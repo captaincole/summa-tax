@@ -1,0 +1,103 @@
+import { createTool } from "@mastra/core/tools";
+import { z } from "zod";
+import { recordDecision, listDecisions } from "../db/aiDecisions";
+
+export const recordAIDecision = createTool({
+  id: "record-ai-decision",
+  description:
+    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the taxpayer's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. Authority citations (Treasury regs / IRS pubs) are left null for now — a separate grounding workflow fills them in later.",
+  inputSchema: z.object({
+    taxpayerId: z.string().describe("Stable id for the taxpayer"),
+    year: z.number().int().describe("Tax year (e.g. 2025)"),
+    decisionKey: z
+      .string()
+      .describe(
+        "Stable decision identifier, dotted snake_case. Prefix with 'decisions.' (e.g. 'decisions.ca_residency', 'decisions.filing_status_eligibility'). This key is how downstream derivations reference the decision.",
+      ),
+    decision: z
+      .any()
+      .describe(
+        "The decision value — string, number, boolean, or object. Use the narrowest shape that captures the call (e.g. 'full_year_resident', true, {status:'single'}).",
+      ),
+    rationale: z
+      .string()
+      .describe(
+        "The 'why' — plain-English reasoning that a CPA could audit. Reference the facts you relied on and why the alternative was rejected.",
+      ),
+    supportingFactKeys: z
+      .array(z.string())
+      .describe(
+        "List of fact_keys (from tax_facts) that informed this decision. Lets a reviewer trace the decision back to its grounding facts.",
+      ),
+    confidence: z
+      .enum(["low", "medium", "high"])
+      .describe(
+        "How confident the agent is. Use 'low' when the facts are sparse or contradictory, 'high' when the rule is unambiguous and the facts fit cleanly.",
+      ),
+    dissentingConsiderations: z
+      .string()
+      .optional()
+      .describe(
+        "Optional — what a reasonable reviewer might push back on, or what would change the decision. Write this when confidence is low or medium.",
+      ),
+    sourceNote: z
+      .string()
+      .describe(
+        "Short origin note — e.g. 'derived from intake conversation 2026-04-22' or 'after user clarified Nevada travel'.",
+      ),
+  }),
+  outputSchema: z.object({
+    id: z.string(),
+    recorded: z.boolean(),
+  }),
+  execute: async (input) => {
+    const id = crypto.randomUUID();
+    await recordDecision({
+      id,
+      taxpayerId: input.taxpayerId,
+      year: input.year,
+      decisionKey: input.decisionKey,
+      decision: input.decision,
+      rationale: input.rationale,
+      supportingFactKeys: input.supportingFactKeys,
+      confidence: input.confidence,
+      dissentingConsiderations: input.dissentingConsiderations,
+      sourceNote: input.sourceNote,
+    });
+    return { id, recorded: true };
+  },
+});
+
+export const listAIDecisions = createTool({
+  id: "list-ai-decisions",
+  description:
+    "List previously recorded AI decisions for a taxpayer. Use to review what judgment calls have been made and avoid duplicating or contradicting them.",
+  inputSchema: z.object({
+    taxpayerId: z.string(),
+    year: z.number().int().optional(),
+    decisionKey: z.string().optional(),
+    limit: z.number().int().min(1).max(500).optional(),
+  }),
+  outputSchema: z.object({
+    decisions: z.array(
+      z.object({
+        id: z.string(),
+        taxpayerId: z.string(),
+        year: z.number(),
+        decisionKey: z.string(),
+        decision: z.any(),
+        rationale: z.string(),
+        supportingFactKeys: z.array(z.string()),
+        confidence: z.string(),
+        dissentingConsiderations: z.string().nullable(),
+        authorityCitations: z.any().nullable(),
+        sourceNote: z.string().nullable(),
+        createdAt: z.string(),
+      }),
+    ),
+  }),
+  execute: async (input) => {
+    const decisions = await listDecisions(input);
+    return { decisions };
+  },
+});

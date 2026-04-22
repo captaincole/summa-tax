@@ -1,0 +1,10 @@
+node_modules
+.mastra
+.env
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.log
+src/mastra/public/drafts/
+.DS_Store
