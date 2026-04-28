@@ -125,6 +125,40 @@ export async function listFacts(opts: ListFactsOpts): Promise<TaxFactRow[]> {
   }));
 }
 
+export async function listFactsByKeys(
+  taxpayerId: string,
+  year: number,
+  keys: string[],
+): Promise<TaxFactRow[]> {
+  if (keys.length === 0) return [];
+  await ensureSchema();
+  const placeholders = keys.map(() => "?").join(", ");
+  const result = await client.execute({
+    sql: `SELECT id, taxpayer_id, year, category, fact_key, value_json, source_note, created_at
+          FROM tax_facts
+          WHERE taxpayer_id = ? AND year = ? AND fact_key IN (${placeholders})
+          ORDER BY created_at DESC`,
+    args: [taxpayerId, year, ...keys],
+  });
+  // tax_facts is append-only; collapse to the latest row per fact_key.
+  const latest = new Map<string, TaxFactRow>();
+  for (const r of result.rows) {
+    const key = String(r.fact_key);
+    if (latest.has(key)) continue;
+    latest.set(key, {
+      id: String(r.id),
+      taxpayerId: String(r.taxpayer_id),
+      year: Number(r.year),
+      category: String(r.category),
+      key,
+      value: JSON.parse(String(r.value_json)),
+      sourceNote: r.source_note == null ? null : String(r.source_note),
+      createdAt: new Date(Number(r.created_at)).toISOString(),
+    });
+  }
+  return Array.from(latest.values());
+}
+
 export interface OpenQuestion {
   id: string;
   taxpayerId: string;

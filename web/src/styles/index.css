@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* dotted grid background, very subtle */
+  .bg-grid {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.04) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply bg-bg-panel border border-border-subtle rounded-xl;
+  }
+
+  .input-base {
+    @apply w-full px-4 py-3 bg-bg-panel border border-border-subtle rounded-lg
+           text-ink-primary placeholder:text-ink-muted
+           focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+           transition-all duration-150;
+  }
+
+  .btn-primary {
+    @apply w-full py-3 bg-accent hover:bg-accent-hover
+           disabled:bg-bg-elevated disabled:text-ink-muted disabled:cursor-not-allowed
+           text-white rounded-lg font-medium
+           transition-colors duration-150;
+  }
+}

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 import { createClient } from "@libsql/client";
 import { Mastra } from "@mastra/core";
-import { registerApiRoute } from "@mastra/core/server";
+import { registerApiRoute, SimpleAuth } from "@mastra/core/server";
 import { InMemoryStore, MastraCompositeStore } from "@mastra/core/storage";
 import { LibSQLStore } from "@mastra/libsql";
 import { PinoLogger } from "@mastra/loggers";
@@ -15,8 +15,29 @@ import {
   DefaultExporter,
 } from "@mastra/observability";
 import { thom } from "./agents/thom";
+import { nynaeve } from "./agents/nynaeve";
 import { resetUserData } from "./db/resetUserData";
 import { cleanGeneratedFiles } from "./fs/cleanGeneratedFiles";
+import { getCaseState } from "./tools/caseState";
+import { listFactsByKeys } from "./db/taxFacts";
+
+// Single demo session — all writes/reads scope to these constants. When we
+// add per-visitor partitioning later, derive these from the authed user.
+const DEMO_TAXPAYER_ID = "demo-session";
+const DEMO_TAX_YEAR = 2025;
+
+// SimpleAuth treats the env var as a bearer token. Frontend sends
+// `Authorization: Bearer <DEMO_PASSCODE>` on every request. Mastra protects
+// /api/agents/*, /api/workflows/*, and any custom routes we register.
+//
+// The "passcode" is the token value verbatim. Not rotation-safe; this is the
+// demo posture. Production swap-out path is JWT or an external IDP.
+const demoPasscode = process.env.DEMO_PASSCODE;
+const demoAuth = demoPasscode
+  ? new SimpleAuth<{ id: string }>({
+      tokens: { [demoPasscode]: { id: "demo" } },
+    })
+  : undefined;
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const DRAFTS_DIR = resolve(projectRoot, "src/mastra/public/drafts");
@@ -54,7 +75,7 @@ const storage = new MastraCompositeStore({
 });
 
 export const mastra = new Mastra({
-  agents: { thom },
+  agents: { thom, nynaeve },
   storage,
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
   observability: new Observability({
@@ -66,11 +87,89 @@ export const mastra = new Mastra({
     },
   }),
   server: {
+    auth: demoAuth,
     apiRoutes: [
+      // Live status for the right rail — open asks, progress, draft URL.
+      registerApiRoute("/app/state", {
+        method: "GET",
+        handler: async (c) => {
+          const result = await (
+            getCaseState as unknown as {
+              execute: (input: { taxpayerId: string; year: number }) => Promise<{
+                openAsks: { factKey: string; prompt: string; origin: string; stage: string }[];
+                progress: { intakePct: number; scopingPct: number; docsPct: number; overallPct: number };
+                withinMvp: boolean;
+                mvpViolations: string[];
+                factCount: number;
+                aiDecisions: unknown[];
+                money: {
+                  totalWages: number;
+                  agi: number;
+                  taxableIncome: number;
+                  federalTaxOwed: number;
+                  federalWithholding: number;
+                  refundOrBalance: unknown;
+                };
+              }>;
+            }
+          ).execute({ taxpayerId: DEMO_TAXPAYER_ID, year: DEMO_TAX_YEAR });
+
+          const draftFilename = `1040-${DEMO_TAXPAYER_ID}-${DEMO_TAX_YEAR}.pdf`;
+          const draftPath = resolve(DRAFTS_DIR, draftFilename);
+          const draftUrl = existsSync(draftPath) ? `/drafts/${draftFilename}` : null;
+
+          // Pull the first-name fact for the header greeting. Listed DESC by
+          // created_at, so [0] is the most recent (handles a name correction).
+          const nameRows = await listFactsByKeys(
+            DEMO_TAXPAYER_ID,
+            DEMO_TAX_YEAR,
+            ["identity.name.first"],
+          );
+          const taxpayerFirstName =
+            nameRows.length > 0 && typeof nameRows[0].value === "string"
+              ? (nameRows[0].value as string)
+              : null;
+
+          return c.json({
+            withinMvp: result.withinMvp,
+            mvpViolations: result.mvpViolations,
+            openAsks: result.openAsks,
+            progress: result.progress,
+            money: result.money,
+            factCount: result.factCount,
+            decisionCount: result.aiDecisions.length,
+            draftUrl,
+            taxpayerFirstName,
+          });
+        },
+      }),
+
+      // Wipes user data + draft files. Mastra and our db modules will
+      // recreate their schemas on next use.
+      registerApiRoute("/app/session/reset", {
+        method: "POST",
+        handler: async (c) => {
+          const resetClient = createClient({ url: dbUrl });
+          const { dropped, preserved } = await resetUserData(resetClient);
+          resetClient.close();
+          const { deleted } = cleanGeneratedFiles();
+          return c.json({
+            ok: true,
+            droppedTables: dropped.length,
+            preservedTables: preserved.length,
+            deletedFiles: deleted.length,
+          });
+        },
+      }),
+
       // Serves generated draft PDFs. Mastra's dev server doesn't auto-serve
       // src/mastra/public/*, so we route /drafts/:filename → disk manually.
+      // Public so <a href> clicks and iframe embeds work without an Authorization
+      // header — filenames are hard-to-guess and the demo is behind a passcode
+      // gate at the app level. Revisit if drafts ever contain real PII.
       registerApiRoute("/drafts/:filename", {
         method: "GET",
+        requiresAuth: false,
         handler: async (c) => {
           const filename = basename(c.req.param("filename"));
           if (!filename.endsWith(".pdf")) {

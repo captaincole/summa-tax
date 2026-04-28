@@ -53,15 +53,45 @@ The case engine (derivation graph → live case state) and MVP artifact library 
 
 ## Running it
 
+Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Vite.
+
 ```bash
 npm install
-cp .env.example .env
-# edit .env with your ANTHROPIC_API_KEY
-npm run dev              # opens Mastra Studio locally
+npm install --prefix web                 # frontend deps
+cp .env.example .env.development
+# edit .env.development with ANTHROPIC_API_KEY + DEMO_PASSCODE
+npm run dev:all                          # mastra (:4111) + vite (:5173)
+
+# or run them separately:
+npm run dev          # mastra only — also opens Mastra Studio at :4111
+npm run dev:web      # vite only
+
 npm run fixtures:build   # regenerates test PDFs under fixtures/docs/
 ```
 
-The SQLite database file is created on first run at `src/mastra/public/wheel-of-time.db` (gitignored; Mastra dev's public-assets dir).
+The SQLite database file is created on first run at `src/mastra/public/wheel-of-time.db` (gitignored; Mastra dev's public-assets dir). The frontend reaches Mastra via Vite proxy: `/api`, `/app`, and `/drafts` all forward to `:4111`.
+
+## Development workflow
+
+We're building agent + UI together. When changes touch both, expect to:
+
+1. **Edit code** (backend in `src/mastra/`, frontend in `web/src/`).
+2. **Watch logs** for errors. Three places to look:
+   - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
+   - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Thom do X?".
+   - **Browser console + Network panel** — frontend errors and HTTP failures (401s from a wrong passcode, 404s from a missing proxy entry, etc.).
+3. **Verify the change in the browser** at http://localhost:5173. Login passcode is whatever's in `.env.development` as `DEMO_PASSCODE`. Hit **Reset** in the chat header to wipe state between test runs. The right rail (when we add it) and the header counters refresh after each agent turn.
+
+For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/thom/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
+
+### Claude verifies UI changes via claude-in-chrome
+
+Claude has the `mcp__claude-in-chrome__*` toolset available. After any non-trivial UI change, use it to drive the browser yourself: navigate to `:5173`, log in, exercise the affected flow, read the console for errors, and report what you observed. This is faster and more reliable than asking Andrew to manually test every iteration. For multi-step interactions worth reviewing later, use `gif_creator` to record the run.
+
+Limits worth remembering:
+- These tools are deferred — load each one with `ToolSearch` (`select:mcp__claude-in-chrome__<name>`) before calling it.
+- Avoid triggering `alert()` / `confirm()` / `prompt()` dialogs — they freeze the extension. Our Reset button uses `confirm()`; if you need to test it programmatically, dispatch the click in the codepath that bypasses the confirm or temporarily comment it out.
+- If a browser tool errors twice in a row, stop and ask Andrew rather than retrying blindly.
 
 ### Resetting user data
 
@@ -90,6 +120,7 @@ The shared reset helpers are `src/mastra/db/resetUserData.ts` (tables) and `src/
 - **Reactive, not batch.** Every fact write triggers downstream re-derivation. At any turn, the draft 1040, open-asks list, and decisions reflect everything known so far. Observable at every step.
 - **Stage boundaries are hard.** Stage 1 (Gatherer) doesn't compute tax owed, suggest strategies, or fill forms. Cross-stage leakage is a bug.
 - **Human in the loop.** Stage 3 requires CPA sign-off before anything ships. The preparer will probably use Opus for accuracy over cost.
+- **Suggest the manual edit when it's faster.** If a task can be done in 10 seconds by Andrew opening a file and changing one line — `.env`, a constant, a feature-flag default — say so up-front instead of writing scripts, chained env loaders, or dotenv-cli wrappers to do it programmatically. Reach for tooling only when the change is repeated, conditional, or part of an automated flow.
 
 ## Facts vs. AI decisions (two-phase reasoning)
 

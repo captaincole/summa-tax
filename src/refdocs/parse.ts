@@ -7,6 +7,24 @@ import type { RefBlock, RefSection } from "../mastra/db/refDocs";
 // a false positive fragments the doc.
 type HeadingMatch = { heading: string; slug: string };
 
+// Known prose subject-headings that appear standalone on a line and would
+// otherwise be swept into the preceding section as body text. These follow no
+// structural pattern (they're just Title Case noun phrases), so we match them
+// by name. Add entries here conservatively — a false positive fragments the
+// section tree.
+const KNOWN_PROSE_HEADINGS = new Set<string>([
+  // Filing status sub-sections (p.13–14 of 1040 instructions)
+  "Single",
+  "Married Filing Jointly",
+  "Married Filing Separately",
+  "Head of Household",
+  "Qualifying Surviving Spouse",
+  // "Qualifying Surviving Spouse" wraps to two lines in the extracted text
+  // ("Qualifying Surviving\nSpouse"); match the first line so the continuation
+  // logic can absorb "Spouse" into the full heading.
+  "Qualifying Surviving",
+]);
+
 const LINE_HEADING_RE = /^Line \d+[a-z]?$/;
 // Line headings with an inline dash-delimited title, e.g. "Line 25a—Form(s) W-2".
 const LINE_DASH_HEADING_RE = /^Line \d+[a-z]?—.+$/;
@@ -31,7 +49,8 @@ function detectHeading(line: string): HeadingMatch | null {
     LINES_LIST_HEADING_RE.test(t) ||
     LINES_RANGE_HEADING_RE.test(t) ||
     PART_HEADING_RE.test(t) ||
-    SCHEDULE_HEADING_RE.test(t)
+    SCHEDULE_HEADING_RE.test(t) ||
+    KNOWN_PROSE_HEADINGS.has(t)
   ) {
     return { heading: t, slug: slugifyHeading(t) };
   }

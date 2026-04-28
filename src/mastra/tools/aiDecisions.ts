@@ -1,11 +1,12 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { recordDecision, listDecisions } from "../db/aiDecisions";
+import { reviewDecision } from "../workflows/reviewDecision";
 
 export const recordAIDecision = createTool({
   id: "record-ai-decision",
   description:
-    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the taxpayer's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. Authority citations (Treasury regs / IRS pubs) are left null for now — a separate grounding workflow fills them in later.",
+    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the taxpayer's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. The decision is synchronously reviewed by Nynaeve (the CPA critic agent): she checks that the facts support the decision and grounds it with IRS reference citations. The tool response includes her verdict — if 'inaccurate', revise and re-record; if 'ungroundable', the decision stands but is flagged for human review.",
   inputSchema: z.object({
     taxpayerId: z.string().describe("Stable id for the taxpayer"),
     year: z.number().int().describe("Tax year (e.g. 2025)"),
@@ -49,6 +50,14 @@ export const recordAIDecision = createTool({
   outputSchema: z.object({
     id: z.string(),
     recorded: z.boolean(),
+    verdict: z.enum(["accurate", "inaccurate", "ungroundable", "review_failed"]),
+    verdictReason: z.string(),
+    authorityCitations: z.array(
+      z.object({
+        blockId: z.string(),
+        quote: z.string().optional(),
+      }),
+    ),
   }),
   execute: async (input) => {
     const id = crypto.randomUUID();
@@ -64,7 +73,15 @@ export const recordAIDecision = createTool({
       dissentingConsiderations: input.dissentingConsiderations,
       sourceNote: input.sourceNote,
     });
-    return { id, recorded: true };
+
+    const review = await reviewDecision(id);
+    return {
+      id,
+      recorded: true,
+      verdict: review.verdict,
+      verdictReason: review.reason,
+      authorityCitations: review.citations,
+    };
   },
 });
 
@@ -93,6 +110,11 @@ export const listAIDecisions = createTool({
         authorityCitations: z.any().nullable(),
         sourceNote: z.string().nullable(),
         createdAt: z.string(),
+        verdict: z
+          .enum(["accurate", "inaccurate", "ungroundable", "review_failed"])
+          .nullable(),
+        verdictReason: z.string().nullable(),
+        verdictAt: z.string().nullable(),
       }),
     ),
   }),

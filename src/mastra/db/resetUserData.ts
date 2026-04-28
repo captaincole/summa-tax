@@ -14,10 +14,17 @@ export interface ResetResult {
 }
 
 /**
- * Drop every user-data table in the database, preserving any `ref_*`
- * reference tables and SQLite internals. Schema is NOT recreated — callers
- * that need tables back (Mastra runtime, our own db modules) recreate them
- * via their own `ensureSchema` logic on next use.
+ * Wipe every user-data row in the database, preserving schemas (so callers
+ * with cached references — Mastra Memory, our own modules — keep working
+ * without restart) and any `ref_*` reference tables.
+ *
+ * We DELETE rows instead of DROP TABLE because Mastra Memory caches schema
+ * state in-process: dropping `mastra_threads` mid-process leaves it querying
+ * a table that no longer exists, breaking the next chat turn until restart.
+ * DELETE FROM keeps the schema and just empties the rows.
+ *
+ * The `dropped` field name is preserved for caller compatibility — it now
+ * means "tables we wiped" rather than "tables we dropped".
  */
 export async function resetUserData(client: Client): Promise<ResetResult> {
   const result = await client.execute(
@@ -36,7 +43,7 @@ export async function resetUserData(client: Client): Promise<ResetResult> {
     }
     // Identifiers from sqlite_master are already-existing table names, so
     // interpolating is safe here (no user input). Quote defensively anyway.
-    await client.execute(`DROP TABLE IF EXISTS "${name}"`);
+    await client.execute(`DELETE FROM "${name}"`);
     dropped.push(name);
   }
 

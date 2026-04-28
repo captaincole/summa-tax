@@ -31,12 +31,36 @@ function ensureSchema(): Promise<void> {
       await client.execute(
         `CREATE INDEX IF NOT EXISTS idx_ai_decisions_key ON ai_decisions(decision_key)`,
       );
+
+      // Verdict columns added after initial schema; add if missing.
+      const cols = await client.execute(`PRAGMA table_info(ai_decisions)`);
+      const names = new Set(cols.rows.map((r) => String(r.name)));
+      if (!names.has("verdict")) {
+        await client.execute(`ALTER TABLE ai_decisions ADD COLUMN verdict TEXT`);
+      }
+      if (!names.has("verdict_reason")) {
+        await client.execute(
+          `ALTER TABLE ai_decisions ADD COLUMN verdict_reason TEXT`,
+        );
+      }
+      if (!names.has("verdict_at")) {
+        await client.execute(
+          `ALTER TABLE ai_decisions ADD COLUMN verdict_at INTEGER`,
+        );
+      }
     })();
   }
   return ready;
 }
 
 export type Confidence = "low" | "medium" | "high";
+
+export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
+
+export interface AuthorityCitation {
+  blockId: string;
+  quote?: string;
+}
 
 export interface AIDecision {
   id: string;
@@ -48,8 +72,7 @@ export interface AIDecision {
   supportingFactKeys: string[];
   confidence: Confidence;
   dissentingConsiderations?: string;
-  // Left null until the grounding workflow runs over this decision.
-  authorityCitations?: unknown[];
+  authorityCitations?: AuthorityCitation[];
   sourceNote?: string;
 }
 
@@ -63,9 +86,12 @@ export interface AIDecisionRow {
   supportingFactKeys: string[];
   confidence: Confidence;
   dissentingConsiderations: string | null;
-  authorityCitations: unknown[] | null;
+  authorityCitations: AuthorityCitation[] | null;
   sourceNote: string | null;
   createdAt: string;
+  verdict: Verdict | null;
+  verdictReason: string | null;
+  verdictAt: string | null;
 }
 
 export async function recordDecision(d: AIDecision): Promise<void> {
@@ -118,12 +144,17 @@ export async function listDecisions(
   const result = await client.execute({
     sql: `SELECT id, taxpayer_id, year, decision_key, decision_json, rationale,
                  supporting_fact_keys_json, confidence, dissenting_considerations,
-                 authority_citations_json, source_note, created_at
+                 authority_citations_json, source_note, created_at,
+                 verdict, verdict_reason, verdict_at
           FROM ai_decisions WHERE ${where.join(" AND ")}
           ORDER BY created_at DESC LIMIT ?`,
     args: [...args, limit],
   });
-  return result.rows.map((r) => ({
+  return result.rows.map(rowToDecision);
+}
+
+function rowToDecision(r: Record<string, unknown>): AIDecisionRow {
+  return {
     id: String(r.id),
     taxpayerId: String(r.taxpayer_id),
     year: Number(r.year),
@@ -139,8 +170,50 @@ export async function listDecisions(
     authorityCitations:
       r.authority_citations_json == null
         ? null
-        : JSON.parse(String(r.authority_citations_json)),
+        : (JSON.parse(String(r.authority_citations_json)) as AuthorityCitation[]),
     sourceNote: r.source_note == null ? null : String(r.source_note),
     createdAt: new Date(Number(r.created_at)).toISOString(),
-  }));
+    verdict: r.verdict == null ? null : (String(r.verdict) as Verdict),
+    verdictReason: r.verdict_reason == null ? null : String(r.verdict_reason),
+    verdictAt:
+      r.verdict_at == null ? null : new Date(Number(r.verdict_at)).toISOString(),
+  };
+}
+
+export async function getDecisionById(
+  id: string,
+): Promise<AIDecisionRow | null> {
+  await ensureSchema();
+  const r = await client.execute({
+    sql: `SELECT id, taxpayer_id, year, decision_key, decision_json, rationale,
+                 supporting_fact_keys_json, confidence, dissenting_considerations,
+                 authority_citations_json, source_note, created_at,
+                 verdict, verdict_reason, verdict_at
+          FROM ai_decisions WHERE id = ?`,
+    args: [id],
+  });
+  if (r.rows.length === 0) return null;
+  return rowToDecision(r.rows[0] as Record<string, unknown>);
+}
+
+export async function setDecisionVerdict(
+  id: string,
+  verdict: Verdict,
+  reason: string,
+  citations: AuthorityCitation[] | null,
+): Promise<void> {
+  await ensureSchema();
+  await client.execute({
+    sql: `UPDATE ai_decisions
+          SET verdict = ?, verdict_reason = ?, verdict_at = ?,
+              authority_citations_json = ?
+          WHERE id = ?`,
+    args: [
+      verdict,
+      reason,
+      Date.now(),
+      citations ? JSON.stringify(citations) : null,
+      id,
+    ],
+  });
 }
