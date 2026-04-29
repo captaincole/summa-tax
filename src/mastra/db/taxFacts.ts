@@ -87,6 +87,27 @@ export async function recordFact(fact: TaxFact): Promise<void> {
   });
 }
 
+// Demo-only: Thom invents his own taxpayer_id on first turn (per his prompt:
+// "pick a short stable taxpayerId for this session"), so server endpoints that
+// want to surface "the current session" can't hardcode a value. This finds the
+// most recently-active taxpayer_id for a year — fine for the single-user demo;
+// will need a per-user lookup once auth carries identity.
+export async function getActiveTaxpayerId(
+  year: number,
+): Promise<string | null> {
+  await ensureSchema();
+  const r = await client.execute({
+    sql: `SELECT taxpayer_id FROM tax_facts
+          WHERE year = ?
+          GROUP BY taxpayer_id
+          ORDER BY MAX(created_at) DESC
+          LIMIT 1`,
+    args: [year],
+  });
+  if (r.rows.length === 0) return null;
+  return String(r.rows[0].taxpayer_id);
+}
+
 export interface ListFactsOpts {
   taxpayerId: string;
   year?: number;

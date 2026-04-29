@@ -39,6 +39,35 @@ export async function fetchState(passcodeOverride?: string): Promise<CaseState> 
   return res.json();
 }
 
+export type ActivityKind = "fact" | "decision";
+export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
+export type Confidence = "low" | "medium" | "high";
+
+export interface ActivityItem {
+  kind: ActivityKind;
+  id: string;
+  createdAt: string;
+  title: string;
+  value: unknown;
+  sourceNote: string | null;
+  // facts only
+  category?: string;
+  // decisions only
+  rationale?: string;
+  supportingFactKeys?: string[];
+  confidence?: Confidence;
+  verdict?: Verdict | null;
+  verdictReason?: string | null;
+}
+
+export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
+  const res = await fetch(`/app/activity?limit=${limit}`, { headers: authHeaders() });
+  if (res.status === 401) throw new UnauthorizedError();
+  if (!res.ok) throw new Error(`Activity fetch failed: ${res.status}`);
+  const json = (await res.json()) as { items: ActivityItem[] };
+  return json.items;
+}
+
 export async function resetSession(): Promise<void> {
   const res = await fetch("/app/session/reset", {
     method: "POST",

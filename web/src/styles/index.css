@@ -15,6 +15,15 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Global scrollbar hiding — scrolling still works, just no visible track. */
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* legacy Edge / IE */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* Chrome / Safari / WebKit */
+  }
+
   /* dotted grid background, very subtle */
   .bg-grid {
     background-image:
@@ -26,6 +35,28 @@
 @layer components {
   .surface {
     @apply bg-bg-panel border border-border-subtle rounded-xl;
+  }
+
+  /* Flat card — no shadow, hairline border, generous radius. */
+  .card {
+    @apply bg-bg-panel border border-border-subtle rounded-2xl;
+  }
+
+  .card-header {
+    @apply px-5 pt-4 pb-3 flex items-center justify-between
+           text-[10px] uppercase tracking-[0.2em] text-ink-muted font-medium;
+  }
+
+  /* Section nav row in the left rail. */
+  .nav-item {
+    @apply w-full flex items-center gap-3 px-3 py-2 rounded-lg
+           text-sm text-ink-secondary
+           hover:bg-bg-elevated hover:text-ink-primary
+           transition-colors duration-150;
+  }
+
+  .nav-item-active {
+    @apply bg-bg-elevated text-ink-primary;
   }
 
   .input-base {
