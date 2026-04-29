@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
@@ -40,7 +40,61 @@ const demoAuth = demoPasscode
   : undefined;
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const DRAFTS_DIR = resolve(projectRoot, "src/mastra/public/drafts");
+const DRAFTS_DIR = process.env.DRAFTS_DIR
+  ? resolve(process.env.DRAFTS_DIR)
+  : resolve(projectRoot, "src/mastra/public/drafts");
+mkdirSync(DRAFTS_DIR, { recursive: true });
+
+// Built React app — Vite emits to web/dist/. Resolved relative to projectRoot
+// so it works both in dev (running from source) and in prod (running from
+// .mastra/output/, where ../../web/dist still resolves correctly because
+// Render keeps the whole workspace at runtime).
+const WEB_DIST_DIR = resolve(projectRoot, "web/dist");
+
+// Paths owned by Mastra (API, custom user routes, Studio, system endpoints).
+// Our static-frontend middleware falls through for these so the rest of the
+// stack can handle them; everything else gets the React app.
+const BACKEND_PREFIXES = [
+  "/api",
+  "/app",
+  "/drafts",
+  "/health",
+  "/studio",
+  "/swagger-ui",
+  "/openapi.json",
+];
+
+const CONTENT_TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".map": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".ico": "image/x-icon",
+  ".webp": "image/webp",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+  ".txt": "text/plain; charset=utf-8",
+};
+
+function contentTypeFor(filePath: string): string {
+  const dot = filePath.lastIndexOf(".");
+  const ext = dot === -1 ? "" : filePath.slice(dot).toLowerCase();
+  return CONTENT_TYPES[ext] ?? "application/octet-stream";
+}
+
+function readSafe(filePath: string): Buffer | null {
+  if (!filePath.startsWith(WEB_DIST_DIR)) return null;
+  if (!existsSync(filePath)) return null;
+  return readFileSync(filePath);
+}
 
 const dbUrl = process.env.DATABASE_URL ?? "file:./wheel-of-time.db";
 
@@ -88,6 +142,46 @@ export const mastra = new Mastra({
   }),
   server: {
     auth: demoAuth,
+    // Mount Studio at /studio so it doesn't claim the URL root and /assets/*,
+    // which we need for the React app. Studio's catch-all only fires for
+    // paths under studioBase, so /assets/foo.js routes to the SPA.
+    studioBase: "/studio",
+    middleware: [
+      {
+        path: "*",
+        handler: async (c, next) => {
+          if (c.req.method !== "GET") return next();
+          const reqPath = c.req.path;
+          if (
+            BACKEND_PREFIXES.some(
+              (p) => reqPath === p || reqPath.startsWith(`${p}/`),
+            )
+          ) {
+            return next();
+          }
+          const rel = reqPath === "/" ? "index.html" : reqPath.replace(/^\/+/, "");
+          const direct = readSafe(resolve(WEB_DIST_DIR, rel));
+          if (direct) {
+            return new Response(direct, {
+              status: 200,
+              headers: { "Content-Type": contentTypeFor(rel) },
+            });
+          }
+          // SPA fallback — any unmatched non-asset path returns index.html so
+          // React Router can resolve client-side. Asset misses (paths that
+          // contain a dot) 404 cleanly instead of returning HTML.
+          if (rel.includes(".")) {
+            return c.notFound();
+          }
+          const indexHtml = readSafe(resolve(WEB_DIST_DIR, "index.html"));
+          if (!indexHtml) return next();
+          return new Response(indexHtml, {
+            status: 200,
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          });
+        },
+      },
+    ],
     apiRoutes: [
       // Live status for the right rail — open asks, progress, draft URL.
       registerApiRoute("/app/state", {

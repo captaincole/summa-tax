@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: wheel-of-time
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm ci && npm --prefix web ci && npm --prefix web run build && npm run build
+    preDeployCommand: npx tsx scripts/seedRefCorpus.ts
+    startCommand: cd .mastra/output && node index.mjs
+    healthCheckPath: /health
+    disk:
+      name: wheel-of-time-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:/data/wheel-of-time.db
+      - key: DRAFTS_DIR
+        value: /data/drafts
+      - key: MASTRA_STUDIO_PATH
+        value: studio
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: VOYAGE_API_KEY
+        sync: false
+      - key: DEMO_PASSCODE
+        sync: false
