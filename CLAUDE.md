@@ -7,7 +7,7 @@
 Agents on the platform are named after characters from the *Wheel of Time* novels:
 
 - **Thom Merrilin** — the conversational front-desk agent; guides the user through the tax-prep flow, orchestrates workflows, narrates progress. First agent built.
-- **Nynaeve** (future) — critic agent; reviews decisions, challenges positions, catches issues before a human CPA does.
+- **Nynaeve al'Meara** — critic agent; reviews every `record-ai-decision` synchronously and grounds it (or flags it) against the IRS reference corpus. Runs on Haiku 4.5. See "Reference-document RAG" section.
 - Future specialist agents get additional WoT character names as they land.
 
 Note: the Unix working directory is still `project-merrilin` (the product was originally called Merrilin; it now lives on only as Thom's surname). Internal names / IDs / docs use "wheel-of-time" or "Wheel of Time".
@@ -131,7 +131,7 @@ The system separates two kinds of data:
 
 Decisions flow back into the case engine: a decision with key `decisions.ca_residency` becomes a fact-like input that downstream derivations can consume. This means "is this person a full-year CA resident?" can be the output of AI reasoning, and the CA 540 scoping derivation reads it like any other fact.
 
-**Two-phase pattern — decide now, ground later.** Decisions currently carry a `rationale` but no formal citations to tax authorities (Treasury regs, IRS pubs, Rev. Ruls., case law). The `authority_citations` field exists on every row but is null for MVP. A future **grounding workflow** will run over each decision, retrieve relevant passages from a curated tax-authority corpus, and write the citations back. This split is deliberate: it lets us ship the reasoning loop today without blocking on corpus curation, and it gives CPAs a concrete "show me the authority" review step later.
+**Two-phase pattern — decide and ground synchronously.** Every `record-ai-decision` call now triggers Nynaeve, who reviews the decision against the supporting facts and the ingested IRS reference corpus, then writes one of four verdicts back to the row: `accurate` / `inaccurate` / `ungroundable` / `review_failed`. `authority_citations_json` populates with `{blockId, quote?}[]` when the verdict is `accurate`. Thom sees the verdict in the tool response and can re-ask the user if `inaccurate`. See the "Reference-document RAG" section for the corpus and retrieval pipeline.
 
 ## Tax facts schema
 
@@ -141,6 +141,90 @@ Categories (see `src/mastra/tools/taxFacts.ts` for the enum):
 `identity`, `filing_status`, `dependents`, `wages`, `self_employment`, `k1`, `investment_income`, `capital_gains`, `rental`, `retirement`, `hsa`, `charitable`, `mortgage`, `state_local_tax`, `medical`, `education`, `estimated_payments`, `crypto`, `foreign`, `trust_estate`, `other`.
 
 Add categories as the domain grows. Prefer splitting over lumping (it's easier to roll up later than to untangle a bucket).
+
+## Reference-document RAG and the grounding workflow (Nynaeve)
+
+### Corpus shape
+
+```
+ref_documents → ref_pages    (page char-ranges into canonical_text)
+              → ref_sections (heading hierarchy with stable slugs)
+              → ref_blocks   (paragraph/list_item/etc — the citable unit)
+                  + ref_blocks_fts        — FTS5 index over contextualized_text
+                  + embedding column      — voyage-law-2 (1024-dim F32_BLOB)
+                  + libsql_vector_idx     — cosine-distance index
+```
+
+Stable IDs — used everywhere as citations:
+- `irs-1040-inst-2025` (doc)
+- `irs-1040-inst-2025::sec::single` (section)
+- `irs-1040-inst-2025::p13::b00013` (block)
+
+`ref_*` tables survive `db:reset` (see "Resetting user data"). Canonical text lives on disk at `reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
+
+### Ingest pipeline
+
+`npm run refdocs:ingest -- --pdf <path> --doc-id <slug> --title "..." --tax-year 2025 [--force]`
+
+```
+PDF → unpdf extractText (per-page text)
+    → parseDoc (heading detection → Document/Section/Block tree, stable IDs)
+    → writeDocument (rows land WITHOUT embeddings)
+    → contextualize (Haiku per block, section-scoped prompt cache)
+    → embed (voyage-law-2, batched by 128 inputs OR 70k tokens)
+    → setBlockEmbeddings (in-place UPDATE)
+```
+
+We write the rows BEFORE embedding so a Voyage failure doesn't waste the ~$0.50 of Haiku contextualization. `block_text_sha1` column is in place for future "skip re-summarize when text unchanged" optimization (not yet wired).
+
+Cost per ingest of the 1040 instructions (~250 blocks): ~$0.50 contextualization + ~$0.02 embeddings + ~$0 reranks (200M free tokens). Each new doc is comparable.
+
+### Retrieval — `search-ref-docs` tool
+
+Single entry point. Hybrid by default:
+
+```
+query
+ → FTS top-50 (BM25 over contextualized_text)  ┐
+ → vector top-50 (voyage-law-2 cosine)         ┘ → merge (union) → rerank-2.5 → top-K
+```
+
+Falls back gracefully:
+- No embeddings yet → FTS-only
+- Voyage key absent or rerank API fails → merged FTS+vector without rerank
+
+`mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs.
+
+### The reviewDecision workflow
+
+`src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
+
+Nynaeve's prompt is in `src/mastra/agents/nynaeve.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
+
+### Inspection scripts
+
+| script | use |
+|---|---|
+| `scripts/ingestRefDoc.ts` | ingest a PDF (npm: `refdocs:ingest`) |
+| `scripts/verifyRefDocs.ts` | round-trip + spot-citation checks |
+| `scripts/inspectBlock.ts` | peek at one block's summary + raw text |
+| `scripts/searchRefDocs.ts` | invoke the production search tool with a query |
+| `scripts/compareRetrieval.ts` | same query through FTS / vector / hybrid+rerank |
+| `scripts/smokeReview.ts` | three end-to-end review scenarios (npm: `smoke:review`) |
+| `scripts/inspectDecisions.ts` | recent ai_decisions with verdicts + citations |
+
+### Lessons from this build (read before changing the pipeline)
+
+- **Mastra structured-output requires `structuredOutput.model` for tool-calling agents.** Without it the agent can do tool calls OR structured output, but the multi-step combination is unreliable. Pass the same model explicitly: `structuredOutput: { schema, model: "anthropic/claude-haiku-4-5" }`.
+- **The cookbook's "send the whole document" doesn't fit big tax docs.** 1040 instructions alone are ~211k tokens — over Haiku's 200k. We use **section-scoped context** for contextual summarization: each block is summarized with its section text as the cached prefix. Same caching benefit (cache hits across blocks within a section), no doc-size ceiling.
+- **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
+- **libsql vector storage uses `vector('[1,2,3]')` SQL function literal**, not bind params. See `setBlockEmbeddings()` in `src/mastra/db/refDocs.ts`. The vector index name (`idx_ref_blocks_embedding`) and column type (`F32_BLOB(1024)`) must match the embedding model's dimensions exactly.
+- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline failure was a parser bug attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Use `inspectBlock.ts` to verify section attribution before tuning retrieval.
+- **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
+- **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
+- **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.
+- **`structuredOutput.errorStrategy: "strict"` is right for production but loud during prompt iteration.** Catches malformed model output explicitly via the existing try/catch → `review_failed` verdict, so failures surface in the DB rather than being papered over.
+- **Pre-retrieval and curated topic indexes were dead ends for this domain.** We considered both; agent-with-good-tool wins on simplicity once the retrieval pipeline is strong. Resist re-introducing pre-retrieval plumbing unless evals show the agent genuinely can't formulate queries — and even then, fix the agent prompt first.
 
 ## Related project — lessons carried forward
 

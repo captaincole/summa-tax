@@ -8,11 +8,27 @@ import {
   type CaseState,
 } from "@/lib/api";
 import { clearPasscode, getPasscode } from "@/lib/auth";
+import { Markdown } from "@/components/Markdown";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  attachmentName?: string;
+}
+
+function readFileAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // FileReader gives "data:<mime>;base64,<base64>" — strip the prefix.
+      const result = reader.result as string;
+      const comma = result.indexOf(",");
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }
 
 const DEMO_THREAD_ID = "demo-thread";
@@ -24,7 +40,9 @@ export function Chat() {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [state, setState] = useState<CaseState | null>(null);
+  const [attachment, setAttachment] = useState<File | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initial mount: bounce to /login if no passcode, otherwise load state.
   // Single effect so we never fire an unauthed fetch in the same render where
@@ -57,12 +75,16 @@ export function Chat() {
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
     const text = input.trim();
-    if (!text || streaming) return;
+    // Allow sending with no text if there's an attachment — the file is
+    // the substance of the turn. Otherwise require text as before.
+    if ((!text && !attachment) || streaming) return;
 
+    const file = attachment;
     const userMsg: Message = {
       id: `u-${Date.now()}`,
       role: "user",
-      content: text,
+      content: text || (file ? `Uploaded ${file.name}` : ""),
+      attachmentName: file?.name,
     };
     const assistantMsg: Message = {
       id: `a-${Date.now()}`,
@@ -71,11 +93,39 @@ export function Chat() {
     };
     setMessages((m) => [...m, userMsg, assistantMsg]);
     setInput("");
+    setAttachment(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setStreaming(true);
 
     try {
+      // If the user attached a file, send a v5 ModelMessage with content
+      // blocks — both images and PDFs go through FilePart (v5's user role
+      // only accepts TextPart and FilePart). Plain string for text-only.
+      let payload: unknown = text;
+      if (file) {
+        const base64 = await readFileAsBase64(file);
+        const mediaType = file.type || "application/pdf";
+        payload = [
+          {
+            role: "user" as const,
+            content: [
+              {
+                type: "text" as const,
+                text: text || "I've attached a document — please review it.",
+              },
+              {
+                type: "file" as const,
+                data: base64,
+                mediaType,
+                filename: file.name,
+              },
+            ],
+          },
+        ];
+      }
+
       const client = makeMastraClient();
-      const stream = await client.getAgent("thom").stream(text, {
+      const stream = await client.getAgent("thom").stream(payload as string, {
         memory: { thread: DEMO_THREAD_ID, resource: DEMO_RESOURCE_ID },
       });
 
@@ -135,8 +185,8 @@ export function Chat() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-base text-ink-primary flex flex-col">
-      <header className="border-b border-border-subtle px-6 py-3 flex items-center justify-between">
+    <div className="h-screen bg-bg-base text-ink-primary flex flex-col">
+      <header className="shrink-0 border-b border-border-subtle px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="text-ink-muted text-[10px] uppercase tracking-[0.24em]">
             Wheel of Time
@@ -187,37 +237,90 @@ export function Chat() {
               <div
                 className={
                   msg.role === "user"
-                    ? "max-w-[80%] bg-accent text-white px-4 py-3 rounded-2xl rounded-br-sm"
-                    : "max-w-[100%] text-ink-primary leading-relaxed whitespace-pre-wrap"
+                    ? "max-w-[80%] bg-accent text-white px-4 py-3 rounded-2xl rounded-br-sm whitespace-pre-wrap"
+                    : "max-w-[100%] text-ink-primary leading-relaxed"
                 }
               >
-                {msg.content || (streaming && <span className="animate-pulse-soft">…</span>)}
+                {msg.attachmentName && (
+                  <div className={
+                    msg.role === "user"
+                      ? "text-xs opacity-80 mb-1.5 flex items-center gap-1.5"
+                      : "text-xs text-ink-muted mb-1.5 flex items-center gap-1.5"
+                  }>
+                    <span>📎</span>
+                    <span className="truncate">{msg.attachmentName}</span>
+                  </div>
+                )}
+                {msg.content
+                  ? msg.role === "assistant"
+                    ? <Markdown>{msg.content}</Markdown>
+                    : msg.content
+                  : streaming && <span className="animate-pulse-soft">…</span>}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <footer className="border-t border-border-subtle px-6 py-4">
-        <form onSubmit={sendMessage} className="max-w-2xl mx-auto flex gap-3">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={streaming ? "Thom is thinking…" : "Type a message"}
-            disabled={streaming}
-            autoFocus
-            className="input-base flex-1"
-          />
-          <button
-            type="submit"
-            disabled={streaming || !input.trim()}
-            className="btn-primary !w-auto px-6"
-          >
-            Send
-          </button>
-        </form>
+      <footer className="shrink-0 border-t border-border-subtle px-6 py-4">
+        <div className="max-w-2xl mx-auto">
+          {attachment && (
+            <div className="mb-2 flex items-center gap-2 px-3 py-2 bg-bg-panel border border-border-subtle rounded-lg text-sm">
+              <span>📎</span>
+              <span className="flex-1 truncate text-ink-primary">{attachment.name}</span>
+              <span className="text-ink-muted text-xs">
+                {(attachment.size / 1024).toFixed(0)} KB
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setAttachment(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }}
+                className="text-ink-muted hover:text-ink-primary text-lg leading-none"
+                aria-label="Remove attachment"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          <form onSubmit={sendMessage} className="flex gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf,image/png,image/jpeg,image/webp"
+              onChange={(e) => setAttachment(e.target.files?.[0] ?? null)}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={streaming}
+              title="Attach a file"
+              className="shrink-0 px-3 py-3 border border-border-subtle hover:border-border-strong rounded-lg text-ink-secondary hover:text-ink-primary disabled:opacity-50 transition-colors"
+            >
+              📎
+            </button>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={streaming ? "Thom is thinking…" : attachment ? "Add a note (optional)…" : "Type a message"}
+              disabled={streaming}
+              autoFocus
+              className="input-base flex-1"
+            />
+            <button
+              type="submit"
+              disabled={streaming || (!input.trim() && !attachment)}
+              className="btn-primary !w-auto px-6"
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </footer>
+
     </div>
   );
 }

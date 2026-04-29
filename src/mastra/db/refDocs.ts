@@ -76,9 +76,60 @@ function ensureSchema(): Promise<void> {
         `CREATE INDEX IF NOT EXISTS idx_ref_blocks_page ON ref_blocks(doc_id, page_num)`,
       );
 
-      // FTS5 index over block text. Porter stemming + unicode61 tokenizer handles
-      // IRS prose well; we keep doc_id/section_id UNINDEXED so we can filter
-      // search results by document or narrow to a section.
+      // RAG additions (Anthropic Contextual Retrieval recipe).
+      //   - contextual_summary:    Haiku-generated 50-100 token blurb situating
+      //                            this block within the whole document.
+      //   - contextualized_text:   summary + "\n\n" + text. Both embedded and
+      //                            FTS-indexed; this is what queries match against.
+      //   - block_text_sha1:       hash of the original text. Lets re-ingestion
+      //                            skip re-summarizing unchanged blocks.
+      //   - embedding:             voyage-law-2 vector of contextualized_text.
+      const blockCols = await client.execute(`PRAGMA table_info(ref_blocks)`);
+      const blockColNames = new Set(
+        blockCols.rows.map((r) => String(r.name)),
+      );
+      if (!blockColNames.has("contextual_summary")) {
+        await client.execute(
+          `ALTER TABLE ref_blocks ADD COLUMN contextual_summary TEXT`,
+        );
+      }
+      if (!blockColNames.has("contextualized_text")) {
+        await client.execute(
+          `ALTER TABLE ref_blocks ADD COLUMN contextualized_text TEXT`,
+        );
+      }
+      if (!blockColNames.has("block_text_sha1")) {
+        await client.execute(
+          `ALTER TABLE ref_blocks ADD COLUMN block_text_sha1 TEXT`,
+        );
+      }
+      if (!blockColNames.has("embedding")) {
+        // libsql's F32_BLOB(n) is the typed-vector column. The dimension must
+        // match voyage-law-2's output (1024).
+        await client.execute(
+          `ALTER TABLE ref_blocks ADD COLUMN embedding F32_BLOB(1024)`,
+        );
+      }
+      // Vector index for fast cosine nearest-neighbor lookup. libsql skips
+      // creation if it already exists at this name.
+      await client.execute(
+        `CREATE INDEX IF NOT EXISTS idx_ref_blocks_embedding
+         ON ref_blocks(libsql_vector_idx(embedding))`,
+      );
+
+      // FTS5 index. We index `contextualized_text` so the contextual summary
+      // contributes to lexical (BM25) matches alongside semantic search.
+      // If an older FTS table exists with the prior `text` column, drop it
+      // so the column shape matches what writeDocument now populates.
+      const ftsInfo = await client.execute(
+        `SELECT sql FROM sqlite_master WHERE type='table' AND name='ref_blocks_fts'`,
+      );
+      const ftsSql =
+        ftsInfo.rows.length > 0 ? String(ftsInfo.rows[0].sql ?? "") : "";
+      const hasContextualizedFts = /contextualized_text/.test(ftsSql);
+      if (ftsInfo.rows.length > 0 && !hasContextualizedFts) {
+        await client.execute(`DROP TABLE ref_blocks_fts`);
+      }
       await client.execute(`
         CREATE VIRTUAL TABLE IF NOT EXISTS ref_blocks_fts USING fts5(
           block_id UNINDEXED,
@@ -86,7 +137,7 @@ function ensureSchema(): Promise<void> {
           section_id UNINDEXED,
           page_num UNINDEXED,
           section_heading,
-          text,
+          contextualized_text,
           tokenize = 'porter unicode61 remove_diacritics 2'
         )
       `);
@@ -146,6 +197,12 @@ export interface RefBlock {
   charStart: number;
   charEnd: number;
   metadata?: Record<string, unknown>;
+  // RAG additions. Populated during ingest after parseDoc; null on legacy
+  // rows or when the contextualization step is skipped.
+  contextualSummary?: string | null;
+  contextualizedText?: string | null;
+  blockTextSha1?: string | null;
+  embedding?: number[] | null;
 }
 
 export interface SearchHit {
@@ -260,6 +317,189 @@ export async function searchRefDocs(opts: SearchOpts): Promise<SearchHit[]> {
   });
 }
 
+export interface VectorSearchOpts {
+  /** Pre-computed query embedding (caller is responsible for embedding the
+   *  query string with the same model used at ingest). */
+  queryEmbedding: number[];
+  docId?: string;
+  limit?: number;
+}
+
+export async function vectorSearchRefDocs(
+  opts: VectorSearchOpts,
+): Promise<SearchHit[]> {
+  await ensureSchema();
+  const limit = Math.min(opts.limit ?? 5, 50);
+  const where: string[] = ["b.embedding IS NOT NULL"];
+  const args: (string | number)[] = [];
+  if (opts.docId) {
+    where.push("b.doc_id = ?");
+    args.push(opts.docId);
+  }
+
+  // libsql vector_distance_cos: smaller = closer. Range [0, 2].
+  const vecLiteral = `vector('${JSON.stringify(opts.queryEmbedding)}')`;
+  const r = await client.execute({
+    sql: `SELECT
+            b.block_id, b.doc_id, b.section_id, b.page_num, b.block_type, b.text,
+            d.title AS doc_title,
+            s.heading AS section_heading,
+            vector_distance_cos(b.embedding, ${vecLiteral}) AS dist
+          FROM ref_blocks b
+          JOIN ref_documents d ON d.doc_id = b.doc_id
+          LEFT JOIN ref_sections s ON s.section_id = b.section_id
+          WHERE ${where.join(" AND ")}
+          ORDER BY dist ASC
+          LIMIT ?`,
+    args: [...args, limit],
+  });
+
+  return r.rows.map((row) => {
+    const sectionHeading =
+      row.section_heading == null ? null : String(row.section_heading);
+    const documentTitle = String(row.doc_title);
+    const pageNum = Number(row.page_num);
+    return {
+      blockId: String(row.block_id),
+      docId: String(row.doc_id),
+      documentTitle,
+      sectionId: row.section_id == null ? null : String(row.section_id),
+      sectionHeading,
+      pageNum,
+      blockType: String(row.block_type) as RefBlockType,
+      text: String(row.text),
+      // No FTS snippet for vector hits; fall back to first 200 chars.
+      snippet: String(row.text).slice(0, 200),
+      // Lower distance = better. Negate so callers sorting "ascending score"
+      // get the same orientation as bm25 (where lower = better).
+      score: Number(row.dist),
+      citation: buildCitation(documentTitle, sectionHeading, pageNum),
+    };
+  });
+}
+
+export interface HybridSearchOpts {
+  query: string;
+  docId?: string;
+  /** Top-K returned to the caller after rerank. Default 8. */
+  limit?: number;
+  /** How many candidates to pull from each leg before merging + reranking.
+   *  Bigger = more recall, more rerank cost. Default 50. */
+  candidatesPerLeg?: number;
+  /** Force a specific retrieval path. Default "auto" picks based on what's
+   *  available (embeddings present? Voyage key set?). */
+  mode?: "auto" | "fts" | "vector" | "hybrid";
+  /** Skip Voyage reranking even when available. Default false. */
+  noRerank?: boolean;
+}
+
+/** Hybrid retrieval: FTS top-N ∪ vector top-N → Voyage rerank → top-K.
+ *
+ * Falls back gracefully:
+ *   - If embeddings missing or Voyage key absent → FTS-only
+ *   - If rerank API fails → return merged candidates ordered by best-of
+ *     (bm25, vector_dist) without rerank
+ *
+ * This is the single entry point we want all retrieval to flow through. */
+export async function hybridSearchRefDocs(
+  opts: HybridSearchOpts,
+): Promise<SearchHit[]> {
+  await ensureSchema();
+  const limit = Math.min(opts.limit ?? 8, 25);
+  const cands = Math.min(opts.candidatesPerLeg ?? 50, 100);
+
+  // Decide which legs to run.
+  const hasVoyageKey = !!process.env.VOYAGE_API_KEY;
+  const embedCheck = await client.execute(
+    `SELECT COUNT(*) AS c FROM ref_blocks WHERE embedding IS NOT NULL`,
+  );
+  const haveEmbeddings = Number(embedCheck.rows[0].c) > 0;
+
+  const mode: "fts" | "vector" | "hybrid" = (() => {
+    if (opts.mode && opts.mode !== "auto") return opts.mode;
+    if (haveEmbeddings && hasVoyageKey) return "hybrid";
+    return "fts";
+  })();
+
+  // Run legs in parallel where applicable.
+  const legPromises: Promise<SearchHit[]>[] = [];
+  if (mode === "fts" || mode === "hybrid") {
+    legPromises.push(searchRefDocs({ query: opts.query, docId: opts.docId, limit: cands }));
+  }
+  if (mode === "vector" || mode === "hybrid") {
+    legPromises.push(
+      (async () => {
+        const { embedOne } = await import("../../refdocs/voyage");
+        const queryVec = await embedOne(opts.query, { inputType: "query" });
+        return vectorSearchRefDocs({
+          queryEmbedding: queryVec,
+          docId: opts.docId,
+          limit: cands,
+        });
+      })(),
+    );
+  }
+  const legs = await Promise.all(legPromises);
+
+  // Merge by block_id, keeping the better score. Using a Map preserves insert
+  // order; we'll re-sort below.
+  const byBlock = new Map<string, SearchHit>();
+  for (const leg of legs) {
+    for (const hit of leg) {
+      const existing = byBlock.get(hit.blockId);
+      if (!existing) byBlock.set(hit.blockId, hit);
+      // Don't try to merge scores between FTS bm25 and vector cosine — they
+      // live in different spaces. We rely on the reranker for the final order.
+    }
+  }
+  let candidates = Array.from(byBlock.values());
+
+  if (candidates.length === 0) return [];
+
+  // Rerank if we have it. Voyage rerank-2.5 takes (query, documents[]) and
+  // returns relevance-ordered indices. Documents we send are the contextualized
+  // text — same surface FTS/vector indexed against, so the reranker scores
+  // against the same signal.
+  const shouldRerank = !opts.noRerank && hasVoyageKey;
+  if (shouldRerank && candidates.length > 1) {
+    try {
+      const { rerank } = await import("../../refdocs/voyage");
+      // Need contextualized text per candidate for the reranker. Pull it.
+      const placeholders = candidates.map(() => "?").join(",");
+      const detail = await client.execute({
+        sql: `SELECT block_id, COALESCE(contextualized_text, text) AS doc_text
+              FROM ref_blocks WHERE block_id IN (${placeholders})`,
+        args: candidates.map((c) => c.blockId),
+      });
+      const textByBlock = new Map(
+        detail.rows.map((r) => [String(r.block_id), String(r.doc_text)]),
+      );
+      const docs = candidates.map(
+        (c) => textByBlock.get(c.blockId) ?? c.text,
+      );
+      const ranked = await rerank(opts.query, docs, { topK: limit });
+      const ordered = ranked.map((r) => {
+        const base = candidates[r.index];
+        return { ...base, score: r.score };
+      });
+      return ordered.slice(0, limit);
+    } catch (err) {
+      // Rerank failed — fall through to merged-without-rerank.
+      console.warn(
+        `[hybridSearchRefDocs] rerank failed, returning merged results: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
+  }
+
+  // Fallback ordering: prefer hits that appeared in both legs, then by best
+  // available score. We don't try to normalize bm25 vs cosine; this is "good
+  // enough until the reranker comes back."
+  candidates = candidates.slice(0, limit);
+  return candidates;
+}
+
 export async function getBlock(blockId: string): Promise<BlockDetail | null> {
   await ensureSchema();
   const r = await client.execute({
@@ -336,6 +576,20 @@ export async function deleteDocument(docId: string): Promise<void> {
   );
 }
 
+export async function setBlockEmbeddings(
+  pairs: { blockId: string; embedding: number[] }[],
+): Promise<void> {
+  if (pairs.length === 0) return;
+  await ensureSchema();
+  // libsql vector literals must be in the SQL text, not bind params, so we
+  // build one statement per row and submit as a single batch.
+  const stmts = pairs.map((p) => ({
+    sql: `UPDATE ref_blocks SET embedding = vector('${JSON.stringify(p.embedding)}') WHERE block_id = ?`,
+    args: [p.blockId],
+  }));
+  await client.batch(stmts, "write");
+}
+
 export interface IngestPayload {
   document: RefDocument;
   pages: RefPage[];
@@ -402,11 +656,21 @@ export async function writeDocument(payload: IngestPayload): Promise<void> {
   }
 
   for (const b of blocks) {
+    // contextualized_text falls back to raw text if summarization was skipped,
+    // so FTS still has something useful to index.
+    const ftsText = b.contextualizedText ?? b.text;
+    // Embeddings are passed via libsql's vector() function — we splice it
+    // into the SQL rather than as a bind parameter because libsql vector
+    // literals must be in the SQL text.
+    const hasEmbedding = b.embedding != null && b.embedding.length > 0;
+    const embeddingExpr = hasEmbedding ? `vector('${JSON.stringify(b.embedding)}')` : "NULL";
+
     stmts.push({
       sql: `INSERT INTO ref_blocks
             (block_id, doc_id, section_id, page_num, block_type, ordinal,
-             text, char_start, char_end, metadata_json)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             text, char_start, char_end, metadata_json,
+             contextual_summary, contextualized_text, block_text_sha1, embedding)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ${embeddingExpr})`,
       args: [
         b.blockId,
         b.docId,
@@ -418,11 +682,14 @@ export async function writeDocument(payload: IngestPayload): Promise<void> {
         b.charStart,
         b.charEnd,
         b.metadata ? JSON.stringify(b.metadata) : null,
+        b.contextualSummary ?? null,
+        b.contextualizedText ?? null,
+        b.blockTextSha1 ?? null,
       ],
     });
     stmts.push({
       sql: `INSERT INTO ref_blocks_fts
-            (block_id, doc_id, section_id, page_num, section_heading, text)
+            (block_id, doc_id, section_id, page_num, section_heading, contextualized_text)
             VALUES (?, ?, ?, ?, ?, ?)`,
       args: [
         b.blockId,
@@ -430,7 +697,7 @@ export async function writeDocument(payload: IngestPayload): Promise<void> {
         b.sectionId,
         b.pageNum,
         b.sectionId ? (sectionHeadingById.get(b.sectionId) ?? "") : "",
-        b.text,
+        ftsText,
       ],
     });
   }

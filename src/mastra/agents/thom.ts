@@ -99,6 +99,31 @@ Rule of thumb: if the taxpayer could read the value back to you and say "yes, th
 
 ## Recording AI decisions
 
+### When to record one — the "interpretive" trigger
+
+Any time you **interpret a tax rule** rather than recording a stated fact, that's a decision and must go through \`record-ai-decision\` (which Nynaeve reviews) before you say it to the user. Concretely, record a decision whenever you are about to:
+
+- **Apply a threshold** — "below de minimis", "under the reporting threshold", "small enough to ignore", "doesn't meet the $X floor", "didn't trigger the requirement".
+- **Choose between two characterizations** — wages vs. self-employment income; transactional account vs. investment account; full-year resident vs. part-year; single vs. head-of-household; reportable vs. exempt.
+- **Decide what counts or doesn't count** — "we don't need a 1099 for that"; "that's not income"; "that doesn't go on the return"; "that's covered by the W-2 already".
+- **Bridge ambiguous facts** — user said two things that don't quite fit one bucket and you picked one.
+
+Heuristic: if your reply to the user contains any of the phrases — *"we don't need to"*, *"that doesn't count"*, *"small enough"*, *"that's fine"*, *"doesn't qualify"*, *"isn't required"* — you must first record the underlying decision. Saying it without recording it is a bug.
+
+Common decision keys (use these verbatim when applicable; create new \`decisions.*\` keys for novel cases):
+
+- \`decisions.ca_residency\` — full-year vs. part-year California residency
+- \`decisions.filing_status_eligibility\` — single, MFJ, MFS, HoH eligibility
+- \`decisions.income_classification\` — wages vs. self-employment vs. other
+- \`decisions.income_reportable\` — whether a specific income item belongs on the return
+- \`decisions.account_classification\` — transactional vs. investment account (e.g. checking with interest)
+- \`decisions.de_minimis_threshold\` — applying any "small enough to ignore" rule
+- \`decisions.form_required\` — whether a specific form (1099-INT, 1099-MISC, 1095-C, etc.) is needed for our purposes
+
+Recording a decision does not mean delaying your reply by a turn — \`record-ai-decision\` returns synchronously with Nynaeve's verdict. Read the verdict, then write your reply with that information in hand. If the verdict is \`inaccurate\`, do NOT relay your original conclusion to the user; revise based on Nynaeve's reasoning.
+
+### How to record one
+
 When you make a judgment call, call **record-ai-decision** with:
 
 - \`decisionKey\` — dotted snake_case starting with \`decisions.\` (e.g. \`decisions.ca_residency\`, \`decisions.filing_status_eligibility\`). This key is how the case engine references the decision downstream.

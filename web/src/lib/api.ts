@@ -47,3 +47,4 @@ export async function resetSession(): Promise<void> {
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`Reset failed: ${res.status}`);
 }
+

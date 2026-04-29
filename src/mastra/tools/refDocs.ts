@@ -1,6 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { searchRefDocs, getBlock } from "../db/refDocs";
+import { hybridSearchRefDocs, getBlock } from "../db/refDocs";
 
 const searchHitSchema = z.object({
   blockId: z.string(),
@@ -19,12 +19,12 @@ const searchHitSchema = z.object({
 export const searchRefDocsTool = createTool({
   id: "search-ref-docs",
   description:
-    "Search the ingested reference-document corpus (IRS instructions, pubs, etc.) via full-text search. Returns the top-matching blocks ranked by BM25. Use this to find the passage that supports a decision — pass a natural-language query with the key terms (e.g. 'household employee wages reporting', 'standard deduction single filer 2025'). Each hit includes a block_id that can be resolved to exact text via cite-ref-docs.",
+    "Search the ingested reference-document corpus (IRS instructions, pubs, etc.). Uses hybrid retrieval (lexical FTS + semantic vector search) with Voyage rerank-2.5 for the final ordering — the system gracefully falls back to FTS-only if embeddings or the rerank API are unavailable. Pass a natural-language query with the key terms (e.g. 'household employee wages reporting', 'standard deduction single filer 2025'). Each hit includes a block_id that can be resolved to exact text via cite-ref-docs.",
   inputSchema: z.object({
     query: z
       .string()
       .describe(
-        "Natural-language query. Key terms matter most — e.g. 'qualified dividends Line 3a' or 'medicaid waiver payments exclusion'.",
+        "Natural-language query. Phrase it naturally — semantic search will bridge vocabulary gaps. Key terms still help.",
       ),
     docId: z
       .string()
@@ -38,17 +38,24 @@ export const searchRefDocsTool = createTool({
       .min(1)
       .max(25)
       .optional()
-      .describe("Max hits to return (default 5)."),
+      .describe("Max hits to return (default 8)."),
+    mode: z
+      .enum(["auto", "fts", "vector", "hybrid"])
+      .optional()
+      .describe(
+        "Retrieval mode. Default 'auto' picks hybrid+rerank if embeddings + Voyage key are available, else FTS-only. Override only for evals/debugging.",
+      ),
   }),
   outputSchema: z.object({
     query: z.string(),
     results: z.array(searchHitSchema),
   }),
   execute: async (input) => {
-    const results = await searchRefDocs({
+    const results = await hybridSearchRefDocs({
       query: input.query,
       docId: input.docId,
       limit: input.limit,
+      mode: input.mode,
     });
     return { query: input.query, results };
   },

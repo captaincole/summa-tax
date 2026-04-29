@@ -57,6 +57,41 @@ function renderDecisionForReview(
     .join("\n");
 }
 
+// Single-line marker we use on every log emitted by this workflow. Makes it
+// trivial to filter in the dev-server stdout: `grep '\[nynaeve-review\]'`.
+const LOG_TAG = "[nynaeve-review]";
+
+function logReviewStart(decision: AIDecisionRow, factCount: number) {
+  const decisionShort =
+    typeof decision.decision === "object"
+      ? JSON.stringify(decision.decision)
+      : String(decision.decision);
+  console.log(
+    `${LOG_TAG} start  decision=${decision.id} key=${decision.decisionKey} value=${decisionShort} confidence=${decision.confidence} facts=${factCount}`,
+  );
+}
+
+function logReviewEnd(
+  outcome: ReviewOutcome,
+  elapsedMs: number,
+) {
+  const verdictTag = (() => {
+    switch (outcome.verdict) {
+      case "accurate": return "✓ accurate";
+      case "inaccurate": return "✗ inaccurate";
+      case "ungroundable": return "? ungroundable";
+      case "review_failed": return "! review_failed";
+    }
+  })();
+  const cites = outcome.citations.map((c) => c.blockId).join(", ") || "(none)";
+  const reasonShort = outcome.reason.replace(/\s+/g, " ").slice(0, 240);
+  console.log(
+    `${LOG_TAG} done   decision=${outcome.decisionId} verdict=${verdictTag} took=${elapsedMs}ms\n` +
+      `${LOG_TAG}        citations=${cites}\n` +
+      `${LOG_TAG}        reason=${reasonShort}${outcome.reason.length > 240 ? "…" : ""}`,
+  );
+}
+
 /**
  * Synchronous review: load the decision and its supporting facts, invoke
  * Nynaeve with a structured-output schema, persist the verdict and citations.
@@ -69,6 +104,7 @@ function renderDecisionForReview(
 export async function reviewDecision(
   decisionId: string,
 ): Promise<ReviewOutcome> {
+  const t0 = Date.now();
   const decision = await getDecisionById(decisionId);
   if (!decision) {
     throw new Error(`reviewDecision: no decision with id ${decisionId}`);
@@ -79,6 +115,7 @@ export async function reviewDecision(
     decision.year,
     decision.supportingFactKeys,
   );
+  logReviewStart(decision, facts.length);
 
   let review: NynaeveReview;
   try {
@@ -103,7 +140,14 @@ export async function reviewDecision(
     const reason =
       err instanceof Error ? err.message : `unknown review failure: ${String(err)}`;
     await setDecisionVerdict(decisionId, "review_failed", reason, null);
-    return { decisionId, verdict: "review_failed", reason, citations: [] };
+    const outcome: ReviewOutcome = {
+      decisionId,
+      verdict: "review_failed",
+      reason,
+      citations: [],
+    };
+    logReviewEnd(outcome, Date.now() - t0);
+    return outcome;
   }
 
   const citations: AuthorityCitation[] = review.citations.map((c) => ({
@@ -118,10 +162,12 @@ export async function reviewDecision(
     citations.length > 0 ? citations : null,
   );
 
-  return {
+  const outcome: ReviewOutcome = {
     decisionId,
     verdict: review.verdict,
     reason: review.reason,
     citations,
   };
+  logReviewEnd(outcome, Date.now() - t0);
+  return outcome;
 }

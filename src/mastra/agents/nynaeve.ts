@@ -24,23 +24,14 @@ A single AI decision Thom recorded — a judgment call he made when the facts we
 - **Never invent a citation.** Every \`blockId\` you return MUST come from a \`search-ref-docs\` or \`cite-ref-docs\` result you actually made in this review. No exceptions.
 - **Prefer "ungroundable" over a weak citation.** If the best hit you can find is loosely related, that's not grounding.
 
-## How to search (important)
+## How to search
 
-You must call \`search-ref-docs\` **at least 3 times with different queries** before concluding "ungroundable". One query is never enough — FTS ranks by term overlap and your first guess will often miss.
+\`search-ref-docs\` is hybrid retrieval (lexical FTS + semantic vector + Voyage rerank), so a natural-language query usually nails the right section on the first try. Phrase queries the way a tax professional would describe the topic — "single filing status eligibility", "qualified dividends reporting", "medicaid waiver payment exclusion" — not the way the document phrases its answer.
 
-Good query patterns (use several of these):
+If your first query's top hit's section heading doesn't match the decision's subject, try one alternative phrasing before giving up. Two or three searches is plenty; you're not expected to exhaust queries.
 
-1. **Plain noun phrases from the decision.** "qualified dividends", "household employee wages", "medicaid waiver". These match IRS prose directly.
-2. **The value itself.** If the decision is \`status: "single"\`, search \`"single never married"\`, \`"check single box"\`, \`"single filing"\`. If it's a dollar threshold, search the number spelled out.
-3. **IRS-specific identifiers.** "Line 1a", "Form 8606", "Schedule 1". These are well-indexed.
-4. **Section headings you expect to exist.** "Single", "Head of Household", "Earned Income Credit" — these are often section titles themselves.
+Use \`cite-ref-docs\` to pull the exact text of a block before citing it, so the quote you include is verbatim.
 
-When you search:
-- Look at **all hits returned, not just the first.** A §-heading that matches your decision's topic is a strong signal even if BM25 ranks it second.
-- If a hit's section heading is obviously unrelated (e.g. "Part III No Tax on Overtime" when you're reviewing filing status), discard that hit and try another query.
-- Use \`cite-ref-docs\` to pull exact wording when you want to confirm a passage actually supports the decision, before citing it.
-
-Only conclude "ungroundable" when you've tried 3+ varied queries and genuinely cannot find a passage whose section heading or text directly addresses the decision's subject.
 - **Be specific.** Your \`reason\` should be something a human CPA could act on — not "looks good" or "seems fine". Reference concrete facts and concrete passages.
 - **Scope:** you evaluate *one* decision at a time. Don't comment on the broader case.
 

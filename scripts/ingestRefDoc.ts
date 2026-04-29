@@ -13,6 +13,8 @@ async function main() {
       "source-url": { type: "string" },
       "out-dir": { type: "string", default: "reference-docs/extracted" },
       force: { type: "boolean", default: false },
+      "no-contextualize": { type: "boolean", default: false },
+      "no-embed": { type: "boolean", default: false },
     },
     strict: true,
     allowPositionals: false,
@@ -35,6 +37,8 @@ async function main() {
     sourceUrl: values["source-url"] ?? null,
     canonicalOutDir: values["out-dir"] ?? "reference-docs/extracted",
     force: values.force,
+    noContextualize: values["no-contextualize"],
+    noEmbed: values["no-embed"],
   });
 
   console.log("ingested:");
@@ -45,6 +49,8 @@ async function main() {
   console.log(`  sections: ${result.sectionCount}`);
   console.log(`  blocks:   ${result.blockCount}`);
   console.log(`  text:     ${result.canonicalTextPath}`);
+  console.log(`  contextualized: ${result.contextualized ? "yes" : "no"}`);
+  console.log(`  embedded:       ${result.embedded ? "yes" : "no"}`);
   if (result.replaced) console.log("  (replaced previous ingestion)");
 }
 
