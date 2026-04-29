@@ -7,7 +7,7 @@
     "dev": "mastra dev --env .env.development",
     "dev:web": "npm --prefix web run dev",
     "dev:all": "concurrently -n mastra,web -c cyan,magenta \"npm:dev\" \"npm:dev:web\"",
-    "build": "mastra build --studio",
+    "build": "npm run build:web && mastra build --studio",
     "build:web": "npm --prefix web run build",
     "start": "cd .mastra/output && node index.mjs",
     "fixtures:build": "tsx fixtures/pipeline/render.ts",
