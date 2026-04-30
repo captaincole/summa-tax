@@ -15,9 +15,33 @@ interface SeedDoc {
 const DOCS: SeedDoc[] = [
   {
     docId: "irs-1040-inst-2025",
-    pdfPath: "reference-docs/2025-1040-1040sr-ref-irs.pdf",
-    title: "2025 Instructions for Form 1040 and 1040-SR",
+    pdfPath: "reference-docs/federal/2025-1040-1040sr-ref-irs.pdf",
+    title: "Instructions for Form 1040 (2025)",
     publisher: "IRS",
+    taxYear: 2025,
+    sourceUrl: "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
+  },
+  {
+    docId: "irs-1040sd-inst-2025",
+    pdfPath: "reference-docs/federal/i1040sd.pdf",
+    title:
+      "2025 Instructions for Schedule D (Form 1040) — Capital Gains and Losses",
+    publisher: "IRS",
+    taxYear: 2025,
+  },
+  {
+    docId: "irs-8949-inst-2025",
+    pdfPath: "reference-docs/federal/i8949.pdf",
+    title:
+      "2025 Instructions for Form 8949 — Sales and Other Dispositions of Capital Assets",
+    publisher: "IRS",
+    taxYear: 2025,
+  },
+  {
+    docId: "ca-540-booklet-2025",
+    pdfPath: "reference-docs/state/ca/2025-540-booklet.pdf",
+    title: "2025 California 540 Personal Income Tax Booklet",
+    publisher: "FTB",
     taxYear: 2025,
   },
 ];
