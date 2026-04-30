@@ -29,7 +29,12 @@ const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
 const BLANK_8949_PATH = resolve(projectRoot, "ref/forms/f8949.pdf");
 const BLANK_SCHEDULE_D_PATH = resolve(projectRoot, "ref/forms/f1040sd.pdf");
 const BLANK_540_PATH = resolve(projectRoot, "ref/forms/state/ca/2025-540.pdf");
-const OUTPUT_DIR = resolve(projectRoot, "src/mastra/public/drafts");
+// Must match the directory src/mastra/index.ts serves /drafts/:filename from
+// — in prod that's the Render persistent disk at $DRAFTS_DIR=/data/drafts;
+// in dev it falls back to src/mastra/public/drafts.
+const OUTPUT_DIR = process.env.DRAFTS_DIR
+  ? resolve(process.env.DRAFTS_DIR)
+  : resolve(projectRoot, "src/mastra/public/drafts");
 
 // Field-name → 1040 line mapping for the 2025 form (extracted by inspection
 // of the AcroForm in ref/forms/f1040-2025.pdf). Stable across an entire
