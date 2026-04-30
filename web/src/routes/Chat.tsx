@@ -5,14 +5,12 @@ import { UnauthorizedError } from "@/lib/api";
 import { clearPasscode } from "@/lib/auth";
 import { Markdown } from "@/components/Markdown";
 import { ActivityCard } from "@/components/ActivityCard";
-import type { LayoutOutletContext } from "@/components/Layout";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  attachmentName?: string;
-}
+import type { ChatMessage, LayoutOutletContext } from "@/components/Layout";
+import {
+  DEMO_RESOURCE_ID,
+  DEMO_THREAD_ID,
+  THOM_AGENT_ID,
+} from "@/lib/chatSession";
 
 function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -28,13 +26,10 @@ function readFileAsBase64(file: File): Promise<string> {
   });
 }
 
-const DEMO_THREAD_ID = "demo-thread";
-const DEMO_RESOURCE_ID = "demo-session";
-
 export function Chat() {
   const navigate = useNavigate();
-  const { state, refreshState, resetTick } = useOutletContext<LayoutOutletContext>();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { state, refreshState, resetTick, messages, setMessages } =
+    useOutletContext<LayoutOutletContext>();
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [attachment, setAttachment] = useState<File | null>(null);
@@ -42,15 +37,11 @@ export function Chat() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Keep the message list pinned to the bottom on append.
+  // Keep the message list pinned to the bottom on append (and on remount,
+  // when we're returning to the route with existing history).
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
-
-  // Wipe local message buffer when the parent signals a session reset.
-  useEffect(() => {
-    if (resetTick > 0) setMessages([]);
-  }, [resetTick]);
 
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
@@ -60,13 +51,13 @@ export function Chat() {
     if ((!text && !attachment) || streaming) return;
 
     const file = attachment;
-    const userMsg: Message = {
+    const userMsg: ChatMessage = {
       id: `u-${Date.now()}`,
       role: "user",
       content: text || (file ? `Uploaded ${file.name}` : ""),
       attachmentName: file?.name,
     };
-    const assistantMsg: Message = {
+    const assistantMsg: ChatMessage = {
       id: `a-${Date.now()}`,
       role: "assistant",
       content: "",
@@ -105,7 +96,7 @@ export function Chat() {
       }
 
       const client = makeMastraClient();
-      const stream = await client.getAgent("thom").stream(payload as string, {
+      const stream = await client.getAgent(THOM_AGENT_ID).stream(payload as string, {
         memory: { thread: DEMO_THREAD_ID, resource: DEMO_RESOURCE_ID },
       });
 

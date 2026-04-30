@@ -197,20 +197,29 @@ export const mastra = new Mastra({
           const result = await (
             getCaseState as unknown as {
               execute: (input: { taxpayerId: string; year: number }) => Promise<{
-                openAsks: { factKey: string; prompt: string; origin: string; stage: string }[];
-                progress: { intakePct: number; scopingPct: number; docsPct: number; overallPct: number };
-                withinMvp: boolean;
-                mvpViolations: string[];
-                factCount: number;
-                aiDecisions: unknown[];
+                forms: Array<{
+                  formId: string;
+                  mustFile: { ok: boolean; value?: boolean };
+                  blockedLineCount: number;
+                  blockers: Array<{ missingDecisionKey: string | null; missingFactKeys: string[] | null }>;
+                }>;
+                pendingDecisions: string[];
+                pendingFacts: string[];
                 money: {
                   totalWages: number;
-                  agi: number;
-                  taxableIncome: number;
-                  federalTaxOwed: number;
+                  federalAgi: number;
+                  federalTaxableIncome: number;
+                  federalTax: number;
                   federalWithholding: number;
-                  refundOrBalance: unknown;
+                  federalRefund: number;
+                  federalOwed: number;
+                  stateTax: number;
+                  stateWithholding: number;
+                  stateRefund: number;
+                  stateOwed: number;
                 };
+                factCount: number;
+                aiDecisions: unknown[];
               }>;
             }
           ).execute({ taxpayerId: activeId, year: DEMO_TAX_YEAR });
@@ -219,8 +228,26 @@ export const mastra = new Mastra({
           const draftPath = resolve(DRAFTS_DIR, draftFilename);
           const draftUrl = existsSync(draftPath) ? `/drafts/${draftFilename}` : null;
 
-          // Pull the first-name fact for the header greeting. Listed DESC by
-          // created_at, so [0] is the most recent (handles a name correction).
+          // Other federal-form PDFs the engine produces. CA 540 PDF is
+          // pending field-mapping work — still null for now.
+          const form8949Filename = `8949-${activeId}-${DEMO_TAX_YEAR}.pdf`;
+          const form8949Url = existsSync(resolve(DRAFTS_DIR, form8949Filename))
+            ? `/drafts/${form8949Filename}`
+            : null;
+          const scheduleDFilename = `schedule-d-${activeId}-${DEMO_TAX_YEAR}.pdf`;
+          const scheduleDUrl = existsSync(resolve(DRAFTS_DIR, scheduleDFilename))
+            ? `/drafts/${scheduleDFilename}`
+            : null;
+          const form540Filename = `540-${activeId}-${DEMO_TAX_YEAR}.pdf`;
+          const form540Url = existsSync(resolve(DRAFTS_DIR, form540Filename))
+            ? `/drafts/${form540Filename}`
+            : null;
+          const sidecarFilename = `forms-${activeId}-${DEMO_TAX_YEAR}.json`;
+          const sidecarUrl = existsSync(resolve(DRAFTS_DIR, sidecarFilename))
+            ? `/drafts/${sidecarFilename}`
+            : null;
+
+          // Pull the first-name fact for the header greeting.
           const nameRows = await listFactsByKeys(
             activeId,
             DEMO_TAX_YEAR,
@@ -231,15 +258,55 @@ export const mastra = new Mastra({
               ? (nameRows[0].value as string)
               : null;
 
+          // Adapter: bridge new caseState shape back to the legacy fields the
+          // current Layout/Activity UI consumes. When we update the UI to read
+          // forms[] directly, this collapses.
+          const openAsks = result.pendingDecisions.map((d) => ({
+            factKey: d,
+            prompt: `Need decision: ${d}`,
+            origin: "form-engine",
+            stage: "decisions",
+          }));
+          const totalForms = result.forms.length;
+          const computedForms = result.forms.filter(
+            (f) => f.mustFile.ok && (f.mustFile.value === false || f.blockedLineCount === 0),
+          ).length;
+          const overallPct = totalForms > 0
+            ? Math.round((computedForms / totalForms) * 100)
+            : 0;
+          const progress = {
+            intakePct: overallPct,
+            scopingPct: overallPct,
+            docsPct: overallPct,
+            overallPct,
+          };
+          const refundOrBalance = result.money.federalRefund > 0
+            ? { direction: "refund", amount: result.money.federalRefund }
+            : result.money.federalOwed > 0
+              ? { direction: "balance_due", amount: result.money.federalOwed }
+              : null;
+          const moneyLegacy = {
+            totalWages: result.money.totalWages,
+            agi: result.money.federalAgi,
+            taxableIncome: result.money.federalTaxableIncome,
+            federalTaxOwed: result.money.federalTax,
+            federalWithholding: result.money.federalWithholding,
+            refundOrBalance,
+          };
+
           return c.json({
-            withinMvp: result.withinMvp,
-            mvpViolations: result.mvpViolations,
-            openAsks: result.openAsks,
-            progress: result.progress,
-            money: result.money,
+            withinMvp: true,
+            mvpViolations: [] as string[],
+            openAsks,
+            progress,
+            money: moneyLegacy,
             factCount: result.factCount,
             decisionCount: result.aiDecisions.length,
             draftUrl,
+            form8949Url,
+            scheduleDUrl,
+            form540Url,
+            sidecarUrl,
             taxpayerFirstName,
           });
         },

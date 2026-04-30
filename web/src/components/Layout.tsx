@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { SideNav } from "./SideNav";
 import {
@@ -8,12 +8,26 @@ import {
   type CaseState,
 } from "@/lib/api";
 import { clearPasscode, getPasscode } from "@/lib/auth";
+import { makeMastraClient } from "@/lib/mastraClient";
+import { DEMO_THREAD_ID, THOM_AGENT_ID } from "@/lib/chatSession";
+
+export interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  attachmentName?: string;
+}
 
 export interface LayoutOutletContext {
   state: CaseState | null;
   refreshState: () => Promise<void>;
   // Triggered when an action (e.g. reset) should bust caches in the active route.
   resetTick: number;
+  // Lifted out of Chat so the message buffer survives route changes — without
+  // this, navigating to /documents and back wipes the visible history even
+  // though Mastra still has it in memory.
+  messages: ChatMessage[];
+  setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
 }
 
 export function Layout() {
@@ -22,6 +36,7 @@ export function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetTick, setResetTick] = useState(0);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   async function refreshState() {
     try {
@@ -34,12 +49,51 @@ export function Layout() {
     }
   }
 
+  // Rehydrate the chat buffer from Mastra memory on full page load. Without
+  // this, refreshing wipes the visible history even though the agent still
+  // has the full thread server-side.
+  async function loadChatHistory() {
+    try {
+      const client = makeMastraClient();
+      const thread = client.getMemoryThread({
+        threadId: DEMO_THREAD_ID,
+        agentId: THOM_AGENT_ID,
+      });
+      const res = await thread.listMessages({ perPage: 200 });
+      const converted: ChatMessage[] = [];
+      for (const m of res.messages) {
+        if (m.role !== "user" && m.role !== "assistant") continue;
+        const parts = m.content?.parts ?? [];
+        const text = parts
+          .filter((p): p is { type: "text"; text: string } => p.type === "text")
+          .map((p) => p.text)
+          .join("");
+        const attachmentName =
+          m.content?.experimental_attachments?.[0]?.name ?? undefined;
+        if (!text && !attachmentName) continue;
+        converted.push({
+          id: m.id,
+          role: m.role,
+          content: text || (attachmentName ? `Uploaded ${attachmentName}` : ""),
+          attachmentName,
+        });
+      }
+      // If the user already started typing/sending before history loaded,
+      // don't clobber their in-flight messages.
+      setMessages((current) => (current.length > 0 ? current : converted));
+    } catch {
+      // Thread doesn't exist yet (fresh session) or transient fetch error —
+      // silently leave the buffer empty.
+    }
+  }
+
   useEffect(() => {
     if (!getPasscode()) {
       navigate("/login", { replace: true });
       return;
     }
     refreshState();
+    loadChatHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -49,6 +103,7 @@ export function Layout() {
     try {
       await resetSession();
       await refreshState();
+      setMessages([]);
       setResetTick((t) => t + 1);
     } catch (err) {
       if (err instanceof UnauthorizedError) {
@@ -60,7 +115,13 @@ export function Layout() {
     }
   }
 
-  const ctx: LayoutOutletContext = { state, refreshState, resetTick };
+  const ctx: LayoutOutletContext = {
+    state,
+    refreshState,
+    resetTick,
+    messages,
+    setMessages,
+  };
 
   return (
     <div className="h-screen bg-bg-base text-ink-primary flex">

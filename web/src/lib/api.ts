@@ -19,6 +19,10 @@ export interface CaseState {
   factCount: number;
   decisionCount: number;
   draftUrl: string | null;
+  form8949Url: string | null;
+  scheduleDUrl: string | null;
+  form540Url: string | null;
+  sidecarUrl: string | null;
   taxpayerFirstName: string | null;
 }
 

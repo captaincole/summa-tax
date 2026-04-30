@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 
 import type { DocumentSpec, ScenarioSpec } from "./types.js"
 import { renderW2 } from "./renderers/w2.js"
+import { renderForm1099Consolidated } from "./renderers/1099consolidated.js"
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const PROJECT_ROOT = resolve(HERE, "../..")
@@ -19,9 +20,11 @@ const renderDocument = async (
   switch (doc.kind) {
     case "W-2":
       return renderW2(doc, scenario.taxpayer, scenario.taxYear)
+    case "1099-Consolidated":
+      return renderForm1099Consolidated(doc, scenario.taxpayer, scenario.taxYear)
     default: {
-      const _exhaustive: never = doc.kind
-      throw new Error(`No renderer for document kind: ${_exhaustive}`)
+      const _exhaustive: never = doc
+      throw new Error(`No renderer for document kind: ${(doc as DocumentSpec).kind}`)
     }
   }
 }
@@ -54,7 +57,7 @@ const parseArgs = (argv: string[]): RenderArgs => {
   return args
 }
 
-const defaultScenarioIds = ["01-base-case"]
+const defaultScenarioIds = ["01-base-case", "03-investments-dividends"]
 
 const main = async (): Promise<void> => {
   const args = parseArgs(process.argv)

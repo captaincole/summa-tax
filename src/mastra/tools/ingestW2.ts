@@ -1,15 +1,19 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { recordFact } from "../db/taxFacts";
+import { makeW2FactKey, type W2FactValue } from "../facts";
 
-// Ingest a W-2's structured data into tax_facts. In production this is
-// the downstream target of OCR + normalization. For MVP, Thom calls it
-// after collecting the W-2 boxes from the user (verbally or via the
-// fixture), passing the values through.
+// Ingest a W-2 as a single structured tax_facts row. The Form Engine reads
+// these via `getW2Facts(facts)` from the fact catalog.
 //
-// Writes all the facts the case engine expects, plus the scoping fact
-// wages.has_w2_income=true and retirement.contribution_401k if a code-D
-// entry exists in box 12.
+// Convention (see src/mastra/facts/kinds/wages.ts):
+//   category: "wages"
+//   key:      "employer.{employerSlug}"
+//   value:    W2FactValue
+//
+// Thom (vision-capable) reads the W-2 PDF and calls this tool with the
+// extracted values. The schema mirrors IRS-canonical box numbers so any
+// W-2 layout maps to the same fields.
 
 const AddressSchema = z.object({
   line1: z.string(),
@@ -19,10 +23,16 @@ const AddressSchema = z.object({
   zip: z.string(),
 });
 
+const slugify = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export const ingestW2 = createTool({
   id: "ingest-w2-structured",
   description:
-    "Ingest a W-2's structured data (all boxes) in one call. Writes the core W-2 facts (box 1–17, box 12 entries, box 13, box 14), marks wages.has_w2_income=true, and captures derived facts like the 401(k) contribution amount and CA SDI. Call this ONCE per W-2 after collecting all the values from the taxpayer.",
+    "Ingest a single W-2 as a structured tax fact. Thom (or whatever upstream extractor) reads the W-2 PDF and calls this with all the box values. Writes ONE tax_facts row with the full W-2 data; the Form Engine reads it via the fact catalog. Call once per W-2.",
   inputSchema: z.object({
     taxpayerId: z.string(),
     year: z.number().int(),
@@ -31,6 +41,25 @@ export const ingestW2 = createTool({
       ein: z.string(),
       address: AddressSchema.optional(),
     }),
+    employee: z
+      .object({
+        firstName: z.string().describe("From W-2 box e (employee first name)"),
+        middleInitial: z.string().optional(),
+        lastName: z.string().describe("From W-2 box e (employee last name)"),
+        suffix: z.string().optional(),
+        ssn: z.string().describe("From W-2 box a (employee SSN, formatted ###-##-####)"),
+        address: AddressSchema.optional().describe("From W-2 box f (employee mailing address)"),
+      })
+      .optional()
+      .describe(
+        "Employee identity from boxes a, e, and f of the W-2. Pass this whenever you can read it from the W-2 — the tool will also write identity.name.first / identity.name.last / identity.ssn / identity.address as facts so the form renderers can fill the personal-information boxes at the top of every form.",
+      ),
+    employerSlug: z
+      .string()
+      .optional()
+      .describe(
+        "Stable slug for this employer in the fact key. Defaults to slugified employer name; falls back to ein-based slug if name doesn't slugify cleanly.",
+      ),
     box1: z.number().describe("Wages, tips, other compensation"),
     box2: z.number().describe("Federal income tax withheld"),
     box3: z.number().describe("Social security wages"),
@@ -65,87 +94,76 @@ export const ingestW2 = createTool({
   }),
   outputSchema: z.object({
     factsWritten: z.number(),
+    employerSlug: z.string(),
+    factKey: z.string(),
   }),
   execute: async (input) => {
     const { taxpayerId, year, sourceNote } = input;
-    let count = 0;
+    const slug =
+      input.employerSlug ||
+      slugify(input.employer.name) ||
+      `ein-${input.employer.ein.replace(/-/g, "")}`;
 
-    const write = async (category: string, key: string, value: unknown) => {
-      await recordFact({
-        id: crypto.randomUUID(),
-        taxpayerId,
-        year,
-        category,
-        key,
-        value,
-        sourceNote,
-      });
-      count++;
+    const w2: W2FactValue = {
+      employerName: input.employer.name,
+      employerEin: input.employer.ein,
+      employerAddress: input.employer.address,
+      employee: input.employee,
+      box1: input.box1,
+      box2: input.box2,
+      box3: input.box3,
+      box4: input.box4,
+      box5: input.box5,
+      box6: input.box6,
+      box7: input.box7,
+      box8: input.box8,
+      box10: input.box10,
+      box11: input.box11,
+      box12: input.box12,
+      box13: input.box13,
+      box14: input.box14,
+      box15: input.box15,
+      box16: input.box16,
+      box17: input.box17,
     };
 
-    // Scoping fact — flips W-2 source-doc scope to in_scope.
-    await write("wages", "wages.has_w2_income", true);
-    await write("wages", "wages.w2_count", 1);
+    const factKey = makeW2FactKey(slug);
+    await recordFact({
+      id: crypto.randomUUID(),
+      taxpayerId,
+      year,
+      category: "wages",
+      key: factKey,
+      value: w2,
+      sourceNote,
+    });
+    let factsWritten = 1;
 
-    // Employer
-    await write("wages", "w2.employer.name", input.employer.name);
-    await write("wages", "w2.employer.ein", input.employer.ein);
-    if (input.employer.address) {
-      await write("wages", "w2.employer.address", input.employer.address);
+    // Side effect: copy employee identity (boxes a/e/f) into the
+    // `identity.*` fact keys that PDF renderers read to fill the
+    // personal-info boxes at the top of every form. The most recent write
+    // wins, so a later user-stated correction will supersede this.
+    if (input.employee) {
+      const e = input.employee;
+      const writeIdentity = async (key: string, value: unknown) => {
+        if (value === undefined || value === null || value === "") return;
+        await recordFact({
+          id: crypto.randomUUID(),
+          taxpayerId,
+          year,
+          category: "identity",
+          key,
+          value,
+          sourceNote: `Auto-extracted from W-2 (${input.employer.name})`,
+        });
+        factsWritten++;
+      };
+      await writeIdentity("identity.name.first", e.firstName);
+      await writeIdentity("identity.name.last", e.lastName);
+      await writeIdentity("identity.ssn", e.ssn);
+      if (e.address) await writeIdentity("identity.address", e.address);
     }
 
-    // Numbered boxes
-    await write("wages", "w2.box1", input.box1);
-    await write("wages", "w2.box2", input.box2);
-    await write("wages", "w2.box3", input.box3);
-    await write("wages", "w2.box4", input.box4);
-    await write("wages", "w2.box5", input.box5);
-    await write("wages", "w2.box6", input.box6);
-    if (input.box7 !== undefined) await write("wages", "w2.box7", input.box7);
-    if (input.box8 !== undefined) await write("wages", "w2.box8", input.box8);
-    if (input.box10 !== undefined) await write("wages", "w2.box10", input.box10);
-    if (input.box11 !== undefined) await write("wages", "w2.box11", input.box11);
-
-    // Box 12: both the raw entries and a normalized list of codes
-    if (input.box12 && input.box12.length > 0) {
-      await write("wages", "w2.box12_entries", input.box12);
-      await write("wages", "w2.box12_codes", input.box12.map((e) => e.code));
-
-      // Code D = 401(k) elective deferral — also a retirement fact
-      const codeD = input.box12.find((e) => e.code === "D");
-      if (codeD) {
-        await write("retirement", "retirement.contribution_401k", codeD.amount);
-      }
-    }
-
-    // Box 13 checkboxes
-    if (input.box13) {
-      if (input.box13.statutoryEmployee !== undefined)
-        await write("wages", "w2.box13.statutory_employee", input.box13.statutoryEmployee);
-      if (input.box13.retirementPlan !== undefined)
-        await write("wages", "w2.box13.retirement_plan", input.box13.retirementPlan);
-      if (input.box13.thirdPartySickPay !== undefined)
-        await write("wages", "w2.box13.third_party_sick_pay", input.box13.thirdPartySickPay);
-    }
-
-    // Box 14 Other
-    if (input.box14 && input.box14.length > 0) {
-      await write("wages", "w2.box14_entries", input.box14);
-
-      // CA SDI specifically — the deductions derivation looks for this key
-      const caSdi = input.box14.find((e) =>
-        /CA\s*SDI|VPDI|SDI/i.test(e.label),
-      );
-      if (caSdi) {
-        await write("state_local_tax", "w2.box14.ca_sdi", caSdi.amount);
-      }
-    }
-
-    // State boxes
-    await write("state_local_tax", "w2.box15", input.box15);
-    await write("state_local_tax", "w2.box16", input.box16);
-    await write("state_local_tax", "w2.box17", input.box17);
-
-    return { factsWritten: count };
+    return { factsWritten, employerSlug: slug, factKey };
   },
 });
