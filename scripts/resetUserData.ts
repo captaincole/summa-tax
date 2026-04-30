@@ -7,8 +7,9 @@
  *   npm run db:reset
  *
  * DATABASE_URL overrides the default path. Without it, the script targets
- * Mastra's public-assets DB at src/mastra/public/wheel-of-time.db
- * (that's where `mastra dev` writes at runtime).
+ * the project-root wheel-of-time.db — same file the dev server and corpus
+ * ingest scripts use when DATABASE_URL is set in .env / .env.development
+ * (see .env.example for the absolute-path requirement).
  */
 import "dotenv/config";
 import { createClient } from "@libsql/client";
@@ -18,7 +19,7 @@ import { resetUserData } from "../src/mastra/db/resetUserData";
 import { cleanGeneratedFiles } from "../src/mastra/fs/cleanGeneratedFiles";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const defaultDbPath = resolve(projectRoot, "src/mastra/public/wheel-of-time.db");
+const defaultDbPath = resolve(projectRoot, "wheel-of-time.db");
 const url = process.env.DATABASE_URL ?? `file:${defaultDbPath}`;
 
 async function main() {
