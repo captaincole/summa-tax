@@ -2,8 +2,8 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import { resolve } from "node:path";
+import { projectRoot } from "../paths";
 import { listFacts } from "../db/taxFacts";
 import { listDecisions } from "../db/aiDecisions";
 import {
@@ -25,11 +25,6 @@ import { renderForm8949Pdf } from "../forms/render/form8949Pdf";
 import { renderScheduleDPdf } from "../forms/render/scheduleDPdf";
 import { renderForm540Pdf } from "../forms/render/form540Pdf";
 
-// Anchor paths to project root so resolution survives Mastra's bundle cwd.
-const projectRoot = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../..",
-);
 const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
 const BLANK_8949_PATH = resolve(projectRoot, "ref/forms/f8949.pdf");
 const BLANK_SCHEDULE_D_PATH = resolve(projectRoot, "ref/forms/f1040sd.pdf");

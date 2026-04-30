@@ -1,8 +1,6 @@
 import "dotenv/config";
 import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve, basename } from "node:path";
-import { fileURLToPath } from "node:url";
-import { dirname } from "node:path";
 import { createClient } from "@libsql/client";
 import { Mastra } from "@mastra/core";
 import { registerApiRoute, SimpleAuth } from "@mastra/core/server";
@@ -14,6 +12,7 @@ import {
   ConsoleExporter,
   DefaultExporter,
 } from "@mastra/observability";
+import { projectRoot } from "./paths";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
 import { resetUserData } from "./db/resetUserData";
@@ -40,7 +39,6 @@ const demoAuth = demoPasscode
     })
   : undefined;
 
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const DRAFTS_DIR = process.env.DRAFTS_DIR
   ? resolve(process.env.DRAFTS_DIR)
   : resolve(projectRoot, "src/mastra/public/drafts");
@@ -133,11 +131,18 @@ export const mastra = new Mastra({
   agents: { thom, nynaeve },
   storage,
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
+  // ConsoleExporter dumps full agent input/output (including base64-encoded
+  // user uploads) to stdout — useful for local debugging, prohibitive in
+  // Render logs. We keep it on only when MASTRA_DEV is set; DefaultExporter
+  // continues to write traces to observability storage in both environments,
+  // and Mastra Studio reads from there.
   observability: new Observability({
     configs: {
       default: {
         serviceName: "wheel-of-time",
-        exporters: [new ConsoleExporter(), new DefaultExporter()],
+        exporters: process.env.MASTRA_DEV
+          ? [new ConsoleExporter(), new DefaultExporter()]
+          : [new DefaultExporter()],
       },
     },
   }),
