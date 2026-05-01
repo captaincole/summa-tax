@@ -22,13 +22,22 @@ const YEAR = 2025;
 
 const CASES: Case[] = [
   {
-    name: "accurate: filing status = single with marital fact = single",
+    name: "accurate: filing status = single with marital fact = never_married",
     expectedVerdict: "accurate",
+    // IRS Single status requires one of: never-married / legally-separated /
+    // widowed-or-divorced. We pin the specific sub-condition so the rationale
+    // is unambiguous — otherwise a rigorous critic correctly flags the gap.
     facts: [
       {
         category: "identity",
         key: "identity.marital_status",
-        value: "single",
+        value: "never_married",
+        sourceNote: "user stated verbally 2026-04-23",
+      },
+      {
+        category: "identity",
+        key: "identity.has_qualifying_dependents",
+        value: false,
         sourceNote: "user stated verbally 2026-04-23",
       },
     ],
@@ -36,8 +45,11 @@ const CASES: Case[] = [
       decisionKey: "decisions.filing_status_eligibility",
       decision: { status: "single" },
       rationale:
-        "User confirmed marital_status=single and has no qualifying dependents. Single is the only filing status that fits per Form 1040 filing-status rules.",
-      supportingFactKeys: ["identity.marital_status"],
+        "User confirmed marital_status=never_married and has no qualifying dependents. Per Form 1040 filing-status rules, a never-married taxpayer with no qualifying dependents files as Single.",
+      supportingFactKeys: [
+        "identity.marital_status",
+        "identity.has_qualifying_dependents",
+      ],
       confidence: "high",
       sourceNote: "derived from intake conversation 2026-04-23",
     },

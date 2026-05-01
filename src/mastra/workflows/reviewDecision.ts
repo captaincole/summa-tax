@@ -120,6 +120,12 @@ export async function reviewDecision(
   let review: NynaeveReview;
   try {
     const result = await nynaeve.generate(renderDecisionForReview(decision, facts), {
+      // Default Mastra maxSteps is 5. Empirically: an "ungroundable" verdict
+      // can take a Haiku 5+ rounds of search-then-reason because the corpus
+      // points at publications it doesn't include (e.g. FTB Pub 1031), and
+      // Nynaeve burns steps chasing them. 10 gives her room to converge to a
+      // final summary; the prompt tells her to bail at 3 searches.
+      maxSteps: 10,
       structuredOutput: {
         schema: nynaeveReviewSchema,
         // Passing a model here enables multi-step tool-call + structured-output
