@@ -20,62 +20,60 @@ The end goal is a three-stage workflow:
 
 Everything routes through a SQLite-backed `tax_facts` table where each row has a `source_note` citing where the value came from. No fact exists without a citation.
 
-## Current state (as of 2026-05-01)
+## Repo structure
 
-Scaffolded:
+This is a monorepo. Two independent deploy units, each with its own `package.json` and lockfile:
 
 ```
-src/mastra/
-├── agents/
-│   └── thom.ts             # Thom Merrilin — conversational front-desk agent
-├── tools/
-│   └── taxFacts.ts         # record-tax-fact, list-tax-facts, note-open-question, list-open-questions, resolve-open-question
-├── db/
-│   └── taxFacts.ts         # tax_facts + open_questions tables, CRUD
-└── index.ts                # Mastra instance, storage, logger
+apps/
+├── agent/                       # Mastra backend → deployed to Render
+│   ├── src/mastra/              # agent code (Thom, Nynaeve, tools, db, server, workflows)
+│   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
+│   ├── fixtures/                # canonical test scenarios + PDF render pipeline
+│   ├── scripts/                 # operator scripts (refdocs:*, db:reset, smoke:review, etc.)
+│   ├── ref/                     # blank PDF templates the form engine fills (1040, 8949, …)
+│   ├── reference-docs/          # IRS / FTB PDFs ingested into the Supabase corpus
+│   ├── supabase/                # corpus migration history
+│   ├── package.json             # agent deps + scripts (mastra dev, fixtures:build, refdocs:*)
+│   └── tsconfig.json
+└── web/                         # React + Vite frontend → deployed to Vercel
+    ├── src/                     # Layout, routes, lib (api, mastraClient, auth)
+    ├── package.json             # web deps + scripts (vite, vite build)
+    └── vite.config.ts
 
-fixtures/
-├── scenarios/              # canonical test taxpayers (narrative .md + structured .ts per scenario)
-│   ├── 01-base-case.md
-│   ├── 01-base-case.ts
-│   ├── 02-itemize-case.md
-│   ├── 02-itemize-case.ts (not yet written)
-│   └── README.md
-├── pipeline/               # scenario spec → PDF rendering via pdf-lib
-│   ├── render.ts           # CLI
-│   ├── renderers/w2.ts
-│   └── types.ts
-└── docs/                   # rendered reference PDFs (committed)
-    └── 01-alex-w2.pdf
+package.json                     # workspace root: thin delegating scripts (dev, dev:all, db:reset, …)
+render.yaml                      # Render blueprint for the agent (rootDir: apps/agent)
+CLAUDE.md
 ```
+
+The two apps share zero source code today. If we ever extract shared types (e.g. an API contract generated from the agent's tool schemas), it goes in a sibling `packages/` directory; we don't need it yet.
 
 The case engine (derivation graph → live case state) and MVP artifact library are next to build.
 
 ## Running it
 
-Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Vite.
+Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Vite. All commands run from the repo root; root scripts delegate via `npm --prefix apps/<app>`.
 
 ```bash
-npm install
-npm install --prefix web                 # frontend deps
-cp .env.example .env.development
-# edit .env.development with ANTHROPIC_API_KEY + DEMO_PASSCODE
-npm run dev:all                          # mastra (:4111) + vite (:5173)
+npm run install:all                         # installs root + apps/agent + apps/web
+cp apps/agent/.env.example apps/agent/.env.development
+# edit apps/agent/.env.development with ANTHROPIC_API_KEY + DEMO_PASSCODE
+npm run dev:all                             # mastra (:4111) + vite (:5173)
 
 # or run them separately:
 npm run dev          # mastra only — also opens Mastra Studio at :4111
 npm run dev:web      # vite only
 
-npm run fixtures:build   # regenerates test PDFs under fixtures/docs/
+npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 ```
 
-The SQLite database file is created on first run at `src/mastra/public/wheel-of-time.db` (gitignored; Mastra dev's public-assets dir). The frontend reaches Mastra via Vite proxy: `/api`, `/app`, and `/drafts` all forward to `:4111`.
+The SQLite database file is created on first run at `apps/agent/wheel-of-time.db` (gitignored; relative to where `mastra dev` runs). In dev the frontend reaches Mastra via Vite's proxy: `/api`, `/app`, and `/drafts` all forward to `:4111`. In prod the frontend is on Vercel and calls Mastra via `VITE_API_URL` set at build time.
 
 ## Development workflow
 
 We're building agent + UI together. When changes touch both, expect to:
 
-1. **Edit code** (backend in `src/mastra/`, frontend in `web/src/`).
+1. **Edit code** (backend in `apps/agent/src/mastra/`, frontend in `apps/web/src/`).
 2. **Watch logs** for errors. Three places to look:
    - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
    - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Thom do X?".
@@ -100,17 +98,17 @@ npm run db:reset                          # manual wipe, run between test sessio
 RESET_USER_DATA_ON_START=1 npm run dev    # wipe on boot (ephemeral deploys, CI)
 ```
 
-**What gets wiped:** every libsql table whose name does NOT start with `ref_` or `sqlite_`. That includes all Mastra runtime tables (`mastra_messages`, `mastra_threads`, traces, scorers, workflow snapshots…) plus ours (`tax_facts`, `open_questions`, `ai_decisions`). Mastra and our own db modules recreate their schemas automatically on next use. Generated per-user artifacts on disk (currently `src/mastra/public/drafts/*.pdf`) are deleted too.
+**What gets wiped:** every libsql table whose name does NOT start with `ref_` or `sqlite_`. That includes all Mastra runtime tables (`mastra_messages`, `mastra_threads`, traces, scorers, workflow snapshots…) plus ours (`tax_facts`, `open_questions`, `ai_decisions`). Mastra and our own db modules recreate their schemas automatically on next use. Generated per-user artifacts on disk (currently `apps/agent/src/mastra/public/drafts/*.pdf`) are deleted too.
 
-**What survives:** any `ref_*` libsql table, anything in Supabase, and any file under `ref/`. Convention:
+**What survives:** any `ref_*` libsql table, anything in Supabase, and any file under `apps/agent/ref/`. Convention:
 
 - **Supabase:** the reference corpus (`ref_documents`, `ref_pages`, `ref_sections`, `ref_blocks`) lives entirely on Supabase, so `db:reset` (which only touches libsql) cannot affect it. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
 - **libsql `ref_*` tables:** the prefix is reserved for future libsql-side reference data (e.g. published bracket tables that are too small to warrant Supabase). None today; the convention is preserved for when we add some.
-- **Filesystem:** put reference assets under `ref/` at project root (e.g. `ref/forms/f1040-2025.pdf`). Put generated per-user artifacts under `src/mastra/public/<dir>/` (e.g. `src/mastra/public/drafts/`). The reset wipes the generated dirs; `ref/` and `reference-docs/` are untouched.
+- **Filesystem:** put reference assets under `apps/agent/ref/` (e.g. `apps/agent/ref/forms/f1040-2025.pdf`). Put generated per-user artifacts under `apps/agent/src/mastra/public/<dir>/` (e.g. `apps/agent/src/mastra/public/drafts/`). The reset wipes the generated dirs; `apps/agent/ref/` and `apps/agent/reference-docs/` are untouched.
 
-When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `src/mastra/fs/cleanGeneratedFiles.ts`.
+When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts`.
 
-The shared reset helpers are `src/mastra/db/resetUserData.ts` (tables) and `src/mastra/fs/cleanGeneratedFiles.ts` (files); the CLI entry is `scripts/resetUserData.ts`.
+The shared reset helpers are `apps/agent/src/mastra/db/resetUserData.ts` (tables) and `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts` (files); the CLI entry is `apps/agent/scripts/resetUserData.ts`.
 
 ## Design principles
 
@@ -138,7 +136,7 @@ Decisions flow back into the case engine: a decision with key `decisions.ca_resi
 
 `tax_facts` rows are keyed by `(taxpayer_id, year, category, fact_key)` in spirit — we don't enforce uniqueness yet because we want an append-only audit log of what was told to us and when.
 
-Categories (see `src/mastra/tools/taxFacts.ts` for the enum):
+Categories (see `apps/agent/src/mastra/tools/taxFacts.ts` for the enum):
 `identity`, `filing_status`, `dependents`, `wages`, `self_employment`, `k1`, `investment_income`, `capital_gains`, `rental`, `retirement`, `hsa`, `charitable`, `mortgage`, `state_local_tax`, `medical`, `education`, `estimated_payments`, `crypto`, `foreign`, `trust_estate`, `other`.
 
 Add categories as the domain grows. Prefer splitting over lumping (it's easier to roll up later than to untangle a bucket).
@@ -147,7 +145,7 @@ Add categories as the domain grows. Prefer splitting over lumping (it's easier t
 
 ### Where the corpus lives
 
-The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase** — separate from user data, which is on libsql. The agent server reads via `@supabase/supabase-js` using a service-role secret. Migration history lives in `supabase/migrations/`.
+The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase** — separate from user data, which is on libsql. The agent server reads via `@supabase/supabase-js` using a service-role secret. Migration history lives in `apps/agent/supabase/migrations/`.
 
 Why split storage: the corpus is shared, read-mostly, and grows substantially as we cover more scenarios. User data is per-tenant and will eventually move to Supabase too (with RLS) — that's a separate phase.
 
@@ -172,11 +170,11 @@ Stable IDs — used everywhere as citations:
 - `irs-1040-inst-2025::sec::single` (section)
 - `irs-1040-inst-2025::p13::b00013` (block)
 
-Canonical text lives on disk at `reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
+Canonical text lives on disk at `apps/agent/reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
 
 ### Adding or updating a reference document
 
-The PDFs in `reference-docs/` are the manifest. Each PDF has a sibling `<basename>.meta.json` with the doc metadata:
+The PDFs in `apps/agent/reference-docs/` are the manifest. Each PDF has a sibling `<basename>.meta.json` with the doc metadata:
 
 ```json
 {
@@ -191,7 +189,7 @@ The PDFs in `reference-docs/` are the manifest. Each PDF has a sibling `<basenam
 Operator flow:
 
 ```bash
-# 1. Drop new/updated PDF + sidecar into reference-docs/
+# 1. Drop new/updated PDF + sidecar into apps/agent/reference-docs/
 # 2. See what's drifted vs Supabase:
 npm run refdocs:status           # diff: present / missing / sha-drift / extra / unconfigured
 npm run refdocs:status -- --strict  # exit non-zero on any drift (for CI/pre-push later)
@@ -238,39 +236,41 @@ Falls back gracefully:
 
 ### The reviewDecision workflow
 
-`src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with `maxSteps: 10` and a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
+`apps/agent/src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with `maxSteps: 10` and a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
 
-Nynaeve's prompt is in `src/mastra/agents/nynaeve.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools, with a hard 3-search budget. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
+Nynaeve's prompt is in `apps/agent/src/mastra/agents/nynaeve.instructions.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools, with a hard 3-search budget. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
 
 ### Inspection scripts
 
+All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from the repo root (which delegates into the agent's `package.json`).
+
 | script | use |
 |---|---|
-| `scripts/refdocsStatus.ts` | diff repo PDFs vs Supabase (npm: `refdocs:status`) |
-| `scripts/refdocsSync.ts` | idempotent corpus sync (npm: `refdocs:sync`) |
-| `scripts/refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
-| `scripts/ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
-| `scripts/checkCorpus.ts` | row counts + per-doc embedding coverage |
-| `scripts/verifyRefDocs.ts` | round-trip + spot-citation checks |
-| `scripts/inspectBlock.ts` | peek at one block's summary + raw text |
-| `scripts/searchRefDocs.ts` | invoke the production search tool with a query |
-| `scripts/compareRetrieval.ts` | same query through FTS / vector / hybrid+rerank |
-| `scripts/smokeReview.ts` | three end-to-end review scenarios (npm: `smoke:review`) |
-| `scripts/inspectDecisions.ts` | recent ai_decisions with verdicts + citations |
+| `refdocsStatus.ts` | diff repo PDFs vs Supabase (npm: `refdocs:status`) |
+| `refdocsSync.ts` | idempotent corpus sync (npm: `refdocs:sync`) |
+| `refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
+| `ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
+| `checkCorpus.ts` | row counts + per-doc embedding coverage |
+| `verifyRefDocs.ts` | round-trip + spot-citation checks |
+| `inspectBlock.ts` | peek at one block's summary + raw text |
+| `searchRefDocs.ts` | invoke the production search tool with a query |
+| `compareRetrieval.ts` | same query through FTS / vector / hybrid+rerank |
+| `smokeReview.ts` | three end-to-end review scenarios (npm: `smoke:review`) |
+| `inspectDecisions.ts` | recent ai_decisions with verdicts + citations |
 
 ### Lessons from this build (read before changing the pipeline)
 
 - **Mastra `maxSteps` defaults to 5 — too low for "ungroundable" verdicts.** Nynaeve burns steps chasing publications the corpus references but doesn't include (e.g. FTB Pub 1031). When she hits the limit mid-tool-call, no final summary is produced and the structuring agent has nothing to convert → `review_failed` with "no structured output". Bump to 10 in `reviewDecision.ts` AND give the agent a hard search budget in the prompt.
 - **Mastra structured-output with tools needs `structuredOutput.model` (separate structuring agent) OR `jsonPromptInjection: true`.** We use the former — Nynaeve does tool calls naturally, then a second Haiku pass extracts structured output from her final text. Direct JSON injection conflicts with critic-style prompts where the agent reasons in prose.
 - **Supabase `upsert` validates NOT NULL columns on the INSERT side, even when conflict triggers UPDATE.** `setBlockEmbeddings` originally tried to upsert `(block_id, embedding)` only — PostgREST rejected because `text`, `doc_id`, etc. are NOT NULL. Fix: per-row `UPDATE … WHERE block_id = …` with concurrency 10. RPC bulk-update is the next optimization if 383 rows × ~50ms ever becomes a bottleneck.
-- **Wrap Supabase errors as `Error` instances at the call site.** They're plain `{ message, code, details, hint }` objects, so `String(err)` becomes `[object Object]` in any try/catch. `assertOk()` in `src/mastra/db/refDocs.ts` does this — copy the pattern when adding new query helpers.
+- **Wrap Supabase errors as `Error` instances at the call site.** They're plain `{ message, code, details, hint }` objects, so `String(err)` becomes `[object Object]` in any try/catch. `assertOk()` in `apps/agent/src/mastra/db/refDocs.ts` does this — copy the pattern when adding new query helpers.
 - **The cookbook's "send the whole document" doesn't fit big tax docs.** 1040 instructions alone are ~211k tokens — over Haiku's 200k. We use **section-scoped context** for contextual summarization: each block is summarized with its section text as the cached prefix. Same caching benefit (cache hits across blocks within a section), no doc-size ceiling.
-- **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
+- **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `apps/agent/src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
 - **pgvector embedding literals serialize as strings, not arrays.** `vectorLiteral([1,2,3])` returns `"[1,2,3]"` — pass that as the column value. Passing a JS array silently fails or coerces. The `vector(1024)` column type must match the embedding model's dimensions exactly (voyage-law-2 = 1024).
 - **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Use `inspectBlock.ts` to verify section attribution before tuning retrieval.
-- **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
+- **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `apps/agent/src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
 - **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
-- **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.
+- **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `apps/agent/src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.
 - **`structuredOutput.errorStrategy: "strict"` is right for production but loud during prompt iteration.** Catches malformed model output explicitly via the existing try/catch → `review_failed` verdict, so failures surface in the DB rather than being papered over.
 - **Pre-retrieval and curated topic indexes were dead ends for this domain.** We considered both; agent-with-good-tool wins on simplicity once the retrieval pipeline is strong. Resist re-introducing pre-retrieval plumbing unless evals show the agent genuinely can't formulate queries — and even then, fix the agent prompt first.
 
@@ -284,7 +284,7 @@ Lessons worth bringing forward:
 - **Agent `Memory` + per-item loops is a trap.** BBG's Twitter poller used `agent.generate()` inside a `for` loop over mentions; memory carried context between iterations and polluted replies. For multi-item batch work, either make each iteration stateless or use separate threads.
 - **Advance dedup markers before processing, not after.** BBG was replying to the same mention multiple times because the "last processed" marker only advanced after the loop completed successfully. Set it first so a crash can't re-process.
 - **Research before building integrations.** For any new third-party API (IRS, state, Plaid, document OCR), do a research pass first, then build. Coding from memory against unfamiliar APIs wastes cycles. This is also saved in BBG's memory.
-- **`mastra dev` doesn't auto-load `.env`.** The `dev` script in `package.json` passes `--env .env` explicitly for a reason.
+- **`mastra dev` doesn't auto-load `.env`.** The `dev` script in `apps/agent/package.json` passes `--env .env.development` explicitly for a reason.
 - **In-process schedulers beat Render Cron for shared state.** Render Cron runs in a separate container without access to the main instance's disk/SQLite. For anything that needs to read/write the agent's DB, use a `setInterval` inside the main process. (Not relevant yet, but will be if we add document-ingestion pollers.)
 
 ## Finding Mastra docs

@@ -1,5 +1,5 @@
 node_modules
-web/dist
+apps/web/dist
 .mastra
 .env
 .env.development
@@ -10,5 +10,5 @@ web/dist
 *.db-wal
 *.db-shm
 *.log
-src/mastra/public/drafts/
+apps/agent/src/mastra/public/drafts/
 .DS_Store

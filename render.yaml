@@ -4,10 +4,10 @@ services:
     runtime: node
     plan: starter
     region: oregon
-    # --include=dev on web's install: NODE_ENV=production (set below) makes
-    # npm skip devDependencies, but the web build needs vite + typescript.
-    # Targeted override here so the runtime env var still does its job.
-    buildCommand: npm ci && npm --prefix web ci --include=dev && npm run build
+    rootDir: apps/agent
+    # Build only the agent on Render now that the frontend deploys separately
+    # to Vercel. mastra build emits .mastra/output/index.mjs.
+    buildCommand: npm ci && npm run build
     startCommand: cd .mastra/output && node index.mjs
     healthCheckPath: /health
     disk:

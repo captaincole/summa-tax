@@ -1,45 +1,28 @@
 {
-  "name": "project-wheel-of-time",
+  "name": "wheel-of-time",
   "version": "0.1.0",
   "private": true,
-  "description": "Wheel of Time — AI CPA platform for HNWI tax preparation. Agents are named after Wheel of Time characters; the front-desk conversational agent is Thom Merrilin.",
+  "description": "Wheel of Time monorepo. apps/agent is the Mastra-based AI CPA backend; apps/web is the React frontend. Each app installs and deploys independently.",
   "scripts": {
-    "dev": "mastra dev --env .env.development",
-    "dev:web": "npm --prefix web run dev",
-    "dev:all": "concurrently -k -n mastra,web -c cyan,magenta \"npm:dev\" \"npm:dev:web\"",
-    "build": "npm run build:web && mastra build --studio",
-    "build:web": "npm --prefix web run build",
-    "start": "cd .mastra/output && node index.mjs",
-    "fixtures:build": "tsx fixtures/pipeline/render.ts",
-    "db:reset": "tsx scripts/resetUserData.ts",
-    "refdocs:ingest": "tsx scripts/ingestRefDoc.ts",
-    "refdocs:status": "tsx scripts/refdocsStatus.ts",
-    "refdocs:sync": "tsx scripts/refdocsSync.ts",
-    "refdocs:verify": "tsx scripts/verifyRefDocs.ts",
-    "smoke:review": "tsx scripts/smokeReview.ts"
+    "dev": "npm --prefix apps/agent run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:all": "concurrently -k -n agent,web -c cyan,magenta \"npm:dev\" \"npm:dev:web\"",
+    "build": "npm --prefix apps/agent run build",
+    "build:web": "npm --prefix apps/web run build",
+    "start": "npm --prefix apps/agent run start",
+    "fixtures:build": "npm --prefix apps/agent run fixtures:build",
+    "db:reset": "npm --prefix apps/agent run db:reset",
+    "refdocs:ingest": "npm --prefix apps/agent run refdocs:ingest",
+    "refdocs:status": "npm --prefix apps/agent run refdocs:status",
+    "refdocs:sync": "npm --prefix apps/agent run refdocs:sync",
+    "refdocs:verify": "npm --prefix apps/agent run refdocs:verify",
+    "smoke:review": "npm --prefix apps/agent run smoke:review",
+    "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.1",
-    "@libsql/client": "^0.15.15",
-    "@mastra/core": "^1.30.0",
-    "@mastra/libsql": "^1.9.0",
-    "@mastra/loggers": "^1.1.1",
-    "@mastra/memory": "^1.17.4",
-    "@mastra/observability": "^1.10.3",
-    "@supabase/supabase-js": "^2.105.1",
-    "dotenv": "^17.4.2",
-    "mastra": "^1.7.2",
-    "tsx": "^4.20.5",
-    "unpdf": "^1.6.0",
-    "zod": "^3.25.76"
-  },
   "devDependencies": {
-    "@types/node": "^20",
-    "concurrently": "^9.2.1",
-    "pdf-lib": "^1.17.1",
-    "typescript": "^5"
+    "concurrently": "^9.2.1"
   }
 }
