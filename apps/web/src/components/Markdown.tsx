@@ -1,8 +1,13 @@
 import ReactMarkdown from "react-markdown";
+import { apiUrl } from "@/lib/apiBase";
 
 // Renders Thom's responses as markdown. Custom components style each element
 // against our dark theme — most importantly, links pop in new tabs and use
 // the accent color so paths like "/drafts/1040-...pdf" become clickable.
+//
+// Backend-served paths (anything starting with "/") are rewritten through
+// apiUrl() so they cross-origin to the API host in prod, where the frontend
+// (Vercel) and backend (Render) live on different origins.
 
 export function Markdown({ children }: { children: string }) {
   return (
@@ -10,7 +15,7 @@ export function Markdown({ children }: { children: string }) {
       components={{
         a: ({ href, children }) => (
           <a
-            href={href}
+            href={href && href.startsWith("/") && !href.startsWith("//") ? apiUrl(href) : href}
             target="_blank"
             rel="noopener noreferrer"
             className="text-accent hover:text-accent-hover underline underline-offset-2"

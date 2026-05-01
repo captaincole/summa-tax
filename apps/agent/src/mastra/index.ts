@@ -15,6 +15,7 @@ import { listDecisions } from "./db/aiDecisions";
 import { projectRoot } from "./paths";
 import { DRAFTS_DIR } from "./fs/draftsDir";
 import { createDemoAuth } from "./server/auth";
+import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { createStorage, dbUrl } from "./server/storage";
 
@@ -100,6 +101,9 @@ export const mastra = new Mastra({
     // paths under studioBase, so /assets/foo.js routes to the SPA.
     studioBase: "/studio",
     middleware: [
+      // CORS first so cross-origin preflights short-circuit before everything
+      // else. Configured by ALLOWED_ORIGINS env var; permissive when unset.
+      corsMiddleware,
       {
         path: "*",
         handler: async (c, next) => {

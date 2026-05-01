@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { makeMastraClient } from "@/lib/mastraClient";
 import { UnauthorizedError } from "@/lib/api";
+import { apiUrl } from "@/lib/apiBase";
 import { clearPasscode } from "@/lib/auth";
 import { Markdown } from "@/components/Markdown";
 import { ActivityCard } from "@/components/ActivityCard";
@@ -165,7 +166,7 @@ export function Chat() {
             )}
             {state?.draftUrl && (
               <a
-                href={state.draftUrl}
+                href={apiUrl(state.draftUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-accent hover:text-accent-hover"

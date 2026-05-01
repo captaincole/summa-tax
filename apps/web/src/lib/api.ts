@@ -1,7 +1,9 @@
 import { authHeaders } from "./auth";
+import { apiUrl } from "./apiBase";
 
-// Vite proxies /app and /api to localhost:4111 in dev. In prod, the same
-// server hosts the bundle so relative paths just work.
+// In dev, Vite proxies /app and /api to localhost:4111. In prod the frontend
+// is on Vercel and the backend on Render — apiUrl() prefixes the configured
+// VITE_API_URL so requests cross-origin to the right host.
 
 export interface CaseState {
   withinMvp: boolean;
@@ -37,7 +39,7 @@ export async function fetchState(passcodeOverride?: string): Promise<CaseState> 
   const headers = passcodeOverride
     ? { Authorization: `Bearer ${passcodeOverride}` }
     : authHeaders();
-  const res = await fetch("/app/state", { headers });
+  const res = await fetch(apiUrl("/app/state"), { headers });
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`State fetch failed: ${res.status}`);
   return res.json();
@@ -65,7 +67,7 @@ export interface ActivityItem {
 }
 
 export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
-  const res = await fetch(`/app/activity?limit=${limit}`, { headers: authHeaders() });
+  const res = await fetch(apiUrl(`/app/activity?limit=${limit}`), { headers: authHeaders() });
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`Activity fetch failed: ${res.status}`);
   const json = (await res.json()) as { items: ActivityItem[] };
@@ -73,7 +75,7 @@ export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
 }
 
 export async function resetSession(): Promise<void> {
-  const res = await fetch("/app/session/reset", {
+  const res = await fetch(apiUrl("/app/session/reset"), {
     method: "POST",
     headers: authHeaders(),
   });

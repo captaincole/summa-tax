@@ -29,6 +29,11 @@ services:
         sync: false
       - key: DEMO_PASSCODE
         sync: false
+      # Cross-origin allowlist for the Vercel-hosted frontend. Production
+      # domain + *.vercel.app for preview deploys. Tighten to a single domain
+      # when leaving demo mode.
+      - key: ALLOWED_ORIGINS
+        sync: false
       # Reference corpus lives in Supabase. The agent server reads via the
       # service-role secret (full read/write, bypasses RLS — fine for now
       # since corpus tables have no public policies).
