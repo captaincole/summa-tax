@@ -20,7 +20,7 @@ The end goal is a three-stage workflow:
 
 Everything routes through a SQLite-backed `tax_facts` table where each row has a `source_note` citing where the value came from. No fact exists without a citation.
 
-## Current state (as of 2026-04-21)
+## Current state (as of 2026-05-01)
 
 Scaffolded:
 
@@ -100,12 +100,13 @@ npm run db:reset                          # manual wipe, run between test sessio
 RESET_USER_DATA_ON_START=1 npm run dev    # wipe on boot (ephemeral deploys, CI)
 ```
 
-**What gets wiped:** every table whose name does NOT start with `ref_` or `sqlite_`. That includes all Mastra runtime tables (`mastra_messages`, `mastra_threads`, traces, scorers, workflow snapshots…) plus ours (`tax_facts`, `open_questions`, `ai_decisions`). Mastra and our own db modules recreate their schemas automatically on next use. Generated per-user artifacts on disk (currently `src/mastra/public/drafts/*.pdf`) are deleted too.
+**What gets wiped:** every libsql table whose name does NOT start with `ref_` or `sqlite_`. That includes all Mastra runtime tables (`mastra_messages`, `mastra_threads`, traces, scorers, workflow snapshots…) plus ours (`tax_facts`, `open_questions`, `ai_decisions`). Mastra and our own db modules recreate their schemas automatically on next use. Generated per-user artifacts on disk (currently `src/mastra/public/drafts/*.pdf`) are deleted too.
 
-**What survives:** any `ref_*` table and any file under `ref/`. Convention:
+**What survives:** any `ref_*` libsql table, anything in Supabase, and any file under `ref/`. Convention:
 
-- **DB tables:** prefix with `ref_` to survive resets (curated reference data — tax authorities, regulation text, form metadata, published bracket tables). Any other prefix (or none, like `tax_facts`) → per-session user data, wiped.
-- **Filesystem:** put reference assets under `ref/` at project root (e.g. `ref/forms/f1040-2025.pdf`). Put generated per-user artifacts under `src/mastra/public/<dir>/` (e.g. `src/mastra/public/drafts/`). The reset wipes the generated dirs; `ref/` is untouched.
+- **Supabase:** the reference corpus (`ref_documents`, `ref_pages`, `ref_sections`, `ref_blocks`) lives entirely on Supabase, so `db:reset` (which only touches libsql) cannot affect it. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
+- **libsql `ref_*` tables:** the prefix is reserved for future libsql-side reference data (e.g. published bracket tables that are too small to warrant Supabase). None today; the convention is preserved for when we add some.
+- **Filesystem:** put reference assets under `ref/` at project root (e.g. `ref/forms/f1040-2025.pdf`). Put generated per-user artifacts under `src/mastra/public/<dir>/` (e.g. `src/mastra/public/drafts/`). The reset wipes the generated dirs; `ref/` and `reference-docs/` are untouched.
 
 When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `src/mastra/fs/cleanGeneratedFiles.ts`.
 
@@ -144,15 +145,26 @@ Add categories as the domain grows. Prefer splitting over lumping (it's easier t
 
 ## Reference-document RAG and the grounding workflow (Nynaeve)
 
-### Corpus shape
+### Where the corpus lives
+
+The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase** — separate from user data, which is on libsql. The agent server reads via `@supabase/supabase-js` using a service-role secret. Migration history lives in `supabase/migrations/`.
+
+Why split storage: the corpus is shared, read-mostly, and grows substantially as we cover more scenarios. User data is per-tenant and will eventually move to Supabase too (with RLS) — that's a separate phase.
+
+Required env vars (already wired into `render.yaml`):
+- `SUPABASE_URL` — project URL (https://<ref>.supabase.co)
+- `SUPABASE_SECRET_KEY` — `sb_secret_…` service-role key. Bypasses RLS; never expose to the browser.
+
+### Corpus shape (Postgres)
 
 ```
 ref_documents → ref_pages    (page char-ranges into canonical_text)
               → ref_sections (heading hierarchy with stable slugs)
               → ref_blocks   (paragraph/list_item/etc — the citable unit)
-                  + ref_blocks_fts        — FTS5 index over contextualized_text
-                  + embedding column      — voyage-law-2 (1024-dim F32_BLOB)
-                  + libsql_vector_idx     — cosine-distance index
+                  + fts                  — generated tsvector column (English)
+                  + idx_ref_blocks_fts   — GIN index over fts
+                  + embedding            — vector(1024) (pgvector, voyage-law-2)
+                  + idx_ref_blocks_embedding — HNSW cosine
 ```
 
 Stable IDs — used everywhere as citations:
@@ -160,52 +172,85 @@ Stable IDs — used everywhere as citations:
 - `irs-1040-inst-2025::sec::single` (section)
 - `irs-1040-inst-2025::p13::b00013` (block)
 
-`ref_*` tables survive `db:reset` (see "Resetting user data"). Canonical text lives on disk at `reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
+Canonical text lives on disk at `reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
+
+### Adding or updating a reference document
+
+The PDFs in `reference-docs/` are the manifest. Each PDF has a sibling `<basename>.meta.json` with the doc metadata:
+
+```json
+{
+  "docId": "irs-1040-inst-2025",
+  "title": "Instructions for Form 1040 (2025)",
+  "publisher": "IRS",
+  "taxYear": 2025,
+  "sourceUrl": "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf"
+}
+```
+
+Operator flow:
+
+```bash
+# 1. Drop new/updated PDF + sidecar into reference-docs/
+# 2. See what's drifted vs Supabase:
+npm run refdocs:status           # diff: present / missing / sha-drift / extra / unconfigured
+npm run refdocs:status -- --strict  # exit non-zero on any drift (for CI/pre-push later)
+
+# 3. Sync changes to Supabase (idempotent, sha-skips already-ingested docs):
+npm run refdocs:sync             # ~$0.50 + ~5 min per new/changed doc
+
+# 4. If a previous sync wrote rows but failed at the embeddings step,
+#    re-embed without re-paying for Haiku contextualization:
+npm run refdocs:reembed
+```
+
+Cost: ~$0.50 Haiku contextualization + ~$0.02 Voyage embeddings + ~$0 rerank per doc. Sha-skip means re-runs are free.
 
 ### Ingest pipeline
 
-`npm run refdocs:ingest -- --pdf <path> --doc-id <slug> --title "..." --tax-year 2025 [--force]`
-
 ```
-PDF → unpdf extractText (per-page text)
+PDF → shaOfFile (compare to ref_documents.sha256 — skip if match)
+    → unpdf extractText (per-page text)
     → parseDoc (heading detection → Document/Section/Block tree, stable IDs)
-    → writeDocument (rows land WITHOUT embeddings)
     → contextualize (Haiku per block, section-scoped prompt cache)
-    → embed (voyage-law-2, batched by 128 inputs OR 70k tokens)
-    → setBlockEmbeddings (in-place UPDATE)
+    → writeDocument (insert rows, embedding=NULL)
+    → embed (voyage-law-2, batched by 128 inputs OR 120k tokens)
+    → setBlockEmbeddings (per-row UPDATE, concurrency 10)
 ```
 
-We write the rows BEFORE embedding so a Voyage failure doesn't waste the ~$0.50 of Haiku contextualization. `block_text_sha1` column is in place for future "skip re-summarize when text unchanged" optimization (not yet wired).
-
-Cost per ingest of the 1040 instructions (~250 blocks): ~$0.50 contextualization + ~$0.02 embeddings + ~$0 reranks (200M free tokens). Each new doc is comparable.
+We write the rows BEFORE embedding so a Voyage failure doesn't waste the ~$0.50 of Haiku contextualization — that's what `refdocs:reembed` recovers from. `block_text_sha1` column is in place for future "skip re-summarize when text unchanged" optimization (not yet wired).
 
 ### Retrieval — `search-ref-docs` tool
 
-Single entry point. Hybrid by default:
+Single entry point. Calls the `match_ref_blocks(query_embedding, query_text, match_count, filter_doc_id)` Postgres function via `supabase.rpc()`. The function returns up to 2×N candidates: top-N from FTS leg (`websearch_to_tsquery` + `ts_rank_cd`) unioned with top-N from vector leg (`embedding <=> query`). The JS layer reranks via Voyage rerank-2.5.
 
 ```
 query
- → FTS top-50 (BM25 over contextualized_text)  ┐
- → vector top-50 (voyage-law-2 cosine)         ┘ → merge (union) → rerank-2.5 → top-K
+ → match_ref_blocks RPC ─┬─ FTS top-50 (ts_rank_cd over fts)    ┐
+                         └─ vector top-50 (cosine over embedding) ┘ → dedupe → rerank-2.5 → top-K
 ```
 
 Falls back gracefully:
-- No embeddings yet → FTS-only
-- Voyage key absent or rerank API fails → merged FTS+vector without rerank
+- Voyage key absent → FTS-only (vector leg passes `query_embedding=null`, RPC returns FTS only)
+- Rerank API fails → return merged candidates ordered by best-of-leg
 
 `mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs.
 
 ### The reviewDecision workflow
 
-`src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
+`src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with `maxSteps: 10` and a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
 
-Nynaeve's prompt is in `src/mastra/agents/nynaeve.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
+Nynaeve's prompt is in `src/mastra/agents/nynaeve.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools, with a hard 3-search budget. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
 
 ### Inspection scripts
 
 | script | use |
 |---|---|
-| `scripts/ingestRefDoc.ts` | ingest a PDF (npm: `refdocs:ingest`) |
+| `scripts/refdocsStatus.ts` | diff repo PDFs vs Supabase (npm: `refdocs:status`) |
+| `scripts/refdocsSync.ts` | idempotent corpus sync (npm: `refdocs:sync`) |
+| `scripts/refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
+| `scripts/ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
+| `scripts/checkCorpus.ts` | row counts + per-doc embedding coverage |
 | `scripts/verifyRefDocs.ts` | round-trip + spot-citation checks |
 | `scripts/inspectBlock.ts` | peek at one block's summary + raw text |
 | `scripts/searchRefDocs.ts` | invoke the production search tool with a query |
@@ -215,11 +260,14 @@ Nynaeve's prompt is in `src/mastra/agents/nynaeve.ts`. She has `search-ref-docs`
 
 ### Lessons from this build (read before changing the pipeline)
 
-- **Mastra structured-output requires `structuredOutput.model` for tool-calling agents.** Without it the agent can do tool calls OR structured output, but the multi-step combination is unreliable. Pass the same model explicitly: `structuredOutput: { schema, model: "anthropic/claude-haiku-4-5" }`.
+- **Mastra `maxSteps` defaults to 5 — too low for "ungroundable" verdicts.** Nynaeve burns steps chasing publications the corpus references but doesn't include (e.g. FTB Pub 1031). When she hits the limit mid-tool-call, no final summary is produced and the structuring agent has nothing to convert → `review_failed` with "no structured output". Bump to 10 in `reviewDecision.ts` AND give the agent a hard search budget in the prompt.
+- **Mastra structured-output with tools needs `structuredOutput.model` (separate structuring agent) OR `jsonPromptInjection: true`.** We use the former — Nynaeve does tool calls naturally, then a second Haiku pass extracts structured output from her final text. Direct JSON injection conflicts with critic-style prompts where the agent reasons in prose.
+- **Supabase `upsert` validates NOT NULL columns on the INSERT side, even when conflict triggers UPDATE.** `setBlockEmbeddings` originally tried to upsert `(block_id, embedding)` only — PostgREST rejected because `text`, `doc_id`, etc. are NOT NULL. Fix: per-row `UPDATE … WHERE block_id = …` with concurrency 10. RPC bulk-update is the next optimization if 383 rows × ~50ms ever becomes a bottleneck.
+- **Wrap Supabase errors as `Error` instances at the call site.** They're plain `{ message, code, details, hint }` objects, so `String(err)` becomes `[object Object]` in any try/catch. `assertOk()` in `src/mastra/db/refDocs.ts` does this — copy the pattern when adding new query helpers.
 - **The cookbook's "send the whole document" doesn't fit big tax docs.** 1040 instructions alone are ~211k tokens — over Haiku's 200k. We use **section-scoped context** for contextual summarization: each block is summarized with its section text as the cached prefix. Same caching benefit (cache hits across blocks within a section), no doc-size ceiling.
 - **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
-- **libsql vector storage uses `vector('[1,2,3]')` SQL function literal**, not bind params. See `setBlockEmbeddings()` in `src/mastra/db/refDocs.ts`. The vector index name (`idx_ref_blocks_embedding`) and column type (`F32_BLOB(1024)`) must match the embedding model's dimensions exactly.
-- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline failure was a parser bug attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Use `inspectBlock.ts` to verify section attribution before tuning retrieval.
+- **pgvector embedding literals serialize as strings, not arrays.** `vectorLiteral([1,2,3])` returns `"[1,2,3]"` — pass that as the column value. Passing a JS array silently fails or coerces. The `vector(1024)` column type must match the embedding model's dimensions exactly (voyage-law-2 = 1024).
+- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Use `inspectBlock.ts` to verify section attribution before tuning retrieval.
 - **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
 - **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
 - **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.

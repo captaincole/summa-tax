@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve, dirname } from "node:path";
 import { extractPdf } from "./extract";
 import { parseDoc } from "./parse";
@@ -43,22 +44,51 @@ export interface IngestResult {
   replaced: boolean;
   contextualized: boolean;
   embedded: boolean;
+  /** True when the on-disk PDF's sha matches the existing ref_documents row,
+   *  so we returned without re-running extract / contextualize / embed. The
+   *  rest of the result fields are pulled from the existing row in this case. */
+  skipped: boolean;
+}
+
+async function shaOfFile(path: string): Promise<string> {
+  const buf = await readFile(path);
+  return createHash("sha256").update(buf).digest("hex");
 }
 
 export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
   const pdfPath = resolve(input.pdfPath);
   const canonicalOutDir = resolve(input.canonicalOutDir);
 
+  // Sha-skip: hash the file before any expensive step. If the existing row's
+  // sha matches and the caller didn't pass --force, we have nothing to do.
+  // This is what makes `refdocs:sync` cheap to run on every dev tick.
+  const fileSha = await shaOfFile(pdfPath);
+  const existing = await getDocument(input.docId);
+  if (existing && existing.sha256 === fileSha && !input.force) {
+    console.log(
+      `  ${input.docId}: sha unchanged (${fileSha.slice(0, 12)}…), skipping ingest`,
+    );
+    return {
+      docId: existing.docId,
+      sha256: existing.sha256,
+      totalPages: existing.totalPages,
+      totalChars: existing.totalChars,
+      // We don't know section/block counts without a query; callers that care
+      // can run the search smoke test instead. Return -1 to make this loud.
+      sectionCount: -1,
+      blockCount: -1,
+      canonicalTextPath: existing.canonicalTextPath,
+      replaced: false,
+      contextualized: false,
+      embedded: false,
+      skipped: true,
+    };
+  }
+
   const extracted = await extractPdf(pdfPath);
 
-  const existing = await getDocument(input.docId);
   let replaced = false;
   if (existing) {
-    if (existing.sha256 === extracted.sha256 && !input.force) {
-      throw new Error(
-        `doc_id '${input.docId}' already ingested at same sha256. Pass --force to re-ingest.`,
-      );
-    }
     await deleteDocument(input.docId);
     replaced = true;
   }
@@ -209,5 +239,6 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
     replaced,
     contextualized: !input.noContextualize,
     embedded: shouldEmbed,
+    skipped: false,
   };
 }

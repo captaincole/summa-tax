@@ -13,6 +13,8 @@
     "fixtures:build": "tsx fixtures/pipeline/render.ts",
     "db:reset": "tsx scripts/resetUserData.ts",
     "refdocs:ingest": "tsx scripts/ingestRefDoc.ts",
+    "refdocs:status": "tsx scripts/refdocsStatus.ts",
+    "refdocs:sync": "tsx scripts/refdocsSync.ts",
     "refdocs:verify": "tsx scripts/verifyRefDocs.ts",
     "smoke:review": "tsx scripts/smokeReview.ts"
   },
@@ -27,6 +29,7 @@
     "@mastra/loggers": "^1.1.1",
     "@mastra/memory": "^1.17.4",
     "@mastra/observability": "^1.10.3",
+    "@supabase/supabase-js": "^2.105.1",
     "dotenv": "^17.4.2",
     "mastra": "^1.7.2",
     "tsx": "^4.20.5",
