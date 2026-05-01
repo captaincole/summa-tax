@@ -1,18 +1,10 @@
 import "dotenv/config";
-import { readFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve, basename } from "node:path";
 import { createClient } from "@libsql/client";
 import { Mastra } from "@mastra/core";
-import { registerApiRoute, SimpleAuth } from "@mastra/core/server";
-import { InMemoryStore, MastraCompositeStore } from "@mastra/core/storage";
-import { LibSQLStore } from "@mastra/libsql";
+import { registerApiRoute } from "@mastra/core/server";
 import { PinoLogger } from "@mastra/loggers";
-import {
-  Observability,
-  ConsoleExporter,
-  DefaultExporter,
-} from "@mastra/observability";
-import { projectRoot } from "./paths";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
 import { resetUserData } from "./db/resetUserData";
@@ -20,35 +12,21 @@ import { cleanGeneratedFiles } from "./fs/cleanGeneratedFiles";
 import { getCaseState } from "./tools/caseState";
 import { getActiveTaxpayerId, listFacts, listFactsByKeys } from "./db/taxFacts";
 import { listDecisions } from "./db/aiDecisions";
+import { projectRoot } from "./paths";
+import { DRAFTS_DIR } from "./fs/draftsDir";
+import { createDemoAuth } from "./server/auth";
+import { createObservability } from "./server/observability";
+import { createStorage, dbUrl } from "./server/storage";
+
+// Built React app (Vite emits to web/dist). Resolved relative to projectRoot
+// so dev (running from source) and prod (running from .mastra/output/) agree.
+// Moves to server/staticFrontend.ts when we extract that middleware.
+const WEB_DIST_DIR = resolve(projectRoot, "web/dist");
 
 // Single demo session — all writes/reads scope to these constants. When we
 // add per-visitor partitioning later, derive these from the authed user.
 const DEMO_TAXPAYER_ID = "demo-session";
 const DEMO_TAX_YEAR = 2025;
-
-// SimpleAuth treats the env var as a bearer token. Frontend sends
-// `Authorization: Bearer <DEMO_PASSCODE>` on every request. Mastra protects
-// /api/agents/*, /api/workflows/*, and any custom routes we register.
-//
-// The "passcode" is the token value verbatim. Not rotation-safe; this is the
-// demo posture. Production swap-out path is JWT or an external IDP.
-const demoPasscode = process.env.DEMO_PASSCODE;
-const demoAuth = demoPasscode
-  ? new SimpleAuth<{ id: string }>({
-      tokens: { [demoPasscode]: { id: "demo" } },
-    })
-  : undefined;
-
-const DRAFTS_DIR = process.env.DRAFTS_DIR
-  ? resolve(process.env.DRAFTS_DIR)
-  : resolve(projectRoot, "src/mastra/public/drafts");
-mkdirSync(DRAFTS_DIR, { recursive: true });
-
-// Built React app — Vite emits to web/dist/. Resolved relative to projectRoot
-// so it works both in dev (running from source) and in prod (running from
-// .mastra/output/, where ../../web/dist still resolves correctly because
-// Render keeps the whole workspace at runtime).
-const WEB_DIST_DIR = resolve(projectRoot, "web/dist");
 
 // Paths owned by Mastra (API, custom user routes, Studio, system endpoints).
 // Our static-frontend middleware falls through for these so the rest of the
@@ -95,8 +73,6 @@ function readSafe(filePath: string): Buffer | null {
   return readFileSync(filePath);
 }
 
-const dbUrl = process.env.DATABASE_URL ?? "file:./wheel-of-time.db";
-
 // RESET_USER_DATA_ON_START=1 → wipe all non-ref_* tables before storage
 // init. Intended for ephemeral deploys (dev redeploys, CI) where we want a
 // clean slate each boot while preserving any curated reference tables.
@@ -110,44 +86,15 @@ if (process.env.RESET_USER_DATA_ON_START) {
   );
 }
 
-const libsql = new LibSQLStore({
-  id: "wheel-of-time-storage",
-  url: dbUrl,
-});
-
-// InMemoryStore resets on restart — fine for local dev; swap for DuckDB/Postgres
-// when we need persistent observability.
-const inMemory = new InMemoryStore({ id: "wheel-of-time-inmemory" });
-
-const storage = new MastraCompositeStore({
-  id: "wheel-of-time-composite",
-  default: libsql,
-  domains: {
-    observability: await inMemory.getStore("observability"),
-  },
-});
+const storage = await createStorage();
 
 export const mastra = new Mastra({
   agents: { thom, nynaeve },
   storage,
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
-  // ConsoleExporter dumps full agent input/output (including base64-encoded
-  // user uploads) to stdout — useful for local debugging, prohibitive in
-  // Render logs. We keep it on only when MASTRA_DEV is set; DefaultExporter
-  // continues to write traces to observability storage in both environments,
-  // and Mastra Studio reads from there.
-  observability: new Observability({
-    configs: {
-      default: {
-        serviceName: "wheel-of-time",
-        exporters: process.env.MASTRA_DEV
-          ? [new ConsoleExporter(), new DefaultExporter()]
-          : [new DefaultExporter()],
-      },
-    },
-  }),
+  observability: createObservability(),
   server: {
-    auth: demoAuth,
+    auth: createDemoAuth(),
     // Mount Studio at /studio so it doesn't claim the URL root and /assets/*,
     // which we need for the React app. Studio's catch-all only fires for
     // paths under studioBase, so /assets/foo.js routes to the SPA.

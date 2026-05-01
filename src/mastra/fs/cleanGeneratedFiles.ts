@@ -1,16 +1,12 @@
 import { readdirSync, unlinkSync, existsSync, statSync } from "node:fs";
 import { resolve } from "node:path";
-import { projectRoot } from "../paths";
+import { DRAFTS_DIR } from "./draftsDir";
 
 // Directories holding generated per-user artifacts that should be wiped
 // alongside user-data tables. Path convention mirrors the DB `ref_*` rule:
 // anything under `ref/` is reference data and survives resets; anything
-// generated per-user gets wiped. Honors $DRAFTS_DIR so prod cleanup hits
-// the Render persistent disk and not a stale src/mastra/public path.
-const draftsDir = process.env.DRAFTS_DIR
-  ? resolve(process.env.DRAFTS_DIR)
-  : resolve(projectRoot, "src/mastra/public/drafts");
-const GENERATED_DIRS = [draftsDir];
+// generated per-user gets wiped.
+const GENERATED_DIRS = [DRAFTS_DIR];
 
 export interface CleanResult {
   deleted: string[];

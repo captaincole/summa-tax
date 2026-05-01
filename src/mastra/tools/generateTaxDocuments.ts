@@ -1,9 +1,10 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { projectRoot } from "../paths";
+import { DRAFTS_DIR } from "../fs/draftsDir";
 import { listFacts } from "../db/taxFacts";
 import { listDecisions } from "../db/aiDecisions";
 import {
@@ -29,12 +30,6 @@ const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
 const BLANK_8949_PATH = resolve(projectRoot, "ref/forms/f8949.pdf");
 const BLANK_SCHEDULE_D_PATH = resolve(projectRoot, "ref/forms/f1040sd.pdf");
 const BLANK_540_PATH = resolve(projectRoot, "ref/forms/state/ca/2025-540.pdf");
-// Must match the directory src/mastra/index.ts serves /drafts/:filename from
-// — in prod that's the Render persistent disk at $DRAFTS_DIR=/data/drafts;
-// in dev it falls back to src/mastra/public/drafts.
-const OUTPUT_DIR = process.env.DRAFTS_DIR
-  ? resolve(process.env.DRAFTS_DIR)
-  : resolve(projectRoot, "src/mastra/public/drafts");
 
 // Field-name → 1040 line mapping for the 2025 form (extracted by inspection
 // of the AcroForm in ref/forms/f1040-2025.pdf). Stable across an entire
@@ -295,9 +290,8 @@ export const generateTaxDocuments = createTool({
     form.flatten();
 
     const outBytes = await pdf.save();
-    if (!existsSync(OUTPUT_DIR)) mkdirSync(OUTPUT_DIR, { recursive: true });
     const fileName = `1040-${taxpayerId}-${year}.pdf`;
-    const outPath = resolve(OUTPUT_DIR, fileName);
+    const outPath = resolve(DRAFTS_DIR, fileName);
     writeFileSync(outPath, outBytes);
     const url = `/drafts/${fileName}`;
 
@@ -315,7 +309,7 @@ export const generateTaxDocuments = createTool({
           taxpayerSsn: ssn,
         });
         const f8949Name = `8949-${taxpayerId}-${year}.pdf`;
-        writeFileSync(resolve(OUTPUT_DIR, f8949Name), bytes);
+        writeFileSync(resolve(DRAFTS_DIR, f8949Name), bytes);
         form8949Url = `/drafts/${f8949Name}`;
       } catch (err) {
         console.warn("[generate-tax-documents] Form 8949 render failed:", err);
@@ -333,7 +327,7 @@ export const generateTaxDocuments = createTool({
           taxpayerSsn: ssn,
         });
         const sdName = `schedule-d-${taxpayerId}-${year}.pdf`;
-        writeFileSync(resolve(OUTPUT_DIR, sdName), bytes);
+        writeFileSync(resolve(DRAFTS_DIR, sdName), bytes);
         scheduleDUrl = `/drafts/${sdName}`;
       } catch (err) {
         console.warn("[generate-tax-documents] Schedule D render failed:", err);
@@ -357,7 +351,7 @@ export const generateTaxDocuments = createTool({
           filingStatus,
         });
         const f540Name = `540-${taxpayerId}-${year}.pdf`;
-        writeFileSync(resolve(OUTPUT_DIR, f540Name), bytes);
+        writeFileSync(resolve(DRAFTS_DIR, f540Name), bytes);
         form540Url = `/drafts/${f540Name}`;
       } catch (err) {
         console.warn("[generate-tax-documents] CA 540 render failed:", err);
@@ -377,7 +371,7 @@ export const generateTaxDocuments = createTool({
       },
     };
     const sidecarFileName = `forms-${taxpayerId}-${year}.json`;
-    const sidecarPath = resolve(OUTPUT_DIR, sidecarFileName);
+    const sidecarPath = resolve(DRAFTS_DIR, sidecarFileName);
     writeFileSync(sidecarPath, JSON.stringify(sidecar, null, 2));
     const sidecarUrl = `/drafts/${sidecarFileName}`;
 
