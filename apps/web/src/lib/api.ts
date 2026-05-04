@@ -35,11 +35,8 @@ export class UnauthorizedError extends Error {
   }
 }
 
-export async function fetchState(passcodeOverride?: string): Promise<CaseState> {
-  const headers = passcodeOverride
-    ? { Authorization: `Bearer ${passcodeOverride}` }
-    : authHeaders();
-  const res = await fetch(apiUrl("/app/state"), { headers });
+export async function fetchState(): Promise<CaseState> {
+  const res = await fetch(apiUrl("/app/state"), { headers: await authHeaders() });
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`State fetch failed: ${res.status}`);
   return res.json();
@@ -67,7 +64,7 @@ export interface ActivityItem {
 }
 
 export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
-  const res = await fetch(apiUrl(`/app/activity?limit=${limit}`), { headers: authHeaders() });
+  const res = await fetch(apiUrl(`/app/activity?limit=${limit}`), { headers: await authHeaders() });
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`Activity fetch failed: ${res.status}`);
   const json = (await res.json()) as { items: ActivityItem[] };
@@ -77,9 +74,8 @@ export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
 export async function resetSession(): Promise<void> {
   const res = await fetch(apiUrl("/app/session/reset"), {
     method: "POST",
-    headers: authHeaders(),
+    headers: await authHeaders(),
   });
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`Reset failed: ${res.status}`);
 }
-

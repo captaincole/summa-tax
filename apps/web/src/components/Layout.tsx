@@ -7,7 +7,8 @@ import {
   UnauthorizedError,
   type CaseState,
 } from "@/lib/api";
-import { clearPasscode, getPasscode } from "@/lib/auth";
+import { signOut } from "@/lib/auth";
+import { supabase } from "@/lib/supabaseClient";
 import { makeMastraClient } from "@/lib/mastraClient";
 import { DEMO_THREAD_ID, THOM_AGENT_ID } from "@/lib/chatSession";
 
@@ -43,7 +44,7 @@ export function Layout() {
       setState(await fetchState());
     } catch (err) {
       if (err instanceof UnauthorizedError) {
-        clearPasscode();
+        await signOut();
         navigate("/login", { replace: true });
       }
     }
@@ -54,7 +55,7 @@ export function Layout() {
   // has the full thread server-side.
   async function loadChatHistory() {
     try {
-      const client = makeMastraClient();
+      const client = await makeMastraClient();
       const thread = client.getMemoryThread({
         threadId: DEMO_THREAD_ID,
         agentId: THOM_AGENT_ID,
@@ -88,12 +89,29 @@ export function Layout() {
   }
 
   useEffect(() => {
-    if (!getPasscode()) {
-      navigate("/login", { replace: true });
-      return;
-    }
-    refreshState();
-    loadChatHistory();
+    // Initial session check + listener for sign-out / token expiry. The
+    // listener catches refresh failures and explicit signOut() calls
+    // elsewhere, redirecting to /login from a single place.
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (!data.session) {
+        navigate("/login", { replace: true });
+        return;
+      }
+      refreshState();
+      loadChatHistory();
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) navigate("/login", { replace: true });
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -107,7 +125,7 @@ export function Layout() {
       setResetTick((t) => t + 1);
     } catch (err) {
       if (err instanceof UnauthorizedError) {
-        clearPasscode();
+        await signOut();
         navigate("/login", { replace: true });
       }
     } finally {

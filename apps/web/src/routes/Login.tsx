@@ -1,38 +1,36 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchState, UnauthorizedError } from "@/lib/api";
-import { setPasscode, getPasscode } from "@/lib/auth";
+import { supabase } from "@/lib/supabaseClient";
 
 export function Login() {
   const navigate = useNavigate();
-  const [passcode, setPasscodeInput] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Already-signed-in tab → skip straight to chat.
   useEffect(() => {
-    if (getPasscode()) navigate("/", { replace: true });
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate("/", { replace: true });
+    });
   }, [navigate]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!passcode || submitting) return;
+    if (!email || !password || submitting) return;
     setSubmitting(true);
     setError(null);
-    try {
-      // Validate the passcode by hitting an authed endpoint with it.
-      // On 200 we know SimpleAuth accepted the token.
-      await fetchState(passcode);
-      setPasscode(passcode);
-      navigate("/", { replace: true });
-    } catch (err) {
-      if (err instanceof UnauthorizedError) {
-        setError("Invalid passcode.");
-      } else {
-        setError("Couldn't reach the server. Is mastra running?");
-      }
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (signInError) {
+      setError(signInError.message);
       setSubmitting(false);
+      return;
     }
+    navigate("/", { replace: true });
   }
 
   return (
@@ -45,21 +43,29 @@ export function Login() {
             Wheel of Time
           </div>
           <h1 className="font-serif text-4xl text-ink-primary mb-3">
-            Demo access
+            Sign in
           </h1>
           <p className="text-ink-secondary text-sm">
-            Enter the passcode to start a session.
+            Enter your email and password to start a session.
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-3">
           <input
-            type="password"
-            value={passcode}
-            onChange={(e) => setPasscodeInput(e.target.value)}
-            placeholder="Passcode"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
             autoFocus
-            autoComplete="off"
+            autoComplete="email"
+            className="input-base"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
             className="input-base"
           />
           {error && (
@@ -67,10 +73,10 @@ export function Login() {
           )}
           <button
             type="submit"
-            disabled={submitting || !passcode}
+            disabled={submitting || !email || !password}
             className="btn-primary"
           >
-            {submitting ? "Checking…" : "Continue"}
+            {submitting ? "Signing in…" : "Sign in"}
           </button>
         </form>
 

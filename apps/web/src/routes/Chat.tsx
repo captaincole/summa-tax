@@ -3,15 +3,11 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { makeMastraClient } from "@/lib/mastraClient";
 import { UnauthorizedError } from "@/lib/api";
 import { apiUrl } from "@/lib/apiBase";
-import { clearPasscode } from "@/lib/auth";
+import { getUserId, signOut } from "@/lib/auth";
 import { Markdown } from "@/components/Markdown";
 import { ActivityCard } from "@/components/ActivityCard";
 import type { ChatMessage, LayoutOutletContext } from "@/components/Layout";
-import {
-  DEMO_RESOURCE_ID,
-  DEMO_THREAD_ID,
-  THOM_AGENT_ID,
-} from "@/lib/chatSession";
+import { DEMO_THREAD_ID, THOM_AGENT_ID } from "@/lib/chatSession";
 
 function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -96,9 +92,19 @@ export function Chat() {
         ];
       }
 
-      const client = makeMastraClient();
+      const userId = await getUserId();
+      if (!userId) {
+        await signOut();
+        navigate("/login", { replace: true });
+        return;
+      }
+      const client = await makeMastraClient();
       const stream = await client.getAgent(THOM_AGENT_ID).stream(payload as string, {
-        memory: { thread: DEMO_THREAD_ID, resource: DEMO_RESOURCE_ID },
+        // The server re-derives the resourceId from the JWT and force-sets it
+        // via MASTRA_RESOURCE_ID_KEY (see server/auth.ts), so a tampered or
+        // mismatched value gets rejected with 403. We still pass the real id
+        // here because the request-body schema requires a string.
+        memory: { thread: DEMO_THREAD_ID, resource: userId },
       });
 
       await stream.processDataStream({
@@ -132,7 +138,7 @@ export function Chat() {
         ),
       );
       if (err instanceof UnauthorizedError) {
-        clearPasscode();
+        await signOut();
         navigate("/login", { replace: true });
       }
     } finally {

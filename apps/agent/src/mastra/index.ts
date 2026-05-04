@@ -7,7 +7,7 @@ import { nynaeve } from "./agents/nynaeve";
 import { resetMastraSchema } from "./db/resetMastraSchema";
 import { resetUserData } from "./db/resetUserData";
 import { cleanGeneratedFiles } from "./fs/cleanGeneratedFiles";
-import { createDemoAuth } from "./server/auth";
+import { createSupabaseAuth } from "./server/auth";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appActivityRoute } from "./server/routes/appActivity";
@@ -40,7 +40,7 @@ export const mastra = new Mastra({
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
   observability: createObservability(),
   server: {
-    auth: createDemoAuth(),
+    auth: createSupabaseAuth(),
     // Mount Studio under /studio rather than the URL root. Frontend lives on
     // Vercel; this server only handles API + Studio + custom routes.
     studioBase: "/studio",
