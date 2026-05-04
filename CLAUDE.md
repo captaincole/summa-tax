@@ -307,6 +307,34 @@ Rule of thumb: grep the bundled docs first (`Grep pattern path=node_modules/@mas
 
 If you're a fresh Claude Code session starting in this folder: read this file, then read the BBG memory dir for broader context on how Andrew builds agents.
 
+## Future architecture (sketched, not built)
+
+The current shape (Vercel frontend + Render-hosted Mastra + libsql + Supabase corpus) is a stepping stone. The intended end state is **three deploy units** with Supabase as the primary store for everything:
+
+1. **Vercel Static Site (`apps/web`)** — Vite frontend, unchanged. Reads most data directly from Supabase via `supabase-js`.
+2. **Vercel Web Service (`apps/agent`)** — Mastra agent runtime only: `/api/agents/*` (chat streaming + tool execution), Studio, observability. The four custom routes in `server/routes/` get deleted.
+3. **Supabase** — primary DB for user data + reference corpus, Storage (drafts), Auth (replaces `DEMO_PASSCODE`), Edge Functions for privileged glue. RLS policies scope every read/write to the authenticated user.
+
+**No separate CRUD/Node service is planned.** Each of today's custom routes maps to a Supabase-native primitive:
+
+| Today | Future |
+|---|---|
+| `GET /app/state` | SQL view or `rpc('case_state')` Postgres function called via `supabase-js` |
+| `GET /app/activity` | UNION view of `tax_facts` + `ai_decisions`, queried with `.from().select()` |
+| `POST /app/session/reset` | `SECURITY DEFINER` SQL function via `rpc()`, or an Edge Function |
+| `GET /drafts/:filename` | Supabase Storage signed URL returned in the row data — no proxy |
+
+`supabase-js` covers PostgREST for tables, RPC for projections, Storage for files, and Auth for sessions. Edge Functions exist if we ever need TypeScript-side privileged logic. A separate Node CRUD service would be pure overhead.
+
+**Open issues / what's required to get there:**
+
+- **Mastra-on-Vercel requires removing `LibSQLStore`.** Serverless platforms don't have persistent filesystems; Mastra's official guidance says to drop libsql in cloud-provider deploys. Swap to `@mastra/pg` pointing at the same Supabase Postgres (with `mastra_*` tables coexisting alongside our domain tables). This is the headline migration.
+- **Document upload stays agent-routed.** PDFs flow through `/api/agents/thom/stream` today as base64 attachments. The future-state optimization is to upload directly to Supabase Storage and pass signed URLs into the chat message — cheaper context, persistent audit trail. That's a tool-side change, not a route change.
+- **`DRAFTS_DIR` becomes a Supabase Storage bucket.** `generateTaxDocuments` writes objects via the Storage API and returns signed URLs in the tool response. The `fs/draftsDir.ts` module deletes itself.
+- **`db:reset` becomes a Postgres function call.** The libsql client + the filesystem-cleanup helper both go away; `truncate tax_facts, ai_decisions, ...` plus a Storage bucket clear is the whole operation.
+
+**Why the current cleanup still matters:** the routes are isolated in `server/routes/*.ts` instead of woven through `index.ts`, so the Supabase migration becomes "delete these four files" rather than "untangle a 400-line entrypoint."
+
 ## Things explicitly out of scope (for now)
 
 - Automatic document OCR / parsing (we'll add it later — probably a separate service; for MVP, ingestion takes structured payloads)

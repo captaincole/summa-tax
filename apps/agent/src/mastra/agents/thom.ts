@@ -1,6 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { LibSQLStore } from "@mastra/libsql";
+import { PostgresStore } from "@mastra/pg";
+import { pgPool } from "../server/storage";
 import {
   recordTaxFact,
   noteOpenQuestion,
@@ -41,9 +42,10 @@ export const thom = new Agent({
     listAIDecisions,
   },
   memory: new Memory({
-    storage: new LibSQLStore({
+    storage: new PostgresStore({
       id: "thom-memory",
-      url: process.env.DATABASE_URL ?? "file:./wheel-of-time.db",
+      pool: pgPool,
+      schemaName: "mastra",
     }),
   }),
 });

@@ -12,3 +12,4 @@ apps/web/dist
 *.log
 apps/agent/src/mastra/public/drafts/
 .DS_Store
+.claude/

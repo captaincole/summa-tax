@@ -1,18 +1,39 @@
 import { InMemoryStore, MastraCompositeStore } from "@mastra/core/storage";
-import { LibSQLStore } from "@mastra/libsql";
+import { PostgresStore } from "@mastra/pg";
+import { Pool } from "pg";
 
+if (!process.env.POSTGRES_URL) {
+  throw new Error(
+    "POSTGRES_URL is required — set it to your Supabase Postgres connection string (see .env.example)",
+  );
+}
+
+// Shared pg.Pool for Mastra's runtime tables and admin queries (resets).
+// Passed to PostgresStore as `pool` rather than `connectionString` so PgStore
+// won't close it on store.close() — we own the pool lifecycle.
+export const pgPool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+  max: 10,
+});
+
+// Legacy libsql URL for not-yet-migrated domain tables (tax_facts,
+// open_questions, ai_decisions). Goes away once those move to Supabase.
 export const dbUrl = process.env.DATABASE_URL ?? "file:./wheel-of-time.db";
 
-// Composite store: libsql for everything by default, InMemoryStore for the
-// observability domain. InMemoryStore resets on restart — fine for local dev;
-// swap for DuckDB/Postgres when we need persistent observability.
+// Composite store: PostgresStore (Supabase) for everything by default,
+// InMemoryStore for the observability domain. InMemoryStore resets on restart
+// — fine for the demo; revisit when we want persistent traces.
 export async function createStorage(): Promise<MastraCompositeStore> {
-  const libsql = new LibSQLStore({ id: "wheel-of-time-storage", url: dbUrl });
+  const pg = new PostgresStore({
+    id: "wheel-of-time-storage",
+    pool: pgPool,
+    schemaName: "mastra",
+  });
   const inMemory = new InMemoryStore({ id: "wheel-of-time-inmemory" });
 
   return new MastraCompositeStore({
     id: "wheel-of-time-composite",
-    default: libsql,
+    default: pg,
     domains: {
       observability: await inMemory.getStore("observability"),
     },
