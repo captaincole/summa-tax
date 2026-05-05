@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   getDecisionById,
   setDecisionVerdict,
@@ -49,7 +50,7 @@ function renderDecisionForReview(
       ? `\nNOTE: Thom cited these fact keys but no matching fact exists in tax_facts: ${missingKeys.join(", ")}. That is itself a reason to consider the decision inaccurate.`
       : "",
     ``,
-    `Taxpayer: ${decision.taxpayerId}  Tax year: ${decision.year}`,
+    `User: ${decision.userId}  Tax year: ${decision.taxYear}`,
     ``,
     `Review this decision per your instructions. Search the reference corpus for supporting IRS guidance, and return a verdict.`,
   ]
@@ -102,17 +103,18 @@ function logReviewEnd(
  * always sees a definitive state for every decision he records.
  */
 export async function reviewDecision(
+  supabase: SupabaseClient,
   decisionId: string,
 ): Promise<ReviewOutcome> {
   const t0 = Date.now();
-  const decision = await getDecisionById(decisionId);
+  const decision = await getDecisionById(supabase, decisionId);
   if (!decision) {
     throw new Error(`reviewDecision: no decision with id ${decisionId}`);
   }
 
   const facts = await listFactsByKeys(
-    decision.taxpayerId,
-    decision.year,
+    supabase,
+    decision.taxYear,
     decision.supportingFactKeys,
   );
   logReviewStart(decision, facts.length);
@@ -145,7 +147,7 @@ export async function reviewDecision(
   } catch (err) {
     const reason =
       err instanceof Error ? err.message : `unknown review failure: ${String(err)}`;
-    await setDecisionVerdict(decisionId, "review_failed", reason, null);
+    await setDecisionVerdict(supabase, decisionId, "review_failed", reason, null);
     const outcome: ReviewOutcome = {
       decisionId,
       verdict: "review_failed",
@@ -162,6 +164,7 @@ export async function reviewDecision(
   }));
 
   await setDecisionVerdict(
+    supabase,
     decisionId,
     review.verdict,
     review.reason,

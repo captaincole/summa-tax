@@ -2,6 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { recordFact } from "../db/taxFacts";
 import { makeW2FactKey, type W2FactValue } from "../facts";
+import { requireUserContext } from "./userContext";
 
 // Ingest a W-2 as a single structured tax_facts row. The Form Engine reads
 // these via `getW2Facts(facts)` from the fact catalog.
@@ -34,7 +35,6 @@ export const ingestW2 = createTool({
   description:
     "Ingest a single W-2 as a structured tax fact. Thom (or whatever upstream extractor) reads the W-2 PDF and calls this with all the box values. Writes ONE tax_facts row with the full W-2 data; the Form Engine reads it via the fact catalog. Call once per W-2.",
   inputSchema: z.object({
-    taxpayerId: z.string(),
     year: z.number().int(),
     employer: z.object({
       name: z.string(),
@@ -97,8 +97,9 @@ export const ingestW2 = createTool({
     employerSlug: z.string(),
     factKey: z.string(),
   }),
-  execute: async (input) => {
-    const { taxpayerId, year, sourceNote } = input;
+  execute: async (input, context) => {
+    const { supabase, userId } = requireUserContext(context);
+    const { year, sourceNote } = input;
     const slug =
       input.employerSlug ||
       slugify(input.employer.name) ||
@@ -128,10 +129,10 @@ export const ingestW2 = createTool({
     };
 
     const factKey = makeW2FactKey(slug);
-    await recordFact({
+    await recordFact(supabase, {
       id: crypto.randomUUID(),
-      taxpayerId,
-      year,
+      userId,
+      taxYear: year,
       category: "wages",
       key: factKey,
       value: w2,
@@ -147,10 +148,10 @@ export const ingestW2 = createTool({
       const e = input.employee;
       const writeIdentity = async (key: string, value: unknown) => {
         if (value === undefined || value === null || value === "") return;
-        await recordFact({
+        await recordFact(supabase, {
           id: crypto.randomUUID(),
-          taxpayerId,
-          year,
+          userId,
+          taxYear: year,
           category: "identity",
           key,
           value,

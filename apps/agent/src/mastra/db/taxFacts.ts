@@ -1,56 +1,15 @@
-import { createClient } from "@libsql/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-const client = createClient({
-  url: process.env.DATABASE_URL ?? "file:./wheel-of-time.db",
-});
-
-let ready: Promise<void> | null = null;
-
-function ensureSchema(): Promise<void> {
-  if (!ready) {
-    ready = (async () => {
-      await client.execute(`
-        CREATE TABLE IF NOT EXISTS tax_facts (
-          id TEXT PRIMARY KEY,
-          taxpayer_id TEXT NOT NULL,
-          year INTEGER NOT NULL,
-          category TEXT NOT NULL,
-          fact_key TEXT NOT NULL,
-          value_json TEXT NOT NULL,
-          source_note TEXT,
-          created_at INTEGER NOT NULL
-        )
-      `);
-      await client.execute(
-        `CREATE INDEX IF NOT EXISTS idx_tax_facts_taxpayer_year ON tax_facts(taxpayer_id, year)`,
-      );
-      await client.execute(
-        `CREATE INDEX IF NOT EXISTS idx_tax_facts_category ON tax_facts(category)`,
-      );
-
-      await client.execute(`
-        CREATE TABLE IF NOT EXISTS open_questions (
-          id TEXT PRIMARY KEY,
-          taxpayer_id TEXT NOT NULL,
-          status TEXT NOT NULL,
-          question TEXT NOT NULL,
-          context TEXT,
-          created_at INTEGER NOT NULL,
-          resolved_at INTEGER
-        )
-      `);
-      await client.execute(
-        `CREATE INDEX IF NOT EXISTS idx_open_questions_taxpayer ON open_questions(taxpayer_id, status)`,
-      );
-    })();
-  }
-  return ready;
-}
+// All helpers take a user-scoped Supabase client (built per request from the
+// caller's JWT). RLS policies on public.tax_facts / public.open_questions
+// scope every read and write to auth.uid() — we don't write WHERE user_id
+// clauses ourselves, the database does. We still pass user_id explicitly on
+// inserts because RLS WITH CHECK validates it, and explicit beats implicit.
 
 export interface TaxFact {
   id: string;
-  taxpayerId: string;
-  year: number;
+  userId: string;
+  taxYear: number;
   category: string;
   key: string;
   value: unknown;
@@ -59,8 +18,8 @@ export interface TaxFact {
 
 export interface TaxFactRow {
   id: string;
-  taxpayerId: string;
-  year: number;
+  userId: string;
+  taxYear: number;
   category: string;
   key: string;
   value: unknown;
@@ -68,138 +27,105 @@ export interface TaxFactRow {
   createdAt: string;
 }
 
-export async function recordFact(fact: TaxFact): Promise<void> {
-  await ensureSchema();
-  await client.execute({
-    sql: `INSERT INTO tax_facts
-          (id, taxpayer_id, year, category, fact_key, value_json, source_note, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    args: [
-      fact.id,
-      fact.taxpayerId,
-      fact.year,
-      fact.category,
-      fact.key,
-      JSON.stringify(fact.value),
-      fact.sourceNote ?? null,
-      Date.now(),
-    ],
-  });
+interface TaxFactDbRow {
+  id: string;
+  user_id: string;
+  tax_year: number;
+  category: string;
+  fact_key: string;
+  fact_value: unknown;
+  source_note: string | null;
+  created_at: string;
 }
 
-// Demo-only: Thom invents his own taxpayer_id on first turn (per his prompt:
-// "pick a short stable taxpayerId for this session"), so server endpoints that
-// want to surface "the current session" can't hardcode a value. This finds the
-// most recently-active taxpayer_id for a year — fine for the single-user demo;
-// will need a per-user lookup once auth carries identity.
-export async function getActiveTaxpayerId(
-  year: number,
-): Promise<string | null> {
-  await ensureSchema();
-  const r = await client.execute({
-    sql: `SELECT taxpayer_id FROM tax_facts
-          WHERE year = ?
-          GROUP BY taxpayer_id
-          ORDER BY MAX(created_at) DESC
-          LIMIT 1`,
-    args: [year],
+function rowToFact(r: TaxFactDbRow): TaxFactRow {
+  return {
+    id: r.id,
+    userId: r.user_id,
+    taxYear: r.tax_year,
+    category: r.category,
+    key: r.fact_key,
+    value: r.fact_value,
+    sourceNote: r.source_note,
+    createdAt: r.created_at,
+  };
+}
+
+export async function recordFact(
+  supabase: SupabaseClient,
+  fact: TaxFact,
+): Promise<void> {
+  const { error } = await supabase.from("tax_facts").insert({
+    id: fact.id,
+    user_id: fact.userId,
+    tax_year: fact.taxYear,
+    category: fact.category,
+    fact_key: fact.key,
+    fact_value: fact.value,
+    source_note: fact.sourceNote ?? null,
   });
-  if (r.rows.length === 0) return null;
-  return String(r.rows[0].taxpayer_id);
+  if (error) throw new Error(`recordFact failed: ${error.message}`);
 }
 
 export interface ListFactsOpts {
-  taxpayerId: string;
-  year?: number;
+  taxYear?: number;
   category?: string;
   limit?: number;
 }
 
-export async function listFacts(opts: ListFactsOpts): Promise<TaxFactRow[]> {
-  await ensureSchema();
-  const where: string[] = ["taxpayer_id = ?"];
-  const args: (string | number)[] = [opts.taxpayerId];
-  if (opts.year !== undefined) {
-    where.push("year = ?");
-    args.push(opts.year);
-  }
-  if (opts.category) {
-    where.push("category = ?");
-    args.push(opts.category);
-  }
-  const limit = Math.min(opts.limit ?? 100, 500);
-  const result = await client.execute({
-    sql: `SELECT id, taxpayer_id, year, category, fact_key, value_json, source_note, created_at
-          FROM tax_facts WHERE ${where.join(" AND ")}
-          ORDER BY created_at DESC LIMIT ?`,
-    args: [...args, limit],
-  });
-  return result.rows.map((r) => ({
-    id: String(r.id),
-    taxpayerId: String(r.taxpayer_id),
-    year: Number(r.year),
-    category: String(r.category),
-    key: String(r.fact_key),
-    value: JSON.parse(String(r.value_json)),
-    sourceNote: r.source_note == null ? null : String(r.source_note),
-    createdAt: new Date(Number(r.created_at)).toISOString(),
-  }));
+export async function listFacts(
+  supabase: SupabaseClient,
+  opts: ListFactsOpts = {},
+): Promise<TaxFactRow[]> {
+  let q = supabase
+    .from("tax_facts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(Math.min(opts.limit ?? 100, 500));
+  if (opts.taxYear !== undefined) q = q.eq("tax_year", opts.taxYear);
+  if (opts.category) q = q.eq("category", opts.category);
+  const { data, error } = await q;
+  if (error) throw new Error(`listFacts failed: ${error.message}`);
+  return (data ?? []).map(rowToFact);
 }
 
 export async function listFactsByKeys(
-  taxpayerId: string,
-  year: number,
+  supabase: SupabaseClient,
+  taxYear: number,
   keys: string[],
 ): Promise<TaxFactRow[]> {
   if (keys.length === 0) return [];
-  await ensureSchema();
-  const placeholders = keys.map(() => "?").join(", ");
-  const result = await client.execute({
-    sql: `SELECT id, taxpayer_id, year, category, fact_key, value_json, source_note, created_at
-          FROM tax_facts
-          WHERE taxpayer_id = ? AND year = ? AND fact_key IN (${placeholders})
-          ORDER BY created_at DESC`,
-    args: [taxpayerId, year, ...keys],
-  });
+  const { data, error } = await supabase
+    .from("tax_facts")
+    .select("*")
+    .eq("tax_year", taxYear)
+    .in("fact_key", keys)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`listFactsByKeys failed: ${error.message}`);
   // tax_facts is append-only; collapse to the latest row per fact_key.
   const latest = new Map<string, TaxFactRow>();
-  for (const r of result.rows) {
-    const key = String(r.fact_key);
-    if (latest.has(key)) continue;
-    latest.set(key, {
-      id: String(r.id),
-      taxpayerId: String(r.taxpayer_id),
-      year: Number(r.year),
-      category: String(r.category),
-      key,
-      value: JSON.parse(String(r.value_json)),
-      sourceNote: r.source_note == null ? null : String(r.source_note),
-      createdAt: new Date(Number(r.created_at)).toISOString(),
-    });
+  for (const r of (data ?? []) as TaxFactDbRow[]) {
+    if (latest.has(r.fact_key)) continue;
+    latest.set(r.fact_key, rowToFact(r));
   }
   return Array.from(latest.values());
 }
 
+// ---------------------------------------------------------------------------
+// Open questions (lives here because the libsql equivalent did, and the
+// surface area is small)
+// ---------------------------------------------------------------------------
+
 export interface OpenQuestion {
   id: string;
-  taxpayerId: string;
+  userId: string;
   question: string;
   context?: string;
 }
 
-export async function noteQuestion(q: OpenQuestion): Promise<void> {
-  await ensureSchema();
-  await client.execute({
-    sql: `INSERT INTO open_questions
-          (id, taxpayer_id, status, question, context, created_at)
-          VALUES (?, ?, 'open', ?, ?, ?)`,
-    args: [q.id, q.taxpayerId, q.question, q.context ?? null, Date.now()],
-  });
-}
-
 export interface OpenQuestionRow {
   id: string;
-  taxpayerId: string;
+  userId: string;
   status: string;
   question: string;
   context: string | null;
@@ -207,41 +133,64 @@ export interface OpenQuestionRow {
   resolvedAt: string | null;
 }
 
-export async function listOpenQuestions(
-  taxpayerId: string,
-  status: "open" | "resolved" | "all" = "open",
-): Promise<OpenQuestionRow[]> {
-  await ensureSchema();
-  const where: string[] = ["taxpayer_id = ?"];
-  const args: (string | number)[] = [taxpayerId];
-  if (status !== "all") {
-    where.push("status = ?");
-    args.push(status);
-  }
-  const result = await client.execute({
-    sql: `SELECT id, taxpayer_id, status, question, context, created_at, resolved_at
-          FROM open_questions WHERE ${where.join(" AND ")}
-          ORDER BY created_at DESC LIMIT 200`,
-    args,
-  });
-  return result.rows.map((r) => ({
-    id: String(r.id),
-    taxpayerId: String(r.taxpayer_id),
-    status: String(r.status),
-    question: String(r.question),
-    context: r.context == null ? null : String(r.context),
-    createdAt: new Date(Number(r.created_at)).toISOString(),
-    resolvedAt:
-      r.resolved_at == null
-        ? null
-        : new Date(Number(r.resolved_at)).toISOString(),
-  }));
+interface OpenQuestionDbRow {
+  id: string;
+  user_id: string;
+  status: string;
+  question: string;
+  context: string | null;
+  created_at: string;
+  resolved_at: string | null;
 }
 
-export async function resolveQuestion(id: string): Promise<void> {
-  await ensureSchema();
-  await client.execute({
-    sql: `UPDATE open_questions SET status='resolved', resolved_at=? WHERE id=?`,
-    args: [Date.now(), id],
+function rowToQuestion(r: OpenQuestionDbRow): OpenQuestionRow {
+  return {
+    id: r.id,
+    userId: r.user_id,
+    status: r.status,
+    question: r.question,
+    context: r.context,
+    createdAt: r.created_at,
+    resolvedAt: r.resolved_at,
+  };
+}
+
+export async function noteQuestion(
+  supabase: SupabaseClient,
+  q: OpenQuestion,
+): Promise<void> {
+  const { error } = await supabase.from("open_questions").insert({
+    id: q.id,
+    user_id: q.userId,
+    status: "open",
+    question: q.question,
+    context: q.context ?? null,
   });
+  if (error) throw new Error(`noteQuestion failed: ${error.message}`);
+}
+
+export async function listOpenQuestions(
+  supabase: SupabaseClient,
+  status: "open" | "resolved" | "all" = "open",
+): Promise<OpenQuestionRow[]> {
+  let q = supabase
+    .from("open_questions")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (status !== "all") q = q.eq("status", status);
+  const { data, error } = await q;
+  if (error) throw new Error(`listOpenQuestions failed: ${error.message}`);
+  return ((data ?? []) as OpenQuestionDbRow[]).map(rowToQuestion);
+}
+
+export async function resolveQuestion(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("open_questions")
+    .update({ status: "resolved", resolved_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(`resolveQuestion failed: ${error.message}`);
 }

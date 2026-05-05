@@ -1,50 +1,46 @@
 /**
- * Standalone CLI for dropping all user-data tables in the LibSQL database.
- * Reference tables (prefix `ref_`) are preserved. Mastra and our own db
- * modules will recreate their schemas on next use.
+ * Standalone CLI for wiping all user data: every row in mastra.* (Mastra
+ * runtime tables) and the public.* domain tables (tax_facts, open_questions,
+ * ai_decisions). Reference corpus (ref_*) is preserved. Mastra and our own
+ * db modules will repopulate their schemas on next use.
  *
  * Usage:
  *   npm run db:reset
  *
- * DATABASE_URL overrides the default path. Without it, the script targets
- * the project-root wheel-of-time.db — same file the dev server and corpus
- * ingest scripts use when DATABASE_URL is set in .env / .env.development
- * (see .env.example for the absolute-path requirement).
+ * Reads POSTGRES_URL from the environment — the same Supabase connection
+ * string the agent server uses (see .env.example).
  */
 import "dotenv/config";
-import { createClient } from "@libsql/client";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
-import { resetUserData } from "../src/mastra/db/resetUserData";
+import { Pool } from "pg";
+import { resetAllUserData } from "../src/mastra/db/resetUserData";
 import { cleanGeneratedFiles } from "../src/mastra/fs/cleanGeneratedFiles";
 
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const defaultDbPath = resolve(projectRoot, "wheel-of-time.db");
-const url = process.env.DATABASE_URL ?? `file:${defaultDbPath}`;
-
 async function main() {
-  console.log(`[db:reset] target: ${url}`);
-  const client = createClient({ url });
-  const { dropped, preserved } = await resetUserData(client);
-
-  if (dropped.length === 0) {
-    console.log("[db:reset] nothing to drop (empty DB?)");
-  } else {
-    console.log(`[db:reset] dropped ${dropped.length} tables:`);
-    for (const t of dropped) console.log(`  - ${t}`);
+  if (!process.env.POSTGRES_URL) {
+    console.error(
+      "[db:reset] POSTGRES_URL must be set — see .env.example for the Supabase connection string format.",
+    );
+    process.exit(1);
   }
-  if (preserved.length > 0) {
-    console.log(`[db:reset] preserved ${preserved.length} tables:`);
-    for (const t of preserved) console.log(`  - ${t}`);
-  }
-  client.close();
 
-  const { deleted } = cleanGeneratedFiles();
-  if (deleted.length === 0) {
-    console.log("[db:reset] no generated files to wipe");
-  } else {
-    console.log(`[db:reset] wiped ${deleted.length} generated files:`);
-    for (const f of deleted) console.log(`  - ${f}`);
+  const pool = new Pool({ connectionString: process.env.POSTGRES_URL });
+  try {
+    const { truncated } = await resetAllUserData(pool);
+    const { deleted } = cleanGeneratedFiles();
+
+    if (truncated.length === 0) {
+      console.log("[db:reset] no tables to truncate.");
+    } else {
+      console.log(`[db:reset] truncated ${truncated.length} tables:`);
+      for (const t of truncated) console.log(`  - ${t}`);
+    }
+    if (deleted.length === 0) {
+      console.log("[db:reset] no generated files to wipe");
+    } else {
+      console.log(`[db:reset] wiped ${deleted.length} generated files`);
+    }
+  } finally {
+    await pool.end();
   }
 }
 

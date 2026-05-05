@@ -1,34 +1,35 @@
 import "dotenv/config";
-import { createClient } from "@libsql/client";
 import { Mastra } from "@mastra/core";
+import { MastraAuthSupabase } from "@mastra/auth-supabase";
 import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
-import { resetMastraSchema } from "./db/resetMastraSchema";
-import { resetUserData } from "./db/resetUserData";
+import { resetAllUserData } from "./db/resetUserData";
 import { cleanGeneratedFiles } from "./fs/cleanGeneratedFiles";
-import { createSupabaseAuth } from "./server/auth";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appActivityRoute } from "./server/routes/appActivity";
 import { appStateRoute } from "./server/routes/appState";
 import { draftsRoute } from "./server/routes/drafts";
 import { sessionResetRoute } from "./server/routes/sessionReset";
-import { createStorage, dbUrl, pgPool } from "./server/storage";
+import { createStorage, pgPool } from "./server/storage";
+import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
 
-// RESET_USER_DATA_ON_START=1 → wipe runtime state on boot. Two stores to
-// clear during the libsql → Postgres transition:
-//   - libsql: legacy domain tables (tax_facts, open_questions, ai_decisions)
-//   - postgres: Mastra's mastra.* schema (threads, messages, traces, …)
-// The libsql half collapses once domain helpers move to Supabase (step 6).
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error(
+    "SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are required (see .env.example)",
+  );
+}
+
+// RESET_USER_DATA_ON_START=1 → full wipe across all users on boot. Intended
+// for ephemeral deploys (dev redeploys, CI) that want a clean slate. Truncates
+// mastra.* (framework runtime) and public.{tax_facts, open_questions,
+// ai_decisions} (our domain), and wipes generated PDFs from disk.
 if (process.env.RESET_USER_DATA_ON_START) {
-  const resetClient = createClient({ url: dbUrl });
-  const { dropped, preserved } = await resetUserData(resetClient);
-  resetClient.close();
-  const { truncated } = await resetMastraSchema(pgPool);
+  const { truncated } = await resetAllUserData(pgPool);
   const { deleted } = cleanGeneratedFiles();
   console.log(
-    `[reset-on-start] libsql: dropped ${dropped.length}, preserved ${preserved.length} (${preserved.join(", ") || "none"}); postgres mastra: truncated ${truncated.length}; files: wiped ${deleted.length}`,
+    `[reset-on-start] truncated ${truncated.length} tables (${truncated.join(", ") || "none"}); wiped ${deleted.length} generated files`,
   );
 }
 
@@ -40,7 +41,18 @@ export const mastra = new Mastra({
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
   observability: createObservability(),
   server: {
-    auth: createSupabaseAuth(),
+    // Validates Supabase JWTs on every protected request. authorizeUser:
+    // () => true is a coarse "authenticated user is allowed past the door"
+    // gate (NOT a permission grant) — per-row scoping comes from RLS at the
+    // public.* tables and from MASTRA_RESOURCE_ID_KEY (set by
+    // userSupabaseMiddleware) at the mastra.* tables. /app/* is in `protected`
+    // alongside the default /api/* so our custom routes go through auth too.
+    auth: new MastraAuthSupabase({
+      url: process.env.SUPABASE_URL,
+      anonKey: process.env.SUPABASE_PUBLISHABLE_KEY,
+      authorizeUser: () => true,
+      protected: ["/api/*", "/app/*"],
+    }),
     // Mount Studio under /studio rather than the URL root. Frontend lives on
     // Vercel; this server only handles API + Studio + custom routes.
     studioBase: "/studio",
@@ -48,6 +60,10 @@ export const mastra = new Mastra({
       // CORS first so cross-origin preflights short-circuit before everything
       // else. Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
+      // Builds a per-request user-scoped Supabase client from the bearer JWT
+      // and stashes it on requestContext + Hono context. Tools and routes
+      // pull it via tools/userContext.ts and HONO_CONTEXT_KEYS respectively.
+      userSupabaseMiddleware,
     ],
     apiRoutes: [
       appStateRoute,

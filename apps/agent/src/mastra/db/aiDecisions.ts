@@ -1,60 +1,10 @@
-import { createClient } from "@libsql/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-const client = createClient({
-  url: process.env.DATABASE_URL ?? "file:./wheel-of-time.db",
-});
-
-let ready: Promise<void> | null = null;
-
-function ensureSchema(): Promise<void> {
-  if (!ready) {
-    ready = (async () => {
-      await client.execute(`
-        CREATE TABLE IF NOT EXISTS ai_decisions (
-          id TEXT PRIMARY KEY,
-          taxpayer_id TEXT NOT NULL,
-          year INTEGER NOT NULL,
-          decision_key TEXT NOT NULL,
-          decision_json TEXT NOT NULL,
-          rationale TEXT NOT NULL,
-          supporting_fact_keys_json TEXT NOT NULL,
-          confidence TEXT NOT NULL,
-          dissenting_considerations TEXT,
-          authority_citations_json TEXT,
-          source_note TEXT,
-          created_at INTEGER NOT NULL
-        )
-      `);
-      await client.execute(
-        `CREATE INDEX IF NOT EXISTS idx_ai_decisions_taxpayer_year ON ai_decisions(taxpayer_id, year)`,
-      );
-      await client.execute(
-        `CREATE INDEX IF NOT EXISTS idx_ai_decisions_key ON ai_decisions(decision_key)`,
-      );
-
-      // Verdict columns added after initial schema; add if missing.
-      const cols = await client.execute(`PRAGMA table_info(ai_decisions)`);
-      const names = new Set(cols.rows.map((r) => String(r.name)));
-      if (!names.has("verdict")) {
-        await client.execute(`ALTER TABLE ai_decisions ADD COLUMN verdict TEXT`);
-      }
-      if (!names.has("verdict_reason")) {
-        await client.execute(
-          `ALTER TABLE ai_decisions ADD COLUMN verdict_reason TEXT`,
-        );
-      }
-      if (!names.has("verdict_at")) {
-        await client.execute(
-          `ALTER TABLE ai_decisions ADD COLUMN verdict_at INTEGER`,
-        );
-      }
-    })();
-  }
-  return ready;
-}
+// All helpers take a user-scoped Supabase client. RLS on public.ai_decisions
+// scopes reads/writes to auth.uid() automatically; we still pass user_id on
+// inserts so RLS WITH CHECK validates it explicitly.
 
 export type Confidence = "low" | "medium" | "high";
-
 export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
 
 export interface AuthorityCitation {
@@ -64,8 +14,8 @@ export interface AuthorityCitation {
 
 export interface AIDecision {
   id: string;
-  taxpayerId: string;
-  year: number;
+  userId: string;
+  taxYear: number;
   decisionKey: string;
   decision: unknown;
   rationale: string;
@@ -78,8 +28,8 @@ export interface AIDecision {
 
 export interface AIDecisionRow {
   id: string;
-  taxpayerId: string;
-  year: number;
+  userId: string;
+  taxYear: number;
   decisionKey: string;
   decision: unknown;
   rationale: string;
@@ -94,126 +44,116 @@ export interface AIDecisionRow {
   verdictAt: string | null;
 }
 
-export async function recordDecision(d: AIDecision): Promise<void> {
-  await ensureSchema();
-  await client.execute({
-    sql: `INSERT INTO ai_decisions
-          (id, taxpayer_id, year, decision_key, decision_json, rationale,
-           supporting_fact_keys_json, confidence, dissenting_considerations,
-           authority_citations_json, source_note, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    args: [
-      d.id,
-      d.taxpayerId,
-      d.year,
-      d.decisionKey,
-      JSON.stringify(d.decision),
-      d.rationale,
-      JSON.stringify(d.supportingFactKeys),
-      d.confidence,
-      d.dissentingConsiderations ?? null,
-      d.authorityCitations ? JSON.stringify(d.authorityCitations) : null,
-      d.sourceNote ?? null,
-      Date.now(),
-    ],
+interface AIDecisionDbRow {
+  id: string;
+  user_id: string;
+  tax_year: number;
+  decision_key: string;
+  decision: unknown;
+  rationale: string;
+  supporting_fact_keys: unknown;
+  confidence: string;
+  dissenting_considerations: string | null;
+  authority_citations: AuthorityCitation[] | null;
+  source_note: string | null;
+  created_at: string;
+  verdict: string | null;
+  verdict_reason: string | null;
+  verdict_at: string | null;
+}
+
+function rowToDecision(r: AIDecisionDbRow): AIDecisionRow {
+  return {
+    id: r.id,
+    userId: r.user_id,
+    taxYear: r.tax_year,
+    decisionKey: r.decision_key,
+    decision: r.decision,
+    rationale: r.rationale,
+    supportingFactKeys: Array.isArray(r.supporting_fact_keys)
+      ? (r.supporting_fact_keys as string[])
+      : [],
+    confidence: r.confidence as Confidence,
+    dissentingConsiderations: r.dissenting_considerations,
+    authorityCitations: r.authority_citations,
+    sourceNote: r.source_note,
+    createdAt: r.created_at,
+    verdict: r.verdict as Verdict | null,
+    verdictReason: r.verdict_reason,
+    verdictAt: r.verdict_at,
+  };
+}
+
+export async function recordDecision(
+  supabase: SupabaseClient,
+  d: AIDecision,
+): Promise<void> {
+  const { error } = await supabase.from("ai_decisions").insert({
+    id: d.id,
+    user_id: d.userId,
+    tax_year: d.taxYear,
+    decision_key: d.decisionKey,
+    decision: d.decision,
+    rationale: d.rationale,
+    supporting_fact_keys: d.supportingFactKeys,
+    confidence: d.confidence,
+    dissenting_considerations: d.dissentingConsiderations ?? null,
+    authority_citations: d.authorityCitations ?? null,
+    source_note: d.sourceNote ?? null,
   });
+  if (error) throw new Error(`recordDecision failed: ${error.message}`);
 }
 
 export interface ListDecisionsOpts {
-  taxpayerId: string;
-  year?: number;
+  taxYear?: number;
   decisionKey?: string;
   limit?: number;
 }
 
 export async function listDecisions(
-  opts: ListDecisionsOpts,
+  supabase: SupabaseClient,
+  opts: ListDecisionsOpts = {},
 ): Promise<AIDecisionRow[]> {
-  await ensureSchema();
-  const where: string[] = ["taxpayer_id = ?"];
-  const args: (string | number)[] = [opts.taxpayerId];
-  if (opts.year !== undefined) {
-    where.push("year = ?");
-    args.push(opts.year);
-  }
-  if (opts.decisionKey) {
-    where.push("decision_key = ?");
-    args.push(opts.decisionKey);
-  }
-  const limit = Math.min(opts.limit ?? 100, 500);
-  const result = await client.execute({
-    sql: `SELECT id, taxpayer_id, year, decision_key, decision_json, rationale,
-                 supporting_fact_keys_json, confidence, dissenting_considerations,
-                 authority_citations_json, source_note, created_at,
-                 verdict, verdict_reason, verdict_at
-          FROM ai_decisions WHERE ${where.join(" AND ")}
-          ORDER BY created_at DESC LIMIT ?`,
-    args: [...args, limit],
-  });
-  return result.rows.map(rowToDecision);
-}
-
-function rowToDecision(r: Record<string, unknown>): AIDecisionRow {
-  return {
-    id: String(r.id),
-    taxpayerId: String(r.taxpayer_id),
-    year: Number(r.year),
-    decisionKey: String(r.decision_key),
-    decision: JSON.parse(String(r.decision_json)),
-    rationale: String(r.rationale),
-    supportingFactKeys: JSON.parse(String(r.supporting_fact_keys_json)),
-    confidence: String(r.confidence) as Confidence,
-    dissentingConsiderations:
-      r.dissenting_considerations == null
-        ? null
-        : String(r.dissenting_considerations),
-    authorityCitations:
-      r.authority_citations_json == null
-        ? null
-        : (JSON.parse(String(r.authority_citations_json)) as AuthorityCitation[]),
-    sourceNote: r.source_note == null ? null : String(r.source_note),
-    createdAt: new Date(Number(r.created_at)).toISOString(),
-    verdict: r.verdict == null ? null : (String(r.verdict) as Verdict),
-    verdictReason: r.verdict_reason == null ? null : String(r.verdict_reason),
-    verdictAt:
-      r.verdict_at == null ? null : new Date(Number(r.verdict_at)).toISOString(),
-  };
+  let q = supabase
+    .from("ai_decisions")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(Math.min(opts.limit ?? 100, 500));
+  if (opts.taxYear !== undefined) q = q.eq("tax_year", opts.taxYear);
+  if (opts.decisionKey) q = q.eq("decision_key", opts.decisionKey);
+  const { data, error } = await q;
+  if (error) throw new Error(`listDecisions failed: ${error.message}`);
+  return ((data ?? []) as AIDecisionDbRow[]).map(rowToDecision);
 }
 
 export async function getDecisionById(
+  supabase: SupabaseClient,
   id: string,
 ): Promise<AIDecisionRow | null> {
-  await ensureSchema();
-  const r = await client.execute({
-    sql: `SELECT id, taxpayer_id, year, decision_key, decision_json, rationale,
-                 supporting_fact_keys_json, confidence, dissenting_considerations,
-                 authority_citations_json, source_note, created_at,
-                 verdict, verdict_reason, verdict_at
-          FROM ai_decisions WHERE id = ?`,
-    args: [id],
-  });
-  if (r.rows.length === 0) return null;
-  return rowToDecision(r.rows[0] as Record<string, unknown>);
+  const { data, error } = await supabase
+    .from("ai_decisions")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`getDecisionById failed: ${error.message}`);
+  return data ? rowToDecision(data as AIDecisionDbRow) : null;
 }
 
 export async function setDecisionVerdict(
+  supabase: SupabaseClient,
   id: string,
   verdict: Verdict,
   reason: string,
   citations: AuthorityCitation[] | null,
 ): Promise<void> {
-  await ensureSchema();
-  await client.execute({
-    sql: `UPDATE ai_decisions
-          SET verdict = ?, verdict_reason = ?, verdict_at = ?,
-              authority_citations_json = ?
-          WHERE id = ?`,
-    args: [
+  const { error } = await supabase
+    .from("ai_decisions")
+    .update({
       verdict,
-      reason,
-      Date.now(),
-      citations ? JSON.stringify(citations) : null,
-      id,
-    ],
-  });
+      verdict_reason: reason,
+      verdict_at: new Date().toISOString(),
+      authority_citations: citations,
+    })
+    .eq("id", id);
+  if (error) throw new Error(`setDecisionVerdict failed: ${error.message}`);
 }

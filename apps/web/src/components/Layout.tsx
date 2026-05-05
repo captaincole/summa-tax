@@ -104,8 +104,13 @@ export function Layout() {
       loadChatHistory();
     })();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) navigate("/login", { replace: true });
+    // Only redirect on actual sign-outs / failed refreshes — supabase-js fires
+    // INITIAL_SESSION on subscribe with whatever's in storage, which can race
+    // with a fresh sign-in's storage write and falsely appear as null. The
+    // async getSession() check above is the source of truth for mount-time
+    // auth state; this listener handles transitions during a live session.
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") navigate("/login", { replace: true });
     });
 
     return () => {
@@ -133,6 +138,15 @@ export function Layout() {
     }
   }
 
+  async function onSignOut() {
+    // signOut() fires SIGNED_OUT on supabase-js, which the onAuthStateChange
+    // listener above catches and redirects to /login. We still navigate
+    // explicitly here so the redirect is instant rather than waiting for the
+    // event to dispatch.
+    await signOut();
+    navigate("/login", { replace: true });
+  }
+
   const ctx: LayoutOutletContext = {
     state,
     refreshState,
@@ -149,6 +163,7 @@ export function Layout() {
         taxpayerFirstName={state?.taxpayerFirstName ?? null}
         onReset={onReset}
         resetting={resetting}
+        onSignOut={onSignOut}
       />
 
       <div className="flex-1 min-w-0 min-h-0 flex flex-col">

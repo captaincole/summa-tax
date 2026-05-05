@@ -25,6 +25,7 @@ import { evaluateForm540, type Form540LineNumber } from "../forms/form540";
 import { renderForm8949Pdf } from "../forms/render/form8949Pdf";
 import { renderScheduleDPdf } from "../forms/render/scheduleDPdf";
 import { renderForm540Pdf } from "../forms/render/form540Pdf";
+import { requireUserContext } from "./userContext";
 
 const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
 const BLANK_8949_PATH = resolve(projectRoot, "ref/forms/f8949.pdf");
@@ -122,7 +123,6 @@ export const generateTaxDocuments = createTool({
   description:
     "Run the four-form engine (Form 8949 → Schedule D → Form 1040 → CA Form 540) for this taxpayer and render every applicable form as a filled-out PDF. Writes Form 1040, Form 8949, Schedule D, and CA Form 540 PDFs (whichever the engine says are required) plus a JSON sidecar with all four forms' line values. Call at hand-off (no pending decisions, all required forms computed). Marked draft / not-for-filing — a CPA reviews before submission.",
   inputSchema: z.object({
-    taxpayerId: z.string(),
     year: z.number().int(),
   }),
   outputSchema: z.object({
@@ -142,13 +142,14 @@ export const generateTaxDocuments = createTool({
       amount: z.number(),
     }),
   }),
-  execute: async (input) => {
-    const { taxpayerId, year } = input;
+  execute: async (input, context) => {
+    const { supabase, userId } = requireUserContext(context);
+    const { year } = input;
 
     // ─── Read state from DB ───
     const [factRows, decisionRows] = await Promise.all([
-      listFacts({ taxpayerId, year, limit: 500 }),
-      listDecisions({ taxpayerId, year, limit: 500 }),
+      listFacts(supabase, { taxYear: year, limit: 500 }),
+      listDecisions(supabase, { taxYear: year, limit: 500 }),
     ]);
 
     // Identity facts: written by ingest-w2-structured (auto-extracted from
@@ -290,7 +291,7 @@ export const generateTaxDocuments = createTool({
     form.flatten();
 
     const outBytes = await pdf.save();
-    const fileName = `1040-${taxpayerId}-${year}.pdf`;
+    const fileName = `1040-${userId}-${year}.pdf`;
     const outPath = resolve(DRAFTS_DIR, fileName);
     writeFileSync(outPath, outBytes);
     const url = `/drafts/${fileName}`;
@@ -308,7 +309,7 @@ export const generateTaxDocuments = createTool({
           taxpayerName,
           taxpayerSsn: ssn,
         });
-        const f8949Name = `8949-${taxpayerId}-${year}.pdf`;
+        const f8949Name = `8949-${userId}-${year}.pdf`;
         writeFileSync(resolve(DRAFTS_DIR, f8949Name), bytes);
         form8949Url = `/drafts/${f8949Name}`;
       } catch (err) {
@@ -326,7 +327,7 @@ export const generateTaxDocuments = createTool({
           taxpayerName,
           taxpayerSsn: ssn,
         });
-        const sdName = `schedule-d-${taxpayerId}-${year}.pdf`;
+        const sdName = `schedule-d-${userId}-${year}.pdf`;
         writeFileSync(resolve(DRAFTS_DIR, sdName), bytes);
         scheduleDUrl = `/drafts/${sdName}`;
       } catch (err) {
@@ -350,7 +351,7 @@ export const generateTaxDocuments = createTool({
           taxpayerZip: addr.zip,
           filingStatus,
         });
-        const f540Name = `540-${taxpayerId}-${year}.pdf`;
+        const f540Name = `540-${userId}-${year}.pdf`;
         writeFileSync(resolve(DRAFTS_DIR, f540Name), bytes);
         form540Url = `/drafts/${f540Name}`;
       } catch (err) {
@@ -360,7 +361,7 @@ export const generateTaxDocuments = createTool({
 
     // ─── JSON sidecar with all four forms' line values ───
     const sidecar = {
-      taxpayerId,
+      userId,
       year,
       generatedAt: new Date().toISOString(),
       forms: {
@@ -370,7 +371,7 @@ export const generateTaxDocuments = createTool({
         "form-540": serializeForm(form540),
       },
     };
-    const sidecarFileName = `forms-${taxpayerId}-${year}.json`;
+    const sidecarFileName = `forms-${userId}-${year}.json`;
     const sidecarPath = resolve(DRAFTS_DIR, sidecarFileName);
     writeFileSync(sidecarPath, JSON.stringify(sidecar, null, 2));
     const sidecarUrl = `/drafts/${sidecarFileName}`;

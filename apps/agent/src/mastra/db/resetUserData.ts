@@ -1,51 +1,85 @@
-import type { Client } from "@libsql/client";
+import type { Pool } from "pg";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-// Tables whose names start with these prefixes are preserved across resets.
-// By convention:
-//   - `ref_*`     → curated reference data (tax authorities, form metadata,
-//                   regulation text). Expensive to rebuild; survives resets.
-//   - `sqlite_*`  → SQLite internal tables (sqlite_sequence, sqlite_stat1).
-//                   Never drop these — SQLite owns them.
-const PRESERVED_PREFIXES = ["ref_", "sqlite_"] as const;
-
-export interface ResetResult {
-  dropped: string[];
-  preserved: string[];
+export interface PerUserResetResult {
+  domainRowsDeleted: number;
+  mastraThreadsDeleted: number;
 }
 
-/**
- * Wipe every user-data row in the database, preserving schemas (so callers
- * with cached references — Mastra Memory, our own modules — keep working
- * without restart) and any `ref_*` reference tables.
- *
- * We DELETE rows instead of DROP TABLE because Mastra Memory caches schema
- * state in-process: dropping `mastra_threads` mid-process leaves it querying
- * a table that no longer exists, breaking the next chat turn until restart.
- * DELETE FROM keeps the schema and just empties the rows.
- *
- * The `dropped` field name is preserved for caller compatibility — it now
- * means "tables we wiped" rather than "tables we dropped".
- */
-export async function resetUserData(client: Client): Promise<ResetResult> {
-  const result = await client.execute(
-    `SELECT name FROM sqlite_master WHERE type = 'table'`,
-  );
-  const allTables = result.rows.map((r) => String(r.name));
-
-  const dropped: string[] = [];
-  const preserved: string[] = [];
-
-  for (const name of allTables) {
-    const isPreserved = PRESERVED_PREFIXES.some((p) => name.startsWith(p));
-    if (isPreserved) {
-      preserved.push(name);
-      continue;
-    }
-    // Identifiers from sqlite_master are already-existing table names, so
-    // interpolating is safe here (no user input). Quote defensively anyway.
-    await client.execute(`DELETE FROM "${name}"`);
-    dropped.push(name);
+// Per-user data reset, used by /app/session/reset. Deletes only the calling
+// user's data — both their public.* domain rows (RLS scopes naturally via the
+// user-scoped Supabase client) and the mastra.* threads owned by their
+// resourceId (admin pool, scoped by parameter — Mastra's framework tables
+// don't have RLS on, so we filter explicitly).
+//
+// mastra_messages, mastra_resources, mastra_observational_memory, etc. either
+// FK-cascade off mastra_threads or live under the same resourceId. The thread
+// delete + cascade is the cleanest single-statement scope.
+export async function resetCurrentUserData(
+  supabase: SupabaseClient,
+  pool: Pool,
+  userId: string,
+): Promise<PerUserResetResult> {
+  // Domain tables — RLS scopes to auth.uid() automatically. Returning the
+  // count is best-effort; on RLS-blocked rows it'd return 0.
+  const [facts, questions, decisions] = await Promise.all([
+    supabase.from("tax_facts").delete().neq("id", ""),
+    supabase.from("open_questions").delete().neq("id", ""),
+    supabase.from("ai_decisions").delete().neq("id", ""),
+  ]);
+  for (const r of [facts, questions, decisions]) {
+    if (r.error) throw new Error(`reset domain delete failed: ${r.error.message}`);
   }
 
-  return { dropped, preserved };
+  // Mastra threads (and via cascade their messages, observational memory, …)
+  // for this user's resourceId.
+  const threads = await pool.query(
+    `DELETE FROM mastra.mastra_threads WHERE "resourceId" = $1`,
+    [userId],
+  );
+  // Resources are a sibling table, not FK-linked to threads — clear those too.
+  await pool.query(
+    `DELETE FROM mastra.mastra_resources WHERE id = $1`,
+    [userId],
+  );
+
+  return {
+    domainRowsDeleted:
+      (facts.count ?? 0) + (questions.count ?? 0) + (decisions.count ?? 0),
+    mastraThreadsDeleted: threads.rowCount ?? 0,
+  };
+}
+
+export interface FullResetResult {
+  truncated: string[];
+}
+
+// Full wipe across all users — only used by RESET_USER_DATA_ON_START at boot,
+// for ephemeral deploy redeployments / CI. Requires admin pool (postgres
+// superuser) to bypass RLS via TRUNCATE.
+export async function resetAllUserData(pool: Pool): Promise<FullResetResult> {
+  const mastraTables = await pool.query<{ tablename: string }>(
+    `SELECT tablename FROM pg_tables WHERE schemaname = $1`,
+    ["mastra"],
+  );
+  const mastraQualified = mastraTables.rows.map(
+    (r) => `mastra."${r.tablename}"`,
+  );
+  const domainQualified = [
+    `public."tax_facts"`,
+    `public."open_questions"`,
+    `public."ai_decisions"`,
+  ];
+  const all = [...mastraQualified, ...domainQualified];
+  if (all.length === 0) return { truncated: [] };
+
+  await pool.query(`TRUNCATE ${all.join(", ")} CASCADE`);
+  return {
+    truncated: [
+      ...mastraTables.rows.map((r) => `mastra.${r.tablename}`),
+      "public.tax_facts",
+      "public.open_questions",
+      "public.ai_decisions",
+    ],
+  };
 }

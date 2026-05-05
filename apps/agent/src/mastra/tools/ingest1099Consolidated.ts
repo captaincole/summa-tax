@@ -8,6 +8,7 @@ import {
   type DividendFactValue,
   type TradeFactValue,
 } from "../facts";
+import { requireUserContext } from "./userContext";
 
 // Ingest a consolidated 1099 (E*TRADE-style multi-section statement) as
 // structured tax_facts + a few broker-reported AI decisions.
@@ -74,7 +75,6 @@ export const ingest1099Consolidated = createTool({
   description:
     "Ingest a consolidated 1099 (a multi-section broker statement). Thom reads the PDF and maps each broker's labels to IRS-canonical box numbers, then calls this tool with the structured data. Writes one tax fact for the dividend section, one per trade in the B section, and broker-reported classification decisions. Call ONCE per consolidated 1099. INT/MISC/OID sections are not yet supported — tell the user to call out what you see in those sections so we can add support when we hit a scenario that needs it.",
   inputSchema: z.object({
-    taxpayerId: z.string(),
     year: z.number().int(),
     accountSlug: z
       .string()
@@ -153,8 +153,9 @@ export const ingest1099Consolidated = createTool({
     decisionsWritten: z.number(),
     tradeIds: z.array(z.string()),
   }),
-  execute: async (input) => {
-    const { taxpayerId, year, sourceNote } = input;
+  execute: async (input, context) => {
+    const { supabase, userId } = requireUserContext(context);
+    const { year, sourceNote } = input;
     const slug =
       input.accountSlug ||
       slugify(input.payer.name) ||
@@ -171,10 +172,10 @@ export const ingest1099Consolidated = createTool({
         payerTin: input.payer.tin,
         ...input.div,
       };
-      await recordFact({
+      await recordFact(supabase, {
         id: crypto.randomUUID(),
-        taxpayerId,
-        year,
+        userId,
+        taxYear: year,
         category: "investment_income",
         key: makeDividendFactKey(slug),
         value,
@@ -202,10 +203,10 @@ export const ingest1099Consolidated = createTool({
           adjustmentCode: t.adjustmentCode,
           adjustmentAmount: t.adjustmentAmount,
         };
-        await recordFact({
+        await recordFact(supabase, {
           id: crypto.randomUUID(),
-          taxpayerId,
-          year,
+          userId,
+          taxYear: year,
           category: "investment_income",
           key: makeTradeFactKey(slug, tradeId),
           value: trade,
@@ -217,10 +218,10 @@ export const ingest1099Consolidated = createTool({
         // Skips Nynaeve grounding by writing directly through recordDecision —
         // the input is broker-reported, no judgment.
         const box = boxFor(t.term, t.basisReported);
-        await recordDecision({
+        await recordDecision(supabase, {
           id: crypto.randomUUID(),
-          taxpayerId,
-          year,
+          userId,
+          taxYear: year,
           decisionKey: `decisions.trade.${tradeId}.form_8949_box`,
           decision: box,
           rationale:
@@ -234,10 +235,10 @@ export const ingest1099Consolidated = createTool({
       }
 
       // Scope decision: reportable sales exist
-      await recordDecision({
+      await recordDecision(supabase, {
         id: crypto.randomUUID(),
-        taxpayerId,
-        year,
+        userId,
+        taxYear: year,
         decisionKey: "decisions.scope.has_reportable_sales",
         decision: true,
         rationale:

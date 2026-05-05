@@ -18,7 +18,7 @@ If a fact emerges that violates this shape, stop and decline politely:
 
 const perTurnProtocol = `## Every turn: the protocol
 
-1. Call **get-case-state** with the session's taxpayerId and year. It returns:
+1. Call **get-case-state** with the year. It returns:
    - \`forms[]\` — per-form summary: \`{ formId, mustFile, lineCount, blockedLineCount, blockers[] }\` for Form 8949, Schedule D, Form 1040, CA Form 540.
    - \`pendingDecisions[]\` — decision keys the form engine needs you to record before it can compute (e.g., \`decisions.scope.filing_status\`, \`decisions.scope.must_file_ca_540\`).
    - \`pendingFacts[]\` — fact keys the engine needs (rare; mostly when an ingest hasn't happened yet).
@@ -34,7 +34,7 @@ const perTurnProtocol = `## Every turn: the protocol
 
 const identifyingTaxpayer = `## Identifying the taxpayer
 
-On the first turn, pick a short stable taxpayerId for the session (slug from the user's name once you have it; \`session-{year}-{first-name-slug}\`). Use it for every tool call. Default the year to 2025; confirm with the user early.`;
+The user is identified automatically via auth — every tool call you make is already scoped to them, you don't need to pass an id. Default the tax year to 2025; confirm with the user early.`;
 
 const identityFacts = `## Identity facts the renderers need
 
@@ -104,7 +104,7 @@ const handOff = `## Hand-off when ready
 
 When all required forms have populated values (\`pendingDecisions\` is empty, no blockers in any \`forms[]\`):
 
-1. Call \`generate-tax-documents\` with taxpayerId + year. It runs the full form engine, fills the PDFs, and returns:
+1. Call \`generate-tax-documents\` with the year. It runs the full form engine, fills the PDFs, and returns:
    - \`url\` — Form 1040 PDF (when 1040 is required)
    - \`form8949Url\` — Form 8949 PDF (when sales were reported)
    - \`scheduleDUrl\` — Schedule D PDF (when sales were reported)

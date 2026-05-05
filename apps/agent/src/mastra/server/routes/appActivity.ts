@@ -1,23 +1,30 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { registerApiRoute } from "@mastra/core/server";
 import { listDecisions } from "../../db/aiDecisions";
-import { getActiveTaxpayerId, listFacts } from "../../db/taxFacts";
-import { DEMO_TAXPAYER_ID, DEMO_TAX_YEAR } from "../demoSession";
+import { listFacts } from "../../db/taxFacts";
+import { DEMO_TAX_YEAR } from "../demoSession";
+import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
 // Merged activity feed for the right rail — tax_facts + ai_decisions newest-
 // first, formatted for the UI. Append-only across both tables, so no dedup;
 // the case engine handles latest-value collapsing elsewhere.
+//
+// Both reads run through the per-request user-scoped Supabase client, so RLS
+// scopes the data to the authenticated user — no manual user_id filtering.
 export const appActivityRoute = registerApiRoute("/app/activity", {
   method: "GET",
   handler: async (c) => {
     const limitParam = c.req.query("limit");
     const limit = limitParam ? Math.min(Number(limitParam) || 50, 200) : 50;
-
-    const activeId =
-      (await getActiveTaxpayerId(DEMO_TAX_YEAR)) ?? DEMO_TAXPAYER_ID;
+    const requestContext = c.get("requestContext");
+    const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
+      | SupabaseClient
+      | undefined;
+    if (!supabase) return c.json({ error: "unauthorized" }, 401);
 
     const [facts, decisions] = await Promise.all([
-      listFacts({ taxpayerId: activeId, year: DEMO_TAX_YEAR, limit }),
-      listDecisions({ taxpayerId: activeId, year: DEMO_TAX_YEAR, limit }),
+      listFacts(supabase, { taxYear: DEMO_TAX_YEAR, limit }),
+      listDecisions(supabase, { taxYear: DEMO_TAX_YEAR, limit }),
     ]);
 
     const factItems = facts.map((f) => ({

@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { listFacts, type TaxFactRow } from "../db/taxFacts";
@@ -12,6 +13,7 @@ import { evaluateForm8949 } from "../forms/form8949";
 import { evaluateScheduleD } from "../forms/scheduleD";
 import { evaluateForm1040 } from "../forms/form1040";
 import { evaluateForm540 } from "../forms/form540";
+import { requireUserContext } from "./userContext";
 
 // Live case state for Thom. Runs the four-form engine against the current
 // fact + decision state and returns:
@@ -42,10 +44,15 @@ type EvaluatedFormSummary = {
   }>;
 };
 
-async function buildCaseState(taxpayerId: string, year: number) {
+// Exported so server routes (appState.ts) can run the same computation
+// outside the Mastra tool surface, with the same supabase client.
+export async function buildCaseState(
+  supabase: SupabaseClient,
+  year: number,
+) {
   const [factRows, decisionRows] = await Promise.all([
-    listFacts({ taxpayerId, year, limit: 500 }),
-    listDecisions({ taxpayerId, year, limit: 500 }),
+    listFacts(supabase, { taxYear: year, limit: 500 }),
+    listDecisions(supabase, { taxYear: year, limit: 500 }),
   ]);
 
   // Supersede on conflict: most recent first per listFacts/listDecisions.
@@ -156,7 +163,6 @@ function summarizeForm(form: {
   const blockers = form.lines
     .filter((l) => !l.result.ok)
     .map((l) => {
-      // Discriminator narrowing: !ok arm above ensures result is the blocked variant.
       const r = l.result as Extract<typeof l.result, { ok: false }>;
       return {
         lineId: l.lineId,
@@ -182,8 +188,6 @@ function summarizeForm(form: {
   };
 }
 
-// Find a numeric line by its `lineNumber` field and return its value if
-// the result is ok and numeric. Used for the money-convenience fields.
 function lineValue<L extends BaseLine & { lineNumber: string }>(
   lines: readonly L[],
   number: string,
@@ -197,9 +201,8 @@ function lineValue<L extends BaseLine & { lineNumber: string }>(
 export const getCaseState = createTool({
   id: "get-case-state",
   description:
-    "Returns live case state: per-form summaries (must-file + line count + blockers), aggregated pending decisions and missing facts across all forms, and money convenience fields (wages, AGI, tax, withholding, refund/owed). Call at the start of every turn to know what's required, what's blocked, and what to ask next.",
+    "Returns live case state: per-form summaries (must-file + line count + blockers), aggregated pending decisions and missing facts across all forms, and money convenience fields (wages, AGI, tax, withholding, refund/owed). Call at the start of every turn to know what's required, what's blocked, and what to ask next. The user is identified automatically — pass only the tax year.",
   inputSchema: z.object({
-    taxpayerId: z.string().describe("Stable id for the taxpayer"),
     year: z.number().int().describe("Tax year (e.g. 2025)"),
   }),
   outputSchema: z.object({
@@ -234,9 +237,10 @@ export const getCaseState = createTool({
       }),
     ),
   }),
-  execute: async (input) => {
+  execute: async (input, context) => {
+    const { supabase } = requireUserContext(context);
     const { summaries, pendingDecisions, pendingFacts, money, factCount, decisionRows } =
-      await buildCaseState(input.taxpayerId, input.year);
+      await buildCaseState(supabase, input.year);
 
     return {
       forms: summaries,
@@ -258,4 +262,3 @@ export const getCaseState = createTool({
     };
   },
 });
-

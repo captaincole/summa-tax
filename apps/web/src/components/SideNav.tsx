@@ -7,6 +7,7 @@ interface SideNavProps {
   taxpayerFirstName: string | null;
   onReset: () => void;
   resetting: boolean;
+  onSignOut: () => void;
 }
 
 // `mobileOnly: true` items are hidden at lg+ where the equivalent UI lives in
@@ -28,6 +29,7 @@ export function SideNav({
   taxpayerFirstName,
   onReset,
   resetting,
+  onSignOut,
 }: SideNavProps) {
   return (
     <>
@@ -97,6 +99,14 @@ export function SideNav({
                        rounded-lg py-2 transition-colors disabled:opacity-50"
           >
             {resetting ? "Resetting…" : "Reset session"}
+          </button>
+          <button
+            onClick={onSignOut}
+            className="mt-2 w-full text-xs text-ink-secondary hover:text-ink-primary
+                       border border-border-subtle hover:border-border-strong
+                       rounded-lg py-2 transition-colors"
+          >
+            Sign out
           </button>
         </div>
       </aside>

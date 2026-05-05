@@ -2,13 +2,13 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { recordDecision, listDecisions } from "../db/aiDecisions";
 import { reviewDecision } from "../workflows/reviewDecision";
+import { requireUserContext } from "./userContext";
 
 export const recordAIDecision = createTool({
   id: "record-ai-decision",
   description:
-    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the taxpayer's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. The decision is synchronously reviewed by Nynaeve (the CPA critic agent): she checks that the facts support the decision and grounds it with IRS reference citations. The tool response includes her verdict — if 'inaccurate', revise and re-record; if 'ungroundable', the decision stands but is flagged for human review.",
+    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the user's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. The decision is synchronously reviewed by Nynaeve (the CPA critic agent): she checks that the facts support the decision and grounds it with IRS reference citations. The tool response includes her verdict — if 'inaccurate', revise and re-record; if 'ungroundable', the decision stands but is flagged for human review.",
   inputSchema: z.object({
-    taxpayerId: z.string().describe("Stable id for the taxpayer"),
     year: z.number().int().describe("Tax year (e.g. 2025)"),
     decisionKey: z
       .string()
@@ -59,12 +59,13 @@ export const recordAIDecision = createTool({
       }),
     ),
   }),
-  execute: async (input) => {
+  execute: async (input, context) => {
+    const { supabase, userId } = requireUserContext(context);
     const id = crypto.randomUUID();
-    await recordDecision({
+    await recordDecision(supabase, {
       id,
-      taxpayerId: input.taxpayerId,
-      year: input.year,
+      userId,
+      taxYear: input.year,
       decisionKey: input.decisionKey,
       decision: input.decision,
       rationale: input.rationale,
@@ -74,7 +75,7 @@ export const recordAIDecision = createTool({
       sourceNote: input.sourceNote,
     });
 
-    const review = await reviewDecision(id);
+    const review = await reviewDecision(supabase, id);
     return {
       id,
       recorded: true,
@@ -88,9 +89,8 @@ export const recordAIDecision = createTool({
 export const listAIDecisions = createTool({
   id: "list-ai-decisions",
   description:
-    "List previously recorded AI decisions for a taxpayer. Use to review what judgment calls have been made and avoid duplicating or contradicting them.",
+    "List previously recorded AI decisions for the current user. Use to review what judgment calls have been made and avoid duplicating or contradicting them.",
   inputSchema: z.object({
-    taxpayerId: z.string(),
     year: z.number().int().optional(),
     decisionKey: z.string().optional(),
     limit: z.number().int().min(1).max(500).optional(),
@@ -99,8 +99,8 @@ export const listAIDecisions = createTool({
     decisions: z.array(
       z.object({
         id: z.string(),
-        taxpayerId: z.string(),
-        year: z.number(),
+        userId: z.string(),
+        taxYear: z.number(),
         decisionKey: z.string(),
         decision: z.any(),
         rationale: z.string(),
@@ -118,8 +118,13 @@ export const listAIDecisions = createTool({
       }),
     ),
   }),
-  execute: async (input) => {
-    const decisions = await listDecisions(input);
+  execute: async (input, context) => {
+    const { supabase } = requireUserContext(context);
+    const decisions = await listDecisions(supabase, {
+      taxYear: input.year,
+      decisionKey: input.decisionKey,
+      limit: input.limit,
+    });
     return { decisions };
   },
 });

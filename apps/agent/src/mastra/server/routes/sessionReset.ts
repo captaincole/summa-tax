@@ -1,28 +1,39 @@
-import { createClient } from "@libsql/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
-import { resetMastraSchema } from "../../db/resetMastraSchema";
-import { resetUserData } from "../../db/resetUserData";
+import { resetCurrentUserData } from "../../db/resetUserData";
 import { cleanGeneratedFiles } from "../../fs/cleanGeneratedFiles";
-import { dbUrl, pgPool } from "../storage";
+import { pgPool } from "../storage";
+import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
-// Wipes user runtime state across both stores during the libsql → Postgres
-// transition: libsql for legacy domain tables (tax_facts, …) and Postgres
-// for Mastra's mastra.* schema (threads, messages, traces). Mastra's PgStore
-// keeps its cached schema references valid because we TRUNCATE rather than
-// DROP. Same orchestration runs at boot when RESET_USER_DATA_ON_START is set.
+// Per-user reset triggered by the in-app "Reset" button. Wipes:
+//   - This user's domain rows (tax_facts / open_questions / ai_decisions),
+//     scoped automatically by RLS via the user's Supabase client.
+//   - This user's Mastra threads + messages + working memory, scoped by
+//     resourceId via the admin pool (Mastra tables aren't RLS-on; we filter
+//     explicitly by the authenticated resourceId).
+//   - Generated PDF/JSON files on disk. Currently global wipe; per-user
+//     filtering is a future improvement once user-scoped paths land.
 export const sessionResetRoute = registerApiRoute("/app/session/reset", {
   method: "POST",
   handler: async (c) => {
-    const resetClient = createClient({ url: dbUrl });
-    const { dropped, preserved } = await resetUserData(resetClient);
-    resetClient.close();
-    const { truncated } = await resetMastraSchema(pgPool);
+    const requestContext = c.get("requestContext");
+    const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
+      | SupabaseClient
+      | undefined;
+    const userId = requestContext?.get(MASTRA_RESOURCE_ID_KEY) as
+      | string
+      | undefined;
+    if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
+
+    const { domainRowsDeleted, mastraThreadsDeleted } =
+      await resetCurrentUserData(supabase, pgPool, userId);
     const { deleted } = cleanGeneratedFiles();
+
     return c.json({
       ok: true,
-      droppedTables: dropped.length,
-      preservedTables: preserved.length,
-      truncatedMastraTables: truncated.length,
+      domainRowsDeleted,
+      mastraThreadsDeleted,
       deletedFiles: deleted.length,
     });
   },
