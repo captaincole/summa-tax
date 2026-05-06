@@ -4,6 +4,7 @@ import { makeMastraClient } from "@/lib/mastraClient";
 import { UnauthorizedError } from "@/lib/api";
 import { apiUrl } from "@/lib/apiBase";
 import { getUserId, signOut } from "@/lib/auth";
+import { uploadDocument } from "@/lib/uploads";
 import { Markdown } from "@/components/Markdown";
 import { ActivityCard } from "@/components/ActivityCard";
 import type { ChatMessage, LayoutOutletContext } from "@/components/Layout";
@@ -64,6 +65,19 @@ export function Chat() {
     setAttachment(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     setStreaming(true);
+
+    // Persist the attachment to user-documents storage in parallel with the
+    // streaming agent call. The bytes go browser → Supabase directly; the
+    // same bytes also flow through the chat message as base64 for vision-
+    // based extraction. Failure here doesn't block the chat — extraction
+    // still works; we just lose the persistent copy. UI surfaces this in
+    // the console for now; a future enhancement could badge the message
+    // bubble with a "saved" indicator once the upload row exists.
+    if (file) {
+      uploadDocument(file).catch((err) => {
+        console.warn("[chat] upload to user-documents failed:", err);
+      });
+    }
 
     try {
       // If the user attached a file, send a v5 ModelMessage with content
