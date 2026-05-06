@@ -5,12 +5,11 @@ import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
 import { resetAllUserData } from "./db/resetUserData";
-import { cleanGeneratedFiles } from "./fs/cleanGeneratedFiles";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appActivityRoute } from "./server/routes/appActivity";
 import { appStateRoute } from "./server/routes/appState";
-import { draftsRoute } from "./server/routes/drafts";
+import { documentsRoute } from "./server/routes/documents";
 import { sessionResetRoute } from "./server/routes/sessionReset";
 import { createStorage, pgPool } from "./server/storage";
 import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
@@ -27,9 +26,8 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
 // ai_decisions} (our domain), and wipes generated PDFs from disk.
 if (process.env.RESET_USER_DATA_ON_START) {
   const { truncated } = await resetAllUserData(pgPool);
-  const { deleted } = cleanGeneratedFiles();
   console.log(
-    `[reset-on-start] truncated ${truncated.length} tables (${truncated.join(", ") || "none"}); wiped ${deleted.length} generated files`,
+    `[reset-on-start] truncated ${truncated.length} tables (${truncated.join(", ") || "none"}); user-documents storage retains orphan blobs (cleanup is a future job)`,
   );
 }
 
@@ -51,7 +49,7 @@ export const mastra = new Mastra({
       url: process.env.SUPABASE_URL,
       anonKey: process.env.SUPABASE_PUBLISHABLE_KEY,
       authorizeUser: () => true,
-      protected: ["/api/*", "/app/*"],
+      protected: ["/api/*", "/app/*", "/documents/*"],
     }),
     // Mount Studio under /studio rather than the URL root. Frontend lives on
     // Vercel; this server only handles API + Studio + custom routes.
@@ -69,7 +67,7 @@ export const mastra = new Mastra({
       appStateRoute,
       appActivityRoute,
       sessionResetRoute,
-      draftsRoute,
+      documentsRoute,
     ],
   },
 });

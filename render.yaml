@@ -10,34 +10,28 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: cd .mastra/output && node index.mjs
     healthCheckPath: /health
-    disk:
-      name: wheel-of-time-data
-      mountPath: /data
-      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        value: file:/data/wheel-of-time.db
-      - key: DRAFTS_DIR
-        value: /data/drafts
       - key: MASTRA_STUDIO_PATH
         value: studio
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: VOYAGE_API_KEY
         sync: false
-      - key: DEMO_PASSCODE
-        sync: false
       # Cross-origin allowlist for the Vercel-hosted frontend. Production
       # domain + *.vercel.app for preview deploys. Tighten to a single domain
       # when leaving demo mode.
       - key: ALLOWED_ORIGINS
         sync: false
-      # Reference corpus lives in Supabase. The agent server reads via the
-      # service-role secret (full read/write, bypasses RLS — fine for now
-      # since corpus tables have no public policies).
+      # Supabase: Postgres connection string for Mastra's runtime tables and
+      # our domain tables; service-role secret for the corpus + admin ops;
+      # publishable key for verifying user JWTs via MastraAuthSupabase.
+      - key: POSTGRES_URL
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
         sync: false

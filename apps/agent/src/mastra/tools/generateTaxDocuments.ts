@@ -1,12 +1,12 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { projectRoot } from "../paths";
-import { DRAFTS_DIR } from "../fs/draftsDir";
 import { listFacts } from "../db/taxFacts";
 import { listDecisions } from "../db/aiDecisions";
+import { createDocument } from "../db/userDocuments";
 import {
   makeDecisionsView,
   makeFactsView,
@@ -131,7 +131,6 @@ export const generateTaxDocuments = createTool({
     scheduleDUrl: z.string().nullable(),
     form540Url: z.string().nullable(),
     sidecarUrl: z.string(),
-    path: z.string(),
     linesPopulated: z.number(),
     federalRefundOrOwed: z.object({
       kind: z.enum(["refund", "owed", "balanced"]),
@@ -290,13 +289,26 @@ export const generateTaxDocuments = createTool({
 
     form.flatten();
 
-    const outBytes = await pdf.save();
-    const fileName = `1040-${userId}-${year}.pdf`;
-    const outPath = resolve(DRAFTS_DIR, fileName);
-    writeFileSync(outPath, outBytes);
-    const url = `/drafts/${fileName}`;
+    // ─── Persist generated artifacts to user-documents storage ───
+    // Each createDocument call uploads bytes + inserts a metadata row,
+    // returning the public UUID we use in `/documents/{id}` links. Drafts
+    // expire after 30 days; metadata holds formId + taxYear so the future
+    // Documents page can group "1040 history" without parsing filenames.
 
-    // ─── Render Form 8949 + Schedule D PDFs (when their forms apply) ───
+    const outBytes = Buffer.from(await pdf.save());
+    const f1040Doc = await createDocument(supabase, {
+      userId,
+      category: "drafts",
+      filename: `Form 1040 — ${year}`,
+      storageSlug: `1040-${year}`,
+      extension: "pdf",
+      bytes: outBytes,
+      mimeType: "application/pdf",
+      expiresInDays: 30,
+      metadata: { formId: "1040", taxYear: year },
+    });
+    const url = `/documents/${f1040Doc.id}`;
+
     const taxpayerName = `${firstName} ${lastName}`.trim();
 
     let form8949Url: string | null = null;
@@ -309,9 +321,18 @@ export const generateTaxDocuments = createTool({
           taxpayerName,
           taxpayerSsn: ssn,
         });
-        const f8949Name = `8949-${userId}-${year}.pdf`;
-        writeFileSync(resolve(DRAFTS_DIR, f8949Name), bytes);
-        form8949Url = `/drafts/${f8949Name}`;
+        const doc = await createDocument(supabase, {
+          userId,
+          category: "drafts",
+          filename: `Form 8949 — ${year}`,
+          storageSlug: `8949-${year}`,
+          extension: "pdf",
+          bytes: Buffer.from(bytes),
+          mimeType: "application/pdf",
+          expiresInDays: 30,
+          metadata: { formId: "8949", taxYear: year },
+        });
+        form8949Url = `/documents/${doc.id}`;
       } catch (err) {
         console.warn("[generate-tax-documents] Form 8949 render failed:", err);
       }
@@ -327,9 +348,18 @@ export const generateTaxDocuments = createTool({
           taxpayerName,
           taxpayerSsn: ssn,
         });
-        const sdName = `schedule-d-${userId}-${year}.pdf`;
-        writeFileSync(resolve(DRAFTS_DIR, sdName), bytes);
-        scheduleDUrl = `/drafts/${sdName}`;
+        const doc = await createDocument(supabase, {
+          userId,
+          category: "drafts",
+          filename: `Schedule D — ${year}`,
+          storageSlug: `schedule-d-${year}`,
+          extension: "pdf",
+          bytes: Buffer.from(bytes),
+          mimeType: "application/pdf",
+          expiresInDays: 30,
+          metadata: { formId: "schedule-d", taxYear: year },
+        });
+        scheduleDUrl = `/documents/${doc.id}`;
       } catch (err) {
         console.warn("[generate-tax-documents] Schedule D render failed:", err);
       }
@@ -351,15 +381,26 @@ export const generateTaxDocuments = createTool({
           taxpayerZip: addr.zip,
           filingStatus,
         });
-        const f540Name = `540-${userId}-${year}.pdf`;
-        writeFileSync(resolve(DRAFTS_DIR, f540Name), bytes);
-        form540Url = `/drafts/${f540Name}`;
+        const doc = await createDocument(supabase, {
+          userId,
+          category: "drafts",
+          filename: `CA Form 540 — ${year}`,
+          storageSlug: `540-${year}`,
+          extension: "pdf",
+          bytes: Buffer.from(bytes),
+          mimeType: "application/pdf",
+          expiresInDays: 30,
+          metadata: { formId: "540", taxYear: year },
+        });
+        form540Url = `/documents/${doc.id}`;
       } catch (err) {
         console.warn("[generate-tax-documents] CA 540 render failed:", err);
       }
     }
 
-    // ─── JSON sidecar with all four forms' line values ───
+    // JSON sidecar with all four forms' line values — same lifecycle as the
+    // PDFs (a draft, expires in 30 days), stored alongside them so a single
+    // listing query surfaces everything from one regeneration.
     const sidecar = {
       userId,
       year,
@@ -371,10 +412,19 @@ export const generateTaxDocuments = createTool({
         "form-540": serializeForm(form540),
       },
     };
-    const sidecarFileName = `forms-${userId}-${year}.json`;
-    const sidecarPath = resolve(DRAFTS_DIR, sidecarFileName);
-    writeFileSync(sidecarPath, JSON.stringify(sidecar, null, 2));
-    const sidecarUrl = `/drafts/${sidecarFileName}`;
+    const sidecarBytes = Buffer.from(JSON.stringify(sidecar, null, 2), "utf-8");
+    const sidecarDoc = await createDocument(supabase, {
+      userId,
+      category: "drafts",
+      filename: `Forms sidecar — ${year}`,
+      storageSlug: `forms-${year}`,
+      extension: "json",
+      bytes: sidecarBytes,
+      mimeType: "application/json",
+      expiresInDays: 30,
+      metadata: { formId: "sidecar", taxYear: year },
+    });
+    const sidecarUrl = `/documents/${sidecarDoc.id}`;
 
     // ─── Refund / owed summaries for the tool response ───
     const federalRefundOrOwed = (() => {
@@ -397,7 +447,6 @@ export const generateTaxDocuments = createTool({
       scheduleDUrl,
       form540Url,
       sidecarUrl,
-      path: outPath,
       linesPopulated,
       federalRefundOrOwed,
       stateRefundOrOwed,

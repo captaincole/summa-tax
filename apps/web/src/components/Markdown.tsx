@@ -3,7 +3,7 @@ import { apiUrl } from "@/lib/apiBase";
 
 // Renders Thom's responses as markdown. Custom components style each element
 // against our dark theme — most importantly, links pop in new tabs and use
-// the accent color so paths like "/drafts/1040-...pdf" become clickable.
+// the accent color so paths like "/documents/{uuid}" become clickable.
 //
 // Backend-served paths (anything starting with "/") are rewritten through
 // apiUrl() so they cross-origin to the API host in prod, where the frontend
