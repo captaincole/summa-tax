@@ -26,7 +26,7 @@ This is a monorepo. Two independent deploy units, each with its own `package.jso
 
 ```
 apps/
-├── agent/                       # Mastra backend → deployed to Render
+├── agent/                       # Mastra backend → deployed to Vercel
 │   ├── src/mastra/              # agent code (Thom, Nynaeve, tools, db, server, workflows)
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
@@ -42,7 +42,6 @@ apps/
     └── vite.config.ts
 
 package.json                     # workspace root: thin delegating scripts (dev, dev:all, db:reset, …)
-render.yaml                      # Render blueprint for the agent (rootDir: apps/agent)
 CLAUDE.md
 ```
 
@@ -71,7 +70,7 @@ The SQLite database file is created on first run at `apps/agent/wheel-of-time.db
 
 ## Supabase Postgres pooler — always use port 6543
 
-`POSTGRES_URL` should connect to the **transaction pooler (port 6543)**, not the session pooler (port 5432). Same hostname, same database — only the port changes. Use 6543 in `.env.development`, on Render, and on Vercel when we get there. One config, one mode, everywhere.
+`POSTGRES_URL` should connect to the **transaction pooler (port 6543)**, not the session pooler (port 5432). Same hostname, same database — only the port changes. Use 6543 in `.env.development` and on Vercel. One config, one mode, everywhere.
 
 **What's actually going on.** Your queries don't hit Postgres directly. They hit a Supabase service called Supavisor that sits in front of Postgres and pools connections. The port you connect to tells Supavisor which pooling rule to apply:
 
@@ -84,7 +83,7 @@ Same Supavisor process, same database, just different juggling.
 
 **Why transaction mode is fine for Mastra.** The "fast queries" feeling comes from keeping the TCP/TLS socket to Supavisor warm, which works in both modes. What transaction mode loses is per-session state on the *Postgres* side — `LISTEN`/`NOTIFY`, server-side named prepared statement caches, session-scoped `SET` commands, long-lived advisory locks. Mastra doesn't use any of those; it issues parameterized queries via pg-node's unnamed-prepare path, which transaction mode handles natively.
 
-**Why this also matters for Vercel.** Serverless functions can't sensibly hold session-mode connections — every cold function spins up a new client. The same `POSTGRES_URL` works locally, on Render, and on Vercel without environment-specific tweaks.
+**Why this also matters for Vercel.** Serverless functions can't sensibly hold session-mode connections — every cold function spins up a new client. The same `POSTGRES_URL` works locally and on Vercel without environment-specific tweaks.
 
 **For Realtime / table-watch features later.** `LISTEN/NOTIFY` is unavailable in transaction mode, but you wouldn't reach for it on Supabase anyway — Supabase Realtime watches table changes over WebSockets and works regardless of pooler mode. So we haven't painted ourselves into a corner.
 
@@ -164,11 +163,11 @@ Add categories as the domain grows. Prefer splitting over lumping (it's easier t
 
 ### Where the corpus lives
 
-The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase** — separate from user data, which is on libsql. The agent server reads via `@supabase/supabase-js` using a service-role secret. Migration history lives in `apps/agent/supabase/migrations/`.
+The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase Postgres** under the `public` schema. User data is in the same Postgres database (`public` schema, RLS-scoped). Mastra's runtime tables (threads, messages, traces, scorers, working memory) live in the `mastra` schema in the same database via `@mastra/pg`. The agent reads the corpus via `@supabase/supabase-js` with a service-role secret; user-scoped reads go through the per-request user-supabase client (RLS-enforced). Migration history lives in `apps/agent/supabase/migrations/`.
 
 Why split storage: the corpus is shared, read-mostly, and grows substantially as we cover more scenarios. User data is per-tenant and will eventually move to Supabase too (with RLS) — that's a separate phase.
 
-Required env vars (already wired into `render.yaml`):
+Required env vars (set on Vercel via `vercel env` or the dashboard; locally in `apps/agent/.env.development`):
 - `SUPABASE_URL` — project URL (https://<ref>.supabase.co)
 - `SUPABASE_SECRET_KEY` — `sb_secret_…` service-role key. Bypasses RLS; never expose to the browser.
 
@@ -304,7 +303,7 @@ Lessons worth bringing forward:
 - **Advance dedup markers before processing, not after.** BBG was replying to the same mention multiple times because the "last processed" marker only advanced after the loop completed successfully. Set it first so a crash can't re-process.
 - **Research before building integrations.** For any new third-party API (IRS, state, Plaid, document OCR), do a research pass first, then build. Coding from memory against unfamiliar APIs wastes cycles. This is also saved in BBG's memory.
 - **`mastra dev` doesn't auto-load `.env`.** The `dev` script in `apps/agent/package.json` passes `--env .env.development` explicitly for a reason.
-- **In-process schedulers beat Render Cron for shared state.** Render Cron runs in a separate container without access to the main instance's disk/SQLite. For anything that needs to read/write the agent's DB, use a `setInterval` inside the main process. (Not relevant yet, but will be if we add document-ingestion pollers.)
+- **Vercel Cron is the right primitive for scheduled work.** A `crons` entry in `vercel.json` triggers a function via HTTP at the given schedule; that function reads/writes Postgres like any other invocation, no shared-state problem. Don't reach for `setInterval` (won't survive function freeze on serverless) or external schedulers. Becomes relevant when we add Nynaeve-as-background-worker or document-ingestion pollers.
 
 ## Finding Mastra docs
 
@@ -328,7 +327,7 @@ If you're a fresh Claude Code session starting in this folder: read this file, t
 
 ## Future architecture (sketched, not built)
 
-The current shape (Vercel frontend + Render-hosted Mastra + libsql + Supabase corpus) is a stepping stone. The intended end state is **three deploy units** with Supabase as the primary store for everything:
+The current shape (Vercel frontend + Vercel-hosted Mastra + Supabase Postgres for all runtime/user/corpus data) is most of the way to the end state. The intended end state is **three deploy units** with Supabase as the primary store for everything:
 
 1. **Vercel Static Site (`apps/web`)** — Vite frontend, unchanged. Reads most data directly from Supabase via `supabase-js`.
 2. **Vercel Web Service (`apps/agent`)** — Mastra agent runtime only: `/api/agents/*` (chat streaming + tool execution), Studio, observability. The four custom routes in `server/routes/` get deleted.
@@ -347,10 +346,8 @@ The current shape (Vercel frontend + Render-hosted Mastra + libsql + Supabase co
 
 **Open issues / what's required to get there:**
 
-- **Mastra-on-Vercel requires removing `LibSQLStore`.** Serverless platforms don't have persistent filesystems; Mastra's official guidance says to drop libsql in cloud-provider deploys. Swap to `@mastra/pg` pointing at the same Supabase Postgres (with `mastra_*` tables coexisting alongside our domain tables). This is the headline migration.
-- **Document upload stays agent-routed.** PDFs flow through `/api/agents/thom/stream` today as base64 attachments. The future-state optimization is to upload directly to Supabase Storage and pass signed URLs into the chat message — cheaper context, persistent audit trail. That's a tool-side change, not a route change.
-- **`DRAFTS_DIR` becomes a Supabase Storage bucket.** `generateTaxDocuments` writes objects via the Storage API and returns signed URLs in the tool response. The `fs/draftsDir.ts` module deletes itself.
-- **`db:reset` becomes a Postgres function call.** The libsql client + the filesystem-cleanup helper both go away; `truncate tax_facts, ai_decisions, ...` plus a Storage bucket clear is the whole operation.
+- **Document upload stays agent-routed (for now).** PDFs flow through `/api/agents/thom/stream` today as base64 attachments. The future-state optimization is to upload directly to Supabase Storage and pass signed URLs into the chat message — cheaper context, persistent audit trail. That's a tool-side change, not a route change.
+- **`db:reset` becomes a Postgres function call.** Today it's a JS script issuing `delete from` statements through the admin pool. Folding it into a `SECURITY DEFINER` function would let the frontend call it directly via `supabase-js`, taking the admin pool out of the picture entirely.
 
 **Why the current cleanup still matters:** the routes are isolated in `server/routes/*.ts` instead of woven through `index.ts`, so the Supabase migration becomes "delete these four files" rather than "untangle a 400-line entrypoint."
 

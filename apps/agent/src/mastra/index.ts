@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Mastra } from "@mastra/core";
 import { MastraAuthSupabase } from "@mastra/auth-supabase";
+import { VercelDeployer } from "@mastra/deployer-vercel";
 import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
@@ -38,6 +39,23 @@ export const mastra = new Mastra({
   storage,
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
   observability: createObservability(),
+  // `mastra build` emits .vercel/output/ for deployment.
+  // studio: false → deployer emits a catch-all route ({src: "/(.*)", dest: "/"})
+  // that sends every request to the function, including /app/* and /documents/*.
+  // With studio: true the deployer hardcodes /api/* and /health as the only
+  // function routes and falls everything else through to a Studio SPA — which
+  // would 404 our custom Hono routes. Until those routes get deleted in the
+  // Next.js migration (per apps/web/PRE_MIGRATION.md step 2), no prod Studio.
+  // Run `mastra studio` locally pointed at the prod URL when needed.
+  // maxDuration: 300 = Pro default; revisit if a Thom turn ever exceeds 60s,
+  // at which point we move Nynaeve to a background queue rather than raise it.
+  // sfo1 keeps the function in the same region as Supabase US-West.
+  deployer: new VercelDeployer({
+    studio: false,
+    maxDuration: 300,
+    memory: 1536,
+    regions: ["sfo1"],
+  }),
   server: {
     // Validates Supabase JWTs on every protected request. authorizeUser:
     // () => true is a coarse "authenticated user is allowed past the door"

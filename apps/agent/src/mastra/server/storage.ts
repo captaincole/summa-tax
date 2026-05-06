@@ -11,9 +11,14 @@ if (!process.env.POSTGRES_URL) {
 // Shared pg.Pool for Mastra's runtime tables and admin queries (resets).
 // Passed to PostgresStore as `pool` rather than `connectionString` so PgStore
 // won't close it on store.close() — we own the pool lifecycle.
+//
+// max: 2 because Supavisor (port 6543) is already the real connection pool —
+// our local pool just keeps a warm socket per process to avoid reconnect cost.
+// One slot is enough; the second hedges against contention when a serverless
+// instance handles concurrent requests under Vercel Fluid Compute.
 export const pgPool = new Pool({
   connectionString: process.env.POSTGRES_URL,
-  max: 10,
+  max: 2,
 });
 
 // Composite store: PostgresStore (Supabase) for everything by default,
