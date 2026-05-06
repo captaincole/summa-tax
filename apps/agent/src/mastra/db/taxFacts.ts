@@ -112,8 +112,7 @@ export async function listFactsByKeys(
 }
 
 // ---------------------------------------------------------------------------
-// Open questions (lives here because the libsql equivalent did, and the
-// surface area is small)
+// Open questions (small surface area, lives alongside tax_facts)
 // ---------------------------------------------------------------------------
 
 export interface OpenQuestion {

@@ -1,9 +1,8 @@
 import { getServiceRoleClient } from "./supabase";
 
 // ---------------------------------------------------------------------------
-// Public types — preserved verbatim from the libsql version so consumers
-// (src/mastra/tools/refDocs.ts, src/refdocs/ingest.ts, smoke scripts) need no
-// changes.
+// Public types — consumed by src/mastra/tools/refDocs.ts and
+// src/refdocs/ingest.ts.
 // ---------------------------------------------------------------------------
 
 export interface RefDocument {

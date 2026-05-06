@@ -16,10 +16,6 @@ export const pgPool = new Pool({
   max: 10,
 });
 
-// Legacy libsql URL for not-yet-migrated domain tables (tax_facts,
-// open_questions, ai_decisions). Goes away once those move to Supabase.
-export const dbUrl = process.env.DATABASE_URL ?? "file:./wheel-of-time.db";
-
 // Composite store: PostgresStore (Supabase) for everything by default,
 // InMemoryStore for the observability domain. InMemoryStore resets on restart
 // — fine for the demo; revisit when we want persistent traces.

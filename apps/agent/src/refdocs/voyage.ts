@@ -163,9 +163,9 @@ export async function rerank(
   return res.data.map((d) => ({ index: d.index, score: d.relevance_score }));
 }
 
-/** Voyage embeddings are returned as JS number arrays; libsql wants them as
- *  Float32 typed arrays. The vector() SQL function accepts a JSON-stringified
- *  array; we encode that for db calls. */
+/** Voyage returns embeddings as JS number arrays; pgvector accepts a
+ *  JSON-stringified array literal — we just JSON.stringify and pass that
+ *  string to whatever query is binding the vector. */
 export function vectorToSqlArg(vec: number[]): string {
   return JSON.stringify(vec);
 }

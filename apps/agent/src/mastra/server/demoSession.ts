@@ -1,6 +1,5 @@
-// Single-user demo session config. Every route that needs to identify "who
-// is this for" reads from here. When we add per-visitor auth and partitioning
-// later, these get replaced by request-scoped resolution (likely via Mastra's
-// RequestContext) and this module can go away entirely.
-export const DEMO_TAXPAYER_ID = "demo-session";
+// Tax year used by routes and the agent until we expose a year selector.
+// Identity is now provided by Supabase Auth (see userSupabaseMiddleware);
+// this constant is the only thing that survived from the old demo-session
+// config.
 export const DEMO_TAX_YEAR = 2025;
