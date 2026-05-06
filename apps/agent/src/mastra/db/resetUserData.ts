@@ -31,12 +31,17 @@ export async function resetCurrentUserData(
     (r) => r.storage_path as string,
   );
 
-  // Domain + document tables — RLS scopes to auth.uid() automatically.
+  // Domain + document tables — RLS scopes to auth.uid() automatically. The
+  // `.gte("created_at", "1970-01-01")` filter is a universal-true predicate
+  // that works regardless of the id column's type (text vs uuid); it's
+  // PostgREST's "delete all matching rows" idiom — DELETE without any
+  // filter is rejected at the API layer.
+  const SENTINEL = "1970-01-01";
   const [facts, questions, decisions, documents] = await Promise.all([
-    supabase.from("tax_facts").delete().neq("id", ""),
-    supabase.from("open_questions").delete().neq("id", ""),
-    supabase.from("ai_decisions").delete().neq("id", ""),
-    supabase.from("user_documents").delete().neq("id", ""),
+    supabase.from("tax_facts").delete().gte("created_at", SENTINEL),
+    supabase.from("open_questions").delete().gte("created_at", SENTINEL),
+    supabase.from("ai_decisions").delete().gte("created_at", SENTINEL),
+    supabase.from("user_documents").delete().gte("created_at", SENTINEL),
   ]);
   for (const r of [facts, questions, decisions, documents]) {
     if (r.error) throw new Error(`reset delete failed: ${r.error.message}`);
