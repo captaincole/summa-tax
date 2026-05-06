@@ -30,7 +30,16 @@ export const documentsRoute = registerApiRoute("/documents/:id", {
     const doc = await getDocumentById(supabase, id);
     if (!doc) return c.json({ error: "Not found" }, 404);
 
-    const signedUrl = await signDocumentUrl(supabase, doc.storagePath, 60);
+    // ?download=1 → force browser to save instead of view. Used by the
+    // Documents page's Download button. Default (no query param) is inline,
+    // which is what we want for chat-message PDF links.
+    const wantsDownload = c.req.query("download") === "1";
+    const signedUrl = await signDocumentUrl(
+      supabase,
+      doc.storagePath,
+      60,
+      wantsDownload ? doc.filename : undefined,
+    );
     return c.redirect(signedUrl, 302);
   },
 });

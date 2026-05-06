@@ -215,14 +215,22 @@ export async function listDocuments(
 // Build a short-lived signed URL for downloading a document's bytes. Used by
 // the /documents/:id route to redirect browsers; URLs expire quickly so
 // leaks (shoulder-surf, screenshot) age out fast.
+//
+// When `downloadFilename` is provided, Supabase sets `Content-Disposition:
+// attachment; filename="..."` on the response — browsers save the file
+// instead of rendering it inline. Pass undefined for default inline behavior
+// (PDFs open in the browser's viewer; useful for chat-link clicks where
+// the user wants to see the form Thom generated, not save it).
 export async function signDocumentUrl(
   supabase: SupabaseClient,
   storagePath: string,
   expiresInSeconds: number = 60,
+  downloadFilename?: string,
 ): Promise<string> {
+  const options = downloadFilename ? { download: downloadFilename } : undefined;
   const { data, error } = await supabase.storage
     .from(BUCKET)
-    .createSignedUrl(storagePath, expiresInSeconds);
+    .createSignedUrl(storagePath, expiresInSeconds, options);
   if (error || !data?.signedUrl) {
     throw new Error(
       `signDocumentUrl failed: ${error?.message ?? "no url returned"}`,

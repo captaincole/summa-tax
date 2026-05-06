@@ -15,7 +15,7 @@ export default defineConfig({
     proxy: {
       "/app": "http://localhost:4111",
       "/api": "http://localhost:4111",
-      "/drafts": "http://localhost:4111",
+      "/documents": "http://localhost:4111",
     },
   },
 });

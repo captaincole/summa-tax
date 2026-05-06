@@ -79,6 +79,10 @@ Soft considerations:
 
 ---
 
+## Known issues blocking on migrations
+
+- **Auth-on-navigation 401s.** Header-based auth (`Authorization: Bearer {jwt}` attached by JS to `fetch()` calls) doesn't extend to plain `<a href>` clicks or URL-bar pastes — browsers only carry cookies on navigations, never custom headers. Hits any agent route reached by clicking a link: `/documents/{uuid}` from the Documents tab, PDF links Thom embeds in chat replies. Same bug ships to Vercel; not a local-only thing. Fix is part of the Next.js migration: adopt `@supabase/ssr` so the session lives in a cookie and is sent on every navigation. Inline TODO in `apps/web/src/routes/Documents.tsx`; full write-up in `apps/web/PRE_MIGRATION.md`. Until cookie auth lands, the View/Download buttons in Documents and any clickable PDF link in chat are placeholder UI.
+
 ## Other architectural debt
 
 Tracked here so it doesn't decay out of context. None of these block the two big projects.

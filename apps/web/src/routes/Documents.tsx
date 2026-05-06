@@ -1,13 +1,16 @@
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import type { LayoutOutletContext } from "@/components/Layout";
 import { apiUrl } from "@/lib/apiBase";
 import { cn } from "@/lib/cn";
+import { supabase } from "@/lib/supabaseClient";
 
 interface DocCardProps {
   name: string;
   description: string;
   status?: string;
   statusTone?: "neutral" | "draft" | "ready";
+  /** Server URL that returns the file. View opens it inline; Download appends ?download=1. */
   href: string;
 }
 
@@ -18,13 +21,25 @@ const STATUS_TONE: Record<NonNullable<DocCardProps["statusTone"]>, string> = {
 };
 
 function DocCard({ name, description, status, statusTone = "neutral", href }: DocCardProps) {
+  // KNOWN ISSUE: View and Download both 401 on prod (and after restart in
+  // dev) because they're plain <a href> clicks. Browsers don't attach the
+  // Authorization header on navigations — only fetch() calls do — so the
+  // agent's auth pipeline rejects them. This is a header-vs-cookie problem,
+  // not a per-route bug, and the fix lives in the Vite → Next.js migration:
+  // adopt @supabase/ssr so the session sits in a cookie, which the browser
+  // sends automatically on every navigation. See apps/web/PRE_MIGRATION.md
+  // for the full write-up. Until then these buttons are placeholder UI.
+  //
+  // Append ?download=1 (or &download=1 if href already has a query) so the
+  // server-side route can set Content-Disposition: attachment instead of
+  // letting the browser render inline — wired up correctly so it works
+  // immediately once cookie auth is in place.
+  const downloadHref = href.includes("?")
+    ? `${href}&download=1`
+    : `${href}?download=1`;
+
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="card px-5 py-4 flex items-center gap-4 hover:border-border-strong transition-colors group"
-    >
+    <div className="card px-5 py-4 flex items-center gap-4 hover:border-border-strong transition-colors">
       <div className="w-10 h-12 shrink-0 border border-border-subtle rounded-md flex items-center justify-center text-ink-muted text-[10px] font-medium tracking-wide">
         PDF
       </div>
@@ -46,20 +61,82 @@ function DocCard({ name, description, status, statusTone = "neutral", href }: Do
           {description}
         </div>
       </div>
-      <span className="shrink-0 text-ink-muted text-sm group-hover:text-ink-primary transition-colors">
-        Open ↗
-      </span>
-    </a>
+      <div className="shrink-0 flex items-center gap-2">
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-ink-secondary hover:text-ink-primary border border-border-subtle hover:border-border-strong rounded-md px-3 py-1.5 transition-colors"
+        >
+          View
+        </a>
+        <a
+          href={downloadHref}
+          className="text-xs text-ink-secondary hover:text-ink-primary border border-border-subtle hover:border-border-strong rounded-md px-3 py-1.5 transition-colors"
+        >
+          Download
+        </a>
+      </div>
+    </div>
   );
 }
 
-export function Documents() {
-  const { state } = useOutletContext<LayoutOutletContext>();
+interface UploadRow {
+  id: string;
+  filename: string;
+  created_at: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+}
 
-  // Collect everything Thom has produced for this session, in form-order.
-  const docs: DocCardProps[] = [];
+function formatBytes(bytes: number | null): string {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatUploadedAt(iso: string): string {
+  const d = new Date(iso);
+  const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = "numeric";
+  return d.toLocaleDateString(undefined, opts);
+}
+
+export function Documents() {
+  const { state, resetTick } = useOutletContext<LayoutOutletContext>();
+  const [uploads, setUploads] = useState<UploadRow[]>([]);
+
+  // Direct supabase-js read scoped by RLS to the current user. Refetches on
+  // `resetTick` (bumped by the Reset button) so the uploads list clears in
+  // the same gesture as the chat.
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("user_documents")
+      .select("id, filename, created_at, mime_type, size_bytes")
+      .eq("category", "uploads")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.warn("[documents] failed to load uploads:", error.message);
+          setUploads([]);
+          return;
+        }
+        setUploads((data ?? []) as UploadRow[]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [resetTick]);
+
+  // Drafts: most-recent-per-form, surfaced by /app/state. Older draft
+  // versions are still reachable through their `/documents/{uuid}` URLs in
+  // chat history; a "draft history" view here is a future enhancement.
+  const drafts: DocCardProps[] = [];
   if (state?.draftUrl) {
-    docs.push({
+    drafts.push({
       name: "Draft 1040 — 2025",
       description: "Federal individual income tax return. Generated by Thom from your facts; not yet filed.",
       status: "Draft",
@@ -68,7 +145,7 @@ export function Documents() {
     });
   }
   if (state?.scheduleDUrl) {
-    docs.push({
+    drafts.push({
       name: "Schedule D — 2025",
       description: "Capital Gains and Losses. Summarizes Form 8949 trade totals; feeds Form 1040 line 7.",
       status: "Draft",
@@ -77,7 +154,7 @@ export function Documents() {
     });
   }
   if (state?.form8949Url) {
-    docs.push({
+    drafts.push({
       name: "Form 8949 — 2025",
       description: "Sales and Other Dispositions of Capital Assets. Itemizes every sale; rolls up to Schedule D.",
       status: "Draft",
@@ -86,7 +163,7 @@ export function Documents() {
     });
   }
   if (state?.form540Url) {
-    docs.push({
+    drafts.push({
       name: "CA Form 540 — 2025",
       description: "California Resident Income Tax Return. State counterpart to the federal 1040.",
       status: "Draft",
@@ -95,7 +172,7 @@ export function Documents() {
     });
   }
   if (state?.sidecarUrl) {
-    docs.push({
+    drafts.push({
       name: "Forms data (JSON)",
       description: "Line values for every form the engine computed — useful for CPA review and debugging.",
       status: "Data",
@@ -114,22 +191,62 @@ export function Documents() {
           Your filing cabinet
         </h1>
         <p className="mt-3 text-ink-secondary text-sm leading-relaxed max-w-xl">
-          Documents generated for your 2025 return live here. Uploads from chat
-          and source documents will land here too.
+          Forms Thom generates for your 2025 return live here, alongside the
+          source documents you've uploaded.
         </p>
 
-        <div className="mt-10 space-y-3">
-          {docs.length > 0 ? (
-            docs.map((d) => <DocCard key={d.href} {...d} />)
-          ) : (
-            <div className="card px-6 py-10 text-center">
-              <div className="text-ink-muted text-sm">No documents yet.</div>
-              <div className="mt-1 text-ink-faint text-xs">
-                Once Thom generates your forms, they will appear here.
+        <section className="mt-10">
+          <h2 className="text-ink-muted text-[10px] uppercase tracking-[0.24em] mb-3">
+            Drafts
+          </h2>
+          <div className="space-y-3">
+            {drafts.length > 0 ? (
+              drafts.map((d) => <DocCard key={d.href} {...d} />)
+            ) : (
+              <div className="card px-6 py-8 text-center">
+                <div className="text-ink-muted text-sm">No drafts yet.</div>
+                <div className="mt-1 text-ink-faint text-xs">
+                  Once Thom generates your forms, they'll appear here.
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-ink-muted text-[10px] uppercase tracking-[0.24em] mb-3">
+            Uploads
+          </h2>
+          <div className="space-y-3">
+            {uploads.length > 0 ? (
+              uploads.map((u) => {
+                const sizeText = formatBytes(u.size_bytes);
+                const dateText = formatUploadedAt(u.created_at);
+                const description = sizeText
+                  ? `${dateText} · ${sizeText}`
+                  : dateText;
+                return (
+                  <DocCard
+                    key={u.id}
+                    name={u.filename}
+                    description={description}
+                    status="Uploaded"
+                    statusTone="neutral"
+                    href={apiUrl(`/documents/${u.id}`)}
+                  />
+                );
+              })
+            ) : (
+              <div className="card px-6 py-8 text-center">
+                <div className="text-ink-muted text-sm">No uploads yet.</div>
+                <div className="mt-1 text-ink-faint text-xs">
+                  Drop a W-2, 1099, or receipt into chat — Thom will read it
+                  and the file will be saved here.
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );
