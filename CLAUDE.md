@@ -69,6 +69,25 @@ npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 
 The SQLite database file is created on first run at `apps/agent/wheel-of-time.db` (gitignored; relative to where `mastra dev` runs). In dev the frontend reaches Mastra via Vite's proxy: `/api`, `/app`, and `/drafts` all forward to `:4111`. In prod the frontend is on Vercel and calls Mastra via `VITE_API_URL` set at build time.
 
+## Supabase Postgres pooler — always use port 6543
+
+`POSTGRES_URL` should connect to the **transaction pooler (port 6543)**, not the session pooler (port 5432). Same hostname, same database — only the port changes. Use 6543 in `.env.development`, on Render, and on Vercel when we get there. One config, one mode, everywhere.
+
+**What's actually going on.** Your queries don't hit Postgres directly. They hit a Supabase service called Supavisor that sits in front of Postgres and pools connections. The port you connect to tells Supavisor which pooling rule to apply:
+
+- **Port 5432 (session mode)** — Supavisor pairs your TCP connection to a real Postgres connection and pins the pairing for the whole client session.
+- **Port 6543 (transaction mode)** — Supavisor borrows a real Postgres connection per-statement, runs it, returns it to the pool. Your TCP connection isn't pinned to anything.
+
+Same Supavisor process, same database, just different juggling.
+
+**Why session mode breaks for us.** Mastra's `MastraCompositeStore.init()` parallel-inits ~17 storage domains on boot, each running a `CREATE TABLE IF NOT EXISTS` check. Free-tier Supabase only lets 15 session-mode clients exist at once. Hot-reload churn during `mastra dev` leaves stale pinned connections that Supavisor doesn't reap for a few minutes — so the next reload often fails with `EMAXCONNSESSION`.
+
+**Why transaction mode is fine for Mastra.** The "fast queries" feeling comes from keeping the TCP/TLS socket to Supavisor warm, which works in both modes. What transaction mode loses is per-session state on the *Postgres* side — `LISTEN`/`NOTIFY`, server-side named prepared statement caches, session-scoped `SET` commands, long-lived advisory locks. Mastra doesn't use any of those; it issues parameterized queries via pg-node's unnamed-prepare path, which transaction mode handles natively.
+
+**Why this also matters for Vercel.** Serverless functions can't sensibly hold session-mode connections — every cold function spins up a new client. The same `POSTGRES_URL` works locally, on Render, and on Vercel without environment-specific tweaks.
+
+**For Realtime / table-watch features later.** `LISTEN/NOTIFY` is unavailable in transaction mode, but you wouldn't reach for it on Supabase anyway — Supabase Realtime watches table changes over WebSockets and works regardless of pooler mode. So we haven't painted ourselves into a corner.
+
 ## Development workflow
 
 We're building agent + UI together. When changes touch both, expect to:

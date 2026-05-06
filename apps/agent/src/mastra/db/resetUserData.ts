@@ -1,5 +1,6 @@
 import type { Pool } from "pg";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { thom } from "../agents/thom";
 
 export interface PerUserResetResult {
   domainRowsDeleted: number;
@@ -58,21 +59,31 @@ export async function resetCurrentUserData(
     }
   }
 
-  // Mastra threads (and via cascade their messages, observational memory, …)
-  // for this user's resourceId.
-  const threads = await pool.query(
-    `DELETE FROM mastra.mastra_threads WHERE "resourceId" = $1`,
-    [userId],
-  );
-  // Resources are a sibling table, not FK-linked to threads — clear those too.
-  await pool.query(`DELETE FROM mastra.mastra_resources WHERE id = $1`, [
-    userId,
-  ]);
+  // Mastra memory cleanup goes through Memory.deleteThread() rather than
+  // raw SQL — Mastra owns the cascade (messages, observational memory,
+  // vector embeddings if semantic recall is enabled), and using the
+  // documented API keeps us aligned with whatever they add to the
+  // teardown path in future versions. We list this user's threads, then
+  // delete each one.
+  let mastraThreadsDeleted = 0;
+  const memory = await thom.getMemory();
+  if (memory) {
+    const { threads } = await memory.listThreads({
+      filter: { resourceId: userId },
+      perPage: false,
+    });
+    await Promise.all(threads.map((t) => memory.deleteThread(t.id)));
+    mastraThreadsDeleted = threads.length;
+  }
+  // pool param kept for future per-user state that lives outside Mastra's
+  // own ownership (e.g. workflow snapshots or traces if those become
+  // user-relevant).
+  void pool;
 
   return {
     domainRowsDeleted:
       (facts.count ?? 0) + (questions.count ?? 0) + (decisions.count ?? 0),
-    mastraThreadsDeleted: threads.rowCount ?? 0,
+    mastraThreadsDeleted,
     documentsDeleted: documents.count ?? 0,
   };
 }
