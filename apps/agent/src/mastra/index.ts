@@ -73,13 +73,18 @@ export const mastra = new Mastra({
     // Vercel; this server only handles API + Studio + custom routes.
     studioBase: "/studio",
     middleware: [
-      // Debug shim: probes whether console.log output reaches Vercel's
-      // runtime logs. PinoLogger has been silent in the dashboard's Messages
-      // column and CLI; if these lines appear and Pino's don't, the issue is
-      // Pino's async-flush on serverless. Remove once logging is sorted.
+      // Debug shim: per-request timing log. PinoLogger writes are async-
+      // buffered and get truncated on serverless function exit; plain
+      // console.log reaches Vercel reliably. Logs at start (so a hung
+      // request still leaves a breadcrumb) and again on completion with
+      // total duration + status. Remove once logging is sorted.
       async (c: any, next: () => Promise<void>) => {
-        console.log(`[req] ${c.req.method} ${c.req.path}`);
+        const start = Date.now();
+        console.log(`[req] ${c.req.method} ${c.req.path} START`);
         await next();
+        console.log(
+          `[req] ${c.req.method} ${c.req.path} ${c.res.status} in ${Date.now() - start}ms`,
+        );
       },
       // CORS so cross-origin preflights short-circuit before everything else.
       // Configured by ALLOWED_ORIGINS env var; permissive when unset.
