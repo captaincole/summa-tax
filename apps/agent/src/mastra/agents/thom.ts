@@ -46,6 +46,9 @@ export const thom = new Agent({
       id: "thom-memory",
       pool: pgPool,
       schemaName: "mastra",
+      // Schema migrations run during build via `npm run migrate:mastra`.
+      // See server/storage.ts for the full reasoning.
+      disableInit: true,
     }),
   }),
 });
