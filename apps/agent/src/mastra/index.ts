@@ -73,8 +73,16 @@ export const mastra = new Mastra({
     // Vercel; this server only handles API + Studio + custom routes.
     studioBase: "/studio",
     middleware: [
-      // CORS first so cross-origin preflights short-circuit before everything
-      // else. Configured by ALLOWED_ORIGINS env var; permissive when unset.
+      // Debug shim: probes whether console.log output reaches Vercel's
+      // runtime logs. PinoLogger has been silent in the dashboard's Messages
+      // column and CLI; if these lines appear and Pino's don't, the issue is
+      // Pino's async-flush on serverless. Remove once logging is sorted.
+      async (c: any, next: () => Promise<void>) => {
+        console.log(`[req] ${c.req.method} ${c.req.path}`);
+        await next();
+      },
+      // CORS so cross-origin preflights short-circuit before everything else.
+      // Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
       // Builds a per-request user-scoped Supabase client from the bearer JWT
       // and stashes it on requestContext + Hono context. Tools and routes
