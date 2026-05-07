@@ -106,12 +106,19 @@ export const mastra = new Mastra({
 // Eagerly trigger MastraCompositeStore.init() at module load so the ~10s of
 // schema-migration work (CREATE TABLE / ALTER TABLE across ~14 sub-stores)
 // runs during Vercel's post-deploy function pre-warm rather than on the first
-// user-facing memory request. Fire-and-forget — if it fails the next memory
-// access just retries init normally. Doesn't help with idle-eviction cold
-// starts (user race the same init promise), but does cover the common
-// post-deploy case where the first real user would otherwise pay 10s.
-mastra
-  .getMemory()
-  ?.listThreads({ resourceId: "__warmup__" })
-  .then(() => console.log("[warmup] memory init done"))
-  .catch((err) => console.log("[warmup] failed:", err?.message ?? err));
+// user-facing memory request. Wrapped in async-IIFE + try/catch so any sync
+// throw can't crash the process; if init fails the next memory access just
+// retries normally. Doesn't help with idle-eviction cold starts (user races
+// the same init promise), but does cover the common post-deploy case where
+// the first real user would otherwise pay 10s.
+void (async () => {
+  try {
+    await (storage as { init?: () => Promise<void> }).init?.();
+    console.log("[warmup] storage init done");
+  } catch (err) {
+    console.log(
+      "[warmup] failed:",
+      err instanceof Error ? err.message : String(err),
+    );
+  }
+})();
