@@ -128,6 +128,16 @@ When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `app
 
 The shared reset helpers are `apps/agent/src/mastra/db/resetUserData.ts` (tables) and `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts` (files); the CLI entry is `apps/agent/scripts/resetUserData.ts`.
 
+## Vercel logs (production debugging)
+
+Production runtime logs for the agent come through `vercel logs`, but with gotchas:
+
+- **Run from `apps/agent/`** — the linked project's directory. From the repo root, the CLI uses the wheel-of-finances project context and returns nothing for the agent. `apps/agent/.vercel/project.json` (gitignored) is what scopes the call.
+- **`/health` bypasses user middleware.** Mastra special-cases its framework routes; a `/health` hit doesn't fire `server.middleware`, so it won't show your `console.log` lines. Test logging via `/api/*` or `/app/*` instead.
+- **Mastra's `PinoLogger` is silent on Vercel.** Pino's async/buffered writes get truncated when the function exits before the buffer flushes. Use plain `console.log` for production-visible output until/unless we switch Pino to sync mode.
+- **Useful flags:** `--since 30m --limit 30 --expand` (historical), `--follow` (live tail), `--json` (richer per-request record incl. `responseStatusCode`, `cache`, structured `logs` array). No duration field — log timings yourself in middleware if needed.
+- **Build logs (separate from runtime):** `vercel inspect <deployment-url> --logs`.
+
 ## Design principles
 
 - **Never invent a number.** If the taxpayer isn't sure, the agent records an open question, not a guess. This is enforced in the system prompt and should be enforced in prompt tests once we have them.
