@@ -12,10 +12,9 @@ if (!process.env.POSTGRES_URL) {
 // Passed to PostgresStore as `pool` rather than `connectionString` so PgStore
 // won't close it on store.close() — we own the pool lifecycle.
 //
-// max: 5 — testing whether session-mode pooling (port 5432) is faster for
-// Mastra's listMessages-style multi-statement reads. Transaction mode (6543)
-// borrows a fresh PG connection per statement, which may add overhead for
-// chatty operations. Revisit once we have data from the [pg] timing logs.
+// max: 5 — Supavisor (port 6543) handles real connection pooling for us, so
+// our local pool just keeps a few warm sockets. 5 gives concurrent-request
+// headroom under Vercel Fluid Compute concurrency.
 export const pgPool = new Pool({
   connectionString: process.env.POSTGRES_URL,
   max: 5,
@@ -49,11 +48,23 @@ const origQuery = pgPool.query.bind(pgPool);
 // Composite store: PostgresStore (Supabase) for everything by default,
 // InMemoryStore for the observability domain. InMemoryStore resets on restart
 // — fine for the demo; revisit when we want persistent traces.
+//
+// disableInit: true on both layers skips the ~200-query schema migration
+// storm Mastra runs on first storage access (CREATE TABLE / ALTER TABLE
+// across ~14 sub-stores). On serverless, that storm fired on every cold
+// start and pushed the first /messages request to ~10–14s. With it off,
+// runtime queries assume the schema is already correct.
+//
+// Schema is kept in sync via `npm run migrate:mastra` — a standalone script
+// that constructs a non-disabled storage and runs init() once. Run it before
+// the first deploy and any time we bump @mastra/* to a version that adds
+// schema. See scripts/migrateMastra.ts.
 export async function createStorage(): Promise<MastraCompositeStore> {
   const pg = new PostgresStore({
     id: "wheel-of-time-storage",
     pool: pgPool,
     schemaName: "mastra",
+    disableInit: true,
   });
   const inMemory = new InMemoryStore({ id: "wheel-of-time-inmemory" });
 
@@ -63,5 +74,6 @@ export async function createStorage(): Promise<MastraCompositeStore> {
     domains: {
       observability: await inMemory.getStore("observability"),
     },
+    disableInit: true,
   });
 }

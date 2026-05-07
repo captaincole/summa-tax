@@ -128,6 +128,21 @@ When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `app
 
 The shared reset helpers are `apps/agent/src/mastra/db/resetUserData.ts` (tables) and `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts` (files); the CLI entry is `apps/agent/scripts/resetUserData.ts`.
 
+## Mastra schema migrations
+
+We set `disableInit: true` on both `PostgresStore` and `MastraCompositeStore` in `server/storage.ts` so the runtime doesn't fire ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start (which pushed first-message-after-cold to ~10s on Vercel). Schema is kept in sync via a one-shot script:
+
+```bash
+npm run migrate:mastra                                # against .env.development
+POSTGRES_URL=<prod-url> npx tsx scripts/migrateMastra.ts   # against prod
+```
+
+Run it:
+- Once before the first deploy (so tables exist when runtime starts).
+- Whenever you bump `@mastra/core` or `@mastra/pg` to a version that adds schema (release notes will say).
+
+The script is idempotent (`CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ADD COLUMN IF NOT EXISTS`). Safe to re-run.
+
 ## Vercel logs (production debugging)
 
 Production runtime logs for the agent come through `vercel logs`, but with gotchas:
