@@ -130,7 +130,9 @@ The shared reset helpers are `apps/agent/src/mastra/db/resetUserData.ts` (tables
 
 ## Mastra schema migrations
 
-We set `disableInit: true` on both `PostgresStore` and `MastraCompositeStore` in `server/storage.ts` so the runtime doesn't fire ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start (which pushed first-message-after-cold to ~10s on Vercel). Schema is kept in sync via a one-shot script:
+We set `disableInit: true` on every `PostgresStore` we construct (the shared one in `server/storage.ts` AND the per-agent one in `agents/thom.ts` — Mastra agents that take a `memory: new Memory({ storage })` create their own store, and each tracks its own init state). This stops the framework from firing ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start, which pushed first-message-after-cold to ~10s on Vercel.
+
+Schema is kept in sync via a one-shot script:
 
 ```bash
 npm run migrate:mastra                                # against .env.development
@@ -142,6 +144,19 @@ Run it:
 - Whenever you bump `@mastra/core` or `@mastra/pg` to a version that adds schema (release notes will say).
 
 The script is idempotent (`CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ADD COLUMN IF NOT EXISTS`). Safe to re-run.
+
+### Known anti-pattern: migration runs as part of `npm run build`
+
+The agent's `build` script chains `mastra build && tsx scripts/migrateMastra.ts`, so Vercel runs migrations as part of every deploy. This is a **shortcut, not standard practice.** We accept it because: (a) build failure gates deploy, so migration failure blocks bad code from shipping; (b) Mastra's init is idempotent and ~909ms when no-op; (c) we're a single-user demo, no concurrency concerns yet.
+
+The standard pattern is migrations as a separate CI step (GitHub Action) that runs *before* the deploy step is allowed to start, with versioned migration files and a `schema_migrations` tracking table — exactly what Supabase CLI gives us for our `public.*` schema in `apps/agent/supabase/migrations/`. We currently have two migration systems (Supabase CLI for our schema, Mastra's `init()` for `mastra.*`), which is also non-ideal.
+
+**When to fix it** (not urgent): closer to multi-user / production load, OR when adding meaningful new schema work. Two paths:
+
+1. **Decouple migration from build.** GitHub Action on push to `main` runs `npm run migrate:mastra` + applies pending Supabase migrations, then triggers Vercel deploy via hook. Build no longer migrates.
+2. **Consolidate to one migration system.** Dump Mastra's schema once as SQL, check into `supabase/migrations/`, drop `migrateMastra.ts`. All migrations are then Supabase-CLI-managed. Cleaner; bigger one-time lift.
+
+Don't add new schema flows on top of the current setup without addressing this — adding a second untracked DDL path makes the cleanup harder.
 
 ## Vercel logs (production debugging)
 
