@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "npm --prefix apps/agent run dev",
     "dev:web": "npm --prefix apps/web run dev",
+    "dev:web-next": "npm --prefix apps/web-next run dev",
     "dev:all": "concurrently -k -n agent,web -c cyan,magenta \"npm:dev\" \"npm:dev:web\"",
+    "dev:all-next": "concurrently -k -n agent,web-next -c cyan,green \"npm:dev\" \"npm:dev:web-next\"",
     "build": "npm --prefix apps/agent run build",
     "build:web": "npm --prefix apps/web run build",
+    "build:web-next": "npm --prefix apps/web-next run build",
     "start": "npm --prefix apps/agent run start",
     "fixtures:build": "npm --prefix apps/agent run fixtures:build",
     "db:reset": "npm --prefix apps/agent run db:reset",
@@ -17,7 +20,7 @@
     "refdocs:sync": "npm --prefix apps/agent run refdocs:sync",
     "refdocs:verify": "npm --prefix apps/agent run refdocs:verify",
     "smoke:review": "npm --prefix apps/agent run smoke:review",
-    "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install"
+    "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install && npm --prefix apps/web-next install"
   },
   "engines": {
     "node": ">=20.0.0"

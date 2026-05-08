@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-base: #0a0a0b;
+  --color-bg-subtle: #111113;
+  --color-bg-panel: #16161a;
+  --color-bg-elevated: #1c1c22;
+
+  --color-border: #2e2e38;
+  --color-border-subtle: #26262e;
+  --color-border-strong: #3a3a44;
+
+  --color-ink-primary: #f5f5f7;
+  --color-ink-secondary: #a1a1aa;
+  --color-ink-muted: #71717a;
+  --color-ink-faint: #52525b;
+
+  --color-accent: #7c5cff;
+  --color-accent-hover: #8d6fff;
+  --color-accent-subtle: rgba(124, 92, 255, 0.12);
+
+  --background-image-hero-glow: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(124, 92, 255, 0.18), transparent 70%);
+  --background-image-rail-fade: linear-gradient(to bottom, rgba(22, 22, 26, 0.6), rgba(10, 10, 11, 0));
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --animate-fade-in: fade-in 320ms ease-out;
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bg-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 0
+    );
+    background-size: 24px 24px;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply bg-bg-panel border border-border-subtle rounded-xl;
+  }
+
+  .card {
+    @apply bg-bg-panel border border-border-subtle rounded-2xl;
+  }
+
+  .card-header {
+    @apply px-5 pt-4 pb-3 flex items-center justify-between
+           text-[10px] uppercase tracking-[0.2em] text-ink-muted font-medium;
+  }
+
+  .nav-item {
+    @apply w-full flex items-center gap-3 px-3 py-2 rounded-lg
+           text-sm text-ink-secondary
+           hover:bg-bg-elevated hover:text-ink-primary
+           transition-colors duration-150;
+  }
+
+  .nav-item-active {
+    @apply bg-bg-elevated text-ink-primary;
+  }
+
+  .input-base {
+    @apply w-full px-4 py-3 bg-bg-panel border border-border-subtle rounded-lg
+           text-ink-primary placeholder:text-ink-muted
+           focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+           transition-all duration-150;
+  }
+
+  .btn-primary {
+    @apply w-full py-3 bg-accent hover:bg-accent-hover
+           disabled:bg-bg-elevated disabled:text-ink-muted disabled:cursor-not-allowed
+           text-white rounded-lg font-medium
+           transition-colors duration-150;
+  }
+}
