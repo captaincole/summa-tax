@@ -4,8 +4,33 @@ import { registerApiRoute } from "@mastra/core/server";
 import { listFactsByKeys } from "../../db/taxFacts";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
 import { buildCaseState } from "../../tools/caseState";
-import { DEMO_TAX_YEAR } from "../demoSession";
+import { thom } from "../../agents/thom";
+import {
+  thomWorkingMemorySchema,
+  type PlanItem,
+} from "../../agents/thom.workingMemory";
+import { DEMO_TAX_YEAR, DEMO_THREAD_ID } from "../demoSession";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
+
+async function readThomPlan(): Promise<PlanItem[]> {
+  // Read working memory off Thom's thread-scoped Memory. Returns [] when:
+  //   - the thread has never had a turn (no working memory row yet)
+  //   - the JSON parse fails (shouldn't happen since Mastra writes via the
+  //     same schema, but defensive)
+  //   - the schema validation fails (e.g. a field rename we haven't migrated)
+  // We never want a malformed plan to take down the whole /app/state response.
+  try {
+    const memory = await thom.getMemory();
+    if (!memory) return [];
+    const raw = await memory.getWorkingMemory({ threadId: DEMO_THREAD_ID });
+    if (!raw) return [];
+    const parsed = thomWorkingMemorySchema.safeParse(JSON.parse(raw));
+    if (!parsed.success) return [];
+    return parsed.data.plan ?? [];
+  } catch {
+    return [];
+  }
+}
 
 // Live status for the right rail — open asks, progress, money summary, and
 // links to the most recent draft of each form. Document links resolve through
@@ -23,7 +48,10 @@ export const appStateRoute = registerApiRoute("/app/state", {
       | undefined;
     if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
 
-    const result = await buildCaseState(supabase, DEMO_TAX_YEAR);
+    const [result, plan] = await Promise.all([
+      buildCaseState(supabase, DEMO_TAX_YEAR),
+      readThomPlan(),
+    ]);
 
     // Most recent draft per formId. listDocuments returns newest-first, so we
     // walk once and keep the first hit per formId — that's "the most recent
@@ -105,6 +133,7 @@ export const appStateRoute = registerApiRoute("/app/state", {
       form540Url: urlFor("540"),
       sidecarUrl: urlFor("sidecar"),
       taxpayerFirstName,
+      plan,
     });
   },
 });

@@ -10,6 +10,15 @@ import { agentUrl } from "@/lib/agentBase";
 // fetchActivity moved to lib/activity.ts (direct Supabase reads) — both
 // the chat right rail and /activity page consume it.
 
+export type PlanItemStatus = "todo" | "doing" | "done";
+
+export interface PlanItem {
+  id: string;
+  title: string;
+  status: PlanItemStatus;
+  note?: string;
+}
+
 export interface CaseState {
   withinMvp: boolean;
   mvpViolations: string[];
@@ -31,6 +40,7 @@ export interface CaseState {
   form540Url: string | null;
   sidecarUrl: string | null;
   taxpayerFirstName: string | null;
+  plan: PlanItem[];
 }
 
 export class UnauthorizedError extends Error {

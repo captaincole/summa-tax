@@ -4,7 +4,6 @@ import { PostgresStore } from "@mastra/pg";
 import { pgPool } from "../server/storage";
 import {
   recordTaxFact,
-  noteOpenQuestion,
   listOpenQuestionsTool,
   resolveOpenQuestion,
 } from "../tools/taxFacts";
@@ -14,6 +13,7 @@ import { ingest1099Consolidated } from "../tools/ingest1099Consolidated";
 import { recordAIDecision, listAIDecisions } from "../tools/aiDecisions";
 import { generateTaxDocuments } from "../tools/generateTaxDocuments";
 import { thomInstructions } from "./thom.instructions";
+import { thomWorkingMemorySchema } from "./thom.workingMemory";
 
 export const thom = new Agent({
   id: "thom",
@@ -32,11 +32,12 @@ export const thom = new Agent({
     ingestW2,
     ingest1099Consolidated,
     recordTaxFact,
-    noteOpenQuestion,
     recordAIDecision,
     // End-of-session artifact generation
     generateTaxDocuments,
-    // Secondary — for follow-up
+    // Secondary — listOpenQuestions/resolveOpenQuestion remain so Thom can
+    // see and clear rows that Nynaeve's review workflow writes. He no longer
+    // authors his own open questions — that lives in working memory now.
     listOpenQuestions: listOpenQuestionsTool,
     resolveOpenQuestion,
     listAIDecisions,
@@ -50,5 +51,16 @@ export const thom = new Agent({
       // See server/storage.ts for the full reasoning.
       disableInit: true,
     }),
+    options: {
+      // Thread-scoped because we currently run a single demo thread per user.
+      // Switch to "resource" once we split per tax year (2025 / 2026 / …).
+      // Mastra auto-registers updateWorkingMemory as a tool; the schema
+      // shape is documented in thom.workingMemory.ts.
+      workingMemory: {
+        enabled: true,
+        scope: "thread",
+        schema: thomWorkingMemorySchema,
+      },
+    },
   }),
 });

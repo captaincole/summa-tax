@@ -3,7 +3,6 @@ import { z } from "zod";
 import {
   recordFact,
   listFacts,
-  noteQuestion,
   listOpenQuestions,
   resolveQuestion,
 } from "../db/taxFacts";
@@ -96,34 +95,6 @@ export const listTaxFacts = createTool({
       limit: input.limit,
     });
     return { facts };
-  },
-});
-
-export const noteOpenQuestion = createTool({
-  id: "note-open-question",
-  description:
-    "Record a question or gap that still needs to be resolved — e.g. missing document, unclear residency, ambiguous K-1 number. Use this whenever you notice you cannot proceed until the user provides more info.",
-  inputSchema: z.object({
-    question: z.string().describe("The question or missing piece, phrased so someone reading later knows exactly what's needed"),
-    context: z
-      .string()
-      .optional()
-      .describe("Why this matters or what prompted the question"),
-  }),
-  outputSchema: z.object({
-    id: z.string(),
-    noted: z.boolean(),
-  }),
-  execute: async (input, ctx) => {
-    const { supabase, userId } = requireUserContext(ctx);
-    const id = crypto.randomUUID();
-    await noteQuestion(supabase, {
-      id,
-      userId,
-      question: input.question,
-      context: input.context,
-    });
-    return { id, noted: true };
   },
 });
 

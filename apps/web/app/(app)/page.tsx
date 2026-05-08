@@ -8,6 +8,7 @@ import { getUserId } from "@/lib/auth";
 import { uploadDocument } from "@/lib/uploads";
 import { Markdown } from "@/components/Markdown";
 import { ActivityCard } from "@/components/ActivityCard";
+import { PlanCard } from "@/components/PlanCard";
 import {
   type ChatMessage,
   useAppShell,
@@ -298,8 +299,16 @@ export default function ChatPage() {
         </footer>
       </div>
 
-      <aside className="hidden lg:flex flex-col shrink-0 w-[22rem] xl:w-[26rem] border-l border-border-subtle p-5 min-h-0">
-        <ActivityCard refreshKey={activityRefreshKey} />
+      <aside className="hidden lg:flex flex-col shrink-0 w-[22rem] xl:w-[26rem] border-l border-border-subtle p-5 min-h-0 gap-4">
+        {/* Plan and Activity claim a fixed 1:2 share of the column. Both
+            cards always fill their slot — no shifting around as content
+            grows or shrinks; internal scroll handles overflow. */}
+        <div className="flex-[1] min-h-0 flex flex-col">
+          <PlanCard plan={state?.plan ?? []} />
+        </div>
+        <div className="flex-[2] min-h-0 flex flex-col">
+          <ActivityCard refreshKey={activityRefreshKey} />
+        </div>
       </aside>
     </div>
   );
