@@ -36,10 +36,13 @@ apps/
 │   ├── supabase/                # corpus migration history
 │   ├── package.json             # agent deps + scripts (mastra dev, fixtures:build, refdocs:*)
 │   └── tsconfig.json
-└── web/                         # React + Vite frontend → deployed to Vercel
-    ├── src/                     # Layout, routes, lib (api, mastraClient, auth)
-    ├── package.json             # web deps + scripts (vite, vite build)
-    └── vite.config.ts
+└── web/                         # Next.js 16 (App Router) frontend → deployed to Vercel
+    ├── app/                     # /login, (app)/{page,documents,activity}, /documents/[id] route handler
+    ├── components/              # AppShell, SideNav, ActivityCard, Markdown
+    ├── lib/                     # supabase/{client,server,proxy}, activity, api, mastraClient, uploads
+    ├── proxy.ts                 # Next.js 16 Proxy (renamed Middleware): @supabase/ssr session refresh + auth gate
+    ├── package.json             # web deps + scripts (next dev, next build)
+    └── next.config.ts
 
 package.json                     # workspace root: thin delegating scripts (dev, dev:all, db:reset, …)
 CLAUDE.md
@@ -51,22 +54,22 @@ The case engine (derivation graph → live case state) and MVP artifact library 
 
 ## Running it
 
-Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Vite. All commands run from the repo root; root scripts delegate via `npm --prefix apps/<app>`.
+Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Next.js (Turbopack). All commands run from the repo root; root scripts delegate via `npm --prefix apps/<app>`.
 
 ```bash
 npm run install:all                         # installs root + apps/agent + apps/web
 cp apps/agent/.env.example apps/agent/.env.development
 # edit apps/agent/.env.development with ANTHROPIC_API_KEY + DEMO_PASSCODE
-npm run dev:all                             # mastra (:4111) + vite (:5173)
+npm run dev:all                             # mastra (:4111) + next (:3000)
 
 # or run them separately:
 npm run dev          # mastra only — also opens Mastra Studio at :4111
-npm run dev:web      # vite only
+npm run dev:web      # next only
 
 npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 ```
 
-The SQLite database file is created on first run at `apps/agent/wheel-of-time.db` (gitignored; relative to where `mastra dev` runs). In dev the frontend reaches Mastra via Vite's proxy: `/api`, `/app`, and `/drafts` all forward to `:4111`. In prod the frontend is on Vercel and calls Mastra via `VITE_API_URL` set at build time.
+The SQLite database file is created on first run at `apps/agent/wheel-of-time.db` (gitignored; relative to where `mastra dev` runs). The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that still go through the agent (chat streaming, `/app/state`, `/app/session/reset`). Most data — drafts, uploads, activity feed, document downloads — is read directly from Supabase by Server Components / Route Handlers. Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls.
 
 ## Supabase Postgres pooler — always use port 6543
 
@@ -91,18 +94,18 @@ Same Supavisor process, same database, just different juggling.
 
 We're building agent + UI together. When changes touch both, expect to:
 
-1. **Edit code** (backend in `apps/agent/src/mastra/`, frontend in `apps/web/src/`).
+1. **Edit code** (backend in `apps/agent/src/mastra/`, frontend in `apps/web/{app,components,lib}/`).
 2. **Watch logs** for errors. Three places to look:
    - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
    - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Thom do X?".
    - **Browser console + Network panel** — frontend errors and HTTP failures (401s from a wrong passcode, 404s from a missing proxy entry, etc.).
-3. **Verify the change in the browser** at http://localhost:5173. Login passcode is whatever's in `.env.development` as `DEMO_PASSCODE`. Hit **Reset** in the chat header to wipe state between test runs. The right rail (when we add it) and the header counters refresh after each agent turn.
+3. **Verify the change in the browser** at http://localhost:3000. Sign in with a Supabase account; cookie-based session via `@supabase/ssr` persists across reloads. Hit **Reset session** in the side nav to wipe state between test runs. The activity rail and header counters refresh after each agent turn.
 
 For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/thom/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
 
 ### Claude verifies UI changes via claude-in-chrome
 
-Claude has the `mcp__claude-in-chrome__*` toolset available. After any non-trivial UI change, use it to drive the browser yourself: navigate to `:5173`, log in, exercise the affected flow, read the console for errors, and report what you observed. This is faster and more reliable than asking Andrew to manually test every iteration. For multi-step interactions worth reviewing later, use `gif_creator` to record the run.
+Claude has the `mcp__claude-in-chrome__*` toolset available. After any non-trivial UI change, use it to drive the browser yourself: navigate to `:3000`, log in, exercise the affected flow, read the console for errors, and report what you observed. This is faster and more reliable than asking Andrew to manually test every iteration. For multi-step interactions worth reviewing later, use `gif_creator` to record the run.
 
 Limits worth remembering:
 - These tools are deferred — load each one with `ToolSearch` (`select:mcp__claude-in-chrome__<name>`) before calling it.
@@ -365,31 +368,27 @@ Rule of thumb: grep the bundled docs first (`Grep pattern path=node_modules/@mas
 
 If you're a fresh Claude Code session starting in this folder: read this file, then read the BBG memory dir for broader context on how Andrew builds agents.
 
-## Future architecture (sketched, not built)
+## Future architecture (mostly built)
 
-The current shape (Vercel frontend + Vercel-hosted Mastra + Supabase Postgres for all runtime/user/corpus data) is most of the way to the end state. The intended end state is **three deploy units** with Supabase as the primary store for everything:
+Three deploy units with Supabase as the primary store for everything:
 
-1. **Vercel Static Site (`apps/web`)** — Vite frontend, unchanged. Reads most data directly from Supabase via `supabase-js`.
-2. **Vercel Web Service (`apps/agent`)** — Mastra agent runtime only: `/api/agents/*` (chat streaming + tool execution), Studio, observability. The four custom routes in `server/routes/` get deleted.
-3. **Supabase** — primary DB for user data + reference corpus, Storage (drafts), Auth (replaces `DEMO_PASSCODE`), Edge Functions for privileged glue. RLS policies scope every read/write to the authenticated user.
+1. **Vercel Web (`apps/web`)** — Next.js 16 App Router. Server Components + Route Handlers read Supabase directly via `@supabase/ssr` cookie auth. Cross-origin agent calls (chat streaming, `/app/state`, `/app/session/reset`) use bearer headers extracted from the cookie session.
+2. **Vercel Agent (`apps/agent`)** — Mastra runtime: `/api/agents/*`, Studio, observability, plus the still-needed custom routes (`/app/state`, `/app/session/reset`).
+3. **Supabase** — Postgres for user data + reference corpus, Storage (drafts/uploads), Auth, RLS scoping every read/write.
 
-**No separate CRUD/Node service is planned.** Each of today's custom routes maps to a Supabase-native primitive:
+Where each agent route landed:
 
-| Today | Future |
+| Route | Status |
 |---|---|
-| `GET /app/state` | SQL view or `rpc('case_state')` Postgres function called via `supabase-js` |
-| `GET /app/activity` | UNION view of `tax_facts` + `ai_decisions`, queried with `.from().select()` |
-| `POST /app/session/reset` | `SECURITY DEFINER` SQL function via `rpc()`, or an Edge Function |
-| `GET /drafts/:filename` | Supabase Storage signed URL returned in the row data — no proxy |
+| `GET /app/activity` | **Done** — Next.js `lib/activity.ts` reads `tax_facts` + `ai_decisions` directly via `supabase-js`. Agent route still exists but unused; safe to delete. |
+| `GET /documents/:id` | **Done** — Next.js `app/documents/[id]/route.ts` reads cookie, mints signed URL, 302s. Agent route still exists but unused. |
+| `GET /app/state` | **Pending** — runs the case engine (derivation graph). Three options for extraction: Postgres RPC (preferred per Supabase shape), shared TS package, or a third serverless function. Decide when we actually need to retire it. |
+| `POST /app/session/reset` | **Pending** — needs admin-pool access for `Memory.deleteThread`. Folding into a `SECURITY DEFINER` Postgres function would let the frontend call via `rpc()` and remove the admin pool entirely. |
 
-`supabase-js` covers PostgREST for tables, RPC for projections, Storage for files, and Auth for sessions. Edge Functions exist if we ever need TypeScript-side privileged logic. A separate Node CRUD service would be pure overhead.
+**Other open follow-ups:**
 
-**Open issues / what's required to get there:**
-
-- **Document upload stays agent-routed (for now).** PDFs flow through `/api/agents/thom/stream` today as base64 attachments. The future-state optimization is to upload directly to Supabase Storage and pass signed URLs into the chat message — cheaper context, persistent audit trail. That's a tool-side change, not a route change.
-- **`db:reset` becomes a Postgres function call.** Today it's a JS script issuing `delete from` statements through the admin pool. Folding it into a `SECURITY DEFINER` function would let the frontend call it directly via `supabase-js`, taking the admin pool out of the picture entirely.
-
-**Why the current cleanup still matters:** the routes are isolated in `server/routes/*.ts` instead of woven through `index.ts`, so the Supabase migration becomes "delete these four files" rather than "untangle a 400-line entrypoint."
+- **Direct-to-Supabase upload during chat.** Today the chat tool sends base64 attachments through `/api/agents/thom/stream`. Uploading to Storage browser-side and passing a signed URL into the chat message is a tool-side change, not a route change.
+- **`db:reset` becomes a Postgres function.** Same shape as the `/app/session/reset` follow-up.
 
 ## Things explicitly out of scope (for now)
 
