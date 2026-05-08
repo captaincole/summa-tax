@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "//": "Vercel runs ignoreCommand from the project's Root Directory (apps/web), so `./` scopes the diff to web-only changes.",
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet -- ./"
 }
