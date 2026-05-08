@@ -2,6 +2,11 @@ import type { Pool } from "pg";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { thom } from "../agents/thom";
 
+// Per-user data reset is the only reset path. The web "Reset session" button
+// hits POST /app/session/reset, which calls resetCurrentUserData below. There
+// is no wholesale-truncate path; for that, run TRUNCATE in the Supabase SQL
+// editor (or against a local Supabase instance once we have one).
+
 export interface PerUserResetResult {
   domainRowsDeleted: number;
   mastraThreadsDeleted: number;
@@ -88,40 +93,3 @@ export async function resetCurrentUserData(
   };
 }
 
-export interface FullResetResult {
-  truncated: string[];
-}
-
-// Full wipe across all users — only used by RESET_USER_DATA_ON_START at boot,
-// for ephemeral deploy redeployments / CI. Truncates Mastra runtime, domain
-// tables, and the user_documents metadata. Storage objects are NOT cleared
-// (the bucket can hold orphans across reboots) — accept this cost for the
-// dev-convenience flag; a periodic cleanup job is the right home for that.
-export async function resetAllUserData(pool: Pool): Promise<FullResetResult> {
-  const mastraTables = await pool.query<{ tablename: string }>(
-    `SELECT tablename FROM pg_tables WHERE schemaname = $1`,
-    ["mastra"],
-  );
-  const mastraQualified = mastraTables.rows.map(
-    (r) => `mastra."${r.tablename}"`,
-  );
-  const domainQualified = [
-    `public."tax_facts"`,
-    `public."open_questions"`,
-    `public."ai_decisions"`,
-    `public."user_documents"`,
-  ];
-  const all = [...mastraQualified, ...domainQualified];
-  if (all.length === 0) return { truncated: [] };
-
-  await pool.query(`TRUNCATE ${all.join(", ")} CASCADE`);
-  return {
-    truncated: [
-      ...mastraTables.rows.map((r) => `mastra.${r.tablename}`),
-      "public.tax_facts",
-      "public.open_questions",
-      "public.ai_decisions",
-      "public.user_documents",
-    ],
-  };
-}

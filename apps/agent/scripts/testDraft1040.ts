@@ -2,7 +2,8 @@
  * End-to-end test: insert Alex's facts into the DB, call
  * generate-draft-1040, render the result to PNG, and print the paths.
  *
- * Run with `npm run db:reset` first if the DB has residue.
+ * If the DB has residue, hit "Reset session" in the web app first (or run
+ * TRUNCATE in the Supabase SQL editor).
  *   npx tsx scripts/testDraft1040.ts
  */
 import "dotenv/config";

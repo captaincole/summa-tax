@@ -11,7 +11,6 @@
     "build:web": "npm --prefix apps/web run build",
     "start": "npm --prefix apps/agent run start",
     "fixtures:build": "npm --prefix apps/agent run fixtures:build",
-    "db:reset": "npm --prefix apps/agent run db:reset",
     "refdocs:ingest": "npm --prefix apps/agent run refdocs:ingest",
     "refdocs:status": "npm --prefix apps/agent run refdocs:status",
     "refdocs:sync": "npm --prefix apps/agent run refdocs:sync",

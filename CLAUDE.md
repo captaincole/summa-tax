@@ -18,7 +18,7 @@ The end goal is a three-stage workflow:
 2. **Summarizer** (Stage 2, not built yet) — turns gathered facts into a human-reviewable tax summary / organizer.
 3. **Preparer** (Stage 3, not built yet) — fills out the actual forms (1040 + schedules, state returns). Human-in-the-loop is mandatory; a CPA signs off.
 
-Everything routes through a SQLite-backed `tax_facts` table where each row has a `source_note` citing where the value came from. No fact exists without a citation.
+Everything routes through a Postgres-backed `tax_facts` table where each row has a `source_note` citing where the value came from. No fact exists without a citation.
 
 ## Repo structure
 
@@ -30,7 +30,7 @@ apps/
 │   ├── src/mastra/              # agent code (Thom, Nynaeve, tools, db, server, workflows)
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
-│   ├── scripts/                 # operator scripts (refdocs:*, db:reset, smoke:review, etc.)
+│   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
 │   ├── ref/                     # blank PDF templates the form engine fills (1040, 8949, …)
 │   ├── reference-docs/          # IRS / FTB PDFs ingested into the Supabase corpus
 │   ├── supabase/                # corpus migration history
@@ -44,7 +44,7 @@ apps/
     ├── package.json             # web deps + scripts (next dev, next build)
     └── next.config.ts
 
-package.json                     # workspace root: thin delegating scripts (dev, dev:all, db:reset, …)
+package.json                     # workspace root: thin delegating scripts (dev, dev:all, refdocs:*, …)
 CLAUDE.md
 ```
 
@@ -69,7 +69,7 @@ npm run dev:web      # next only
 npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 ```
 
-The SQLite database file is created on first run at `apps/agent/wheel-of-time.db` (gitignored; relative to where `mastra dev` runs). The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that still go through the agent (chat streaming, `/app/state`, `/app/session/reset`). Most data — drafts, uploads, activity feed, document downloads — is read directly from Supabase by Server Components / Route Handlers. Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls.
+All persistent state (user data, Mastra runtime tables, reference corpus, document blobs) lives in Supabase — `POSTGRES_URL` for the database, the service-role key for Storage. There is no local DB file. The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that still go through the agent (chat streaming, `/app/state`, `/app/session/reset`). Most data — drafts, uploads, activity feed, document downloads — is read directly from Supabase by Server Components / Route Handlers. Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls.
 
 ## Supabase Postgres pooler — always use port 6543
 
@@ -114,22 +114,18 @@ Limits worth remembering:
 
 ### Resetting user data
 
-```bash
-npm run db:reset                          # manual wipe, run between test sessions
-RESET_USER_DATA_ON_START=1 npm run dev    # wipe on boot (ephemeral deploys, CI)
-```
+The web "Reset session" button in the side nav is the only reset path. It hits `POST /app/session/reset` (handler: `apps/agent/src/mastra/server/routes/sessionReset.ts`), which calls `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts`. Per-user, RLS-scoped, run as the signed-in Supabase user.
 
-**What gets wiped:** every libsql table whose name does NOT start with `ref_` or `sqlite_`. That includes all Mastra runtime tables (`mastra_messages`, `mastra_threads`, traces, scorers, workflow snapshots…) plus ours (`tax_facts`, `open_questions`, `ai_decisions`). Mastra and our own db modules recreate their schemas automatically on next use. Generated per-user artifacts on disk (currently `apps/agent/src/mastra/public/drafts/*.pdf`) are deleted too.
+**What gets wiped (for the signed-in user only):**
+- Domain rows in `public.tax_facts`, `public.open_questions`, `public.ai_decisions`, `public.user_documents` — RLS scopes the `delete` to `auth.uid()`.
+- Storage objects under `user-documents/{userId}/…` — `storage.objects` RLS scopes by folder name to the user. The handler captures `storage_path` from `user_documents` *before* deleting the rows so it doesn't orphan bytes.
+- The user's Mastra threads — listed via `memory.listThreads({ filter: { resourceId: userId } })` and removed via `memory.deleteThread(id)`. Cascades to messages, observational memory, and any vector embeddings Mastra owns.
 
-**What survives:** any `ref_*` libsql table, anything in Supabase, and any file under `apps/agent/ref/`. Convention:
+**What survives:** the reference corpus (`public.ref_documents`, `public.ref_pages`, `public.ref_sections`, `public.ref_blocks`) and any file under `apps/agent/ref/`. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
 
-- **Supabase:** the reference corpus (`ref_documents`, `ref_pages`, `ref_sections`, `ref_blocks`) lives entirely on Supabase, so `db:reset` (which only touches libsql) cannot affect it. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
-- **libsql `ref_*` tables:** the prefix is reserved for future libsql-side reference data (e.g. published bracket tables that are too small to warrant Supabase). None today; the convention is preserved for when we add some.
-- **Filesystem:** put reference assets under `apps/agent/ref/` (e.g. `apps/agent/ref/forms/f1040-2025.pdf`). Put generated per-user artifacts under `apps/agent/src/mastra/public/<dir>/` (e.g. `apps/agent/src/mastra/public/drafts/`). The reset wipes the generated dirs; `apps/agent/ref/` and `apps/agent/reference-docs/` are untouched.
+**No wholesale-truncate path.** Per-user reset is the only operator-facing reset. To nuke the database (e.g. start over from scratch), run `TRUNCATE` directly in the Supabase SQL editor against `mastra.*` + `public.{tax_facts, open_questions, ai_decisions, user_documents}`. Once we have a local Supabase instance with seed scripts, that becomes the dev-side equivalent.
 
-When you add a new generated-artifact directory, extend `GENERATED_DIRS` in `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts`.
-
-The shared reset helpers are `apps/agent/src/mastra/db/resetUserData.ts` (tables) and `apps/agent/src/mastra/fs/cleanGeneratedFiles.ts` (files); the CLI entry is `apps/agent/scripts/resetUserData.ts`.
+**Generated artifacts.** Form PDFs and sidecars now live entirely in the Supabase Storage `user-documents` bucket with metadata rows in `public.user_documents`. There's no generated-files directory on disk.
 
 ## Mastra schema migrations
 
@@ -388,7 +384,6 @@ Where each agent route landed:
 **Other open follow-ups:**
 
 - **Direct-to-Supabase upload during chat.** Today the chat tool sends base64 attachments through `/api/agents/thom/stream`. Uploading to Storage browser-side and passing a signed URL into the chat message is a tool-side change, not a route change.
-- **`db:reset` becomes a Postgres function.** Same shape as the `/app/session/reset` follow-up.
 
 ## Things explicitly out of scope (for now)
 

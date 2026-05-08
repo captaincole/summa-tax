@@ -5,28 +5,16 @@ import { VercelDeployer } from "@mastra/deployer-vercel";
 import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
 import { nynaeve } from "./agents/nynaeve";
-import { resetAllUserData } from "./db/resetUserData";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appStateRoute } from "./server/routes/appState";
 import { sessionResetRoute } from "./server/routes/sessionReset";
-import { createStorage, pgPool } from "./server/storage";
+import { createStorage } from "./server/storage";
 import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
 
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
   throw new Error(
     "SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are required (see .env.example)",
-  );
-}
-
-// RESET_USER_DATA_ON_START=1 → full wipe across all users on boot. Intended
-// for ephemeral deploys (dev redeploys, CI) that want a clean slate. Truncates
-// mastra.* (framework runtime) and public.{tax_facts, open_questions,
-// ai_decisions} (our domain), and wipes generated PDFs from disk.
-if (process.env.RESET_USER_DATA_ON_START) {
-  const { truncated } = await resetAllUserData(pgPool);
-  console.log(
-    `[reset-on-start] truncated ${truncated.length} tables (${truncated.join(", ") || "none"}); user-documents storage retains orphan blobs (cleanup is a future job)`,
   );
 }
 
