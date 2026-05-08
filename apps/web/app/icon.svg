@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <circle cx="16" cy="16" r="15" fill="#7c5cff" />
+  <text
+    x="16"
+    y="16"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-weight="600"
+    font-size="26"
+    fill="#ffffff"
+  >$</text>
+  <rect x="14.4" y="-1" width="3.2" height="34" fill="#ffffff" />
+</svg>
