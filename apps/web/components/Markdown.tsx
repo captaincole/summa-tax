@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Renders Thom's responses as markdown. Custom components style each element
 // against our dark theme — most importantly, links pop in new tabs and use
@@ -11,6 +12,7 @@ import ReactMarkdown from "react-markdown";
 export function Markdown({ children }: { children: string }) {
   return (
     <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
       components={{
         a: ({ href, children }) => (
           <a
@@ -52,6 +54,34 @@ export function Markdown({ children }: { children: string }) {
           </blockquote>
         ),
         hr: () => <hr className="my-4 border-border-subtle" />,
+        table: ({ children }) => (
+          <div className="my-3 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">{children}</table>
+          </div>
+        ),
+        thead: ({ children }) => (
+          <thead className="border-b border-border-strong">{children}</thead>
+        ),
+        tbody: ({ children }) => (
+          <tbody className="divide-y divide-border-subtle">{children}</tbody>
+        ),
+        tr: ({ children }) => <tr>{children}</tr>,
+        th: ({ children, style }) => (
+          <th
+            className="px-3 py-2 text-left font-semibold text-ink-primary"
+            style={style}
+          >
+            {children}
+          </th>
+        ),
+        td: ({ children, style }) => (
+          <td className="px-3 py-2 align-top text-ink-secondary" style={style}>
+            {children}
+          </td>
+        ),
+        del: ({ children }) => (
+          <del className="text-ink-muted line-through">{children}</del>
+        ),
       }}
     >
       {children}
