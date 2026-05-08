@@ -33,7 +33,6 @@ apps/
 │   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
 │   ├── ref/                     # blank PDF templates the form engine fills (1040, 8949, …)
 │   ├── reference-docs/          # IRS / FTB PDFs ingested into the Supabase corpus
-│   ├── supabase/                # corpus migration history
 │   ├── package.json             # agent deps + scripts (mastra dev, fixtures:build, refdocs:*)
 │   └── tsconfig.json
 └── web/                         # Next.js 16 (App Router) frontend → deployed to Vercel
@@ -44,6 +43,7 @@ apps/
     ├── package.json             # web deps + scripts (next dev, next build)
     └── next.config.ts
 
+supabase/                        # shared DB infra: config.toml + migrations (public.*, RLS, publications)
 package.json                     # workspace root: thin delegating scripts (dev, dev:all, refdocs:*, …)
 CLAUDE.md
 ```
@@ -144,18 +144,18 @@ Run it:
 
 The script is idempotent (`CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ADD COLUMN IF NOT EXISTS`). Safe to re-run.
 
-### Known anti-pattern: migration runs as part of `npm run build`
+### Two migration systems by design
 
-The agent's `build` script chains `mastra build && tsx scripts/migrateMastra.ts`, so Vercel runs migrations as part of every deploy. This is a **shortcut, not standard practice.** We accept it because: (a) build failure gates deploy, so migration failure blocks bad code from shipping; (b) Mastra's init is idempotent and ~909ms when no-op; (c) we're a single-user demo, no concurrency concerns yet.
+We deliberately keep two migration systems running side by side:
 
-The standard pattern is migrations as a separate CI step (GitHub Action) that runs *before* the deploy step is allowed to start, with versioned migration files and a `schema_migrations` tracking table — exactly what Supabase CLI gives us for our `public.*` schema in `apps/agent/supabase/migrations/`. We currently have two migration systems (Supabase CLI for our schema, Mastra's `init()` for `mastra.*`), which is also non-ideal.
+1. **Supabase CLI for `public.*`** — versioned SQL files in `supabase/migrations/`, hand-written, applied via `supabase db push` from repo root. Owns our domain tables (`tax_facts`, `ai_decisions`, `ref_documents`, etc.) and any tweaks we make to Postgres-level config (publications, RLS, replica identity).
+2. **Mastra's `init()` for `mastra.*`** — auto-discovered from `@mastra/pg` package code, run via `npm run migrate:mastra` (which calls `MastraCompositeStore.init()`). Owns the runtime tables (`mastra_messages`, `mastra_threads`, `mastra_workflow_snapshot`, `mastra_traces`, …). The schema lives inside the framework, not in our repo.
 
-**When to fix it** (not urgent): closer to multi-user / production load, OR when adding meaningful new schema work. Two paths:
+The agent's `build` script chains `mastra build && tsx scripts/migrateMastra.ts`, so Vercel runs the Mastra migration as part of every deploy. This couples migration to build — non-standard for production systems — but we accept it because: (a) build failure gates deploy, so a failing migration blocks bad code from shipping; (b) Mastra's init is idempotent and ~909ms when no-op; (c) we get fully automatic schema sync on every Mastra version bump with zero hand-written SQL.
 
-1. **Decouple migration from build.** GitHub Action on push to `main` runs `npm run migrate:mastra` + applies pending Supabase migrations, then triggers Vercel deploy via hook. Build no longer migrates.
-2. **Consolidate to one migration system.** Dump Mastra's schema once as SQL, check into `supabase/migrations/`, drop `migrateMastra.ts`. All migrations are then Supabase-CLI-managed. Cleaner; bigger one-time lift.
+**Why we're not consolidating.** The "right" pattern would be to `pg_dump -s -n mastra` once, check that into `supabase/migrations/`, and hand-write a new SQL migration for every Mastra version bump going forward. The win is single source of truth + decoupled migration. The cost is ongoing vigilance — every `@mastra/core` upgrade becomes a manual schema review against their changelog. We've decided that cost isn't worth paying until Mastra's auto-init causes a concrete problem (e.g. a destructive migration in a future version).
 
-Don't add new schema flows on top of the current setup without addressing this — adding a second untracked DDL path makes the cleanup harder.
+**When the calculus could change:** if we hit multi-user production load, OR if Mastra ships a release with a problematic migration. Until then, leave the two-system setup alone.
 
 ## Vercel logs (production debugging)
 
@@ -202,7 +202,7 @@ Add categories as the domain grows. Prefer splitting over lumping (it's easier t
 
 ### Where the corpus lives
 
-The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase Postgres** under the `public` schema. User data is in the same Postgres database (`public` schema, RLS-scoped). Mastra's runtime tables (threads, messages, traces, scorers, working memory) live in the `mastra` schema in the same database via `@mastra/pg`. The agent reads the corpus via `@supabase/supabase-js` with a service-role secret; user-scoped reads go through the per-request user-supabase client (RLS-enforced). Migration history lives in `apps/agent/supabase/migrations/`.
+The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase Postgres** under the `public` schema. User data is in the same Postgres database (`public` schema, RLS-scoped). Mastra's runtime tables (threads, messages, traces, scorers, working memory) live in the `mastra` schema in the same database via `@mastra/pg`. The agent reads the corpus via `@supabase/supabase-js` with a service-role secret; user-scoped reads go through the per-request user-supabase client (RLS-enforced). Migration history lives in `supabase/migrations/` at the repo root — the supabase folder is shared infrastructure, not agent-owned (run `supabase db push` from repo root, not from `apps/agent/`).
 
 Why split storage: the corpus is shared, read-mostly, and grows substantially as we cover more scenarios. User data is per-tenant and will eventually move to Supabase too (with RLS) — that's a separate phase.
 
