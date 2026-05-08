@@ -1,10 +1,14 @@
 import { authHeaders } from "@/lib/auth";
 import { agentUrl } from "@/lib/agentBase";
 
-// Cross-origin agent calls. fetchState and fetchActivity are kept around
-// for Phase 3 — they get retired in Phase 5 when their data moves to
-// Server Component reads against Supabase. resetSession stays on the agent
-// because it deletes Mastra threads via Memory.deleteThread (admin-pool work).
+// Cross-origin agent calls. fetchState stays here for now — it runs the
+// case engine on the agent side, which we're not extracting in this
+// migration (see follow-up on /app/state in CLAUDE.md). resetSession also
+// stays because it deletes Mastra threads via Memory.deleteThread (admin-
+// pool work).
+//
+// fetchActivity moved to lib/activity.ts (direct Supabase reads) — both
+// the chat right rail and /activity page consume it.
 
 export interface CaseState {
   withinMvp: boolean;
@@ -41,35 +45,6 @@ export async function fetchState(): Promise<CaseState> {
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`State fetch failed: ${res.status}`);
   return res.json();
-}
-
-export type ActivityKind = "fact" | "decision";
-export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
-export type Confidence = "low" | "medium" | "high";
-
-export interface ActivityItem {
-  kind: ActivityKind;
-  id: string;
-  createdAt: string;
-  title: string;
-  value: unknown;
-  sourceNote: string | null;
-  category?: string;
-  rationale?: string;
-  supportingFactKeys?: string[];
-  confidence?: Confidence;
-  verdict?: Verdict | null;
-  verdictReason?: string | null;
-}
-
-export async function fetchActivity(limit = 50): Promise<ActivityItem[]> {
-  const res = await fetch(agentUrl(`/app/activity?limit=${limit}`), {
-    headers: await authHeaders(),
-  });
-  if (res.status === 401) throw new UnauthorizedError();
-  if (!res.ok) throw new Error(`Activity fetch failed: ${res.status}`);
-  const json = (await res.json()) as { items: ActivityItem[] };
-  return json.items;
 }
 
 export async function resetSession(): Promise<void> {

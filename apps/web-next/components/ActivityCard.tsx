@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchActivity, type ActivityItem, type Verdict } from "@/lib/api";
+import { fetchActivityItems, type ActivityItem, type Verdict } from "@/lib/activity";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 
 interface ActivityCardProps {
@@ -86,11 +87,12 @@ export function ActivityCard({ refreshKey }: ActivityCardProps) {
 
   useEffect(() => {
     let cancelled = false;
-    fetchActivity(50)
+    fetchActivityItems(createClient(), 50)
       .then((rows) => {
         if (!cancelled) setItems(rows);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.warn("[activity] fetch failed:", err);
         if (!cancelled) setItems([]);
       });
     return () => {
