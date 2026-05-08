@@ -26,7 +26,10 @@ export const pgPool = new Pool({
 // run on a checked-out client (pool.connect()) — extend if those become
 // load-bearing. Truncates SQL to 120 chars so long INSERT/UPDATE statements
 // don't dominate the log line.
-const origQuery = pgPool.query.bind(pgPool);
+// pg.Pool.query has many overloads; bypass overload resolution since we
+// proxy verbatim regardless of which shape was called.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const origQuery = pgPool.query.bind(pgPool) as (...args: any[]) => Promise<any>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (pgPool as any).query = async (...args: any[]) => {
   const start = Date.now();

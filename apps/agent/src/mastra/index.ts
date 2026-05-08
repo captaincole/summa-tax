@@ -8,9 +8,7 @@ import { nynaeve } from "./agents/nynaeve";
 import { resetAllUserData } from "./db/resetUserData";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
-import { appActivityRoute } from "./server/routes/appActivity";
 import { appStateRoute } from "./server/routes/appState";
-import { documentsRoute } from "./server/routes/documents";
 import { sessionResetRoute } from "./server/routes/sessionReset";
 import { createStorage, pgPool } from "./server/storage";
 import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
@@ -41,12 +39,12 @@ export const mastra = new Mastra({
   observability: createObservability(),
   // `mastra build` emits .vercel/output/ for deployment.
   // studio: false → deployer emits a catch-all route ({src: "/(.*)", dest: "/"})
-  // that sends every request to the function, including /app/* and /documents/*.
-  // With studio: true the deployer hardcodes /api/* and /health as the only
-  // function routes and falls everything else through to a Studio SPA — which
-  // would 404 our custom Hono routes. Until those routes get deleted in the
-  // Next.js migration (per apps/web/PRE_MIGRATION.md step 2), no prod Studio.
-  // Run `mastra studio` locally pointed at the prod URL when needed.
+  // that sends every request to the function, including /app/*. With studio:
+  // true the deployer hardcodes /api/* and /health as the only function routes
+  // and falls everything else through to a Studio SPA — which would 404 our
+  // /app/state and /app/session/reset routes. Run `mastra studio` locally
+  // pointed at the prod URL when needed. (Once /app/* moves to Supabase RPCs
+  // / shared package, studio: true becomes safe — see CLAUDE.md follow-ups.)
   // maxDuration: 300 = Pro default; revisit if a Thom turn ever exceeds 60s,
   // at which point we move Nynaeve to a background queue rather than raise it.
   // sfo1 keeps the function in the same region as Supabase US-West.
@@ -67,7 +65,7 @@ export const mastra = new Mastra({
       url: process.env.SUPABASE_URL,
       anonKey: process.env.SUPABASE_PUBLISHABLE_KEY,
       authorizeUser: () => true,
-      protected: ["/api/*", "/app/*", "/documents/*"],
+      protected: ["/api/*", "/app/*"],
     }),
     // Mount Studio under /studio rather than the URL root. Frontend lives on
     // Vercel; this server only handles API + Studio + custom routes.
@@ -94,12 +92,7 @@ export const mastra = new Mastra({
       // pull it via tools/userContext.ts and HONO_CONTEXT_KEYS respectively.
       userSupabaseMiddleware,
     ],
-    apiRoutes: [
-      appStateRoute,
-      appActivityRoute,
-      sessionResetRoute,
-      documentsRoute,
-    ],
+    apiRoutes: [appStateRoute, sessionResetRoute],
   },
 });
 

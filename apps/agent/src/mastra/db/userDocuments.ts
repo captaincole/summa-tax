@@ -166,19 +166,6 @@ export async function createDocument(
   return { id: data.id as string, storagePath };
 }
 
-export async function getDocumentById(
-  supabase: SupabaseClient,
-  id: string,
-): Promise<UserDocumentRow | null> {
-  const { data, error } = await supabase
-    .from("user_documents")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-  if (error) throw new Error(`getDocumentById failed: ${error.message}`);
-  return data ? rowToDocument(data as UserDocumentDbRow) : null;
-}
-
 export interface ListDocumentsOpts {
   category?: Category;
   scenario?: string | null;
@@ -212,44 +199,3 @@ export async function listDocuments(
   return ((data ?? []) as UserDocumentDbRow[]).map(rowToDocument);
 }
 
-// Build a short-lived signed URL for downloading a document's bytes. Used by
-// the /documents/:id route to redirect browsers; URLs expire quickly so
-// leaks (shoulder-surf, screenshot) age out fast.
-//
-// When `downloadFilename` is provided, Supabase sets `Content-Disposition:
-// attachment; filename="..."` on the response — browsers save the file
-// instead of rendering it inline. Pass undefined for default inline behavior
-// (PDFs open in the browser's viewer; useful for chat-link clicks where
-// the user wants to see the form Thom generated, not save it).
-export async function signDocumentUrl(
-  supabase: SupabaseClient,
-  storagePath: string,
-  expiresInSeconds: number = 60,
-  downloadFilename?: string,
-): Promise<string> {
-  const options = downloadFilename ? { download: downloadFilename } : undefined;
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(storagePath, expiresInSeconds, options);
-  if (error || !data?.signedUrl) {
-    throw new Error(
-      `signDocumentUrl failed: ${error?.message ?? "no url returned"}`,
-    );
-  }
-  return data.signedUrl;
-}
-
-// Read a document's bytes server-side (e.g., for an agent tool that processes
-// a W-2 with vision). RLS scopes via the user-scoped client.
-export async function downloadDocumentBytes(
-  supabase: SupabaseClient,
-  storagePath: string,
-): Promise<ArrayBuffer> {
-  const { data, error } = await supabase.storage.from(BUCKET).download(storagePath);
-  if (error || !data) {
-    throw new Error(
-      `downloadDocumentBytes failed: ${error?.message ?? "no data"}`,
-    );
-  }
-  return data.arrayBuffer();
-}
