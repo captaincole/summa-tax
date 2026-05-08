@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Mastra } from "@mastra/core";
-import { MastraAuthSupabase } from "@mastra/auth-supabase";
+import { StudioSupabaseAuth } from "./server/studioAuth";
 import { VercelDeployer } from "@mastra/deployer-vercel";
 import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
@@ -47,21 +47,20 @@ export const mastra = new Mastra({
     regions: ["sfo1"],
   }),
   server: {
-    // Validates Supabase JWTs on every protected request. authorizeUser:
-    // () => true is a coarse "authenticated user is allowed past the door"
-    // gate (NOT a permission grant) — per-row scoping comes from RLS at the
-    // public.* tables and from MASTRA_RESOURCE_ID_KEY (set by
-    // userSupabaseMiddleware) at the mastra.* tables. /app/* is in `protected`
-    // alongside the default /api/* so our custom routes go through auth too.
-    auth: new MastraAuthSupabase({
+    // StudioSupabaseAuth = MastraAuthSupabase (JWT verification for web-app
+    // requests) + ICredentialsProvider.signIn (so Studio renders an
+    // email/password login form). Sign-in is gated by STUDIO_ALLOWED_EMAILS;
+    // web-app users go through the existing JWT path and bypass that
+    // allowlist entirely. authorizeUser: () => true is the coarse "authed
+    // user is past the door" gate — per-row scoping comes from RLS at
+    // public.* tables and MASTRA_RESOURCE_ID_KEY (set by
+    // userSupabaseMiddleware) at mastra.* tables.
+    auth: new StudioSupabaseAuth({
       url: process.env.SUPABASE_URL,
       anonKey: process.env.SUPABASE_PUBLISHABLE_KEY,
       authorizeUser: () => true,
       protected: ["/api/*", "/app/*"],
     }),
-    // Mount Studio under /studio rather than the URL root. Frontend lives on
-    // Vercel; this server only handles API + Studio + custom routes.
-    studioBase: "/studio",
     middleware: [
       // Debug shim: per-request timing log. PinoLogger writes are async-
       // buffered and get truncated on serverless function exit; plain

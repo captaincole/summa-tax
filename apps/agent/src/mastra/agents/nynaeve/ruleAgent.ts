@@ -1,5 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { citeRefDocTool } from "../../tools/refDocs";
+import { CPA_RULES } from "./cpaRules";
 
 // Rule agent — the workflow's verdict-or-loop decider. Sees the decision,
 // the evidence bundle, and the assessed risk tier. Returns a discriminated
@@ -11,7 +12,7 @@ import { citeRefDocTool } from "../../tools/refDocs";
 // to verify exact quotes for citations. (Restricting tools here prevents
 // the agent from inventing a parallel search and complicating training data.)
 
-const instructions = `You are the verdict-or-loop decider for the review-decision workflow. You see one decision the tax agent recorded, the evidence gathered for it (taxpayer facts + retrieved IRS passages), and a risk-tier assessment.
+const baseInstructions = `You are the verdict-or-loop decider for the review-decision workflow. You see one decision the tax agent recorded, the evidence gathered for it (taxpayer facts + retrieved IRS passages), and a risk-tier assessment.
 
 ## Your job
 
@@ -39,6 +40,14 @@ Given the risk tier, decide whether the evidence is sufficient to commit to a ve
 - **Self-attestable claims don't need IRS authority at low risk.** "I live in California" with a W-2 California address corroborates without an IRS pub citation.
 
 Be specific. Your \`reason\` should reference concrete facts and concrete passages, not "looks good".`;
+
+const instructions = `${baseInstructions}
+
+# Learned CPA rules
+
+These are domain rules contributed by our CPAs as they review edge cases. They take precedence over the default heuristics above when they conflict.
+
+${CPA_RULES}`;
 
 export const ruleAgent = new Agent({
   id: "ruleAgent",

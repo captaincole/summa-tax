@@ -1,4 +1,5 @@
 import { createTool } from "@mastra/core/tools";
+import { waitUntil } from "@vercel/functions";
 import { z } from "zod";
 import { recordDecision, listDecisions } from "../db/aiDecisions";
 import { reviewDecision } from "../workflows/reviewDecision";
@@ -7,7 +8,7 @@ import { requireUserContext } from "./userContext";
 export const recordAIDecision = createTool({
   id: "record-ai-decision",
   description:
-    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the user's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. The decision is synchronously reviewed by the review-decision workflow: it gathers facts + IRS guidance, assesses risk tier, then rules on the decision (looping up to 3 times to retrieve more evidence if needed). The tool response includes verdict — if 'inaccurate', revise and re-record; if 'needs_more_facts', the workflow created an open_questions row describing what to ask the user.",
+    "Record a judgment call the agent made that isn't a direct user-stated fact. Use when the user's situation is ambiguous or underdetermined and the agent must interpret it (e.g. 'full-year CA resident despite 3 months in NV', 'W-2 income classified as wages not self-employment'). MUST include a rationale explaining the reasoning, which facts supported it, and a confidence level. After the decision is recorded, a background review-decision workflow runs (gather facts + IRS guidance, assess risk, rule). The tool returns IMMEDIATELY with verdict='pending' — keep going. The verdict updates on the row when the review completes; an open_questions row is created if more facts are needed.",
   inputSchema: z.object({
     year: z.number().int().describe("Tax year (e.g. 2025)"),
     decisionKey: z
@@ -50,25 +51,8 @@ export const recordAIDecision = createTool({
   outputSchema: z.object({
     id: z.string(),
     recorded: z.boolean(),
-    verdict: z.enum([
-      "accurate",
-      "inaccurate",
-      "needs_more_facts",
-      "review_failed",
-    ]),
+    verdict: z.literal("pending"),
     verdictReason: z.string(),
-    authorityCitations: z.array(
-      z.object({
-        blockId: z.string(),
-        quote: z.string().optional(),
-      }),
-    ),
-    riskTier: z.enum(["low", "medium", "high"]).nullable(),
-    iterationCount: z.number().int().min(1).max(3),
-    // Populated only when verdict === 'needs_more_facts' — Thom uses these
-    // to ask the user for clarification on this specific decision.
-    whatsMissing: z.string().optional(),
-    openQuestionId: z.string().optional(),
   }),
   execute: async (input, context) => {
     const { supabase, userId } = requireUserContext(context);
@@ -86,19 +70,27 @@ export const recordAIDecision = createTool({
       sourceNote: input.sourceNote,
     });
 
-    const review = await reviewDecision(supabase, userId, id);
+    // Fire-and-forget the review. On Vercel, waitUntil keeps the function
+    // alive until the workflow completes (the HTTP response is sent
+    // immediately regardless). Locally, mastra dev is a long-running server
+    // so the promise just resolves naturally. Errors are logged and
+    // swallowed — the workflow's own try/catch already stamps verdict=
+    // 'review_failed' on the row before re-throwing, so a failed review
+    // shows up in the activity feed regardless.
+    waitUntil(
+      reviewDecision(supabase, userId, id).catch((err) => {
+        console.error(
+          `[review-decision] background run failed for decision ${id}:`,
+          err,
+        );
+      }),
+    );
+
     return {
       id,
       recorded: true,
-      verdict: review.finalVerdict,
-      verdictReason: review.reason,
-      authorityCitations: review.citations,
-      riskTier: review.riskTier,
-      iterationCount: review.iterationCount,
-      ...(review.whatsMissing ? { whatsMissing: review.whatsMissing } : {}),
-      ...(review.openQuestionId
-        ? { openQuestionId: review.openQuestionId }
-        : {}),
+      verdict: "pending" as const,
+      verdictReason: "Review running in background.",
     };
   },
 });
@@ -129,6 +121,7 @@ export const listAIDecisions = createTool({
         createdAt: z.string(),
         verdict: z
           .enum([
+            "pending",
             "accurate",
             "inaccurate",
             "ungroundable",

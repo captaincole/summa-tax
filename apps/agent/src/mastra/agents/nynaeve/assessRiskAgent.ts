@@ -1,4 +1,5 @@
 import { Agent } from "@mastra/core/agent";
+import { CPA_RULES } from "./cpaRules";
 
 // Risk-tier assessor for the review-decision workflow. Reads the decision
 // plus the gathered evidence (facts + retrieved IRS blocks) and emits a tier
@@ -10,7 +11,7 @@ import { Agent } from "@mastra/core/agent";
 // No tools — the agent reasons over the input it's given. Always emits a
 // tier even when shaky; the rule step is the single source of loop control.
 
-const instructions = `You are a tax risk assessor. Read one decision recorded by the tax agent, plus the supporting evidence (taxpayer-stated facts, retrieved IRS reference passages), and assign a risk tier.
+const baseInstructions = `You are a tax risk assessor. Read one decision recorded by the tax agent, plus the supporting evidence (taxpayer-stated facts, retrieved IRS reference passages), and assign a risk tier.
 
 ## Tiers
 
@@ -27,6 +28,14 @@ const instructions = `You are a tax risk assessor. Read one decision recorded by
 You always emit a tier — never refuse. If you can't decide between two tiers, pick the higher one and capture the reasoning in \`dissentingConsiderations\`.
 
 Do not call tools. Do not narrate. Return only the structured output.`;
+
+const instructions = `${baseInstructions}
+
+# Learned CPA rules
+
+These are domain rules contributed by our CPAs as they review edge cases. They take precedence over the default heuristics above when they conflict.
+
+${CPA_RULES}`;
 
 export const assessRiskAgent = new Agent({
   id: "assessRiskAgent",

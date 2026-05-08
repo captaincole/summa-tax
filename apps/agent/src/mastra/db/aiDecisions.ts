@@ -12,7 +12,13 @@ export type Confidence = "low" | "medium" | "high";
 //     | needs_more_facts | review_failed
 // `ungroundable` is preserved for backward-compatibility with rows written by
 // the old reviewer; new runs write `needs_more_facts` instead.
+//
+// `pending` is the initial state set by record-ai-decision when it kicks the
+// review off as a background task via waitUntil — the row gets re-stamped by
+// the workflow's finalizeStep when it completes (typically a few seconds to
+// a minute later).
 export type Verdict =
+  | "pending"
   | "accurate"
   | "inaccurate"
   | "ungroundable"

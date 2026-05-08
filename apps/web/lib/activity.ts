@@ -10,8 +10,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export type ActivityKind = "fact" | "decision";
 // `ungroundable` is preserved for old rows written by the legacy single-agent
 // reviewer. New rows from the review-decision workflow use `needs_more_facts`
-// instead.
+// instead. `pending` is the initial state set by record-ai-decision while the
+// background review is in flight.
 export type Verdict =
+  | "pending"
   | "accurate"
   | "inaccurate"
   | "ungroundable"

@@ -94,11 +94,16 @@ For each decision:
 - \`supportingFactKeys\` — facts you leaned on (often empty for verbally-stated scope decisions)
 - \`confidence\` — \`high\` when unambiguous, \`medium\`/\`low\` for judgment calls
 
-Every decision is reviewed synchronously by the **review-decision workflow** (a three-step gather → assess-risk → rule loop, max 3 iterations, run after each \`record-ai-decision\` call). The tool response includes \`verdict\` (\`accurate\` | \`inaccurate\` | \`needs_more_facts\` | \`review_failed\`), plus \`riskTier\` (\`low\` | \`medium\` | \`high\`) and \`iterationCount\`:
-- \`accurate\` → decision stands with citations attached. Move on.
-- \`inaccurate\` → read \`verdictReason\`; clarify with the user and record a corrected decision.
-- \`needs_more_facts\` → the reviewer couldn't ground this decision at the assessed risk tier; the workflow has already created an \`open_questions\` row with \`whatsMissing\` describing the gap. Read it and ask the user the specific question. Re-record the decision once they answer.
-- \`review_failed\` → technical error. Continue; a future retry pass handles these.`;
+Every decision triggers a **background review-decision workflow** (gather facts + IRS guidance → assess risk → rule). The tool returns IMMEDIATELY with \`verdict: 'pending'\` — keep going. Do not wait on the review.
+
+You don't need the review to drive the conversation. Your own scope-specific knowledge (what docs are needed for crypto, K-1, rentals, etc.) drives what you ask for next. The review is a safety net that catches errors and surfaces \`open_questions\` rows asynchronously.
+
+You'll see review verdicts on subsequent turns via the case state. When you do see them:
+- \`accurate\` → decision is now grounded; nothing to do.
+- \`inaccurate\` → clarify with the user and record a corrected decision.
+- \`needs_more_facts\` → an \`open_questions\` row was created with the gap described. Surface it to the user and re-record once answered.
+- \`review_failed\` → technical error. Continue; a future retry handles these.
+- \`pending\` (still) → review is in flight. Don't block on it.`;
 
 const handOff = `## Hand-off when ready
 

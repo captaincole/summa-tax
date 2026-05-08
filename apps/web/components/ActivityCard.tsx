@@ -11,6 +11,7 @@ interface ActivityCardProps {
 }
 
 const VERDICT_LABEL: Record<Verdict, string> = {
+  pending: "Reviewing…",
   accurate: "Grounded",
   inaccurate: "Conflict",
   ungroundable: "No source",
@@ -19,6 +20,7 @@ const VERDICT_LABEL: Record<Verdict, string> = {
 };
 
 const VERDICT_TONE: Record<Verdict, string> = {
+  pending: "text-ink-secondary bg-bg-elevated animate-pulse-soft",
   accurate: "text-emerald-400 bg-emerald-400/10",
   inaccurate: "text-red-400 bg-red-400/10",
   ungroundable: "text-amber-400 bg-amber-400/10",

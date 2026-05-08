@@ -28,6 +28,7 @@
     "@mastra/observability": "^1.10.3",
     "@mastra/pg": "^1.9.4",
     "@supabase/supabase-js": "^2.105.1",
+    "@vercel/functions": "^3.5.0",
     "dotenv": "^17.4.2",
     "mastra": "^1.7.2",
     "pg": "^8.20.0",
