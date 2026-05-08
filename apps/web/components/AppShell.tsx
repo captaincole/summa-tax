@@ -28,6 +28,10 @@ export interface ChatMessage {
 }
 
 interface AppShellContextValue {
+  // Authenticated user's id, sourced from the layout's verified getUser() call.
+  // Components that subscribe to per-user resources (Realtime channels, etc.)
+  // read it from here instead of re-fetching.
+  userId: string;
   state: CaseState | null;
   refreshState: () => Promise<void>;
   // Triggered when the user resets so child routes can bust caches.
@@ -45,7 +49,13 @@ export function useAppShell(): AppShellContextValue {
   return v;
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  userId,
+}: {
+  children: React.ReactNode;
+  userId: string;
+}) {
   const router = useRouter();
   const [state, setState] = useState<CaseState | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -133,6 +143,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   const ctx: AppShellContextValue = {
+    userId,
     state,
     refreshState,
     resetTick,

@@ -1,14 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchActivityItems, type ActivityItem, type Verdict } from "@/lib/activity";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ACTIVITY_TAX_YEAR,
+  decisionRowToItem,
+  factRowToItem,
+  fetchActivityItems,
+  type ActivityItem,
+  type Verdict,
+} from "@/lib/activity";
 import { createClient } from "@/lib/supabase/client";
+import { useAppShell } from "@/components/AppShell";
 import { cn } from "@/lib/cn";
 
 interface ActivityCardProps {
   // Bumped by the parent when activity may have changed (new turn, reset, etc).
+  // Also serves as the "wipe and refetch" trigger after a session reset; the
+  // realtime subscription handles incremental updates between bumps.
   refreshKey: number;
 }
+
+const ACTIVITY_LIMIT = 50;
 
 const VERDICT_LABEL: Record<Verdict, string> = {
   pending: "Reviewing…",
@@ -86,12 +98,17 @@ function isObject(v: unknown): v is Record<string, unknown> {
 }
 
 export function ActivityCard({ refreshKey }: ActivityCardProps) {
+  const { userId } = useAppShell();
+  const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState<ActivityItem[] | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
+  // Initial fetch + reset re-fetch. The realtime subscription below handles
+  // everything in between, so we only fetch on mount and when the parent
+  // bumps refreshKey (post-reset or post-turn safety net).
   useEffect(() => {
     let cancelled = false;
-    fetchActivityItems(createClient(), 50)
+    fetchActivityItems(supabase, ACTIVITY_LIMIT)
       .then((rows) => {
         if (!cancelled) setItems(rows);
       })
@@ -102,7 +119,83 @@ export function ActivityCard({ refreshKey }: ActivityCardProps) {
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }, [refreshKey, supabase]);
+
+  // Realtime — one channel, three listeners. RLS already scopes broadcasts to
+  // the owner; the user_id filter is a defensive narrow that also avoids
+  // deserializing other tax years' rows.
+  useEffect(() => {
+    const userFilter = `user_id=eq.${userId}`;
+
+    function prepend(item: ActivityItem) {
+      setItems((prev) => {
+        const base = prev ?? [];
+        if (base.some((existing) => existing.id === item.id)) return base;
+        return [item, ...base].slice(0, ACTIVITY_LIMIT);
+      });
+    }
+
+    function patch(item: ActivityItem) {
+      setItems((prev) => {
+        if (!prev) return prev;
+        const idx = prev.findIndex((existing) => existing.id === item.id);
+        if (idx === -1) return prev;
+        const next = prev.slice();
+        next[idx] = item;
+        return next;
+      });
+    }
+
+    const channel = supabase
+      .channel(`activity-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "tax_facts",
+          filter: userFilter,
+        },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
+          prepend(factRowToItem(row));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "ai_decisions",
+          filter: userFilter,
+        },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
+          prepend(decisionRowToItem(row));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "ai_decisions",
+          filter: userFilter,
+        },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
+          patch(decisionRowToItem(row));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [supabase, userId]);
 
   function toggle(id: string) {
     setExpanded((prev) => {

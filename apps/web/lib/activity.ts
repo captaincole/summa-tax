@@ -37,6 +37,41 @@ export interface ActivityItem {
 }
 
 const DEMO_TAX_YEAR = 2025;
+export const ACTIVITY_TAX_YEAR = DEMO_TAX_YEAR;
+
+// Raw column shape coming back from supabase-js / postgres_changes payloads.
+// We accept Record<string, unknown> because the realtime payload type isn't
+// generic over the row, and casting site-by-site at the call point is noisier.
+type Row = Record<string, unknown>;
+
+export function factRowToItem(row: Row): ActivityItem {
+  return {
+    kind: "fact",
+    id: row.id as string,
+    createdAt: row.created_at as string,
+    title: row.fact_key as string,
+    category: row.category as string,
+    value: row.fact_value,
+    sourceNote: (row.source_note as string | null) ?? null,
+  };
+}
+
+export function decisionRowToItem(row: Row): ActivityItem {
+  return {
+    kind: "decision",
+    id: row.id as string,
+    createdAt: row.created_at as string,
+    title: row.decision_key as string,
+    value: row.decision,
+    sourceNote: (row.source_note as string | null) ?? null,
+    rationale: (row.rationale as string | undefined) ?? undefined,
+    supportingFactKeys:
+      (row.supporting_fact_keys as string[] | undefined) ?? undefined,
+    confidence: (row.confidence as Confidence | undefined) ?? undefined,
+    verdict: (row.verdict as Verdict | null | undefined) ?? null,
+    verdictReason: (row.verdict_reason as string | null | undefined) ?? null,
+  };
+}
 
 export async function fetchActivityItems(
   supabase: SupabaseClient,
@@ -65,29 +100,8 @@ export async function fetchActivityItems(
   if (decisionsRes.error)
     throw new Error(`activity decisions: ${decisionsRes.error.message}`);
 
-  const factItems: ActivityItem[] = (factsRes.data ?? []).map((f) => ({
-    kind: "fact",
-    id: f.id as string,
-    createdAt: f.created_at as string,
-    title: f.fact_key as string,
-    category: f.category as string,
-    value: f.fact_value as unknown,
-    sourceNote: (f.source_note as string | null) ?? null,
-  }));
-
-  const decisionItems: ActivityItem[] = (decisionsRes.data ?? []).map((d) => ({
-    kind: "decision",
-    id: d.id as string,
-    createdAt: d.created_at as string,
-    title: d.decision_key as string,
-    value: d.decision as unknown,
-    sourceNote: (d.source_note as string | null) ?? null,
-    rationale: (d.rationale as string | undefined) ?? undefined,
-    supportingFactKeys: (d.supporting_fact_keys as string[] | undefined) ?? undefined,
-    confidence: (d.confidence as Confidence | undefined) ?? undefined,
-    verdict: (d.verdict as Verdict | null | undefined) ?? null,
-    verdictReason: (d.verdict_reason as string | null | undefined) ?? null,
-  }));
+  const factItems = (factsRes.data ?? []).map(factRowToItem);
+  const decisionItems = (decisionsRes.data ?? []).map(decisionRowToItem);
 
   return [...factItems, ...decisionItems]
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
