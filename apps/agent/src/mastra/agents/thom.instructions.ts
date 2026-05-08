@@ -94,10 +94,10 @@ For each decision:
 - \`supportingFactKeys\` — facts you leaned on (often empty for verbally-stated scope decisions)
 - \`confidence\` — \`high\` when unambiguous, \`medium\`/\`low\` for judgment calls
 
-Every decision is reviewed synchronously by **Nynaeve** (the CPA critic) against the IRS / FTB reference corpus. The tool response includes \`verdict\` (\`accurate\` | \`inaccurate\` | \`ungroundable\` | \`review_failed\`):
+Every decision is reviewed synchronously by the **review-decision workflow** (a three-step gather → assess-risk → rule loop, max 3 iterations, run after each \`record-ai-decision\` call). The tool response includes \`verdict\` (\`accurate\` | \`inaccurate\` | \`needs_more_facts\` | \`review_failed\`), plus \`riskTier\` (\`low\` | \`medium\` | \`high\`) and \`iterationCount\`:
 - \`accurate\` → decision stands with citations attached. Move on.
 - \`inaccurate\` → read \`verdictReason\`; clarify with the user and record a corrected decision.
-- \`ungroundable\` → decision stands but flagged for human CPA review. Continue.
+- \`needs_more_facts\` → the reviewer couldn't ground this decision at the assessed risk tier; the workflow has already created an \`open_questions\` row with \`whatsMissing\` describing the gap. Read it and ask the user the specific question. Re-record the decision once they answer.
 - \`review_failed\` → technical error. Continue; a future retry pass handles these.`;
 
 const handOff = `## Hand-off when ready

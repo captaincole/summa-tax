@@ -8,7 +8,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // here. The case engine handles latest-value collapsing elsewhere.
 
 export type ActivityKind = "fact" | "decision";
-export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
+// `ungroundable` is preserved for old rows written by the legacy single-agent
+// reviewer. New rows from the review-decision workflow use `needs_more_facts`
+// instead.
+export type Verdict =
+  | "accurate"
+  | "inaccurate"
+  | "ungroundable"
+  | "needs_more_facts"
+  | "review_failed";
 export type Confidence = "low" | "medium" | "high";
 
 export interface ActivityItem {

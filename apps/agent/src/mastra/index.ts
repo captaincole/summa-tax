@@ -4,7 +4,10 @@ import { MastraAuthSupabase } from "@mastra/auth-supabase";
 import { VercelDeployer } from "@mastra/deployer-vercel";
 import { PinoLogger } from "@mastra/loggers";
 import { thom } from "./agents/thom";
-import { nynaeve } from "./agents/nynaeve";
+import { queryFormulator } from "./agents/nynaeve/queryFormulator";
+import { assessRiskAgent } from "./agents/nynaeve/assessRiskAgent";
+import { ruleAgent } from "./agents/nynaeve/ruleAgent";
+import { reviewDecisionWorkflow } from "./workflows/reviewDecision";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appStateRoute } from "./server/routes/appState";
@@ -21,7 +24,8 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
 const storage = await createStorage();
 
 export const mastra = new Mastra({
-  agents: { thom, nynaeve },
+  agents: { thom, queryFormulator, assessRiskAgent, ruleAgent },
+  workflows: { reviewDecision: reviewDecisionWorkflow },
   storage,
   logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
   observability: createObservability(),

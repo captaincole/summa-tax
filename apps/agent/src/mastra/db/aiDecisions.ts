@@ -5,7 +5,19 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // inserts so RLS WITH CHECK validates it explicitly.
 
 export type Confidence = "low" | "medium" | "high";
-export type Verdict = "accurate" | "inaccurate" | "ungroundable" | "review_failed";
+// Verdicts come from two paths:
+//   - the legacy single-agent reviewer (Nynaeve direct): accurate | inaccurate
+//     | ungroundable | review_failed
+//   - the multi-step review-decision workflow: accurate | inaccurate
+//     | needs_more_facts | review_failed
+// `ungroundable` is preserved for backward-compatibility with rows written by
+// the old reviewer; new runs write `needs_more_facts` instead.
+export type Verdict =
+  | "accurate"
+  | "inaccurate"
+  | "ungroundable"
+  | "needs_more_facts"
+  | "review_failed";
 
 export interface AuthorityCitation {
   blockId: string;

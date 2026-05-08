@@ -14,6 +14,7 @@ const VERDICT_LABEL: Record<Verdict, string> = {
   accurate: "Grounded",
   inaccurate: "Conflict",
   ungroundable: "No source",
+  needs_more_facts: "Needs info",
   review_failed: "Review failed",
 };
 
@@ -21,6 +22,7 @@ const VERDICT_TONE: Record<Verdict, string> = {
   accurate: "text-emerald-400 bg-emerald-400/10",
   inaccurate: "text-red-400 bg-red-400/10",
   ungroundable: "text-amber-400 bg-amber-400/10",
+  needs_more_facts: "text-amber-400 bg-amber-400/10",
   review_failed: "text-ink-muted bg-bg-elevated",
 };
 

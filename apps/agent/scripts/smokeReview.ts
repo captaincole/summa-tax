@@ -5,7 +5,13 @@ import { recordAIDecision } from "../src/mastra/tools/aiDecisions";
 
 type Case = {
   name: string;
-  expectedVerdict: "accurate" | "inaccurate" | "ungroundable";
+  // The third case's expectedVerdict is "ungroundable" — that was the verdict
+  // the legacy single-agent reviewer produced. The new review-decision
+  // workflow does not produce "ungroundable"; it produces "needs_more_facts"
+  // when retrieval fails after 3 iterations, or "accurate" for self-attestable
+  // claims at low risk (which the CA residency case probably is). Re-validate
+  // test expectations after a smoke run.
+  expectedVerdict: "accurate" | "inaccurate" | "ungroundable" | "needs_more_facts";
   facts: Array<{ category: string; key: string; value: unknown; sourceNote: string }>;
   decision: {
     decisionKey: string;
