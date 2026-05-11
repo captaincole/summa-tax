@@ -32,6 +32,15 @@ export interface RetrieveOpts {
   topK?: number;
   /** How many fields to retrieve for in parallel. */
   concurrency?: number;
+  /** Skip Voyage rerank-2.5 — falls back to merged FTS + vector ordering.
+   *  Default true for Phase D because the 197-field × 100-candidate volume
+   *  trips the rerank-2.5 TPM ceiling (2M tok/min), and binding
+   *  classification doesn't need rerank-grade precision. */
+  noRerank?: boolean;
+  /** Candidates pulled from each retrieval leg before merging. Smaller =
+   *  less data through Voyage = faster + lower cost. Default 20 (vs
+   *  hybridSearchRefDocs's default of 50) since we keep topK at 3. */
+  candidatesPerLeg?: number;
 }
 
 export async function retrieveContextPerField(
@@ -40,6 +49,8 @@ export async function retrieveContextPerField(
 ): Promise<RetrievedFieldContext[]> {
   const topK = opts.topK ?? 3;
   const concurrency = Math.max(1, Math.min(opts.concurrency ?? 10, 25));
+  const noRerank = opts.noRerank ?? true;
+  const candidatesPerLeg = opts.candidatesPerLeg ?? 20;
 
   const out: RetrievedFieldContext[] = new Array(opts.fields.length);
   let cursor = 0;
@@ -51,7 +62,12 @@ export async function retrieveContextPerField(
       if (i >= opts.fields.length) return;
       const field = opts.fields[i];
       const query = buildFieldQuery(field, opts.formTitle);
-      const hits = await hybridSearchRefDocs({ query, limit: topK });
+      const hits = await hybridSearchRefDocs({
+        query,
+        limit: topK,
+        noRerank,
+        candidatesPerLeg,
+      });
       out[i] = {
         fieldId: field.fieldId,
         blocks: hits.map((h) => ({

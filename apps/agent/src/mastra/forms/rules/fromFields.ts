@@ -18,7 +18,9 @@ export const fromFields = rule({
     terms: z
       .array(
         z.object({
-          formId: z.string(),
+          // Full fieldId from the catalog (e.g. "form-1040.line.9"). The
+          // source form is derived from the first segment — by convention,
+          // every fieldId starts with its parent formId.
           fieldId: z.string(),
           sign: z.number(),
           // When the term's source form's mustFile is `false`, contribute
@@ -39,15 +41,21 @@ export const fromFields = rule({
     const supporting: string[] = [];
 
     for (const t of p.terms) {
-      const sourceMustFile = ctx.formMustFile(t.formId);
+      // fieldId convention: "<formId>.<section>.<key>". Split on first dot
+      // to recover the source formId for the mustFile check.
+      const dotIdx = t.fieldId.indexOf(".");
+      const sourceFormId =
+        dotIdx > 0 ? t.fieldId.slice(0, dotIdx) : t.fieldId;
+
+      const sourceMustFile = ctx.formMustFile(sourceFormId);
       if (!sourceMustFile) {
         return blocked(
-          `Source form ${t.formId} has not been evaluated yet — likely a topo-sort gap.`,
+          `Source form ${sourceFormId} (from fieldId ${t.fieldId}) has not been evaluated yet — likely a topo-sort gap.`,
         );
       }
       if (!sourceMustFile.ok) {
         return blocked(
-          `Source form ${t.formId} mustFile is blocked: ${sourceMustFile.reason}`,
+          `Source form ${sourceFormId} mustFile is blocked: ${sourceMustFile.reason}`,
           {
             decisionKey: sourceMustFile.missingDecisionKey,
             factKeys: sourceMustFile.missingFactKeys,
@@ -60,13 +68,13 @@ export const fromFields = rule({
       if (sourceMustFile.value === false) {
         if (t.whenSourceNotRequired === undefined) {
           return blocked(
-            `Source form ${t.formId} not required and term has no whenSourceNotRequired fallback.`,
+            `Source form ${sourceFormId} not required and term has no whenSourceNotRequired fallback.`,
           );
         }
         const fallback = Number(t.whenSourceNotRequired);
         if (!Number.isFinite(fallback)) {
           return blocked(
-            `Term ${t.formId}/${t.fieldId} fallback is not numeric: ${String(t.whenSourceNotRequired)}`,
+            `Term ${t.fieldId} fallback is not numeric: ${String(t.whenSourceNotRequired)}`,
           );
         }
         sum += t.sign * fallback;

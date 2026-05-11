@@ -82,13 +82,19 @@ tableLookupByDecision — Look up a numeric value from a flat table keyed on a d
   params: { decisionKey: string, table: Record<string, number> }
   Use for filing-status-dependent constants: standard deduction, exemption amounts.
 
-fromFields — Signed sum / reference of other fields (intra-form or cross-form).
+fromFields — Signed sum / reference of other form fields (intra-form or cross-form).
   params: {
-    terms: Array<{ formId: string, fieldId: string, sign: number (typically +1 or -1), whenSourceNotRequired?: number }>,
+    terms: Array<{
+      fieldId: string,   // FULL fieldId from the inventory (e.g. "form-1040.line.9", NOT "line.9").
+                         // The source form is derived from the first segment.
+      sign: number,      // Typically +1 or -1.
+      whenSourceNotRequired?: number,  // Fallback if the source form isn't required (set to 0 on cross-form refs).
+    }>,
     floor?: number,
     rationale?: string,
   }
-  Use for any line-arithmetic ("line 11 = line 9 − line 10", "line 7 = schedule-d.line.16"). For cross-form refs where the source form may not apply, set whenSourceNotRequired (typically 0).
+  Use for any line-arithmetic ("line 11 = line 9 − line 10") or cross-form value references.
+  IMPORTANT: every term's fieldId must match an inventory entry EXACTLY. Do not reference fields from forms that aren't in the inventory — use \`constant\` 0 instead for those.
 
 constant — Fixed value, no inputs.
   params: { value: unknown, rationale: string }
@@ -131,9 +137,9 @@ Picking rules:
   - Tax bracket math (only line 16) → bracketLookup
   - Anything not yet supported → constant 0 with a rationale
 
-When using fromFields for intra-form math (e.g. line 11 = line 9 − line 10), every term's formId is the current form being bound. When using fromFields for cross-form refs (e.g. 1040 line 7 from schedule-d.line.16), use the source form's id and include whenSourceNotRequired: 0 if the source form might not apply.
+When using fromFields, every term's fieldId must match an inventory entry exactly — full path including the formId prefix. For intra-form math (e.g. line 11 = line 9 − line 10) every term references the current form's fields. For cross-form refs, the referenced form must also be in the catalog inventory; if it isn't, bind to constant 0 with a rationale explaining "source form not yet ingested."
 
-Don't invent facts or decisions that aren't on the "Available" list. If a field requires data we don't have, use constant 0 with an explanatory rationale — that's the honest answer.
+Don't invent facts, decisions, or field references that aren't on the inventory / Available list. If a field requires data we don't have, use constant 0 with an explanatory rationale — that's the honest answer.
 
 Rationales should be one short sentence per binding ("Sum of W-2 box 1 across employers"). The form engine surfaces rationales to debug why a value came out a certain way.`;
 
@@ -392,8 +398,14 @@ function buildInventoryBlock(opts: ClassifyBindingsOpts): string {
     (f) =>
       `  ${f.fieldId} — "${f.label}" (category=${f.category}, valueType=${f.valueType})`,
   );
+  // Distinct formIds in the catalog. Right now Phase B only seeded
+  // form-1040; Schedule D / 8949 / 540 come back in Phase F.
+  const formsInCatalog = Array.from(new Set(opts.fields.map((f) => f.formId)));
   return `Form being bound: ${opts.formTitle} (${opts.formId}, tax year ${opts.taxYear})
 
-Full field inventory (${opts.fields.length} fields — use for cross-field references via fromFields):
+Catalog contains these forms (any fromFields term whose fieldId references a form NOT in this list must instead bind to constant 0 with a "source form not in catalog yet" rationale):
+${formsInCatalog.map((f) => `  - ${f}`).join("\n")}
+
+Full field inventory (${opts.fields.length} fields — use ONLY these fieldIds for fromFields references):
 ${lines.join("\n")}`;
 }
