@@ -6,7 +6,6 @@ export { lookupFact } from "./lookupFact.js";
 export { sumFacts } from "./sumFacts.js";
 export { tableLookupByDecision } from "./tableLookupByDecision.js";
 export { lookupDecision } from "./lookupDecision.js";
-export { fromOtherFormField } from "./fromOtherFormField.js";
+export { fromFields } from "./fromFields.js";
 export { constant } from "./constant.js";
 export { bracketLookup } from "./bracketLookup.js";
-export { combineFields } from "./combineFields.js";

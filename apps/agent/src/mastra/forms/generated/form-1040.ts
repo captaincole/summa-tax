@@ -113,9 +113,11 @@ bindField(
     category: "income",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
-    terms: [{ fieldId: "form-1040.line.1a", sign: 1 }],
+    terms: [
+      { formId: "form-1040", fieldId: "form-1040.line.1a", sign: 1 },
+    ],
     rationale: "Currently only line 1a is populated.",
   },
 );
@@ -157,9 +159,14 @@ bindField(
 );
 
 // ─── Capital gain/(loss) ───
-// TODO(Phase F): re-bind to r.fromOtherFormField pointing at
-// schedule-d.line.16 once Schedule D is reintroduced. For Phase A,
-// Schedule D is disabled so line 7 is just zero.
+// TODO(Phase F): once Schedule D is reintroduced, rebind to:
+//   r.fromFields with terms = [{
+//     formId: "schedule-d",
+//     fieldId: "schedule-d.line.16",
+//     sign: 1,
+//     whenSourceNotRequired: 0,
+//   }]
+// For Phase A, Schedule D isn't registered so line 7 is just zero.
 bindField(
   "form-1040",
   {
@@ -184,12 +191,12 @@ bindField(
     category: "income",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.1z", sign: 1 },
-      { fieldId: "form-1040.line.3b", sign: 1 },
-      { fieldId: "form-1040.line.7", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.1z", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.3b", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.7", sign: 1 },
     ],
     rationale: "Sum of lines 1z, 3b, 7 (only ones populated for this return).",
   },
@@ -217,11 +224,11 @@ bindField(
     category: "income",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.9", sign: 1 },
-      { fieldId: "form-1040.line.10", sign: -1 },
+      { formId: "form-1040", fieldId: "form-1040.line.9", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.10", sign: -1 },
     ],
     rationale: "Line 9 minus line 10.",
   },
@@ -274,11 +281,11 @@ bindField(
     category: "deductions_credits",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.12", sign: 1 },
-      { fieldId: "form-1040.line.13", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.12", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.13", sign: 1 },
     ],
     rationale: "Standard deduction + QBI.",
   },
@@ -293,11 +300,11 @@ bindField(
     category: "income",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.11", sign: 1 },
-      { fieldId: "form-1040.line.14", sign: -1 },
+      { formId: "form-1040", fieldId: "form-1040.line.11", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.14", sign: -1 },
     ],
     floor: 0,
     rationale: "AGI minus deductions, floored at zero.",
@@ -362,11 +369,11 @@ bindField(
     category: "deductions_credits",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.16", sign: 1 },
-      { fieldId: "form-1040.line.23", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.16", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.23", sign: 1 },
     ],
     rationale: "Tax + other taxes.",
   },
@@ -394,9 +401,11 @@ bindField(
     category: "deductions_credits",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
-    terms: [{ fieldId: "form-1040.line.25a", sign: 1 }],
+    terms: [
+      { formId: "form-1040", fieldId: "form-1040.line.25a", sign: 1 },
+    ],
     rationale: "Currently only line 25a contributes.",
   },
 );
@@ -410,11 +419,11 @@ bindField(
     category: "deductions_credits",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.33", sign: 1 },
-      { fieldId: "form-1040.line.24", sign: -1 },
+      { formId: "form-1040", fieldId: "form-1040.line.33", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.24", sign: -1 },
     ],
     floor: 0,
     rationale: "Refund: payments minus tax, floored at zero.",
@@ -430,11 +439,11 @@ bindField(
     category: "deductions_credits",
     valueType: "numeric",
   },
-  r.combineFields,
+  r.fromFields,
   {
     terms: [
-      { fieldId: "form-1040.line.24", sign: 1 },
-      { fieldId: "form-1040.line.33", sign: -1 },
+      { formId: "form-1040", fieldId: "form-1040.line.24", sign: 1 },
+      { formId: "form-1040", fieldId: "form-1040.line.33", sign: -1 },
     ],
     floor: 0,
     rationale: "Balance due: tax minus payments, floored at zero.",
