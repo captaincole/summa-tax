@@ -27,14 +27,18 @@ PDF + form metadata
         │
         ▼
 ┌─────────────────────────┐
-│ extractRawText          │   pdf-lib / unpdf → per-page text
+│ extractAcroFormWidgets  │   pdf-lib → deterministic list of widgets:
+│                         │   name (e.g. "f1_3"), type, page, x/y.
 └─────────────────────────┘
         │
         ▼
 ┌─────────────────────────┐
-│ extractFields           │   Claude with structured output
-│                         │   → array of { fieldId, label, valueType,
-│                         │     pdf_widget_name, position }
+│ classifyWidgets         │   Claude with structured output, given
+│                         │   widget + surrounding page text, fills
+│                         │   the parts that need judgment: label,
+│                         │   category, valueType.
+│                         │   → array of { fieldId, label, category,
+│                         │     valueType, pdf_widget_name, position }
 └─────────────────────────┘
         │
         ▼
@@ -42,6 +46,8 @@ PDF + form metadata
 │ writeFormRecords        │   upsert into `forms` + `form_fields`
 └─────────────────────────┘
 ```
+
+AcroForm widgets are the trusted spine. The PDFs we care about (1040, 540, 8949, Schedule D, and most IRS/FTB output forms) are fillable AcroForms, so `pdf-lib` gives us a complete, deterministic field inventory with zero AI in the loop. Claude only fills the parts that genuinely need judgment — the human-readable label, the UI category, the value type. If a form ever turns out to be flat-text-only (no AcroForm), we fall back to text extraction — but the fallback should rarely trigger for output forms.
 
 ### Part 2 — Fields + Instructions → generated bindings
 
@@ -55,7 +61,9 @@ form_fields (from DB) + instructions PDF
         │
         ▼
 ┌─────────────────────────┐
-│ classifyBindings        │   per-field Claude call (.foreach step)
+│ classifyBindings        │   per-field semantics; Claude calls
+│                         │   coalesced 10 fields at a time under the
+│                         │   hood to stay under Anthropic rate limits.
 │                         │   → { ruleName, ruleParams } per field
 └─────────────────────────┘
         │
@@ -65,7 +73,18 @@ form_fields (from DB) + instructions PDF
 └─────────────────────────┘
 ```
 
-Stage 2 records a row per field in `form_ingestion_run_steps` for the same auditability we get on Nynaeve's reviews.
+`classifyBindings` is **per-field semantically** — one workflow step per field, one row per field in `form_ingestion_run_steps`, debug-able at field granularity. Under the hood, calls are coalesced into batches of 10 (DataLoader-style aggregator → one Claude call returning an array → dis-aggregator splits results back to per-field). Each batched call benefits from prompt caching on the instructions PDF + the already-extracted-forms context. A concurrency cap (~3-5 in-flight batches) keeps the TPM curve smooth so a long form like the 1040 doesn't burst-fail.
+
+## Build order
+
+Six phases. The runtime stays working through phases A–E with 540, 8949, and Schedule D temporarily disabled — they come back in Phase F. The point of phases A–B is to lock in the runtime shape and DB plumbing before any AI is in the loop, so Phase E can diff AI-generated output against a known-good hand-written reference.
+
+- **Phase A — Engine + rules + hand-written 1040.** Build `forms/engine.ts`, the six rules under `forms/rules/`, and hand-write `forms/generated/form-1040.ts` in the new shape. Wire `caseState.ts` through the new engine. 540, 8949, Schedule D temporarily disabled.
+- **Phase B — DB tables + Catalog loader.** Add `forms` and `form_fields` tables. `Catalog` interface with `loadFromFixture(path)` and `loadFromDb(supabase)`. Seed the DB from the Phase A 1040 fixture so the DB path is exercised before the AI pipeline produces real rows.
+- **Phase C — Part 1: PDF → DB.** AcroForm-spine extraction script plus the Claude classification step. Writes `form_fields` rows for 1040.
+- **Phase D — Part 2: DB → generated TS.** Workflow reads `form_fields` + the 1040 instructions PDF, classifies bindings 10 fields at a time, overwrites `generated/form-1040.ts`.
+- **Phase E — Validate 1040.** Diff AI-generated `form-1040.ts` (Phase D) against hand-written `form-1040.ts` (Phase A). Hand-written is the reference. Any drift either fixes the Part 2 prompt or surfaces a gap in the rule library.
+- **Phase F — Remaining forms.** Run the pipeline on 540, 8949, Schedule D, or hand-write them in the new shape — whichever is faster at the time.
 
 ## Data model
 
@@ -134,7 +153,7 @@ bindField("form-1040.line.1a", r.sumFacts, {
 
 Each rule is a pure function `(params, ctx) => DerivationResult<V>`. Params are validated by Zod at registration time so the generated code can't reference a rule with the wrong param shape.
 
-We'll need more rules over time but the count grows slowly — most new forms reuse existing rules with new params.
+We'll need more rules over time but the count grows slowly — most new forms reuse existing rules with new params. Conditional-math rules (bracket lookup for progressive tax bands, threshold caps like SALT or IRA limits, phase-outs like QBI or child credit, branching formulas) are **deferred**. We add one when a real form forces it, not preemptively, because the right shape for each is easier to see in context.
 
 ## Three worked examples
 
@@ -290,6 +309,9 @@ Considered: standard deductions, tax brackets, EITC tables as DB rows. **Deferre
 ### Composite must-file rules (`any_of`, `all_of`)
 Considered: a must-file rule that ORs/ANDs other rules. **Rejected** — replaced by "must-file is always an AI decision." The judgment that goes into "Schedule D required if (sales OR cap_gain_distributions)" lives in Nynaeve's review and Thom's prompt, not in a composite-rule DSL.
 
+### Pre-designed conditional-math rule family
+Considered: design bracket / cap / phase-out / conditional rules upfront so the rule library is "complete." **Deferred.** The shapes are different enough that one-rule-fits-all gets ugly fast, and the right param shape for each is easier to see when a real form is asking for it. We start at six rules and grow on demand.
+
 ### PDF rendering auto-generation
 Considered: walk `form_fields.pdf_widget_name` and a generic renderer fills any form. **Deferred.** Renderer logic varies per form (radio groups, repeating sections, multi-page handling). Auto-generate as Phase 2 once the binding pipeline is stable.
 
@@ -306,6 +328,6 @@ Considered: `generated/form-1040.ai.ts` (regeneratable) + `generated/form-1040.o
 
 ## Relationship to current code
 
-The work in this session (renames `BaseLine` → `BaseFormField`, addition of `category` + `valueType`, header fields modeled as FormFields, `categorize()` function) is **scaffolding that validates the runtime data shape**. Once the ingestion pipeline lands, the hand-coded `formXxx.ts` files are replaced by generated files. The types in `forms/types.ts` survive; the per-form files get regenerated.
+The work in commit `ba0def5` (renames `BaseLine` → `BaseFormField`, addition of `category` + `valueType`, header fields modeled as FormFields, `categorize()` function) is **scaffolding that validates the runtime data shape**. Once the ingestion pipeline lands, the hand-coded `formXxx.ts` files are replaced by generated files. The types in `forms/types.ts` survive; the per-form files get regenerated.
 
-Plan: ship the current scaffolding to lock in the data shape, then start building the ingestion pipeline in a subsequent session.
+Phase A starts by replacing the hand-coded `form1040.ts` with `forms/engine.ts` + `forms/rules/*.ts` + a hand-written `forms/generated/form-1040.ts`. The other per-form files (`form540.ts`, `form8949.ts`, `scheduleD.ts`) get disabled in Phase A and reintroduced in Phase F. We're not maintaining backwards compatibility across the phase transitions.
