@@ -9,10 +9,11 @@ import {
   type BaseFormField,
   type DerivationContext,
 } from "../forms/types";
-import { evaluateForm8949 } from "../forms/form8949";
-import { evaluateScheduleD } from "../forms/scheduleD";
-import { evaluateForm1040 } from "../forms/form1040";
-import { evaluateForm540 } from "../forms/form540";
+import { evaluateForm } from "../forms/engine";
+// Side-effect import: registers form-1040 with the engine. Phase F adds
+// imports for 540, 8949, Schedule D back here as they're re-implemented in
+// the new style.
+import "../forms/generated/form-1040";
 import { requireUserContext } from "./userContext";
 
 // Live case state for Thom. Runs the four-form engine against the current
@@ -79,18 +80,11 @@ export async function buildCaseState(
     decisions: makeDecisionsView(decisions),
   };
 
-  // Run forms in dependency order.
-  const form8949 = evaluateForm8949(ctx);
-  const scheduleD = evaluateScheduleD(ctx, form8949);
-  const form1040 = evaluateForm1040(ctx, scheduleD);
-  const form540 = evaluateForm540(ctx, form1040);
+  // Phase A: only Form 1040 runs through the new engine. 8949, Schedule D,
+  // and 540 are disabled — Phase F reintroduces them in the new shape.
+  const form1040 = evaluateForm("form-1040", ctx);
 
-  const summaries: EvaluatedFormSummary[] = [
-    summarizeForm(form8949),
-    summarizeForm(scheduleD),
-    summarizeForm(form1040),
-    summarizeForm(form540),
-  ];
+  const summaries: EvaluatedFormSummary[] = [summarizeForm(form1040)];
 
   // Aggregate unique pending decisions / facts across all blockers (incl.
   // mustFile blockers). Thom asks the user about these.
@@ -121,19 +115,20 @@ export async function buildCaseState(
     if (!ctx.facts.get(key)) pendingFacts.add(key);
   }
 
-  // Money convenience fields — read specific 1040 / CA 540 lines if present.
+  // Money convenience fields — read specific 1040 lines if present. State
+  // (540) money is zero in Phase A; restored in Phase F.
   const money = {
-    totalWages: lineValue(form1040.fields, "1z") ?? 0,
-    federalAgi: lineValue(form1040.fields, "11") ?? 0,
-    federalTaxableIncome: lineValue(form1040.fields, "15") ?? 0,
-    federalTax: lineValue(form1040.fields, "24") ?? 0,
-    federalWithholding: lineValue(form1040.fields, "25a") ?? 0,
-    federalRefund: lineValue(form1040.fields, "34") ?? 0,
-    federalOwed: lineValue(form1040.fields, "37") ?? 0,
-    stateTax: lineValue(form540.fields, "64") ?? 0,
-    stateWithholding: lineValue(form540.fields, "71") ?? 0,
-    stateRefund: lineValue(form540.fields, "97") ?? 0,
-    stateOwed: lineValue(form540.fields, "100") ?? 0,
+    totalWages: numericField(form1040.fields, "form-1040.line.1z") ?? 0,
+    federalAgi: numericField(form1040.fields, "form-1040.line.11") ?? 0,
+    federalTaxableIncome: numericField(form1040.fields, "form-1040.line.15") ?? 0,
+    federalTax: numericField(form1040.fields, "form-1040.line.24") ?? 0,
+    federalWithholding: numericField(form1040.fields, "form-1040.line.25a") ?? 0,
+    federalRefund: numericField(form1040.fields, "form-1040.line.34") ?? 0,
+    federalOwed: numericField(form1040.fields, "form-1040.line.37") ?? 0,
+    stateTax: 0,
+    stateWithholding: 0,
+    stateRefund: 0,
+    stateOwed: 0,
   };
 
   return {
@@ -145,7 +140,7 @@ export async function buildCaseState(
     decisionRows,
     // Raw evaluated forms — for downstream rollups like the Filing Status
     // panel that need access to every field, not just blockers.
-    evaluatedForms: [form8949, scheduleD, form1040, form540],
+    evaluatedForms: [form1040],
   };
 }
 
@@ -191,17 +186,13 @@ function summarizeForm(form: {
   };
 }
 
-// Look up a numeric field by its lineNumber. The fields array is
-// heterogeneous now — header text/select fields don't have lineNumber —
-// so we filter for the ones that do.
-function lineValue(
+// Look up a numeric field by its fieldId. Fields are heterogeneous (text,
+// numeric, single_select) so we filter on result type.
+function numericField(
   fields: readonly BaseFormField[],
-  number: string,
+  fieldId: string,
 ): number | null {
-  const field = fields.find(
-    (l): l is BaseFormField & { lineNumber: string } =>
-      "lineNumber" in l && (l as { lineNumber?: string }).lineNumber === number,
-  );
+  const field = fields.find((f) => f.fieldId === fieldId);
   if (!field || !field.result.ok) return null;
   const v = field.result.value;
   return typeof v === "number" ? v : null;
