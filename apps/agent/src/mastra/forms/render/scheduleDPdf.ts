@@ -100,25 +100,25 @@ export async function renderScheduleDPdf(
   setText("topmostSubform[0].Page1[0].f1_1[0]", taxpayerName);
   setText("topmostSubform[0].Page1[0].f1_2[0]", taxpayerSsn);
 
-  for (const line of evaluated.lines) {
-    // Narrow on lineKind first, then on result.ok — gives us the right
+  for (const field of evaluated.fields) {
+    // Narrow on formFieldKind first, then on result.ok — gives us the right
     // value type inside each branch without casts.
-    if (line.lineKind === "schedule-d.aggregate") {
-      if (!line.result.ok) continue;
-      const lineNum = line.lineNumber;
+    if (field.formFieldKind === "schedule-d.aggregate") {
+      if (!field.result.ok) continue;
+      const lineNum = field.lineNumber;
       if (!(lineNum in AGG_ROW_BASE)) continue;
-      const v = line.result.value;
+      const v = field.result.value;
       // 4 columns: (d) proceeds, (e) cost basis, (g) adjustments, (h) gain/loss
       setText(aggFieldName(lineNum as keyof typeof AGG_ROW_BASE, 0), fmtMoney(v.proceeds));
       setText(aggFieldName(lineNum as keyof typeof AGG_ROW_BASE, 1), fmtMoney(v.costBasis));
       setText(aggFieldName(lineNum as keyof typeof AGG_ROW_BASE, 2), fmtMoney(v.adjustments));
       setText(aggFieldName(lineNum as keyof typeof AGG_ROW_BASE, 3), fmtMoney(v.gainLoss));
       linesPopulated++;
-    } else if (line.lineKind === "schedule-d.single") {
-      if (!line.result.ok) continue;
-      const lineNum = line.lineNumber;
+    } else if (field.formFieldKind === "schedule-d.single") {
+      if (!field.result.ok) continue;
+      const lineNum = field.lineNumber;
       if (!(lineNum in SINGLE_LINE_FIELD)) continue;
-      setText(singleFieldName(lineNum as keyof typeof SINGLE_LINE_FIELD), fmtMoney(line.result.value));
+      setText(singleFieldName(lineNum as keyof typeof SINGLE_LINE_FIELD), fmtMoney(field.result.value));
       linesPopulated++;
     }
   }

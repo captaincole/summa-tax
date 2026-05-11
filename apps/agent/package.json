@@ -13,7 +13,8 @@
     "refdocs:status": "tsx scripts/refdocsStatus.ts",
     "refdocs:sync": "tsx scripts/refdocsSync.ts",
     "refdocs:verify": "tsx scripts/verifyRefDocs.ts",
-    "smoke:review": "tsx scripts/smokeReview.ts"
+    "smoke:review": "tsx scripts/smokeReview.ts",
+    "inspect:filing-status": "tsx --env-file=.env.development scripts/inspectFilingStatus.ts"
   },
   "engines": {
     "node": ">=20.0.0"

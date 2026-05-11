@@ -10,7 +10,7 @@ import { createDocument } from "../db/userDocuments";
 import {
   makeDecisionsView,
   makeFactsView,
-  type BaseLine,
+  type BaseFormField,
   type DerivationContext,
   type EvaluatedForm,
 } from "../forms/types";
@@ -19,7 +19,7 @@ import { evaluateScheduleD } from "../forms/scheduleD";
 import {
   evaluateForm1040,
   type Form1040LineNumber,
-  type Form1040NumericLine,
+  type Form1040NumericField,
 } from "../forms/form1040";
 import { evaluateForm540, type Form540LineNumber } from "../forms/form540";
 import { renderForm8949Pdf } from "../forms/render/form8949Pdf";
@@ -109,13 +109,19 @@ function fmtAddress(addr: unknown): {
 }
 
 // Look up a numeric Form 1040 line value from the EvaluatedForm1040.
+// The fields array contains numeric / text / single-select; only the
+// numeric kind carries lineNumber.
 function f1040LineValue(
-  lines: readonly Form1040NumericLine[],
+  fields: readonly BaseFormField[],
   number: Form1040LineNumber,
 ): number | null {
-  const line = lines.find((l) => l.lineNumber === number);
-  if (!line || !line.result.ok) return null;
-  return line.result.value;
+  const field = fields.find(
+    (l): l is Form1040NumericField =>
+      (l as Form1040NumericField).formFieldKind === "form-1040.numeric" &&
+      (l as Form1040NumericField).lineNumber === number,
+  );
+  if (!field || !field.result.ok) return null;
+  return field.result.value;
 }
 
 export const generateTaxDocuments = createTool({
@@ -181,7 +187,7 @@ export const generateTaxDocuments = createTool({
     const form540 = evaluateForm540(ctx, form1040);
 
     // ─── Pull 1040 line values ───
-    const lv = (n: Form1040LineNumber) => f1040LineValue(form1040.lines, n);
+    const lv = (n: Form1040LineNumber) => f1040LineValue(form1040.fields, n);
 
     const totalWages = lv("1a") ?? 0;
     const totalWages_1z = lv("1z") ?? 0;
@@ -456,22 +462,26 @@ export const generateTaxDocuments = createTool({
 
 // ─── Helpers for sidecar serialization ───────────────────────────────────
 
-function serializeForm<L extends BaseLine>(form: EvaluatedForm<L>) {
+function serializeForm<F extends BaseFormField>(form: EvaluatedForm<F>) {
   return {
     formId: form.formId,
     jurisdiction: form.jurisdiction,
     title: form.title,
     mustFile: form.mustFile,
-    lines: form.lines.map((l) => ({ ...l })),
+    fields: form.fields.map((f) => ({ ...f })),
   };
 }
 
-function f540LineValue<L extends BaseLine & { lineNumber: Form540LineNumber }>(
-  form540: EvaluatedForm<L>,
+function f540LineValue(
+  form540: EvaluatedForm,
   number: Form540LineNumber,
 ): number | null {
-  const line = form540.lines.find((l) => l.lineNumber === number);
-  if (!line || !line.result.ok) return null;
-  const v = line.result.value;
+  const field = form540.fields.find(
+    (l) =>
+      "lineNumber" in l &&
+      (l as { lineNumber?: string }).lineNumber === number,
+  );
+  if (!field || !field.result.ok) return null;
+  const v = field.result.value;
   return typeof v === "number" ? v : null;
 }

@@ -6,7 +6,7 @@ import { listDecisions, type AIDecisionRow } from "../db/aiDecisions";
 import {
   makeDecisionsView,
   makeFactsView,
-  type BaseLine,
+  type BaseFormField,
   type DerivationContext,
 } from "../forms/types";
 import { evaluateForm8949 } from "../forms/form8949";
@@ -34,10 +34,10 @@ type EvaluatedFormSummary = {
   mustFile:
     | { ok: true; value: boolean; rationale: string }
     | { ok: false; reason: string; missingDecisionKey: string | null };
-  lineCount: number;
-  blockedLineCount: number;
+  fieldCount: number;
+  blockedFieldCount: number;
   blockers: Array<{
-    lineId: string;
+    fieldId: string;
     reason: string;
     missingDecisionKey: string | null;
     missingFactKeys: string[] | null;
@@ -123,17 +123,17 @@ export async function buildCaseState(
 
   // Money convenience fields — read specific 1040 / CA 540 lines if present.
   const money = {
-    totalWages: lineValue(form1040.lines, "1z") ?? 0,
-    federalAgi: lineValue(form1040.lines, "11") ?? 0,
-    federalTaxableIncome: lineValue(form1040.lines, "15") ?? 0,
-    federalTax: lineValue(form1040.lines, "24") ?? 0,
-    federalWithholding: lineValue(form1040.lines, "25a") ?? 0,
-    federalRefund: lineValue(form1040.lines, "34") ?? 0,
-    federalOwed: lineValue(form1040.lines, "37") ?? 0,
-    stateTax: lineValue(form540.lines, "64") ?? 0,
-    stateWithholding: lineValue(form540.lines, "71") ?? 0,
-    stateRefund: lineValue(form540.lines, "97") ?? 0,
-    stateOwed: lineValue(form540.lines, "100") ?? 0,
+    totalWages: lineValue(form1040.fields, "1z") ?? 0,
+    federalAgi: lineValue(form1040.fields, "11") ?? 0,
+    federalTaxableIncome: lineValue(form1040.fields, "15") ?? 0,
+    federalTax: lineValue(form1040.fields, "24") ?? 0,
+    federalWithholding: lineValue(form1040.fields, "25a") ?? 0,
+    federalRefund: lineValue(form1040.fields, "34") ?? 0,
+    federalOwed: lineValue(form1040.fields, "37") ?? 0,
+    stateTax: lineValue(form540.fields, "64") ?? 0,
+    stateWithholding: lineValue(form540.fields, "71") ?? 0,
+    stateRefund: lineValue(form540.fields, "97") ?? 0,
+    stateOwed: lineValue(form540.fields, "100") ?? 0,
   };
 
   return {
@@ -143,6 +143,9 @@ export async function buildCaseState(
     money,
     factCount: facts.length,
     decisionRows,
+    // Raw evaluated forms — for downstream rollups like the Filing Status
+    // panel that need access to every field, not just blockers.
+    evaluatedForms: [form8949, scheduleD, form1040, form540],
   };
 }
 
@@ -153,19 +156,19 @@ function summarizeForm(form: {
   mustFile:
     | { ok: true; value: boolean; rationale: string; supportingFactKeys: string[]; decisionKey?: string }
     | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[] };
-  lines: Array<{
-    lineId: string;
+  fields: Array<{
+    fieldId: string;
     result:
       | { ok: true; value: unknown; rationale: string; supportingFactKeys: string[]; decisionKey?: string }
       | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[] };
   }>;
 }): EvaluatedFormSummary {
-  const blockers = form.lines
+  const blockers = form.fields
     .filter((l) => !l.result.ok)
     .map((l) => {
       const r = l.result as Extract<typeof l.result, { ok: false }>;
       return {
-        lineId: l.lineId,
+        fieldId: l.fieldId,
         reason: r.reason,
         missingDecisionKey: r.missingDecisionKey ?? null,
         missingFactKeys: r.missingFactKeys ?? null,
@@ -182,19 +185,25 @@ function summarizeForm(form: {
           reason: form.mustFile.reason,
           missingDecisionKey: form.mustFile.missingDecisionKey ?? null,
         },
-    lineCount: form.lines.length,
-    blockedLineCount: blockers.length,
+    fieldCount: form.fields.length,
+    blockedFieldCount: blockers.length,
     blockers,
   };
 }
 
-function lineValue<L extends BaseLine & { lineNumber: string }>(
-  lines: readonly L[],
+// Look up a numeric field by its lineNumber. The fields array is
+// heterogeneous now — header text/select fields don't have lineNumber —
+// so we filter for the ones that do.
+function lineValue(
+  fields: readonly BaseFormField[],
   number: string,
 ): number | null {
-  const line = lines.find((l) => l.lineNumber === number);
-  if (!line || !line.result.ok) return null;
-  const v = line.result.value;
+  const field = fields.find(
+    (l): l is BaseFormField & { lineNumber: string } =>
+      "lineNumber" in l && (l as { lineNumber?: string }).lineNumber === number,
+  );
+  if (!field || !field.result.ok) return null;
+  const v = field.result.value;
   return typeof v === "number" ? v : null;
 }
 

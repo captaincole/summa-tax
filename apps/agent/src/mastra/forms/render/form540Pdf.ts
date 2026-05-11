@@ -124,12 +124,14 @@ export async function renderForm540Pdf(
     }
   }
 
-  // Numeric lines from the evaluated form
-  for (const line of input.evaluated.lines) {
-    if (!line.result.ok) continue;
-    const fieldName = LINE_FIELD[line.lineNumber];
+  // Numeric fields from the evaluated form (skip header text/select fields —
+  // those are populated separately above from raw identity facts).
+  for (const field of input.evaluated.fields) {
+    if (field.formFieldKind !== "form-540.numeric") continue;
+    if (!field.result.ok) continue;
+    const fieldName = LINE_FIELD[field.lineNumber];
     if (!fieldName) continue;
-    setText(fieldName, fmtMoney(line.result.value));
+    setText(fieldName, fmtMoney(field.result.value));
     linesPopulated++;
   }
 

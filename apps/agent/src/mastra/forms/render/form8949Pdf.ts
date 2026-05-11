@@ -114,8 +114,8 @@ export async function renderForm8949Pdf(
   const part2Rows: RowEntry[] = [];
   const totalsByBox: Record<string, { proceeds: number; costBasis: number; adjustments: number; gainLoss: number }> = {};
 
-  for (const line of evaluated.lines) {
-    if (line.lineKind === "form-8949.row" && line.result.ok) {
+  for (const line of evaluated.fields) {
+    if (line.formFieldKind === "form-8949.row" && line.result.ok) {
       const trade = line.result.value;
       const entry: RowEntry = {
         trade: {
@@ -135,7 +135,7 @@ export async function renderForm8949Pdf(
       if (line.box.startsWith("partI.")) part1Rows.push(entry);
       else if (line.box.startsWith("partII.")) part2Rows.push(entry);
     }
-    if (line.lineKind === "form-8949.totals" && line.result.ok) {
+    if (line.formFieldKind === "form-8949.totals" && line.result.ok) {
       const t = line.result.value;
       totalsByBox[line.box] = {
         proceeds: t.totalProceeds,

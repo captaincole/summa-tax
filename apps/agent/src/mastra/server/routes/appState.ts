@@ -94,7 +94,7 @@ export const appStateRoute = registerApiRoute("/app/state", {
     const computedForms = result.summaries.filter(
       (f) =>
         f.mustFile.ok &&
-        (f.mustFile.value === false || f.blockedLineCount === 0),
+        (f.mustFile.value === false || f.blockedFieldCount === 0),
     ).length;
     const overallPct =
       totalForms > 0 ? Math.round((computedForms / totalForms) * 100) : 0;

@@ -6,6 +6,11 @@
 // produces the tax owed / refund.
 //
 // Scope for the first iteration (Alejandro):
+//   header       — first name, last name, SSN, address, filing status
+//                  (modelled as fields so the Filing Status panel can show
+//                  whether the renderer's top-of-form personal info is
+//                  complete; the PDF layer continues to read raw identity
+//                  facts directly, this is for the progress UI)
 //   1a, 1z       — wages from W-2 box 1
 //   3a, 3b       — qualified / ordinary dividends from 1099-DIV
 //   7            — capital gain/(loss) from Schedule D line 16
@@ -31,15 +36,16 @@
 import {
   ok,
   blocked,
-  type BaseLine,
+  type BaseFormField,
+  type Category,
   type DerivationContext,
   type DerivationResult,
   type EvaluatedForm,
 } from "./types.js";
-import type { EvaluatedScheduleD, ScheduleDSingleValueLine } from "./scheduleD.js";
+import type { EvaluatedScheduleD, ScheduleDSingleValueField } from "./scheduleD.js";
 import { getDividendFacts, getW2Facts } from "../facts/index.js";
 
-// ─── Line shape ──────────────────────────────────────────────────────────
+// ─── Field shapes ────────────────────────────────────────────────────────
 
 export type Form1040LineNumber =
   | "1a" | "1z"
@@ -53,14 +59,50 @@ export type Form1040LineNumber =
   | "33"
   | "34" | "37";
 
-export interface Form1040NumericLine extends BaseLine<number> {
-  lineKind: "form-1040.numeric";
+export interface Form1040NumericField extends BaseFormField<number> {
+  formFieldKind: "form-1040.numeric";
   lineNumber: Form1040LineNumber;
 }
 
-export type Form1040Line = Form1040NumericLine;
+export interface Form1040TextField extends BaseFormField<string> {
+  formFieldKind: "form-1040.text";
+}
 
-export type EvaluatedForm1040 = EvaluatedForm<Form1040Line>;
+export interface Form1040SingleSelectField extends BaseFormField<string> {
+  formFieldKind: "form-1040.single-select";
+}
+
+export type Form1040Field =
+  | Form1040NumericField
+  | Form1040TextField
+  | Form1040SingleSelectField;
+
+export type EvaluatedForm1040 = EvaluatedForm<Form1040Field>;
+
+// Each numeric line maps to a Filing-Status-panel category. This is the
+// only categorization the form needs to declare — the form engine's
+// derivation graph already tells us whether a field is complete or blocked.
+const NUMERIC_CATEGORY: Record<Form1040LineNumber, Category> = {
+  "1a":  "income",
+  "1z":  "income",
+  "3a":  "income",
+  "3b":  "income",
+  "7":   "income",
+  "9":   "income",
+  "10":  "deductions_credits",
+  "11":  "income",                // AGI — still an income aggregate
+  "12":  "deductions_credits",
+  "13":  "deductions_credits",
+  "14":  "deductions_credits",
+  "15":  "income",                // taxable income (income minus deductions)
+  "16":  "deductions_credits",
+  "23":  "deductions_credits",
+  "24":  "deductions_credits",
+  "25a": "deductions_credits",    // withholding is a payment against tax
+  "33":  "deductions_credits",
+  "34":  "deductions_credits",
+  "37":  "deductions_credits",
+};
 
 // ─── 2025 Single filer constants ─────────────────────────────────────────
 // Hardcoded for Alejandro's case. When more filing statuses come online,
@@ -103,10 +145,10 @@ export function evaluateForm1040(
   ctx: DerivationContext,
   scheduleD: EvaluatedScheduleD,
 ): EvaluatedForm1040 {
-  const lines: Form1040Line[] = [];
+  const fields: Form1040Field[] = [];
 
   const mustFile = mustFileForm1040(ctx);
-  const baseForm: Omit<EvaluatedForm1040, "lines"> = {
+  const baseForm: Omit<EvaluatedForm1040, "fields"> = {
     formId: "form-1040",
     jurisdiction: "federal",
     title: "U.S. Individual Income Tax Return",
@@ -114,8 +156,58 @@ export function evaluateForm1040(
     mustFile,
   };
   if (!mustFile.ok || !mustFile.value) {
-    return { ...baseForm, lines };
+    return { ...baseForm, fields };
   }
+
+  // ─── Header — personal info + filing scope ───
+  // These derive from identity facts and the filing_status decision. They
+  // exist so the Filing Status panel knows whether the form's header is
+  // complete; PDF rendering still reads raw facts directly.
+  fields.push(
+    textFieldFromFact(
+      "form-1040.header.first_name",
+      "First name",
+      "personal_info",
+      "identity.name.first",
+      ctx,
+    ),
+  );
+  fields.push(
+    textFieldFromFact(
+      "form-1040.header.last_name",
+      "Last name",
+      "personal_info",
+      "identity.name.last",
+      ctx,
+    ),
+  );
+  fields.push(
+    textFieldFromFact(
+      "form-1040.header.ssn",
+      "SSN",
+      "personal_info",
+      "identity.ssn",
+      ctx,
+    ),
+  );
+  fields.push(
+    textFieldFromFact(
+      "form-1040.header.address",
+      "Home address",
+      "personal_info",
+      "identity.address",
+      ctx,
+    ),
+  );
+  fields.push(
+    singleSelectFromDecision(
+      "form-1040.header.filing_status",
+      "Filing status",
+      "filing_scope",
+      "decisions.scope.filing_status",
+      ctx,
+    ),
+  );
 
   // ─── Wages from W-2s ───
   const w2s = getW2Facts(ctx.facts);
@@ -124,8 +216,8 @@ export function evaluateForm1040(
   const w2FactKeys = w2s.map((w) => w.sourceFact.key);
 
   // Line 1a — Total wages from box 1 of all W-2s
-  lines.push(
-    numericLine("1a", "Total amount from Form(s) W-2, box 1", ok(
+  fields.push(
+    numericField("1a", "Total amount from Form(s) W-2, box 1", ok(
       totalBox1,
       `Sum of box 1 across ${w2s.length} W-2(s).`,
       w2FactKeys,
@@ -133,8 +225,8 @@ export function evaluateForm1040(
   );
 
   // Line 1z — Sum of 1a–1h (only 1a populated for now)
-  lines.push(
-    numericLine("1z", "Add lines 1a through 1h", ok(
+  fields.push(
+    numericField("1z", "Add lines 1a through 1h", ok(
       totalBox1,
       "Currently only line 1a is populated.",
       w2FactKeys,
@@ -148,8 +240,8 @@ export function evaluateForm1040(
   const divFactKeys = divs.map((d) => d.sourceFact.key);
 
   // Line 3a — Qualified dividends (1099-DIV box 1b)
-  lines.push(
-    numericLine("3a", "Qualified dividends", ok(
+  fields.push(
+    numericField("3a", "Qualified dividends", ok(
       totalQualDivs,
       `Sum of 1099-DIV box 1b across ${divs.length} account(s).`,
       divFactKeys,
@@ -157,8 +249,8 @@ export function evaluateForm1040(
   );
 
   // Line 3b — Ordinary dividends (1099-DIV box 1a)
-  lines.push(
-    numericLine("3b", "Ordinary dividends", ok(
+  fields.push(
+    numericField("3b", "Ordinary dividends", ok(
       totalOrdDivs,
       `Sum of 1099-DIV box 1a across ${divs.length} account(s).`,
       divFactKeys,
@@ -189,9 +281,9 @@ export function evaluateForm1040(
       );
     }
     // Schedule D required — find line 16
-    const sdLine16 = scheduleD.lines.find(
-      (l): l is ScheduleDSingleValueLine =>
-        l.lineKind === "schedule-d.single" && l.lineNumber === "16",
+    const sdLine16 = scheduleD.fields.find(
+      (l): l is ScheduleDSingleValueField =>
+        l.formFieldKind === "schedule-d.single" && l.lineNumber === "16",
     );
     if (!sdLine16) {
       return blocked("Schedule D required but line 16 was not emitted");
@@ -212,8 +304,8 @@ export function evaluateForm1040(
     );
   })();
 
-  lines.push(
-    numericLine("7", "Capital gain or (loss). Attach Schedule D if required", line7Result),
+  fields.push(
+    numericField("7", "Capital gain or (loss). Attach Schedule D if required", line7Result),
   );
 
   // For downstream computations: if line 7 is blocked, downstream lines that
@@ -227,8 +319,8 @@ export function evaluateForm1040(
   // For Alejandro: 1z (wages) + 3b (ordinary divs) + 7 (cap gain).
   // (When we add interest, IRA, SS, etc., add those to this sum.)
   const totalIncome = totalBox1 + totalOrdDivs + capitalGain;
-  lines.push(
-    numericLine("9", "Total income", ok(
+  fields.push(
+    numericField("9", "Total income", ok(
       totalIncome,
       "Sum of lines 1z, 3b, 7 (only ones populated for this return).",
       [...w2FactKeys, ...divFactKeys, ...sdLine16FactKeys],
@@ -236,8 +328,8 @@ export function evaluateForm1040(
   );
 
   // Line 10 — Adjustments to income (Schedule 1) — zero for now
-  lines.push(
-    numericLine("10", "Adjustments to income from Schedule 1", ok(
+  fields.push(
+    numericField("10", "Adjustments to income from Schedule 1", ok(
       0,
       "No Schedule 1 adjustments for this return.",
       [],
@@ -246,8 +338,8 @@ export function evaluateForm1040(
 
   // Line 11 — AGI
   const agi = totalIncome - 0;
-  lines.push(
-    numericLine("11", "Adjusted gross income (line 9 − line 10)", ok(
+  fields.push(
+    numericField("11", "Adjusted gross income (line 9 − line 10)", ok(
       agi,
       "Line 9 minus line 10.",
       [...w2FactKeys, ...divFactKeys, ...sdLine16FactKeys],
@@ -257,34 +349,30 @@ export function evaluateForm1040(
   // ─── Standard deduction (line 12) — depends on filing-status decision ───
   const filingStatus = ctx.decisions.get("decisions.scope.filing_status");
   if (!filingStatus) {
-    lines.push({
-      lineKind: "form-1040.numeric",
-      lineNumber: "12",
-      lineId: "form-1040.line.12",
-      label: "Standard deduction",
-      result: blocked("Need filing-status decision to look up standard deduction", {
-        decisionKey: "decisions.scope.filing_status",
-      }),
-    });
-    return { ...baseForm, lines };
+    fields.push(
+      numericField("12", "Standard deduction",
+        blocked("Need filing-status decision to look up standard deduction", {
+          decisionKey: "decisions.scope.filing_status",
+        }),
+      ),
+    );
+    return { ...baseForm, fields };
   }
   const fs = String(filingStatus.decision);
   const stdDed = STANDARD_DEDUCTION_2025[fs];
   if (stdDed === undefined) {
-    lines.push({
-      lineKind: "form-1040.numeric",
-      lineNumber: "12",
-      lineId: "form-1040.line.12",
-      label: "Standard deduction",
-      result: blocked(
-        `Unknown filing status "${fs}"; expected one of ${Object.keys(STANDARD_DEDUCTION_2025).join(", ")}`,
-        { decisionKey: "decisions.scope.filing_status" },
+    fields.push(
+      numericField("12", "Standard deduction",
+        blocked(
+          `Unknown filing status "${fs}"; expected one of ${Object.keys(STANDARD_DEDUCTION_2025).join(", ")}`,
+          { decisionKey: "decisions.scope.filing_status" },
+        ),
       ),
-    });
-    return { ...baseForm, lines };
+    );
+    return { ...baseForm, fields };
   }
-  lines.push(
-    numericLine("12", "Standard deduction", ok(
+  fields.push(
+    numericField("12", "Standard deduction", ok(
       stdDed,
       `2025 standard deduction for ${fs}.`,
       filingStatus.supportingFactKeys,
@@ -293,8 +381,8 @@ export function evaluateForm1040(
   );
 
   // Line 13 — QBI deduction (Form 8995). Zero for Alejandro.
-  lines.push(
-    numericLine("13", "Qualified business income deduction", ok(
+  fields.push(
+    numericField("13", "Qualified business income deduction", ok(
       0,
       "No QBI deduction for this return.",
       [],
@@ -303,8 +391,8 @@ export function evaluateForm1040(
 
   // Line 14 — Sum of 12 + 13
   const line14 = stdDed + 0;
-  lines.push(
-    numericLine("14", "Add lines 12 and 13", ok(
+  fields.push(
+    numericField("14", "Add lines 12 and 13", ok(
       line14,
       "Standard deduction + QBI.",
       filingStatus.supportingFactKeys,
@@ -313,8 +401,8 @@ export function evaluateForm1040(
 
   // Line 15 — Taxable income (line 11 − line 14, floored at 0)
   const taxable = Math.max(0, agi - line14);
-  lines.push(
-    numericLine("15", "Taxable income (line 11 − line 14, not less than 0)", ok(
+  fields.push(
+    numericField("15", "Taxable income (line 11 − line 14, not less than 0)", ok(
       taxable,
       "AGI minus deductions.",
       [...w2FactKeys, ...divFactKeys, ...sdLine16FactKeys, ...filingStatus.supportingFactKeys],
@@ -323,8 +411,8 @@ export function evaluateForm1040(
 
   // Line 16 — Tax. SIMPLIFIED: ordinary brackets only.
   const tax = ordinaryTaxSingle(taxable);
-  lines.push(
-    numericLine("16", "Tax", ok(
+  fields.push(
+    numericField("16", "Tax", ok(
       tax,
       "Computed via 2025 single ordinary brackets. " +
       "Note: Qualified Dividends and Capital Gain Tax Worksheet not yet applied — " +
@@ -334,8 +422,8 @@ export function evaluateForm1040(
   );
 
   // Line 23 — Other taxes (Schedule 2). Zero for Alejandro.
-  lines.push(
-    numericLine("23", "Other taxes from Schedule 2", ok(
+  fields.push(
+    numericField("23", "Other taxes from Schedule 2", ok(
       0,
       "No other taxes.",
       [],
@@ -344,8 +432,8 @@ export function evaluateForm1040(
 
   // Line 24 — Total tax
   const totalTax = tax + 0;
-  lines.push(
-    numericLine("24", "Total tax (line 16 + line 23)", ok(
+  fields.push(
+    numericField("24", "Total tax (line 16 + line 23)", ok(
       totalTax,
       "Tax + other taxes.",
       [],
@@ -353,8 +441,8 @@ export function evaluateForm1040(
   );
 
   // Line 25a — Federal income tax withheld from W-2s
-  lines.push(
-    numericLine("25a", "Federal income tax withheld from Form(s) W-2", ok(
+  fields.push(
+    numericField("25a", "Federal income tax withheld from Form(s) W-2", ok(
       totalBox2,
       `Sum of box 2 across ${w2s.length} W-2(s).`,
       w2FactKeys,
@@ -364,8 +452,8 @@ export function evaluateForm1040(
   // Line 33 — Total payments
   // For Alejandro just 25a; will add 25b/25c/26-32 as those data sources arrive.
   const totalPayments = totalBox2;
-  lines.push(
-    numericLine("33", "Total payments", ok(
+  fields.push(
+    numericField("33", "Total payments", ok(
       totalPayments,
       "Currently only line 25a contributes.",
       w2FactKeys,
@@ -374,16 +462,16 @@ export function evaluateForm1040(
 
   // Lines 34 / 37 — Refund or amount owed
   if (totalPayments >= totalTax) {
-    lines.push(
-      numericLine("34", "Amount overpaid (line 33 − line 24)", ok(
+    fields.push(
+      numericField("34", "Amount overpaid (line 33 − line 24)", ok(
         Math.round((totalPayments - totalTax) * 100) / 100,
         "Refund owed to taxpayer.",
         w2FactKeys,
       )),
     );
   } else {
-    lines.push(
-      numericLine("37", "Amount you owe (line 24 − line 33)", ok(
+    fields.push(
+      numericField("37", "Amount you owe (line 24 − line 33)", ok(
         Math.round((totalTax - totalPayments) * 100) / 100,
         "Balance due to IRS.",
         w2FactKeys,
@@ -391,22 +479,85 @@ export function evaluateForm1040(
     );
   }
 
-  return { ...baseForm, lines };
+  return { ...baseForm, fields };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
-function numericLine(
+function numericField(
   lineNumber: Form1040LineNumber,
   label: string,
   result: DerivationResult<number>,
-): Form1040NumericLine {
+): Form1040NumericField {
   return {
-    lineKind: "form-1040.numeric",
+    formFieldKind: "form-1040.numeric",
     lineNumber,
-    lineId: `form-1040.line.${lineNumber}`,
+    fieldId: `form-1040.line.${lineNumber}`,
     label,
+    category: NUMERIC_CATEGORY[lineNumber],
+    valueType: "numeric",
     result,
+  };
+}
+
+function textFieldFromFact(
+  fieldId: string,
+  label: string,
+  category: Category,
+  factKey: string,
+  ctx: DerivationContext,
+): Form1040TextField {
+  const fact = ctx.facts.get(factKey);
+  if (!fact) {
+    return {
+      formFieldKind: "form-1040.text",
+      fieldId,
+      label,
+      category,
+      valueType: "text",
+      result: blocked(`Need fact: ${factKey}`, { factKeys: [factKey] }),
+    };
+  }
+  // Address is an object; everything else is already a primitive. Stringify
+  // for the value side, but the renderer still reads the raw fact when it
+  // needs the structured shape.
+  const stringified =
+    typeof fact.value === "string" ? fact.value : JSON.stringify(fact.value);
+  return {
+    formFieldKind: "form-1040.text",
+    fieldId,
+    label,
+    category,
+    valueType: "text",
+    result: ok(stringified, `From ${factKey}.`, [factKey]),
+  };
+}
+
+function singleSelectFromDecision(
+  fieldId: string,
+  label: string,
+  category: Category,
+  decisionKey: string,
+  ctx: DerivationContext,
+): Form1040SingleSelectField {
+  const d = ctx.decisions.get(decisionKey);
+  if (!d) {
+    return {
+      formFieldKind: "form-1040.single-select",
+      fieldId,
+      label,
+      category,
+      valueType: "single_select",
+      result: blocked(`Need decision: ${decisionKey}`, { decisionKey }),
+    };
+  }
+  return {
+    formFieldKind: "form-1040.single-select",
+    fieldId,
+    label,
+    category,
+    valueType: "single_select",
+    result: ok(String(d.decision), d.rationale, d.supportingFactKeys, decisionKey),
   };
 }
 

@@ -157,6 +157,33 @@ The agent's `build` script chains `mastra build && tsx scripts/migrateMastra.ts`
 
 **When the calculus could change:** if we hit multi-user production load, OR if Mastra ships a release with a problematic migration. Until then, leave the two-system setup alone.
 
+## Data-model iteration: wipe + re-ingest, not migrations
+
+While the data model is in flux, breaking schema changes are handled by **wiping per-user data and re-ingesting from fixtures**, not by writing Supabase migrations or backfill scripts. The per-user reset endpoint (side-nav "Reset session" button) clears the signed-in user's domain rows; fixture-driven re-ingest restores a known-good state.
+
+Reach for a real migration only for:
+- Schema shapes we expect to keep (e.g. the `review_runs` / `review_run_steps` tables that record training data).
+- Postgres-level configuration that affects production behavior (RLS policies, realtime publications, replica identity).
+
+Anything else — renaming a fact_key, restructuring a fact_value blob, adding/removing a category — just iterate the code and let the next ingest produce rows in the new shape.
+
+## Form engine — the FormField model
+
+Every output form (1040, 540, 8949, Schedule D, …) is a collection of typed **FormField**s. A FormField is the unified abstraction over every inputable value on the form — numeric lines, single-select checkboxes, text fields (name, address), boolean checkboxes, date fields. All share `BaseFormField` (`fieldId`, `label`, `category`, `valueType`, `result`).
+
+**Two required properties every new field must declare:**
+
+- **`category: Category`** — which Filing Status panel bucket the field rolls up into. One of `personal_info | filing_scope | income | deductions_credits | other`.
+- **`valueType: FieldValueType`** — shape of the field's value. One of `numeric | single_select | text | boolean | date`.
+
+TypeScript enforces both. Adding a field without declaring them is a compile error — the categorization layer (`forms/categorization/categorize.ts`) is automatically consistent because it reads `field.category` directly off each field.
+
+**When adding a new form** (e.g. Schedule A): define line types extending `BaseFormField`, write the evaluator, register in `caseState.ts`'s form list, add a PDF renderer. TypeScript will fail to compile until every field has its `category` and `valueType`. There's no separate registry file to keep in sync.
+
+**Header fields** (top-of-form personal info, filing-status checkboxes) are modeled as FormFields too — text/single-select kinds that derive from identity facts / scope decisions. They sit in the same `EvaluatedForm.fields` array as the numeric lines. PDF renderers continue to read raw facts directly; the header fields exist for the Filing Status panel rollup.
+
+**Where this is going.** The hand-coded per-form TS files (`form1040.ts`, `form540.ts`, …) are scaffolding. The plan is to replace them with an AI ingestion pipeline that extracts field inventories from form PDFs into the DB and generates binding files from form instructions. See `apps/agent/src/mastra/forms/PIPELINE.md` for the full design — including the three worked examples (sum-of-facts, table lookup, cross-form reference), the rule library, and the explicit list of things we chose not to do.
+
 ## Vercel logs (production debugging)
 
 Production runtime logs for the agent come through `vercel logs`, but with gotchas:

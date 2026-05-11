@@ -1,6 +1,6 @@
 // Core types for the Form Engine. Every form gets an evaluator function that
 // takes a DerivationContext (facts + decisions) and returns an EvaluatedForm
-// (mustFile result + per-line results). Evaluators are pure functions —
+// (mustFile result + per-field results). Evaluators are pure functions —
 // deterministic given the input fact + decision state.
 //
 // Per docs/architecture.md the rules are:
@@ -60,13 +60,13 @@ export interface DerivationContext {
   facts: FactsView;
   decisions: DecisionsView;
   /**
-   * Cross-form / cross-line lookup. Returns the previously-evaluated result
-   * for a (formId, lineId), or undefined if not yet evaluated. The engine
-   * topologically schedules form/line evaluations; if you call this for a
-   * line that hasn't been evaluated yet, it's a programming error in the
+   * Cross-form / cross-field lookup. Returns the previously-evaluated result
+   * for a (formId, fieldId), or undefined if not yet evaluated. The engine
+   * topologically schedules form/field evaluations; if you call this for a
+   * field that hasn't been evaluated yet, it's a programming error in the
    * form spec, not a missing-data condition.
    */
-  formValues?: (formId: string, lineId: string) => DerivationResult<unknown> | undefined;
+  formValues?: (formId: string, fieldId: string) => DerivationResult<unknown> | undefined;
 }
 
 export interface FactsView {
@@ -81,49 +81,78 @@ export interface DecisionsView {
   byKeyPrefix(prefix: string): AIDecisionRow[];
 }
 
-// ─── Evaluated form / line shapes ────────────────────────────────────────
+// ─── Category + value-type taxonomy used by every form field ─────────────
 //
-// Lines use a discriminated union: each form declares its own line kinds,
-// each kind tagged with a string `lineKind` and parameterized on a value
-// type V. Consumers narrow by lineKind to get a strongly-typed value with
-// no casts.
+// Category is the user-facing bucket each field rolls up into for the
+// Filing Status panel. Every FormField declares one — TypeScript enforces
+// it, so a new field can't be added without classifying it.
+//
+// FieldValueType describes the shape of the field's value, which drives
+// rendering and (eventually) UI input semantics. A single-select reads from
+// a decision; a numeric reads from a numeric derivation; a text reads
+// straight from an identity fact, etc.
+
+export type Category =
+  | "personal_info"        // taxpayer name, SSN, address, DOB — top-of-form header bits
+  | "filing_scope"         // filing status, residency, must-file decisions
+  | "income"               // wages, dividends, capital gains, withholding
+  | "deductions_credits"   // standard deduction, taxable income, tax, credits, payments
+  | "other";
+
+export type FieldValueType =
+  | "numeric"
+  | "single_select"
+  | "text"
+  | "boolean"
+  | "date";
+
+// ─── Evaluated form / field shapes ───────────────────────────────────────
+//
+// Fields use a discriminated union: each form declares its own field kinds,
+// each kind tagged with a string `formFieldKind` and parameterized on a
+// value type V. Consumers narrow by formFieldKind to get a strongly-typed
+// value with no casts.
 //
 // Example shape per form (declared in form8949.ts etc.):
-//   interface Form8949RowLine extends BaseLine<Form8949Row> {
-//     lineKind: "form-8949.row"; box: BoxId; rowIndex: number;
+//   interface Form8949RowField extends BaseFormField<Form8949Row> {
+//     formFieldKind: "form-8949.row"; box: BoxId; rowIndex: number;
 //   }
-//   interface Form8949TotalsLine extends BaseLine<Form8949BoxTotals> {
-//     lineKind: "form-8949.totals"; box: BoxId;
+//   interface Form8949TotalsField extends BaseFormField<Form8949BoxTotals> {
+//     formFieldKind: "form-8949.totals"; box: BoxId;
 //   }
-//   type Form8949Line = Form8949RowLine | Form8949TotalsLine | …;
+//   type Form8949Field = Form8949RowField | Form8949TotalsField | …;
 //
-// Each form's evaluator returns EvaluatedForm<TheirLineUnion>.
+// Each form's evaluator returns EvaluatedForm<TheirFieldUnion>.
 
-export interface BaseLine<V = unknown> {
-  lineId: string;
+export interface BaseFormField<V = unknown> {
+  fieldId: string;
   label: string;
+  /** Which UI bucket this field belongs to (Filing Status panel rollup). */
+  category: Category;
+  /** Shape of the field's value — informs rendering and input semantics. */
+  valueType: FieldValueType;
   result: DerivationResult<V>;
 }
 
 /**
- * Loosest possible line shape — what generic engine code (e.g., a registry
+ * Loosest possible field shape — what generic engine code (e.g., a registry
  * holding heterogeneous forms) gets when it doesn't know which form it's
  * looking at. Specific consumers should always know the form's concrete
- * line union and not see this type.
+ * field union and not see this type.
  */
-export type AnyLine = BaseLine & { lineKind: string };
+export type AnyFormField = BaseFormField & { formFieldKind: string };
 
-export interface EvaluatedForm<L extends BaseLine = AnyLine> {
+export interface EvaluatedForm<F extends BaseFormField = AnyFormField> {
   formId: string;
   jurisdiction: string;            // "federal" | "state-ca" | …
   title: string;
   taxYear: number;
   mustFile: DerivationResult<boolean>;
-  lines: L[];
+  fields: F[];
 }
 
-export type FormEvaluator<L extends BaseLine = AnyLine> =
-  (ctx: DerivationContext) => EvaluatedForm<L>;
+export type FormEvaluator<F extends BaseFormField = AnyFormField> =
+  (ctx: DerivationContext) => EvaluatedForm<F>;
 
 // ─── In-memory view builders (used by tests + future engine wiring) ──────
 
