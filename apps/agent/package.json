@@ -13,6 +13,9 @@
     "refdocs:status": "tsx scripts/refdocsStatus.ts",
     "refdocs:sync": "tsx scripts/refdocsSync.ts",
     "refdocs:verify": "tsx scripts/verifyRefDocs.ts",
+    "forms:seed": "tsx --env-file=.env.development scripts/seedFormCatalog.ts",
+    "forms:verify": "tsx --env-file=.env.development scripts/verifyFormCatalog.ts",
+    "smoke:engine": "tsx scripts/smokeFormEngine.ts",
     "smoke:review": "tsx scripts/smokeReview.ts",
     "inspect:filing-status": "tsx --env-file=.env.development scripts/inspectFilingStatus.ts"
   },

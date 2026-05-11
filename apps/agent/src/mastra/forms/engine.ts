@@ -1,46 +1,29 @@
-// Form engine — registry + evaluator.
+// Form engine — binding registry + Catalog-driven evaluator.
 //
-// Each form is built up by side-effect registration: importing a generated
-// file (e.g. `forms/generated/form-1040.ts`) calls `registerForm`,
-// `bindMustFile`, and `bindField` against module-level Maps in this file.
-// Once all registrations have run, `evaluateForm(formId, ctx)` walks the
-// form's bindings in registration order, evaluating each rule against the
-// derivation context and returning an EvaluatedForm.
+// Generated files (e.g. `forms/generated/form-1040.ts`) register bindings
+// by side effect on import: `bindField(formId, fieldId, rule, params)` and
+// `bindMustFile(formId, rule, params)`. The engine evaluates a form by
+// joining those bindings against a `Catalog`, which supplies the
+// inventory side (label, category, valueType, position) for every field.
 //
-// Phase A: inventory (label, category, valueType, pdfWidgetName, position)
-// is declared inline in each bindField call. Phase B moves inventory to the
-// `form_fields` Supabase table; bindField's signature drops the inventory
-// arg at that point and the engine reads inventory from a Catalog. The
-// behavior layer (rule + params) stays in TS either way.
+// Two stores back the Catalog:
+//   - Phase B+   JSON fixtures in `apps/agent/fixtures/forms/<form>.json`
+//   - Phase C+   Supabase tables (`forms`, `form_fields`) written by the
+//                AI ingestion pipeline.
+// Both round-trip through `Catalog`, so the engine doesn't know which
+// store it's reading from.
 
 import { z } from "zod";
 import {
   blocked,
   type AnyFormField,
-  type Category,
   type DerivationContext,
   type DerivationResult,
   type EvaluatedForm,
-  type FieldValueType,
 } from "./types.js";
+import type { Catalog } from "./catalog.js";
 
 // ─── Public shapes ───────────────────────────────────────────────────────
-
-export interface FieldInventory {
-  fieldId: string;
-  label: string;
-  category: Category;
-  valueType: FieldValueType;
-  pdfWidgetName?: string;
-  position?: { page: number; x: number; y: number };
-}
-
-export interface FormDefinition {
-  formId: string;
-  taxYear: number;
-  jurisdiction: string;
-  title: string;
-}
 
 export interface Rule<Params = unknown, V = unknown> {
   name: string;
@@ -69,7 +52,8 @@ export function rule<P, V>(spec: {
 // ─── Internal registry state ─────────────────────────────────────────────
 
 interface FieldBinding {
-  inventory: FieldInventory;
+  formId: string;
+  fieldId: string;
   rule: Rule;
   params: unknown;
 }
@@ -79,18 +63,10 @@ interface MustFileBinding {
   params: unknown;
 }
 
-const forms = new Map<string, FormDefinition>();
 const mustFileBindings = new Map<string, MustFileBinding>();
-const fieldBindings = new Map<string, FieldBinding[]>();
+const fieldBindings = new Map<string, FieldBinding>(); // keyed by fieldId
 
 // ─── Registration API (used by generated files) ──────────────────────────
-
-export function registerForm(def: FormDefinition): void {
-  forms.set(def.formId, def);
-  if (!fieldBindings.has(def.formId)) {
-    fieldBindings.set(def.formId, []);
-  }
-}
 
 // Accepts any rule — the engine coerces the result's value to boolean at
 // evaluation time. This lets `lookupDecision` (which returns the decision
@@ -109,33 +85,23 @@ export function bindMustFile<P>(
 
 export function bindField<P>(
   formId: string,
-  inventory: FieldInventory,
+  fieldId: string,
   ruleDef: Rule<P>,
   params: P,
 ): void {
   ruleDef.paramsSchema.parse(params);
-  const list = fieldBindings.get(formId) ?? [];
-  list.push({ inventory, rule: ruleDef as Rule, params });
-  fieldBindings.set(formId, list);
+  fieldBindings.set(fieldId, {
+    formId,
+    fieldId,
+    rule: ruleDef as Rule,
+    params,
+  });
 }
 
 // ─── Inspection API ──────────────────────────────────────────────────────
 
-export function listRegisteredForms(): FormDefinition[] {
-  return Array.from(forms.values());
-}
-
-export function getFormDefinition(formId: string): FormDefinition | undefined {
-  return forms.get(formId);
-}
-
-export function getFieldInventory(formId: string): FieldInventory[] {
-  return (fieldBindings.get(formId) ?? []).map((b) => b.inventory);
-}
-
 /** Test-only: clears all registrations. Production callers never use this. */
 export function _resetRegistryForTests(): void {
-  forms.clear();
   mustFileBindings.clear();
   fieldBindings.clear();
 }
@@ -143,19 +109,24 @@ export function _resetRegistryForTests(): void {
 // ─── Evaluation ──────────────────────────────────────────────────────────
 
 /**
- * Evaluate a single form. Fields are evaluated in registration order so
- * intra-form arithmetic (e.g. line 11 = line 9 − line 10) just works as
- * long as the generated file orders bindings naturally. When we re-enable
- * cross-form refs in Phase F, we'll wrap this in a `evaluateAllForms` that
- * topologically schedules forms.
+ * Evaluate a single form against the supplied Catalog. Fields are iterated
+ * in Catalog ordinal order, so intra-form arithmetic (e.g. line 11 = line
+ * 9 − line 10) works as long as inventory is ordered top-to-bottom in the
+ * fixture / DB. Cross-form references read from prior evaluations on the
+ * same engine pass — see `evaluateAllForms` (added in Phase F) for the
+ * topological scheduler that makes that safe.
  */
 export function evaluateForm(
   formId: string,
   ctx: DerivationContext,
+  catalog: Catalog,
 ): EvaluatedForm<AnyFormField> {
-  const def = forms.get(formId);
+  const def = catalog.getForm(formId);
   if (!def) {
-    throw new Error(`evaluateForm: no form registered with id "${formId}"`);
+    throw new Error(
+      `evaluateForm: no form "${formId}" in the Catalog. ` +
+        `Did you forget to load its fixture / seed the DB?`,
+    );
   }
 
   const fieldResults = new Map<string, DerivationResult<unknown>>();
@@ -204,18 +175,29 @@ export function evaluateForm(
     };
   }
 
-  // Evaluate each field in registration order, recording each result so
-  // subsequent fields can reference it via ctx.fieldResult.
-  const list = fieldBindings.get(formId) ?? [];
-  for (const b of list) {
-    const result = b.rule.evaluate(b.params, engineCtx);
-    fieldResults.set(b.inventory.fieldId, result);
+  // Walk the Catalog's inventory in order. For each field, look up the
+  // binding registered by the generated TS. Missing bindings surface as
+  // blocked field results — that's a misalignment between the Catalog
+  // (inventory) and the generated TS (behavior), worth fixing rather than
+  // hiding.
+  for (const inv of catalog.getFields(formId)) {
+    const binding = fieldBindings.get(inv.fieldId);
+    let result: DerivationResult<unknown>;
+    if (!binding) {
+      result = blocked(
+        `No binding registered for ${inv.fieldId}. ` +
+          `Either remove it from the Catalog or add a bindField call.`,
+      );
+    } else {
+      result = binding.rule.evaluate(binding.params, engineCtx);
+    }
+    fieldResults.set(inv.fieldId, result);
     fields.push({
-      formFieldKind: `${formId}.${b.inventory.valueType}`,
-      fieldId: b.inventory.fieldId,
-      label: b.inventory.label,
-      category: b.inventory.category,
-      valueType: b.inventory.valueType,
+      formFieldKind: `${formId}.${inv.valueType}`,
+      fieldId: inv.fieldId,
+      label: inv.label,
+      category: inv.category,
+      valueType: inv.valueType,
       result,
     });
   }

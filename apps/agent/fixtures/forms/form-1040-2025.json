@@ -1,0 +1,154 @@
+{
+  "form": {
+    "formId": "form-1040",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "U.S. Individual Income Tax Return"
+  },
+  "fields": [
+    {
+      "fieldId": "form-1040.header.first_name",
+      "label": "First name",
+      "category": "personal_info",
+      "valueType": "text"
+    },
+    {
+      "fieldId": "form-1040.header.last_name",
+      "label": "Last name",
+      "category": "personal_info",
+      "valueType": "text"
+    },
+    {
+      "fieldId": "form-1040.header.ssn",
+      "label": "SSN",
+      "category": "personal_info",
+      "valueType": "text"
+    },
+    {
+      "fieldId": "form-1040.header.address",
+      "label": "Home address",
+      "category": "personal_info",
+      "valueType": "text"
+    },
+    {
+      "fieldId": "form-1040.header.filing_status",
+      "label": "Filing status",
+      "category": "filing_scope",
+      "valueType": "single_select"
+    },
+    {
+      "fieldId": "form-1040.line.1a",
+      "label": "Total amount from Form(s) W-2, box 1",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.1z",
+      "label": "Add lines 1a through 1h",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.3a",
+      "label": "Qualified dividends",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.3b",
+      "label": "Ordinary dividends",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.7",
+      "label": "Capital gain or (loss). Attach Schedule D if required",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.9",
+      "label": "Total income",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.10",
+      "label": "Adjustments to income from Schedule 1",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.11",
+      "label": "Adjusted gross income (line 9 − line 10)",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.12",
+      "label": "Standard deduction",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.13",
+      "label": "Qualified business income deduction",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.14",
+      "label": "Add lines 12 and 13",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.15",
+      "label": "Taxable income (line 11 − line 14, not less than 0)",
+      "category": "income",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.16",
+      "label": "Tax",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.23",
+      "label": "Other taxes from Schedule 2",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.24",
+      "label": "Total tax (line 16 + line 23)",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.25a",
+      "label": "Federal income tax withheld from Form(s) W-2",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.33",
+      "label": "Total payments",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.34",
+      "label": "Amount overpaid (line 33 − line 24)",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    },
+    {
+      "fieldId": "form-1040.line.37",
+      "label": "Amount you owe (line 24 − line 33)",
+      "category": "deductions_credits",
+      "valueType": "numeric"
+    }
+  ]
+}

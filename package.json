@@ -15,6 +15,9 @@
     "refdocs:status": "npm --prefix apps/agent run refdocs:status",
     "refdocs:sync": "npm --prefix apps/agent run refdocs:sync",
     "refdocs:verify": "npm --prefix apps/agent run refdocs:verify",
+    "forms:seed": "npm --prefix apps/agent run forms:seed",
+    "forms:verify": "npm --prefix apps/agent run forms:verify",
+    "smoke:engine": "npm --prefix apps/agent run smoke:engine",
     "smoke:review": "npm --prefix apps/agent run smoke:review",
     "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install"
   },

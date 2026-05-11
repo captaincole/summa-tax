@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
@@ -10,11 +11,30 @@ import {
   type DerivationContext,
 } from "../forms/types";
 import { evaluateForm } from "../forms/engine";
-// Side-effect import: registers form-1040 with the engine. Phase F adds
-// imports for 540, 8949, Schedule D back here as they're re-implemented in
-// the new style.
+import { loadFromFixtures, type Catalog } from "../forms/catalog";
+import { projectRoot } from "../paths";
+// Side-effect import: registers form-1040 bindings with the engine. Phase F
+// adds imports for 540, 8949, Schedule D back here as they're re-implemented
+// in the new style.
 import "../forms/generated/form-1040";
 import { requireUserContext } from "./userContext";
+
+// Catalog (form inventory) lives in JSON fixtures during Phase B. The DB-
+// backed loader (loadFromDb) is the AI pipeline's staging area starting in
+// Phase C — caseState will switch to it when the AI extractions become the
+// source of truth. For now the fixture path keeps the runtime self-contained
+// and lets tests run without a DB.
+const CATALOG_FIXTURES = [
+  resolve(projectRoot, "fixtures/forms/form-1040-2025.json"),
+];
+
+let catalogPromise: Promise<Catalog> | null = null;
+function getCatalog(): Promise<Catalog> {
+  if (!catalogPromise) {
+    catalogPromise = loadFromFixtures(CATALOG_FIXTURES);
+  }
+  return catalogPromise;
+}
 
 // Live case state for Thom. Runs the four-form engine against the current
 // fact + decision state and returns:
@@ -80,9 +100,11 @@ export async function buildCaseState(
     decisions: makeDecisionsView(decisions),
   };
 
-  // Phase A: only Form 1040 runs through the new engine. 8949, Schedule D,
-  // and 540 are disabled — Phase F reintroduces them in the new shape.
-  const form1040 = evaluateForm("form-1040", ctx);
+  // Phase B: only Form 1040 runs through the new engine, against the
+  // fixture-loaded Catalog. 8949, Schedule D, and 540 are disabled —
+  // Phase F reintroduces them in the new shape.
+  const catalog = await getCatalog();
+  const form1040 = evaluateForm("form-1040", ctx, catalog);
 
   const summaries: EvaluatedFormSummary[] = [summarizeForm(form1040)];
 
