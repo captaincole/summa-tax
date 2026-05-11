@@ -28,7 +28,8 @@ export type RuleName =
   | "lookupDecision"
   | "fromFields"
   | "constant"
-  | "bracketLookup";
+  | "bracketLookup"
+  | "unsupported";
 
 export interface ClassifiedBinding {
   fieldId: string;
@@ -72,7 +73,12 @@ lookupFact — Read a single fact by key.
 
 sumFacts — Aggregate a numeric field across all facts in a category (optionally filtered by key prefix).
   params: { category: string, keyPrefix?: string, fieldPath: string }
-  Use for sum-of-many-similar-facts (line 1a = sum of W-2 box 1, line 3a = sum of 1099-DIV box 1b).
+  Use for sum-of-many-similar-facts.
+  IMPORTANT: \`fieldPath\` is a dot-path into the fact's VALUE object — it does NOT include the key suffix. For 1099-DIV facts keyed "account.{slug}.dividends" the value is { box1a, box1b, … } so fieldPath is "box1b", NOT "dividends.box1b". For W-2 facts keyed "employer.{slug}" the value is { box1, box2, … } so fieldPath is "box1", NOT "wages.box1".
+  Examples:
+    - line 1a (W-2 wages): { category: "wages", keyPrefix: "employer.", fieldPath: "box1" }
+    - line 3a (qualified divs): { category: "investment_income", keyPrefix: "account.", fieldPath: "box1b" }
+    - line 25a (W-2 withholding): { category: "wages", keyPrefix: "employer.", fieldPath: "box2" }
 
 lookupDecision — Pass through an ai_decision value as-is.
   params: { decisionKey: string }
@@ -98,7 +104,7 @@ fromFields — Signed sum / reference of other form fields (intra-form or cross-
 
 constant — Fixed value, no inputs.
   params: { value: unknown, rationale: string }
-  Use for fields with no available data source — placeholder that surfaces 0 until we ingest the relevant facts. Always provide a rationale explaining what's missing.
+  Use ONLY for genuinely fixed values that are known regardless of taxpayer (e.g. tax year ending date = "12/31/2025"). DO NOT use for placeholders — prefer \`unsupported\` for those.
 
 bracketLookup — Progressive tax bracket math.
   params: {
@@ -106,7 +112,12 @@ bracketLookup — Progressive tax bracket math.
     inputFieldId: string (the taxable income field),
     brackets: Record<string, Array<{ upTo: number, rate: number }>>
   }
-  Use ONLY for the tax-line calculation (1040 line 16). For other progressive math we'll add rules later.`;
+  Use ONLY for the tax-line calculation (1040 line 16). For other progressive math we'll add rules later.
+
+unsupported — Mark a field as a known engine gap. We don't compute it yet because we don't have a worked example scenario or fact-ingestion path for it.
+  params: { reason: string }
+  Use for ANY field where we don't have an obvious mapping to facts or decisions yet. Examples: deceased-taxpayer date of death (no scenario yet), dependents detail (no dependent ingestion), spouse info (no MFJ scenario), foreign address, paid preparer block, signing-block dates.
+  IMPORTANT: prefer \`unsupported\` over \`constant 0\` whenever the field's value depends on facts we haven't built ingestion for. \`constant\` is for fixed values; \`unsupported\` is for "we'll model this when a real scenario forces it." Downstream sums treat unsupported terms as 0 so the form still renders.`;
 
 const AVAILABLE_DATA_SPEC = `Available tax_facts (fact_key patterns):
   - identity.name.first, identity.name.last, identity.ssn, identity.dob, identity.address
@@ -120,7 +131,7 @@ Available ai_decisions (decision_key patterns):
   - decisions.scope.has_reportable_sales (boolean)
   - decisions.trade.{tradeId}.form_8949_box (string)
 
-For fields that don't map to any of the above (spouse info, dependents, retirement, foreign income, Schedule 1/2/3 detail, signing block, paid preparer block, …), bind to \`constant\` with value 0 and explain why in the rationale (e.g. "spouse fields not yet ingested" or "schedule 2 fields not yet wired"). The form will surface 0 for those lines until we extend ingestion.`;
+For fields that don't map to any of the above (spouse info, dependents, retirement, foreign income, Schedule 1/2/3 detail, signing block, paid preparer block, …), bind to \`unsupported\` with a reason explaining what scenario we'd need to support it (e.g. "no MFJ scenario yet — spouse fields unsupported" or "no dependent-with-CTC scenario yet"). The engine will treat these as gaps without surfacing them as user questions; downstream sums skip them as 0.`;
 
 const SYSTEM_PROMPT = `You are generating bindings for U.S. tax form fields. Each binding pairs a field with a rule from our library that determines how the form engine computes its value.
 
@@ -135,11 +146,12 @@ Picking rules:
   - Filing-status-keyed constant (standard deduction) → tableLookupByDecision
   - Math over other lines → fromFields
   - Tax bracket math (only line 16) → bracketLookup
-  - Anything not yet supported → constant 0 with a rationale
+  - Genuinely fixed value (tax year date, IRS-defined boilerplate) → constant
+  - Anything else we haven't built ingestion / scenarios for → unsupported
 
-When using fromFields, every term's fieldId must match an inventory entry exactly — full path including the formId prefix. For intra-form math (e.g. line 11 = line 9 − line 10) every term references the current form's fields. For cross-form refs, the referenced form must also be in the catalog inventory; if it isn't, bind to constant 0 with a rationale explaining "source form not yet ingested."
+When using fromFields, every term's fieldId must match an inventory entry exactly — full path including the formId prefix. For intra-form math (e.g. line 11 = line 9 − line 10) every term references the current form's fields. For cross-form refs, the referenced form must also be in the catalog inventory; if it isn't, bind to \`unsupported\` with a reason explaining "source form not yet ingested."
 
-Don't invent facts, decisions, or field references that aren't on the inventory / Available list. If a field requires data we don't have, use constant 0 with an explanatory rationale — that's the honest answer.
+Don't invent facts, decisions, or field references that aren't on the inventory / Available list. If a field requires data we don't have, use \`unsupported\` with a reason — that's the honest answer. Reserve \`constant\` for values that are TRULY fixed (not "we'll fill this in later").
 
 Rationales should be one short sentence per binding ("Sum of W-2 box 1 across employers"). The form engine surfaces rationales to debug why a value came out a certain way.`;
 
@@ -277,6 +289,7 @@ For each field, emit a binding via the emit_bindings tool. ${batchIndex === 0 ? 
                       "fromFields",
                       "constant",
                       "bracketLookup",
+                      "unsupported",
                     ],
                   },
                   params: {

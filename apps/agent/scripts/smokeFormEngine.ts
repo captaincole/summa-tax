@@ -208,7 +208,10 @@ async function main() {
     assertApprox("form-1040.line.37", -expectedRefund);
   }
 
-  // Print every field's result.
+  // Print every field's result. Three states:
+  //   ✓ ok           — engine computed a value
+  //   ⊘ unsupported  — engine gap (no scenario / no ingestion); doesn't block Thom
+  //   ✗ blocked      — actual missing input (user fact or decision needed)
   for (const field of form.fields) {
     if (field.result.ok) {
       const v = field.result.value;
@@ -222,16 +225,21 @@ async function main() {
             ? v
             : JSON.stringify(v);
       console.log(`  ✓ ${field.fieldId.padEnd(50)} = ${pretty}`);
+    } else if (field.result.unsupported) {
+      console.log(`  ⊘ ${field.fieldId.padEnd(50)} — ${field.result.reason}`);
     } else {
       console.log(`  ✗ ${field.fieldId}: BLOCKED — ${field.result.reason}`);
     }
   }
 
   const okCount = form.fields.filter((f) => f.result.ok).length;
-  const blockedCount = form.fields.length - okCount;
+  const unsupportedCount = form.fields.filter(
+    (f) => !f.result.ok && f.result.unsupported,
+  ).length;
+  const blockedCount = form.fields.length - okCount - unsupportedCount;
   console.log();
   console.log(
-    `Summary: ${form.fields.length} fields, ${okCount} ok, ${blockedCount} blocked.`,
+    `Summary: ${form.fields.length} fields — ${okCount} ok, ${blockedCount} blocked, ${unsupportedCount} unsupported.`,
   );
 
   if (failures.length > 0) {

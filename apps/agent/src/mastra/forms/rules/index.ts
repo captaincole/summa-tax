@@ -9,3 +9,4 @@ export { lookupDecision } from "./lookupDecision.js";
 export { fromFields } from "./fromFields.js";
 export { constant } from "./constant.js";
 export { bracketLookup } from "./bracketLookup.js";
+export { unsupported } from "./unsupported.js";

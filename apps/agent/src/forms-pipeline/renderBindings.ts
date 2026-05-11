@@ -36,6 +36,7 @@ const RULE_IMPORTS: Record<RuleName, string> = {
   fromFields: "r.fromFields",
   constant: "r.constant",
   bracketLookup: "r.bracketLookup",
+  unsupported: "r.unsupported",
 };
 
 export function renderBindings(opts: RenderBindingsOpts): string {

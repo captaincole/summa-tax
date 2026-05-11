@@ -44,6 +44,7 @@ const ruleNameSchema = z.enum([
   "fromFields",
   "constant",
   "bracketLookup",
+  "unsupported",
 ]);
 
 const classifiedBindingSchema = z.object({

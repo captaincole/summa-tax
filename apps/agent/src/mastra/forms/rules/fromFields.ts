@@ -88,6 +88,12 @@ export const fromFields = rule({
           `Term ${t.fieldId} not evaluated yet — topo-sort gap.`,
         );
       }
+      // Unsupported terms contribute 0 so downstream sums keep computing.
+      // The gap is logged via the upstream field's own unsupported result;
+      // we don't propagate it here.
+      if (!field.ok && field.unsupported) {
+        continue;
+      }
       if (!field.ok) {
         return blocked(
           `Term ${t.fieldId} is blocked: ${field.reason}`,

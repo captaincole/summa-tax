@@ -19,13 +19,16 @@ import { projectRoot } from "../paths";
 import "../forms/generated/form-1040";
 import { requireUserContext } from "./userContext";
 
-// Catalog (form inventory) lives in JSON fixtures during Phase B. The DB-
-// backed loader (loadFromDb) is the AI pipeline's staging area starting in
-// Phase C — caseState will switch to it when the AI extractions become the
-// source of truth. For now the fixture path keeps the runtime self-contained
-// and lets tests run without a DB.
+// Catalog (form inventory) lives in JSON fixtures. We point at the
+// Phase C AI-extracted catalog (197 fields) because that's what the
+// AI-generated bindings in `forms/generated/form-1040.ts` were produced
+// against — catalog + bindings have to share the same fieldId set or the
+// engine surfaces "no binding registered" blocks for the mismatched fields.
+//
+// Regeneration: `npm run forms:ingest` rewrites the .extracted.json,
+// `npm run forms:bind` rewrites the bindings. Both should run together.
 const CATALOG_FIXTURES = [
-  resolve(projectRoot, "fixtures/forms/form-1040-2025.json"),
+  resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
 ];
 
 let catalogPromise: Promise<Catalog> | null = null;
@@ -57,6 +60,7 @@ type EvaluatedFormSummary = {
     | { ok: false; reason: string; missingDecisionKey: string | null };
   fieldCount: number;
   blockedFieldCount: number;
+  unsupportedFieldCount: number;
   blockers: Array<{
     fieldId: string;
     reason: string;
@@ -172,16 +176,18 @@ function summarizeForm(form: {
   title: string;
   mustFile:
     | { ok: true; value: boolean; rationale: string; supportingFactKeys: string[]; decisionKey?: string }
-    | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[] };
+    | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[]; unsupported?: boolean };
   fields: Array<{
     fieldId: string;
     result:
       | { ok: true; value: unknown; rationale: string; supportingFactKeys: string[]; decisionKey?: string }
-      | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[] };
+      | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[]; unsupported?: boolean };
   }>;
 }): EvaluatedFormSummary {
+  // Unsupported fields are engine gaps, not user-input gaps. They don't
+  // count as blockers and don't get aggregated into pending questions.
   const blockers = form.fields
-    .filter((l) => !l.result.ok)
+    .filter((l) => !l.result.ok && !l.result.unsupported)
     .map((l) => {
       const r = l.result as Extract<typeof l.result, { ok: false }>;
       return {
@@ -191,6 +197,9 @@ function summarizeForm(form: {
         missingFactKeys: r.missingFactKeys ?? null,
       };
     });
+  const unsupportedFieldCount = form.fields.filter(
+    (l) => !l.result.ok && l.result.unsupported,
+  ).length;
   return {
     formId: form.formId,
     jurisdiction: form.jurisdiction,
@@ -204,6 +213,7 @@ function summarizeForm(form: {
         },
     fieldCount: form.fields.length,
     blockedFieldCount: blockers.length,
+    unsupportedFieldCount,
     blockers,
   };
 }
