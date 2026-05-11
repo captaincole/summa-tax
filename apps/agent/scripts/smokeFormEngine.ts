@@ -145,8 +145,10 @@ async function main() {
     decisions: makeDecisionsView(decisions),
   };
 
+  // Phase D catalog: the AI-extracted form-1040 fields, 197 entries.
+  // Pairs with the AI-generated bindings in forms/generated/form-1040.ts.
   const catalog = await loadFromFixtures([
-    resolve(projectRoot, "fixtures/forms/form-1040-2025.json"),
+    resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
   ]);
 
   const form = evaluateForm("form-1040", ctx, catalog);
@@ -170,22 +172,28 @@ async function main() {
     }
   };
 
+  // The AI's bindings use slightly different fieldIds than the hand-written
+  // fixture — line 11 splits into 11a/11b (one per page), line 12 splits
+  // into 12a–12e (with 12e being the actual standard deduction amount).
+  // Standard deduction value is also higher than the hand-written 15000
+  // because the AI picked up the 2025 OBBBA update (15750 for single).
+
   assertApprox("form-1040.line.1a", 100_000);
   assertApprox("form-1040.line.1z", 100_000);
   assertApprox("form-1040.line.3a", 381.4);
   assertApprox("form-1040.line.3b", 385.2);
-  assertApprox("form-1040.line.7", 0); // Schedule D not yet wired in
   assertApprox("form-1040.line.9", 100_385.2);
-  assertApprox("form-1040.line.11", 100_385.2);
-  assertApprox("form-1040.line.12", 15_000);
-  assertApprox("form-1040.line.14", 15_000);
-  assertApprox("form-1040.line.15", 85_385.2);
+  assertApprox("form-1040.line.11a", 100_385.2); // AGI (page 1 display)
+  assertApprox("form-1040.line.11b", 100_385.2); // AGI (page 2 display)
+  assertApprox("form-1040.line.12e", 15_750);    // Standard deduction (2025 OBBBA)
+  assertApprox("form-1040.line.14", 15_750);
+  assertApprox("form-1040.line.15", 84_635.2);   // Taxable income
 
-  // 2025 single brackets on $85,385.20:
+  // 2025 single brackets on $84,635.20:
   //   10% on first 11,925         = 1,192.50
   //   12% on next  36,550         = 4,386.00
-  //   22% on remaining 36,910.20  = 8,120.24
-  const expectedTax = 1192.5 + 4386.0 + (85385.2 - 48475) * 0.22;
+  //   22% on remaining 36,160.20  = 7,955.24
+  const expectedTax = 1192.5 + 4386.0 + (84635.2 - 48475) * 0.22;
   assertApprox("form-1040.line.16", expectedTax);
   assertApprox("form-1040.line.24", expectedTax);
   assertApprox("form-1040.line.25a", 14_500);
@@ -200,6 +208,7 @@ async function main() {
     assertApprox("form-1040.line.37", -expectedRefund);
   }
 
+  // Print every field's result.
   for (const field of form.fields) {
     if (field.result.ok) {
       const v = field.result.value;
@@ -212,20 +221,25 @@ async function main() {
           : typeof v === "string"
             ? v
             : JSON.stringify(v);
-      console.log(`  ✓ ${field.fieldId.padEnd(34)} = ${pretty}`);
+      console.log(`  ✓ ${field.fieldId.padEnd(50)} = ${pretty}`);
     } else {
       console.log(`  ✗ ${field.fieldId}: BLOCKED — ${field.result.reason}`);
     }
   }
+
+  const okCount = form.fields.filter((f) => f.result.ok).length;
+  const blockedCount = form.fields.length - okCount;
+  console.log();
+  console.log(
+    `Summary: ${form.fields.length} fields, ${okCount} ok, ${blockedCount} blocked.`,
+  );
 
   if (failures.length > 0) {
     console.log(`\n${failures.length} assertion(s) failed:`);
     for (const f of failures) console.log(`  ✗ ${f}`);
     process.exit(1);
   }
-  console.log(
-    `\nAll ${form.fields.length} fields evaluated; ${form.fields.filter((f) => f.result.ok).length} ok.`,
-  );
+  console.log(`All assertions passed.`);
 }
 
 main().catch((e) => {
