@@ -8,8 +8,10 @@
 // Run: npx tsx scripts/smokeFormEngine.ts
 
 import { resolve } from "node:path";
-import "../src/mastra/forms/generated/form-1040.js";
+import { register as registerForm1040 } from "../src/mastra/forms/generated/form-1040.js";
 import { evaluateForm } from "../src/mastra/forms/engine.js";
+
+registerForm1040();
 import { loadFromFixtures } from "../src/mastra/forms/catalog.js";
 import { projectRoot } from "../src/mastra/paths.js";
 import {

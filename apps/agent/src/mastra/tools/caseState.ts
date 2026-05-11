@@ -13,10 +13,12 @@ import {
 import { evaluateForm } from "../forms/engine";
 import { loadFromFixtures, type Catalog } from "../forms/catalog";
 import { projectRoot } from "../paths";
-// Side-effect import: registers form-1040 bindings with the engine. Phase F
-// adds imports for 540, 8949, Schedule D back here as they're re-implemented
-// in the new style.
-import "../forms/generated/form-1040";
+// Explicit register() call so the bundler / dev server can't tree-shake
+// the side-effect-import idiom we used previously. Idempotent — bindings
+// overwrite themselves if called twice. Phase F adds register() calls
+// for 540, 8949, Schedule D here as they're re-implemented in the new style.
+import { register as registerForm1040 } from "../forms/generated/form-1040";
+registerForm1040();
 import { requireUserContext } from "./userContext";
 
 // Catalog (form inventory) lives in JSON fixtures. We point at the

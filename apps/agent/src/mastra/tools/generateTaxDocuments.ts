@@ -20,8 +20,12 @@ import {
   type Catalog,
   type FieldInventory,
 } from "../forms/catalog";
-// Side-effect import: registers form-1040 bindings with the engine.
-import "../forms/generated/form-1040";
+// Explicit register() call so the bundler / dev server can't tree-shake
+// the side-effect-import idiom we used previously. Idempotent — bindings
+// overwrite themselves if called twice.
+import { register as registerForm1040 } from "../forms/generated/form-1040";
+registerForm1040();
+import { verifiedWidget } from "../../forms-pipeline/verifiedWidgets";
 import { requireUserContext } from "./userContext";
 
 const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
@@ -221,16 +225,22 @@ export const generateTaxDocuments = createTool({
 
     // Generic walk over catalog fields. Each catalog field carries its
     // PDF widget name (from Phase C extraction); each evaluated result is
-    // matched to that widget and filled by valueType.
+    // matched to that widget and filled by valueType. The verified-widgets
+    // override map takes precedence over the AI's catalog mapping for
+    // fields where we know Phase C drifted (see verifiedWidgets.ts).
     let linesPopulated = 0;
     for (const field of form1040.fields) {
       const inv = catalog.getField(field.fieldId);
-      if (!inv?.pdfWidgetName) continue;
+      if (!inv) continue;
       if (!field.result.ok) continue;
       const value = field.result.value;
       if (value === null || value === undefined) continue;
 
-      const filled = fillByType(setText, check, inv, value);
+      const widgetName =
+        verifiedWidget("form-1040", field.fieldId) ?? inv.pdfWidgetName;
+      if (!widgetName) continue;
+
+      const filled = fillByType(setText, check, widgetName, inv.valueType, value);
       if (filled) linesPopulated++;
     }
 
@@ -240,9 +250,11 @@ export const generateTaxDocuments = createTool({
     // rule, this lives in the renderer.
     const fsFieldId = FILING_STATUS_FIELD_IDS[filingStatus];
     if (fsFieldId) {
-      const inv = catalog.getField(fsFieldId);
-      if (inv?.pdfWidgetName) {
-        check(inv.pdfWidgetName);
+      const widgetName =
+        verifiedWidget("form-1040", fsFieldId) ??
+        catalog.getField(fsFieldId)?.pdfWidgetName;
+      if (widgetName) {
+        check(widgetName);
         linesPopulated++;
       }
     }
@@ -267,9 +279,11 @@ export const generateTaxDocuments = createTool({
     ];
     for (const [fieldId, value] of addrParts) {
       if (!value) continue;
-      const inv = catalog.getField(fieldId);
-      if (!inv?.pdfWidgetName) continue;
-      setText(inv.pdfWidgetName, value);
+      const widgetName =
+        verifiedWidget("form-1040", fieldId) ??
+        catalog.getField(fieldId)?.pdfWidgetName;
+      if (!widgetName) continue;
+      setText(widgetName, value);
       linesPopulated++;
     }
 
@@ -348,42 +362,42 @@ export const generateTaxDocuments = createTool({
 
 // Fill a single widget based on the field's valueType + the engine's
 // evaluated value. Returns true if a widget was actually touched.
+//
+// Numeric zeros are written as "0" — they distinguish "engine computed
+// zero" from "engine didn't compute this at all" (the latter is
+// unsupported/blocked and gets no widget fill).
 function fillByType(
   setText: (widgetName: string, value: string) => void,
   check: (widgetName: string) => void,
-  inv: FieldInventory,
+  widgetName: string,
+  valueType: FieldInventory["valueType"],
   value: unknown,
 ): boolean {
-  if (!inv.pdfWidgetName) return false;
-  switch (inv.valueType) {
+  switch (valueType) {
     case "numeric": {
       if (typeof value === "number" && Number.isFinite(value)) {
-        // Skip zeros — the form looks cleaner with empty cells than "0"
-        // on every unused line, and engine-side zeros are usually
-        // unsupported-as-0 cascades from fromFields.
-        if (value === 0) return false;
-        setText(inv.pdfWidgetName, fmtMoney(value));
+        setText(widgetName, fmtMoney(value));
         return true;
       }
       return false;
     }
     case "text": {
       if (typeof value === "string" && value.length > 0) {
-        setText(inv.pdfWidgetName, value);
+        setText(widgetName, value);
         return true;
       }
       return false;
     }
     case "boolean": {
       if (value === true) {
-        check(inv.pdfWidgetName);
+        check(widgetName);
         return true;
       }
       return false;
     }
     case "date": {
       if (typeof value === "string" && value.length > 0) {
-        setText(inv.pdfWidgetName, value);
+        setText(widgetName, value);
         return true;
       }
       return false;

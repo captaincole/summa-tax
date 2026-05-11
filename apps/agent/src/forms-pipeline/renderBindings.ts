@@ -57,9 +57,14 @@ export function renderBindings(opts: RenderBindingsOpts): string {
   out.push(`import { bindMustFile, bindField } from "../engine.js";`);
   out.push(`import * as r from "../rules/index.js";`);
   out.push("");
-  out.push(`// must-file — ${opts.mustFile.rationale}`);
+  out.push(`// Wrapping all bind* calls inside an exported \`register\``);
+  out.push(`// function gives consumers a tangible reference to import so the`);
+  out.push(`// dev server / bundler can't tree-shake the side-effect away.`);
+  out.push(`// Idempotent: bindings overwrite themselves when called twice.`);
+  out.push(`export function register(): void {`);
+  out.push(`  // must-file — ${opts.mustFile.rationale}`);
   out.push(
-    `bindMustFile(${quote(opts.formId)}, r.lookupDecision, ${formatParams({ decisionKey: opts.mustFile.decisionKey })});`,
+    `  bindMustFile(${quote(opts.formId)}, r.lookupDecision, ${indent(formatParams({ decisionKey: opts.mustFile.decisionKey }), 2)});`,
   );
   out.push("");
 
@@ -70,7 +75,7 @@ export function renderBindings(opts: RenderBindingsOpts): string {
     if (!binding) {
       // Field exists in the catalog but the classifier didn't emit a binding
       // — log a TODO so a human can fix it instead of silently dropping.
-      out.push(`// TODO: no binding emitted for ${field.fieldId} — "${field.label}"`);
+      out.push(`  // TODO: no binding emitted for ${field.fieldId} — "${field.label}"`);
       out.push("");
       missing++;
       continue;
@@ -78,24 +83,34 @@ export function renderBindings(opts: RenderBindingsOpts): string {
     const ruleSymbol = RULE_IMPORTS[binding.ruleName];
     if (!ruleSymbol) {
       out.push(
-        `// SKIP: unknown rule "${binding.ruleName}" for ${field.fieldId} — "${field.label}"`,
+        `  // SKIP: unknown rule "${binding.ruleName}" for ${field.fieldId} — "${field.label}"`,
       );
       out.push("");
       missing++;
       continue;
     }
-    out.push(`// ${shortLabel(field.label)} (${field.category})`);
-    out.push(`//   why: ${binding.rationale}`);
+    out.push(`  // ${shortLabel(field.label)} (${field.category})`);
+    out.push(`  //   why: ${binding.rationale}`);
     out.push(
-      `bindField(${quote(opts.formId)}, ${quote(field.fieldId)}, ${ruleSymbol}, ${formatParams(binding.params)});`,
+      `  bindField(${quote(opts.formId)}, ${quote(field.fieldId)}, ${ruleSymbol}, ${indent(formatParams(binding.params), 2)});`,
     );
     out.push("");
     bound++;
   }
 
+  out.push(`}`);
+  out.push("");
   out.push(`// Summary: ${bound} field(s) bound, ${missing} unmapped.`);
   out.push("");
   return out.join("\n");
+}
+
+function indent(s: string, spaces: number): string {
+  const pad = " ".repeat(spaces);
+  return s
+    .split("\n")
+    .map((line, i) => (i === 0 ? line : pad + line))
+    .join("\n");
 }
 
 function quote(s: string): string {
