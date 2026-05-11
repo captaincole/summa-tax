@@ -59,10 +59,9 @@ export async function extractAcroForm(pdfPath: string): Promise<ExtractedAcroFor
     for (const w of acroWidgets) {
       const widget = w as {
         getRectangle: () => { x: number; y: number; width: number; height: number };
-        dict: unknown;
       };
       const rect = widget.getRectangle();
-      const page = findWidgetPage(widget.dict, pages);
+      const page = findWidgetPage(fullName, pages.length);
       widgets.push({
         fullName,
         shortName,
@@ -109,18 +108,23 @@ function shortenName(fullName: string): string {
   return last.replace(/\[\d+\]$/, "");
 }
 
-// pdf-lib doesn't expose a direct "what page is this widget on?" API.
-// Each page has an Annots array; we scan pages looking for one whose
-// Annots array contains this widget's dict.
-function findWidgetPage(
-  widgetDict: unknown,
-  pages: Array<{ node: { Annots: () => unknown } }>,
-): number {
-  for (let i = 0; i < pages.length; i++) {
-    const annots = pages[i].node.Annots();
-    if (!annots) continue;
-    const arr = (annots as { asArray: () => unknown[] }).asArray();
-    if (arr.includes(widgetDict)) return i;
+// pdf-lib's PDFRef vs. PDFDict comparison doesn't reliably resolve annot
+// references on these forms (pdf-lib warns about stripping XFA data on
+// load, which seems to leave the annot-array references in an unresolvable
+// state). The existing scripts/mapFieldsByPosition.ts has the same bug.
+//
+// Workaround: parse the page index from the widget's full name. IRS forms
+// (and most fillable government PDFs) encode page in the subform path:
+//   topmostSubform[0].Page1[0].f1_47[0]   → page 0 (0-indexed)
+//   topmostSubform[0].Page2[0].f2_01[0]   → page 1
+//
+// Falls back to 0 when no page marker is found (rare; usually means a
+// flat single-page form).
+function findWidgetPage(fullName: string, totalPages: number): number {
+  const match = fullName.match(/Page(\d+)\[/);
+  if (match) {
+    const pageNum = parseInt(match[1], 10) - 1;
+    if (pageNum >= 0 && pageNum < totalPages) return pageNum;
   }
   return 0;
 }

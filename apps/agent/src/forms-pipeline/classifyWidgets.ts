@@ -69,38 +69,41 @@ export interface ClassifyOpts {
   pages: FormPage[];
 }
 
-const SYSTEM_PROMPT = `You are classifying fillable widgets on a U.S. tax form into a structured catalog.
+const SYSTEM_PROMPT = `You are classifying fillable form fields on a U.S. tax form into a structured catalog.
 
-For each widget we give you, return one of:
-  - A "field" entry — when the widget corresponds to a meaningful taxpayer-fillable field (a line, a header field, a filing-status checkbox, etc.).
-  - A "skip" entry — when the widget is decorative, a UI helper, a separate button, or otherwise not a real form field to track. Give a short reason.
+For each form field we give you, return one of:
+  - A "field" entry — when the form field corresponds to a meaningful taxpayer-fillable thing (a line, a header field, a checkbox, a date cell, etc.).
+  - A "skip" entry — when the form field is decorative, a UI helper, a separate button, or otherwise not a real catalog entry. Give a short reason.
 
-Field IDs follow the convention "<formId>.<section>.<key>":
-  - section is one of "header" (top-of-form personal info) or "line" (numbered IRS lines)
-  - key for header fields is a snake_case identifier ("first_name", "last_name", "ssn", "address", "filing_status")
-  - key for line fields is the IRS line number including any letter suffix, e.g. "1a", "1z", "3b", "25a"
+Granularity is **per form field**. Every distinct fillable thing on the form gets its own entry — don't collapse multiple form fields into one logical entry. Example: on Form 1040, the AGI appears twice (line 11a on page 1, line 11b on page 2). Each is its own form field with its own fieldId. The tax for special forms (line 16: 4972 / 8814 checkboxes) is multiple form fields, one per checkbox. The home address breaks into separate street / apt / city / state / zip form fields.
+
+Field IDs follow the convention "<formId>.<section>.<key>" where:
+  - section names where the form field sits on the form (e.g. "header", "line", "signing")
+  - key uniquely identifies the form field within that section (e.g. "first_name", "1a", "11a", "16_4972")
+
+**Cross-batch consistency is critical.** When we send you a list of "fieldIds already assigned" from earlier batches, every fieldId you generate in this batch MUST either (a) be a completely new identifier not in that list, or (b) be omitted because the form field belongs to one of the existing entries. Don't invent synonyms — "header.address" and "header.address_street" referring to the same form field is a bug. Pick one canonical name on the first encounter and reuse it.
 
 Examples for form-1040:
-  - widget f1_14 → header field "form-1040.header.first_name", label "First name", category "personal_info", valueType "text"
-  - widget c1_8[0] → header field "form-1040.header.filing_status", label "Filing status", category "filing_scope", valueType "single_select" (one row per radio option is fine — many widgets can share a fieldId when they're part of one logical selection group)
-  - widget f1_47 → line field "form-1040.line.1a", label "Total amount from Form(s) W-2, box 1", category "income", valueType "numeric"
-  - widget f2_06 → line field "form-1040.line.15", label "Taxable income (line 11 − line 14, not less than 0)", category "income", valueType "numeric"
+  - form field f1_14 → "form-1040.header.first_name", label "First name", category "personal_info", valueType "text"
+  - form field c1_8[0] → "form-1040.header.filing_status_single", label "Filing status: Single", category "filing_scope", valueType "boolean"
+  - form field f1_47 → "form-1040.line.1a", label "Total amount from Form(s) W-2, box 1", category "income", valueType "numeric"
+  - form field f2_06 → "form-1040.line.15", label "Taxable income (line 11 − line 14, not less than 0)", category "income", valueType "numeric"
 
-Categories (pick the one closest to the field's role in the Filing Status panel rollup):
+Categories (pick the closest fit — this is a loose UI bucket, not a precision call):
   - personal_info — taxpayer name, SSN, address, DOB; top-of-form header bits
   - filing_scope — filing status, residency, dependents counts, must-file selectors
-  - income — wages, dividends, capital gains, taxable income, withholding (anything that increments the income side of the return)
+  - income — wages, dividends, capital gains, taxable income, withholding (anything on the income side)
   - deductions_credits — standard deduction, QBI, tax, credits, payments, refund/owed
   - other — anything that doesn't fit cleanly
 
 ValueTypes:
   - numeric — money amounts and counts
-  - single_select — one-of-many choices (filing status, residency status)
-  - text — free-text strings (names, address)
-  - boolean — yes/no checkboxes (single binary state)
+  - single_select — one-of-many choices
+  - text — free-text strings (names, address segments)
+  - boolean — yes/no or single checkbox
   - date — calendar dates
 
-Use the page text alongside each widget to figure out the surrounding label. The widget's bounding box (x, y) and short name (e.g. "f1_47") tell you where it sits.`;
+Use the page text alongside each form field to figure out the surrounding label. The form field's bounding box (x, y) and short name (e.g. "f1_47") tell you where it sits.`;
 
 export async function classifyWidgets(
   opts: ClassifyOpts,
@@ -127,15 +130,24 @@ export async function classifyWidgets(
     batches.push(opts.widgets.slice(i, i + WIDGET_BATCH_SIZE));
   }
 
+  // Dedupe fieldIds across batches: first occurrence wins. We surface the
+  // running list to each subsequent batch so the model reuses canonical
+  // names instead of inventing synonyms ("header.address" vs.
+  // "header.address_street") in isolation.
+  const assignedFieldIds = new Map<string, string>(); // fieldId → label
+
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
     const widgetsTable = buildWidgetsTable(batch);
+    const assignedTable = buildAssignedTable(assignedFieldIds);
     const userText = `Form: ${opts.formTitle} (${opts.formId}, tax year ${opts.taxYear}, jurisdiction ${opts.jurisdiction})
 
-Batch ${i + 1} of ${batches.length} — ${batch.length} widgets to classify:
+${assignedTable}
+
+Batch ${i + 1} of ${batches.length} — ${batch.length} form fields to classify:
 ${widgetsTable}
 
-Classify every widget into either a field or a skip entry. Return one entry per widget — same count as the table above.`;
+Classify every form field into either a field or a skip entry. Return one entry per form field — same count as the table above. Reuse fieldIds from "Already-assigned fieldIds" above when a form field belongs to one of them; pick a new canonical fieldId otherwise.`;
 
     const response = await client.messages.create({
       model: MODEL,
@@ -252,6 +264,11 @@ Classify every widget into either a field or a skip entry. Return one entry per 
         category: f.category,
         valueType: f.value_type,
       });
+      // Track on first occurrence; subsequent widgets pointing at the same
+      // fieldId just reaffirm it (collisions are the intended outcome).
+      if (!assignedFieldIds.has(f.field_id)) {
+        assignedFieldIds.set(f.field_id, f.label);
+      }
     }
     for (const s of rawInput.skipped ?? []) {
       allSkipped.push({
@@ -267,7 +284,7 @@ Classify every widget into either a field or a skip entry. Return one entry per 
     usage.cache_read_input_tokens += response.usage.cache_read_input_tokens ?? 0;
 
     console.log(
-      `    batch ${i + 1}/${batches.length}: ${rawInput.fields.length} fields, ${(rawInput.skipped ?? []).length} skipped (cache_read=${response.usage.cache_read_input_tokens ?? 0})`,
+      `    batch ${i + 1}/${batches.length}: ${rawInput.fields.length} entries, ${(rawInput.skipped ?? []).length} skipped, ${assignedFieldIds.size} unique fieldIds so far (cache_read=${response.usage.cache_read_input_tokens ?? 0})`,
     );
   }
 
@@ -283,6 +300,17 @@ function buildFormContext(opts: ClassifyOpts): string {
     (p) => `── Page ${p.page + 1} ──\n${p.text.trim()}`,
   );
   return `Form context (rendered page text):\n\n${pageBlocks.join("\n\n")}`;
+}
+
+function buildAssignedTable(assigned: Map<string, string>): string {
+  if (assigned.size === 0) {
+    return "Already-assigned fieldIds: (none — this is the first batch)";
+  }
+  const lines = ["Already-assigned fieldIds from earlier batches (reuse when applicable):"];
+  for (const [id, label] of assigned) {
+    lines.push(`  ${id} — ${label}`);
+  }
+  return lines.join("\n");
 }
 
 function buildWidgetsTable(widgets: ExtractedWidget[]): string {
