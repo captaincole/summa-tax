@@ -10,77 +10,54 @@ import { createDocument } from "../db/userDocuments";
 import {
   makeDecisionsView,
   makeFactsView,
-  type BaseFormField,
+  type AnyFormField,
   type DerivationContext,
   type EvaluatedForm,
 } from "../forms/types";
-import { evaluateForm8949 } from "../forms/form8949";
-import { evaluateScheduleD } from "../forms/scheduleD";
+import { evaluateForm } from "../forms/engine";
 import {
-  evaluateForm1040,
-  type Form1040LineNumber,
-  type Form1040NumericField,
-} from "../forms/form1040";
-import { evaluateForm540, type Form540LineNumber } from "../forms/form540";
-import { renderForm8949Pdf } from "../forms/render/form8949Pdf";
-import { renderScheduleDPdf } from "../forms/render/scheduleDPdf";
-import { renderForm540Pdf } from "../forms/render/form540Pdf";
+  loadFromFixtures,
+  type Catalog,
+  type FieldInventory,
+} from "../forms/catalog";
+// Side-effect import: registers form-1040 bindings with the engine.
+import "../forms/generated/form-1040";
 import { requireUserContext } from "./userContext";
 
 const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
-const BLANK_8949_PATH = resolve(projectRoot, "ref/forms/f8949.pdf");
-const BLANK_SCHEDULE_D_PATH = resolve(projectRoot, "ref/forms/f1040sd.pdf");
-const BLANK_540_PATH = resolve(projectRoot, "ref/forms/state/ca/2025-540.pdf");
 
-// Field-name → 1040 line mapping for the 2025 form (extracted by inspection
-// of the AcroForm in ref/forms/f1040-2025.pdf). Stable across an entire
-// tax year's PDF; will need re-mapping when IRS publishes 2026's form.
-const FIELDS = {
-  // Primary identity
-  firstNameMi: "topmostSubform[0].Page1[0].f1_14[0]",
-  lastName: "topmostSubform[0].Page1[0].f1_15[0]",
-  ssn: "topmostSubform[0].Page1[0].f1_16[0]",
+// Phase B/C catalog fixture. Pairs with the AI-generated bindings in
+// forms/generated/form-1040.ts. When we flip caseState to loadFromDb in
+// Phase F+, this generator should do the same so prod stays consistent.
+const CATALOG_FIXTURES = [
+  resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
+];
 
-  // Home address
-  addressLine: "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_20[0]",
-  aptNo: "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_21[0]",
-  city: "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_22[0]",
-  state: "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_23[0]",
-  zip: "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_24[0]",
+let catalogPromise: Promise<Catalog> | null = null;
+function getCatalog(): Promise<Catalog> {
+  if (!catalogPromise) catalogPromise = loadFromFixtures(CATALOG_FIXTURES);
+  return catalogPromise;
+}
 
-  // Filing status — 5 checkboxes split across two AcroForm groups.
-  filingSingle: "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]",
-  filingMFJ: "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]",
-  filingMFS: "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]",
-  filingHoH: "topmostSubform[0].Page1[0].c1_8[0]",
-  filingQSS: "topmostSubform[0].Page1[0].c1_8[1]",
-
-  // Income (Page 1) — field IDs verified via scripts/labelPdfFields.ts on
-  // ref/forms/f1040-2025.pdf and visual inspection of the labeled output.
-  line1a_wagesW2: "topmostSubform[0].Page1[0].f1_47[0]",
-  line1z_totalWages: "topmostSubform[0].Page1[0].f1_57[0]",
-  line3a_qualDivs: "topmostSubform[0].Page1[0].f1_60[0]",   // small "3a" box on left
-  line3b_ordDivs: "topmostSubform[0].Page1[0].f1_61[0]",    // right income column
-  line7_capitalGain: "topmostSubform[0].Page1[0].f1_70[0]", // capital gain from Schedule D
-  line9_totalIncome: "topmostSubform[0].Page1[0].f1_73[0]",
-  line10_adjustments: "topmostSubform[0].Page1[0].f1_74[0]",
-  line11a_agi: "topmostSubform[0].Page1[0].f1_75[0]",
-
-  // Tax and credits (Page 2)
-  line11b_agi: "topmostSubform[0].Page2[0].f2_01[0]",
-  line12e_stdDeduction: "topmostSubform[0].Page2[0].f2_02[0]",
-  line14_deductionsTotal: "topmostSubform[0].Page2[0].f2_05[0]",
-  line15_taxableIncome: "topmostSubform[0].Page2[0].f2_06[0]",
-  line16_tax: "topmostSubform[0].Page2[0].f2_08[0]",
-  line18_addTax: "topmostSubform[0].Page2[0].f2_10[0]",
-  line22_afterCredits: "topmostSubform[0].Page2[0].f2_14[0]",
-  line24_totalTax: "topmostSubform[0].Page2[0].f2_16[0]",
-  line25a_withholdingW2: "topmostSubform[0].Page2[0].f2_17[0]",
-  line25d_totalWithholding: "topmostSubform[0].Page2[0].f2_20[0]",
-  line33_totalPayments: "topmostSubform[0].Page2[0].f2_29[0]",
-  line34_amountOverpaid: "topmostSubform[0].Page2[0].f2_30[0]",
-  line35a_refund: "topmostSubform[0].Page2[0].f2_31[0]",
-  line37_amountOwed: "topmostSubform[0].Page2[0].f2_35[0]",
+// Filing-status checkboxes — the AI's current bindings have all five
+// bound to lookupDecision("decisions.scope.filing_status"), which returns
+// the same string for every widget. Until we add an equalsDecision rule
+// or similar, the renderer maps the string to the matching checkbox.
+//
+// TODO(rules): add an `equalsDecision({ decisionKey, value })` rule that
+// returns a boolean — true when the decision matches the value. Re-bind
+// each filing_status_* field to that rule and delete this map. Same
+// pattern will apply to any other radio-group widgets we encounter.
+const FILING_STATUS_FIELD_IDS: Record<string, string> = {
+  single: "form-1040.header.filing_status_single",
+  married_filing_jointly: "form-1040.header.filing_status_mfj",
+  mfj: "form-1040.header.filing_status_mfj",
+  married_filing_separately: "form-1040.header.filing_status_mfs",
+  mfs: "form-1040.header.filing_status_mfs",
+  head_of_household: "form-1040.header.filing_status_hoh",
+  hoh: "form-1040.header.filing_status_hoh",
+  qualifying_surviving_spouse: "form-1040.header.filing_status_qss",
+  qss: "form-1040.header.filing_status_qss",
 };
 
 function fmtMoney(n: number | null | undefined): string {
@@ -89,62 +66,99 @@ function fmtMoney(n: number | null | undefined): string {
   return Math.round(n).toString();
 }
 
-function fmtAddress(addr: unknown): {
-  line: string; apt: string; city: string; state: string; zip: string;
+interface AddressShape {
+  line1?: string;
+  street?: string;
+  line2?: string;
+  apt?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  zipCode?: string;
+}
+
+function parseAddress(addr: unknown): {
+  street: string;
+  apt: string;
+  city: string;
+  state: string;
+  zip: string;
 } {
   if (typeof addr === "string") {
-    return { line: addr, apt: "", city: "", state: "", zip: "" };
+    return { street: addr, apt: "", city: "", state: "", zip: "" };
   }
   if (addr && typeof addr === "object") {
-    const a = addr as Record<string, unknown>;
+    const a = addr as AddressShape;
     return {
-      line: String(a.line1 ?? a.street ?? ""),
+      street: String(a.line1 ?? a.street ?? ""),
       apt: String(a.line2 ?? a.apt ?? ""),
       city: String(a.city ?? ""),
       state: String(a.state ?? ""),
       zip: String(a.zip ?? a.zipCode ?? ""),
     };
   }
-  return { line: "", apt: "", city: "", state: "", zip: "" };
+  return { street: "", apt: "", city: "", state: "", zip: "" };
 }
 
-// Look up a numeric Form 1040 line value from the EvaluatedForm1040.
-// The fields array contains numeric / text / single-select; only the
-// numeric kind carries lineNumber.
-function f1040LineValue(
-  fields: readonly BaseFormField[],
-  number: Form1040LineNumber,
+function lineValue(
+  form: EvaluatedForm<AnyFormField>,
+  fieldId: string,
 ): number | null {
-  const field = fields.find(
-    (l): l is Form1040NumericField =>
-      (l as Form1040NumericField).formFieldKind === "form-1040.numeric" &&
-      (l as Form1040NumericField).lineNumber === number,
-  );
-  if (!field || !field.result.ok) return null;
-  return field.result.value;
+  const f = form.fields.find((x) => x.fieldId === fieldId);
+  if (!f || !f.result.ok) return null;
+  const v = f.result.value;
+  return typeof v === "number" ? v : null;
+}
+
+function serializeForm<F extends AnyFormField>(
+  form: EvaluatedForm<F>,
+): {
+  formId: string;
+  jurisdiction: string;
+  title: string;
+  mustFile: EvaluatedForm<F>["mustFile"];
+  fields: Array<{
+    fieldId: string;
+    label: string;
+    category: string;
+    valueType: string;
+    result: F["result"];
+  }>;
+} {
+  return {
+    formId: form.formId,
+    jurisdiction: form.jurisdiction,
+    title: form.title,
+    mustFile: form.mustFile,
+    fields: form.fields.map((f) => ({
+      fieldId: f.fieldId,
+      label: f.label,
+      category: f.category,
+      valueType: f.valueType,
+      result: f.result,
+    })),
+  };
 }
 
 export const generateTaxDocuments = createTool({
   id: "generate-tax-documents",
   description:
-    "Run the four-form engine (Form 8949 → Schedule D → Form 1040 → CA Form 540) for this taxpayer and render every applicable form as a filled-out PDF. Writes Form 1040, Form 8949, Schedule D, and CA Form 540 PDFs (whichever the engine says are required) plus a JSON sidecar with all four forms' line values. Call at hand-off (no pending decisions, all required forms computed). Marked draft / not-for-filing — a CPA reviews before submission.",
+    "Render the taxpayer's 1040 as a filled-out PDF using the form engine. Run the 1040 evaluator against the current facts and decisions, look up each catalog field's PDF widget, and write the value. Returns a /documents/{id} URL plus a JSON sidecar with the evaluated form. Call at hand-off (no pending decisions, all required facts present). Marked draft / not-for-filing — a CPA reviews before submission. Currently 1040 only; Schedule D, Form 8949, and CA Form 540 are out of scope until those forms are reintroduced in the new engine.",
   inputSchema: z.object({
     year: z.number().int(),
   }),
   outputSchema: z.object({
     url: z.string(),
-    form8949Url: z.string().nullable(),
-    scheduleDUrl: z.string().nullable(),
-    form540Url: z.string().nullable(),
     sidecarUrl: z.string(),
     linesPopulated: z.number(),
     federalRefundOrOwed: z.object({
       kind: z.enum(["refund", "owed", "balanced"]),
       amount: z.number(),
     }),
-    stateRefundOrOwed: z.object({
-      kind: z.enum(["refund", "owed", "balanced"]),
-      amount: z.number(),
+    fieldCounts: z.object({
+      ok: z.number(),
+      blocked: z.number(),
+      unsupported: z.number(),
     }),
   }),
   execute: async (input, context) => {
@@ -157,17 +171,9 @@ export const generateTaxDocuments = createTool({
       listDecisions(supabase, { taxYear: year, limit: 500 }),
     ]);
 
-    // Identity facts: written by ingest-w2-structured (auto-extracted from
-    // W-2 boxes a/e/f) or by record-tax-fact when no W-2 is involved.
     const factMap = new Map<string, unknown>();
     for (const r of factRows) if (!factMap.has(r.key)) factMap.set(r.key, r.value);
-    const firstName = String(factMap.get("identity.name.first") ?? "");
-    const lastName = String(factMap.get("identity.name.last") ?? "");
-    const ssn = String(factMap.get("identity.ssn") ?? "").replace(/\D/g, "");
-    const dob = String(factMap.get("identity.dob") ?? "");
-    const addr = fmtAddress(factMap.get("identity.address"));
 
-    // Filing status now lives as an ai_decision.
     const filingStatusDecision = decisionRows.find(
       (d) => d.decisionKey === "decisions.scope.filing_status",
     );
@@ -175,132 +181,101 @@ export const generateTaxDocuments = createTool({
       ? String(filingStatusDecision.decision)
       : "";
 
-    // ─── Run the form engine ───
+    // ─── Run the new engine on form-1040 ───
     const ctx: DerivationContext = {
       taxYear: year,
       facts: makeFactsView(factRows),
       decisions: makeDecisionsView(decisionRows),
     };
-    const form8949 = evaluateForm8949(ctx);
-    const scheduleD = evaluateScheduleD(ctx, form8949);
-    const form1040 = evaluateForm1040(ctx, scheduleD);
-    const form540 = evaluateForm540(ctx, form1040);
-
-    // ─── Pull 1040 line values ───
-    const lv = (n: Form1040LineNumber) => f1040LineValue(form1040.fields, n);
-
-    const totalWages = lv("1a") ?? 0;
-    const totalWages_1z = lv("1z") ?? 0;
-    const qualDivs = lv("3a") ?? 0;
-    const ordDivs = lv("3b") ?? 0;
-    const capitalGain = lv("7") ?? 0;
-    const totalIncome = lv("9") ?? 0;
-    const adjustments = lv("10") ?? 0;
-    const agi = lv("11") ?? 0;
-    const stdDed = lv("12") ?? 0;
-    const deductionsTotal = lv("14") ?? 0;
-    const taxableIncome = lv("15") ?? 0;
-    const tax = lv("16") ?? 0;
-    const totalTax = lv("24") ?? 0;
-    const withholding = lv("25a") ?? 0;
-    const totalPayments = lv("33") ?? 0;
-    const refund = lv("34");  // null if balance due
-    const owed = lv("37");    // null if refund
+    const catalog = await getCatalog();
+    const form1040 = evaluateForm("form-1040", ctx, catalog);
 
     // ─── Fill the 1040 PDF ───
     const blankBytes = readFileSync(BLANK_FORM_PATH);
     const pdf = await PDFDocument.load(blankBytes);
-    const form = pdf.getForm();
+    const pdfForm = pdf.getForm();
 
-    const setText = (fieldName: string, value: string) => {
+    const setText = (widgetName: string, value: string) => {
       if (!value) return;
-      const f = form.getField(fieldName);
-      if (f instanceof PDFTextField) {
-        try { f.setText(value); } catch (err) {
-          console.warn(`[generate-tax-documents] setText failed for ${fieldName}:`, err);
-        }
+      try {
+        const f = pdfForm.getField(widgetName);
+        if (f instanceof PDFTextField) f.setText(value);
+      } catch (err) {
+        console.warn(
+          `[generate-tax-documents] setText failed for ${widgetName}:`,
+          err,
+        );
       }
     };
-    const check = (fieldName: string) => {
-      const f = form.getField(fieldName);
-      if (f instanceof PDFCheckBox) f.check();
+    const check = (widgetName: string) => {
+      try {
+        const f = pdfForm.getField(widgetName);
+        if (f instanceof PDFCheckBox) f.check();
+      } catch (err) {
+        console.warn(
+          `[generate-tax-documents] check failed for ${widgetName}:`,
+          err,
+        );
+      }
     };
 
+    // Generic walk over catalog fields. Each catalog field carries its
+    // PDF widget name (from Phase C extraction); each evaluated result is
+    // matched to that widget and filled by valueType.
     let linesPopulated = 0;
-    const touch = () => linesPopulated++;
+    for (const field of form1040.fields) {
+      const inv = catalog.getField(field.fieldId);
+      if (!inv?.pdfWidgetName) continue;
+      if (!field.result.ok) continue;
+      const value = field.result.value;
+      if (value === null || value === undefined) continue;
 
-    // Identity
-    setText(FIELDS.firstNameMi, firstName); touch();
-    setText(FIELDS.lastName, lastName); touch();
-    setText(FIELDS.ssn, ssn); touch();
-
-    // Address
-    setText(FIELDS.addressLine, addr.line);
-    if (addr.apt) setText(FIELDS.aptNo, addr.apt);
-    setText(FIELDS.city, addr.city);
-    setText(FIELDS.state, addr.state);
-    setText(FIELDS.zip, addr.zip);
-    touch();
-
-    // Filing status
-    switch (filingStatus) {
-      case "single": check(FIELDS.filingSingle); touch(); break;
-      case "married_filing_jointly":
-      case "mfj": check(FIELDS.filingMFJ); touch(); break;
-      case "married_filing_separately":
-      case "mfs": check(FIELDS.filingMFS); touch(); break;
-      case "head_of_household":
-      case "hoh": check(FIELDS.filingHoH); touch(); break;
-      case "qualifying_surviving_spouse":
-      case "qss": check(FIELDS.filingQSS); touch(); break;
+      const filled = fillByType(setText, check, inv, value);
+      if (filled) linesPopulated++;
     }
 
-    // Income (Page 1)
-    setText(FIELDS.line1a_wagesW2, fmtMoney(totalWages));
-    setText(FIELDS.line1z_totalWages, fmtMoney(totalWages_1z));
-    setText(FIELDS.line3a_qualDivs, fmtMoney(qualDivs));
-    setText(FIELDS.line3b_ordDivs, fmtMoney(ordDivs));
-    setText(FIELDS.line7_capitalGain, fmtMoney(capitalGain));
-    setText(FIELDS.line9_totalIncome, fmtMoney(totalIncome));
-    setText(FIELDS.line10_adjustments, fmtMoney(adjustments));
-    setText(FIELDS.line11a_agi, fmtMoney(agi));
-    touch();
-
-    // Tax and credits (Page 2)
-    setText(FIELDS.line11b_agi, fmtMoney(agi));
-    setText(FIELDS.line12e_stdDeduction, fmtMoney(stdDed));
-    setText(FIELDS.line14_deductionsTotal, fmtMoney(deductionsTotal));
-    setText(FIELDS.line15_taxableIncome, fmtMoney(taxableIncome));
-    setText(FIELDS.line16_tax, fmtMoney(tax));
-    setText(FIELDS.line18_addTax, fmtMoney(tax));
-    setText(FIELDS.line22_afterCredits, fmtMoney(tax));
-    setText(FIELDS.line24_totalTax, fmtMoney(totalTax));
-    touch();
-
-    // Payments
-    setText(FIELDS.line25a_withholdingW2, fmtMoney(withholding));
-    setText(FIELDS.line25d_totalWithholding, fmtMoney(withholding));
-    setText(FIELDS.line33_totalPayments, fmtMoney(totalPayments));
-    touch();
-
-    // Refund or balance due
-    if (refund !== null && refund > 0) {
-      setText(FIELDS.line34_amountOverpaid, fmtMoney(refund));
-      setText(FIELDS.line35a_refund, fmtMoney(refund));
-      touch();
-    } else if (owed !== null && owed > 0) {
-      setText(FIELDS.line37_amountOwed, fmtMoney(owed));
-      touch();
+    // ─── Special-case: filing status checkboxes ───
+    // Override the generic walk by checking the one widget matching the
+    // taxpayer's filing-status decision. Until we add an equalsDecision
+    // rule, this lives in the renderer.
+    const fsFieldId = FILING_STATUS_FIELD_IDS[filingStatus];
+    if (fsFieldId) {
+      const inv = catalog.getField(fsFieldId);
+      if (inv?.pdfWidgetName) {
+        check(inv.pdfWidgetName);
+        linesPopulated++;
+      }
     }
 
-    form.flatten();
+    // ─── Special-case: address decomposition ───
+    // identity.address is a structured fact { line1, city, state, zip };
+    // the catalog has separate widgets for street/apt/city/state/zip but
+    // only the street widget got bound to the address fact (the others
+    // are marked unsupported). Decompose here so all five fields fill.
+    //
+    // TODO(facts): split identity.address into separate sub-facts
+    // (identity.address.street, .city, .state, .zip) at ingest time so the
+    // AI can bind each subfield to lookupFact directly. Then drop this
+    // renderer-side special case and let the generic walk handle them.
+    const addr = parseAddress(factMap.get("identity.address"));
+    const addrParts: Array<[string, string]> = [
+      ["form-1040.header.address_street", addr.street],
+      ["form-1040.header.address_apt", addr.apt],
+      ["form-1040.header.address_city", addr.city],
+      ["form-1040.header.address_state", addr.state],
+      ["form-1040.header.address_zip", addr.zip],
+    ];
+    for (const [fieldId, value] of addrParts) {
+      if (!value) continue;
+      const inv = catalog.getField(fieldId);
+      if (!inv?.pdfWidgetName) continue;
+      setText(inv.pdfWidgetName, value);
+      linesPopulated++;
+    }
 
-    // ─── Persist generated artifacts to user-documents storage ───
-    // Each createDocument call uploads bytes + inserts a metadata row,
-    // returning the public UUID we use in `/documents/{id}` links. Drafts
-    // expire after 30 days; metadata holds formId + taxYear so the future
-    // Documents page can group "1040 history" without parsing filenames.
+    pdfForm.flatten();
 
+    // ─── Persist 1040 PDF ───
     const outBytes = Buffer.from(await pdf.save());
     const f1040Doc = await createDocument(supabase, {
       userId,
@@ -315,107 +290,13 @@ export const generateTaxDocuments = createTool({
     });
     const url = `/documents/${f1040Doc.id}`;
 
-    const taxpayerName = `${firstName} ${lastName}`.trim();
-
-    let form8949Url: string | null = null;
-    if (form8949.mustFile.ok && form8949.mustFile.value) {
-      try {
-        const blank8949 = readFileSync(BLANK_8949_PATH);
-        const { bytes } = await renderForm8949Pdf({
-          templateBytes: blank8949,
-          evaluated: form8949,
-          taxpayerName,
-          taxpayerSsn: ssn,
-        });
-        const doc = await createDocument(supabase, {
-          userId,
-          category: "drafts",
-          filename: `Form 8949 — ${year}`,
-          storageSlug: `8949-${year}`,
-          extension: "pdf",
-          bytes: Buffer.from(bytes),
-          mimeType: "application/pdf",
-          expiresInDays: 30,
-          metadata: { formId: "8949", taxYear: year },
-        });
-        form8949Url = `/documents/${doc.id}`;
-      } catch (err) {
-        console.warn("[generate-tax-documents] Form 8949 render failed:", err);
-      }
-    }
-
-    let scheduleDUrl: string | null = null;
-    if (scheduleD.mustFile.ok && scheduleD.mustFile.value) {
-      try {
-        const blankSd = readFileSync(BLANK_SCHEDULE_D_PATH);
-        const { bytes } = await renderScheduleDPdf({
-          templateBytes: blankSd,
-          evaluated: scheduleD,
-          taxpayerName,
-          taxpayerSsn: ssn,
-        });
-        const doc = await createDocument(supabase, {
-          userId,
-          category: "drafts",
-          filename: `Schedule D — ${year}`,
-          storageSlug: `schedule-d-${year}`,
-          extension: "pdf",
-          bytes: Buffer.from(bytes),
-          mimeType: "application/pdf",
-          expiresInDays: 30,
-          metadata: { formId: "schedule-d", taxYear: year },
-        });
-        scheduleDUrl = `/documents/${doc.id}`;
-      } catch (err) {
-        console.warn("[generate-tax-documents] Schedule D render failed:", err);
-      }
-    }
-
-    let form540Url: string | null = null;
-    if (form540.mustFile.ok && form540.mustFile.value) {
-      try {
-        const blank540 = readFileSync(BLANK_540_PATH);
-        const { bytes } = await renderForm540Pdf({
-          templateBytes: blank540,
-          evaluated: form540,
-          taxpayerFirstName: firstName,
-          taxpayerLastName: lastName,
-          taxpayerSsn: ssn,
-          taxpayerDob: dob,
-          taxpayerStreetAddress: addr.line,
-          taxpayerCity: addr.city,
-          taxpayerZip: addr.zip,
-          filingStatus,
-        });
-        const doc = await createDocument(supabase, {
-          userId,
-          category: "drafts",
-          filename: `CA Form 540 — ${year}`,
-          storageSlug: `540-${year}`,
-          extension: "pdf",
-          bytes: Buffer.from(bytes),
-          mimeType: "application/pdf",
-          expiresInDays: 30,
-          metadata: { formId: "540", taxYear: year },
-        });
-        form540Url = `/documents/${doc.id}`;
-      } catch (err) {
-        console.warn("[generate-tax-documents] CA 540 render failed:", err);
-      }
-    }
-
-    // JSON sidecar with all four forms' line values — same lifecycle as the
-    // PDFs (a draft, expires in 30 days), stored alongside them so a single
-    // listing query surfaces everything from one regeneration.
+    // ─── Sidecar — evaluated 1040 only ───
     const sidecar = {
       userId,
       year,
       generatedAt: new Date().toISOString(),
       forms: {
-        "form-8949": serializeForm(form8949),
-        "schedule-d": serializeForm(scheduleD),
         "form-1040": serializeForm(form1040),
-        "form-540": serializeForm(form540),
       },
     };
     const sidecarBytes = Buffer.from(JSON.stringify(sidecar, null, 2), "utf-8");
@@ -432,56 +313,84 @@ export const generateTaxDocuments = createTool({
     });
     const sidecarUrl = `/documents/${sidecarDoc.id}`;
 
-    // ─── Refund / owed summaries for the tool response ───
+    // ─── Refund / owed summary ───
+    const refund = lineValue(form1040, "form-1040.line.34");
+    const owed = lineValue(form1040, "form-1040.line.37");
     const federalRefundOrOwed = (() => {
-      if (refund !== null && refund > 0) return { kind: "refund" as const, amount: refund };
-      if (owed !== null && owed > 0) return { kind: "owed" as const, amount: owed };
+      if (refund !== null && refund > 0) {
+        return { kind: "refund" as const, amount: refund };
+      }
+      if (owed !== null && owed > 0) {
+        return { kind: "owed" as const, amount: owed };
+      }
       return { kind: "balanced" as const, amount: 0 };
     })();
 
-    const stateRefund = f540LineValue(form540, "97");
-    const stateOwed = f540LineValue(form540, "100");
-    const stateRefundOrOwed = (() => {
-      if (stateRefund !== null && stateRefund > 0) return { kind: "refund" as const, amount: stateRefund };
-      if (stateOwed !== null && stateOwed > 0) return { kind: "owed" as const, amount: stateOwed };
-      return { kind: "balanced" as const, amount: 0 };
-    })();
+    const okCount = form1040.fields.filter((f) => f.result.ok).length;
+    const unsupportedCount = form1040.fields.filter(
+      (f) => !f.result.ok && f.result.unsupported,
+    ).length;
+    const blockedCount = form1040.fields.length - okCount - unsupportedCount;
 
     return {
       url,
-      form8949Url,
-      scheduleDUrl,
-      form540Url,
       sidecarUrl,
       linesPopulated,
       federalRefundOrOwed,
-      stateRefundOrOwed,
+      fieldCounts: {
+        ok: okCount,
+        blocked: blockedCount,
+        unsupported: unsupportedCount,
+      },
     };
   },
 });
 
-// ─── Helpers for sidecar serialization ───────────────────────────────────
-
-function serializeForm<F extends BaseFormField>(form: EvaluatedForm<F>) {
-  return {
-    formId: form.formId,
-    jurisdiction: form.jurisdiction,
-    title: form.title,
-    mustFile: form.mustFile,
-    fields: form.fields.map((f) => ({ ...f })),
-  };
-}
-
-function f540LineValue(
-  form540: EvaluatedForm,
-  number: Form540LineNumber,
-): number | null {
-  const field = form540.fields.find(
-    (l) =>
-      "lineNumber" in l &&
-      (l as { lineNumber?: string }).lineNumber === number,
-  );
-  if (!field || !field.result.ok) return null;
-  const v = field.result.value;
-  return typeof v === "number" ? v : null;
+// Fill a single widget based on the field's valueType + the engine's
+// evaluated value. Returns true if a widget was actually touched.
+function fillByType(
+  setText: (widgetName: string, value: string) => void,
+  check: (widgetName: string) => void,
+  inv: FieldInventory,
+  value: unknown,
+): boolean {
+  if (!inv.pdfWidgetName) return false;
+  switch (inv.valueType) {
+    case "numeric": {
+      if (typeof value === "number" && Number.isFinite(value)) {
+        // Skip zeros — the form looks cleaner with empty cells than "0"
+        // on every unused line, and engine-side zeros are usually
+        // unsupported-as-0 cascades from fromFields.
+        if (value === 0) return false;
+        setText(inv.pdfWidgetName, fmtMoney(value));
+        return true;
+      }
+      return false;
+    }
+    case "text": {
+      if (typeof value === "string" && value.length > 0) {
+        setText(inv.pdfWidgetName, value);
+        return true;
+      }
+      return false;
+    }
+    case "boolean": {
+      if (value === true) {
+        check(inv.pdfWidgetName);
+        return true;
+      }
+      return false;
+    }
+    case "date": {
+      if (typeof value === "string" && value.length > 0) {
+        setText(inv.pdfWidgetName, value);
+        return true;
+      }
+      return false;
+    }
+    case "single_select":
+      // Handled by the renderer's filing-status special-case for now.
+      return false;
+  }
+  return false;
 }
