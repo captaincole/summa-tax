@@ -13,6 +13,6 @@
     "allowImportingTsExtensions": false,
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "fixtures/**/*.ts"],
+  "include": ["src/**/*.ts", "fixtures/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", ".mastra"]
 }

@@ -77,10 +77,17 @@ export async function buildCaseState(
   supabase: SupabaseClient,
   year: number,
 ) {
-  const [factRows, decisionRows] = await Promise.all([
+  const [factRows, decisionRows, authUserRes] = await Promise.all([
     listFacts(supabase, { taxYear: year, limit: 500 }),
     listDecisions(supabase, { taxYear: year, limit: 500 }),
+    // We pull the auth user once per case-state build so Thom can see the
+    // signed-in email. He acknowledges it back to the user at doc-gen time
+    // and records it as identity.email before rendering the 1040. We don't
+    // throw if this fails — it's enriching info, not load-bearing for the
+    // engine.
+    supabase.auth.getUser().catch(() => null),
   ]);
+  const authEmail = authUserRes?.data?.user?.email ?? null;
 
   // Supersede on conflict: most recent first per listFacts/listDecisions.
   const seenFactKeys = new Set<string>();
@@ -132,6 +139,10 @@ export async function buildCaseState(
   // fill PDF cells, not derivation inputs), but the renderers need them.
   // If any are missing, surface them as pendingFacts so Thom knows to ask
   // before generating documents.
+  // Required for a signed 1040. identity.email is intentionally NOT in this
+  // list — it's a courtesy field on the signing block, and Thom auto-fills
+  // it from the Supabase auth user (with on-screen acknowledgment) at
+  // doc-generation time. See thom.instructions.ts.
   const REQUIRED_IDENTITY_KEYS = [
     "identity.name.first",
     "identity.name.last",
@@ -141,6 +152,8 @@ export async function buildCaseState(
     "identity.address.city",
     "identity.address.state",
     "identity.address.zip",
+    "identity.occupation",
+    "identity.phone",
   ];
   for (const key of REQUIRED_IDENTITY_KEYS) {
     if (!ctx.facts.get(key)) pendingFacts.add(key);
@@ -169,6 +182,7 @@ export async function buildCaseState(
     money,
     factCount: facts.length,
     decisionRows,
+    authEmail,
     // Raw evaluated forms — for downstream rollups like the Filing Status
     // panel that need access to every field, not just blockers.
     evaluatedForms: [form1040],
@@ -260,6 +274,9 @@ export const getCaseState = createTool({
       stateOwed: z.number(),
     }),
     factCount: z.number(),
+    /** Supabase login email — Thom records this as identity.email at doc-gen
+     *  time after acknowledging it with the user. */
+    authEmail: z.string().nullable(),
     aiDecisions: z.array(
       z.object({
         id: z.string(),
@@ -276,8 +293,15 @@ export const getCaseState = createTool({
   }),
   execute: async (input, context) => {
     const { supabase } = requireUserContext(context);
-    const { summaries, pendingDecisions, pendingFacts, money, factCount, decisionRows } =
-      await buildCaseState(supabase, input.year);
+    const {
+      summaries,
+      pendingDecisions,
+      pendingFacts,
+      money,
+      factCount,
+      decisionRows,
+      authEmail,
+    } = await buildCaseState(supabase, input.year);
 
     return {
       forms: summaries,
@@ -285,6 +309,7 @@ export const getCaseState = createTool({
       pendingFacts,
       money,
       factCount,
+      authEmail,
       aiDecisions: decisionRows.map((d) => ({
         id: d.id,
         decisionKey: d.decisionKey,

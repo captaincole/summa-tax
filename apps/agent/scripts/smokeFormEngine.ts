@@ -116,6 +116,36 @@ const facts: TaxFactRow[] = [
     createdAt: "2026-04-29T00:00:00Z",
   },
   {
+    id: "f-id-occ",
+    taxpayerId: TAXPAYER,
+    year: YEAR,
+    category: "identity",
+    key: "identity.occupation",
+    value: "Software Engineer",
+    sourceNote: "verbal",
+    createdAt: "2026-04-29T00:00:00Z",
+  },
+  {
+    id: "f-id-phone",
+    taxpayerId: TAXPAYER,
+    year: YEAR,
+    category: "identity",
+    key: "identity.phone",
+    value: "415-555-0142",
+    sourceNote: "verbal",
+    createdAt: "2026-04-29T00:00:00Z",
+  },
+  {
+    id: "f-id-email",
+    taxpayerId: TAXPAYER,
+    year: YEAR,
+    category: "identity",
+    key: "identity.email",
+    value: "alejandro@example.com",
+    sourceNote: "Supabase login email",
+    createdAt: "2026-04-29T00:00:00Z",
+  },
+  {
     id: "f-w2",
     taxpayerId: TAXPAYER,
     year: YEAR,
@@ -221,11 +251,12 @@ async function main() {
   assertApprox("form-1040.line.14", 15_750);
   assertApprox("form-1040.line.15", 84_635.2);   // Taxable income
 
-  // 2025 single brackets on $84,635.20:
-  //   10% on first 11,925         = 1,192.50
-  //   12% on next  36,550         = 4,386.00
-  //   22% on remaining 36,160.20  = 7,955.24
-  const expectedTax = 1192.5 + 4386.0 + (84635.2 - 48475) * 0.22;
+  // 2025 IRS Tax Table for income $84,635.20 single → row [84,600, 84,650)
+  // → tax $13,532. The table value (NOT the raw bracket formula at the
+  // exact income) is authoritative for sub-$100k incomes per the 1040 line
+  // 16 instructions; each row is computed at the bracket midpoint, so raw
+  // bracket math here would produce ~$13,540 (close but wrong).
+  const expectedTax = 13_532;
   assertApprox("form-1040.line.16", expectedTax);
   assertApprox("form-1040.line.24", expectedTax);
   assertApprox("form-1040.line.25a", 14_500);

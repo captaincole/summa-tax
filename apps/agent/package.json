@@ -17,8 +17,11 @@
     "forms:verify": "tsx --env-file=.env.development scripts/verifyFormCatalog.ts",
     "forms:ingest": "tsx --env-file=.env.development scripts/ingestForm.ts",
     "forms:bind": "tsx --env-file=.env.development scripts/generateBindings.ts",
+    "forms:ingest-tax-table": "tsx scripts/ingestTaxTable.ts",
     "smoke:engine": "tsx scripts/smokeFormEngine.ts",
     "smoke:review": "tsx scripts/smokeReview.ts",
+    "test": "tsx tests/runAll.ts",
+    "test:alex": "tsx tests/scenarios/alex/run.ts",
     "inspect:filing-status": "tsx --env-file=.env.development scripts/inspectFilingStatus.ts"
   },
   "engines": {
@@ -44,6 +47,7 @@
   "devDependencies": {
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
+    "cheerio": "^1.2.0",
     "pdf-lib": "^1.17.1",
     "tsx": "^4.20.5",
     "typescript": "^5"

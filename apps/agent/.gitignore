@@ -1,1 +1,7 @@
 .vercel
+
+# Source HTML cached by scripts/ingestTaxTable.ts (and future table-ingest
+# scripts). Provenance — URL, sha256, fetchedAt — lives in the generated
+# JSON, so reproducibility is preserved without checking in megabytes of
+# raw HTML.
+src/mastra/forms/data/*.source.html

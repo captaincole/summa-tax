@@ -79,6 +79,16 @@ export const VERIFIED_WIDGETS: Record<string, Record<string, string>> = {
     "form-1040.line.34": "topmostSubform[0].Page2[0].f2_30[0]",
     "form-1040.line.35a": "topmostSubform[0].Page2[0].f2_31[0]",
     "form-1040.line.37": "topmostSubform[0].Page2[0].f2_35[0]",
+
+    // Signing block — Phase C swapped occupation and "signature date" within
+    // each row. The wider widget at x=325 (w=135, no maxLength) is the
+    // OCCUPATION text field; the narrow widget at x=504 (w=72, maxLength=6)
+    // is the 6-digit IRS-mailed IP PIN. The catalog has these reversed.
+    // Signature dates have no fillable widget on this form (handwritten).
+    "form-1040.signing.taxpayer_occupation":
+      "topmostSubform[0].Page2[0].f2_40[0]",
+    "form-1040.signing.spouse_occupation":
+      "topmostSubform[0].Page2[0].f2_42[0]",
   },
 };
 

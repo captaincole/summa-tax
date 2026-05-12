@@ -46,6 +46,7 @@ const ruleNameSchema = z.enum([
   "fromFields",
   "constant",
   "bracketLookup",
+  "taxTable",
   "unsupported",
 ]);
 

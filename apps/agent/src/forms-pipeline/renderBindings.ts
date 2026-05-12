@@ -37,6 +37,7 @@ const RULE_IMPORTS: Record<RuleName, string> = {
   fromFields: "r.fromFields",
   constant: "r.constant",
   bracketLookup: "r.bracketLookup",
+  taxTable: "r.taxTable",
   unsupported: "r.unsupported",
 };
 

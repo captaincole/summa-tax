@@ -30,6 +30,7 @@ export type RuleName =
   | "fromFields"
   | "constant"
   | "bracketLookup"
+  | "taxTable"
   | "unsupported";
 
 export interface ClassifiedBinding {
@@ -117,7 +118,14 @@ bracketLookup — Progressive tax bracket math.
     inputFieldId: string (the taxable income field),
     brackets: Record<string, Array<{ upTo: number, rate: number }>>
   }
-  Use ONLY for the tax-line calculation (1040 line 16). For other progressive math we'll add rules later.
+  RARELY USED. The IRS instructions require the Tax Table for sub-$100k income on 1040 line 16 (per-row tax computed at $50-bracket midpoint, NOT raw bracket math). Use \`taxTable\` for line 16. Reserve \`bracketLookup\` for future cases like AMT or the Tax Computation Worksheet (≥$100k income) once those paths are built.
+
+taxTable — IRS Tax Table lookup for Form 1040 line 16.
+  params: {
+    decisionKey: string (typically "decisions.scope.filing_status"),
+    inputFieldId: string (the taxable income field, e.g. "form-1040.line.15")
+  }
+  Use for 1040 line 16. Looks up tax from the published Tax Table for taxable income < $100,000. Returns \`unsupported\` for income ≥ $100k (Tax Computation Worksheet path not built yet). Handles all five filing statuses; QSS uses the MFJ column per IRS instruction.
 
 unsupported — Mark a field as a known engine gap. We don't compute it yet because we don't have a worked example scenario or fact-ingestion path for it.
   params: { reason: string }
@@ -152,7 +160,7 @@ Picking rules:
   - multi_select form fields (radio groups, yes/no checkboxes) → decisionIfEquals
   - Filing-status-keyed constant (standard deduction) → tableLookupByDecision
   - Math over other lines → fromFields
-  - Tax bracket math (only line 16) → bracketLookup
+  - 1040 line 16 tax (income < $100k) → taxTable
   - Genuinely fixed value (tax year date, IRS-defined boilerplate) → constant
   - Anything else we haven't built ingestion / scenarios for → unsupported
 
@@ -299,6 +307,7 @@ For each field, emit a binding via the emit_bindings tool. ${batchIndex === 0 ? 
                       "fromFields",
                       "constant",
                       "bracketLookup",
+                      "taxTable",
                       "unsupported",
                     ],
                   },

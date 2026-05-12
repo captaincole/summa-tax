@@ -1,0 +1,9 @@
+# Pre-commit: run the Alex integration test (plus any other scenarios in
+# apps/agent/tests/runAll.ts). Fully offline, deterministic, ~200ms — fast
+# enough not to be annoying.
+#
+# Skip with --no-verify if you're committing a deliberate scenario update
+# in two stages (expected.ts before fact-fix, or vice versa). Don't make
+# that a habit.
+
+npm test

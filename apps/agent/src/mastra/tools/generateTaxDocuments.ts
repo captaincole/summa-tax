@@ -1,6 +1,5 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { projectRoot } from "../paths";
@@ -15,17 +14,13 @@ import {
   type EvaluatedForm,
 } from "../forms/types";
 import { evaluateForm } from "../forms/engine";
-import {
-  loadFromFixtures,
-  type Catalog,
-  type FieldInventory,
-} from "../forms/catalog";
+import { loadFromFixtures, type Catalog } from "../forms/catalog";
 // Explicit register() call so the bundler / dev server can't tree-shake
 // the side-effect-import idiom we used previously. Idempotent — bindings
 // overwrite themselves if called twice.
 import { register as registerForm1040 } from "../forms/generated/form-1040";
 registerForm1040();
-import { verifiedWidget } from "../../forms-pipeline/verifiedWidgets";
+import { fillForm1040 } from "../forms/render/fillForm1040";
 import { requireUserContext } from "./userContext";
 
 const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
@@ -42,13 +37,6 @@ function getCatalog(): Promise<Catalog> {
   if (!catalogPromise) catalogPromise = loadFromFixtures(CATALOG_FIXTURES);
   return catalogPromise;
 }
-
-function fmtMoney(n: number | null | undefined): string {
-  if (n === null || n === undefined) return "";
-  if (n === 0) return "0";
-  return Math.round(n).toString();
-}
-
 
 function lineValue(
   form: EvaluatedForm<AnyFormField>,
@@ -131,60 +119,20 @@ export const generateTaxDocuments = createTool({
     const form1040 = evaluateForm("form-1040", ctx, catalog);
 
     // ─── Fill the 1040 PDF ───
+    // Delegates to fillForm1040 so the integration test (scripts/integrationAlex.ts)
+    // exercises the same code path. Any soft warnings (widget missing,
+    // maxLength exceeded) get logged but don't fail the tool — the tool's
+    // contract is "render best-effort"; the test treats warnings as fatal.
     const blankBytes = readFileSync(BLANK_FORM_PATH);
-    const pdf = await PDFDocument.load(blankBytes);
-    const pdfForm = pdf.getForm();
-
-    const setText = (widgetName: string, value: string) => {
-      if (!value) return;
-      try {
-        const f = pdfForm.getField(widgetName);
-        if (f instanceof PDFTextField) f.setText(value);
-      } catch (err) {
-        console.warn(
-          `[generate-tax-documents] setText failed for ${widgetName}:`,
-          err,
-        );
-      }
-    };
-    const check = (widgetName: string) => {
-      try {
-        const f = pdfForm.getField(widgetName);
-        if (f instanceof PDFCheckBox) f.check();
-      } catch (err) {
-        console.warn(
-          `[generate-tax-documents] check failed for ${widgetName}:`,
-          err,
-        );
-      }
-    };
-
-    // Generic walk over catalog fields. Each catalog field carries its
-    // PDF widget name (from Phase C extraction); each evaluated result is
-    // matched to that widget and filled by valueType. The verified-widgets
-    // override map takes precedence over the AI's catalog mapping for
-    // fields where we know Phase C drifted (see verifiedWidgets.ts).
-    let linesPopulated = 0;
-    for (const field of form1040.fields) {
-      const inv = catalog.getField(field.fieldId);
-      if (!inv) continue;
-      if (!field.result.ok) continue;
-      const value = field.result.value;
-      if (value === null || value === undefined) continue;
-
-      // multi_select fields don't have a single pdfWidgetName — each option
-      // maps to its own widget. fillByType iterates options when valueType
-      // is multi_select; for other types it fills the resolved widgetName.
-      const widgetName =
-        verifiedWidget("form-1040", field.fieldId) ?? inv.pdfWidgetName;
-      const filled = fillByType(setText, check, widgetName, inv, value);
-      if (filled) linesPopulated++;
+    const { pdfBytes: outBytes, rendered, warnings } = await fillForm1040({
+      blankPdfBytes: blankBytes,
+      form: form1040,
+      catalog,
+    });
+    const linesPopulated = rendered.size;
+    for (const w of warnings) {
+      console.warn(`[generate-tax-documents] ${w}`);
     }
-
-    pdfForm.flatten();
-
-    // ─── Persist 1040 PDF ───
-    const outBytes = Buffer.from(await pdf.save());
     const f1040Doc = await createDocument(supabase, {
       userId,
       category: "drafts",
@@ -254,75 +202,3 @@ export const generateTaxDocuments = createTool({
   },
 });
 
-// Fill widgets based on the field's valueType + the engine's evaluated
-// value. Returns true if at least one widget was touched.
-//
-// For single-widget types (numeric/text/boolean/date) the caller supplies
-// the resolved widgetName (verified overlay or catalog default). For
-// multi_select the widget mapping lives per-option in the catalog, so this
-// function ignores the passed widgetName and iterates inv.options instead.
-//
-// Numeric zeros are written as "0" — they distinguish "engine computed
-// zero" from "engine didn't compute this at all" (the latter is
-// unsupported/blocked and gets no widget fill).
-function fillByType(
-  setText: (widgetName: string, value: string) => void,
-  check: (widgetName: string) => void,
-  widgetName: string | undefined,
-  inv: FieldInventory,
-  value: unknown,
-): boolean {
-  switch (inv.valueType) {
-    case "numeric": {
-      if (!widgetName) return false;
-      if (typeof value === "number" && Number.isFinite(value)) {
-        setText(widgetName, fmtMoney(value));
-        return true;
-      }
-      return false;
-    }
-    case "text": {
-      if (!widgetName) return false;
-      if (typeof value === "string" && value.length > 0) {
-        setText(widgetName, value);
-        return true;
-      }
-      return false;
-    }
-    case "boolean": {
-      if (!widgetName) return false;
-      if (value === true) {
-        check(widgetName);
-        return true;
-      }
-      return false;
-    }
-    case "date": {
-      if (!widgetName) return false;
-      if (typeof value === "string" && value.length > 0) {
-        setText(widgetName, value);
-        return true;
-      }
-      return false;
-    }
-    case "multi_select": {
-      // value should be string[] — the selected option values. Check each
-      // option's PDF widget by looking it up in inv.options.
-      if (!Array.isArray(value) || !inv.options) return false;
-      let touched = false;
-      for (const selected of value) {
-        const opt = inv.options.find((o) => o.value === selected);
-        if (!opt) continue;
-        check(opt.pdfWidgetName);
-        touched = true;
-      }
-      return touched;
-    }
-    case "single_select":
-      // No live single_select renderer path — all current radio groups are
-      // modeled as multi_select. If we ever introduce a true single_select
-      // (one widget, one decision-driven value), add the branch here.
-      return false;
-  }
-  return false;
-}

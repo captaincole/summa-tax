@@ -17,24 +17,24 @@ export function register(): void {
     });
 
   // Tax year beginning date (filing_scope)
-  //   why: For a standard tax-year 2025 return the beginning date is a fixed IRS-defined value of 01/01/2025.
-  bindField("form-1040", "form-1040.header.tax_year_begin", r.constant, {
-      "value": "01/01/2025",
-      "rationale": "Standard calendar-year 1040: tax year always begins January 1, 2025 for tax year 2025 filers."
+  //   why: Leave blank for standard calendar-year filers. The "For the year Jan. 1–Dec. 31, 2025, or other tax year beginning ___" header is ONLY filled by fiscal-year filers (rare — typically partnerships or C-corps; individuals almost never). For Alex-shaped scenarios this stays unset.
+  //   MANUAL EDIT: was constant "01/01/2025"; calendar-year filers should leave it blank.
+  bindField("form-1040", "form-1040.header.tax_year_begin", r.unsupported, {
+      "reason": "Fiscal-year (non-calendar) filer header field — leave blank for standard calendar-year returns."
     });
 
   // Tax year ending date (filing_scope)
-  //   why: For a standard tax-year 2025 return the ending date is a fixed IRS-defined value of 12/31/2025.
-  bindField("form-1040", "form-1040.header.tax_year_end", r.constant, {
-      "value": "12/31/2025",
-      "rationale": "Standard calendar-year 1040: tax year always ends December 31, 2025 for tax year 2025 filers."
+  //   why: Same fiscal-year-only header field — calendar-year filers leave blank.
+  //   MANUAL EDIT: was constant "12/31/2025".
+  bindField("form-1040", "form-1040.header.tax_year_end", r.unsupported, {
+      "reason": "Fiscal-year (non-calendar) filer header field — leave blank for standard calendar-year returns."
     });
 
   // Tax year ending year (20__) (filing_scope)
-  //   why: Fixed two-digit year suffix for the 2025 tax year form header.
-  bindField("form-1040", "form-1040.header.tax_year_end_year", r.constant, {
-      "value": "25",
-      "rationale": "The two-digit year printed in the '20__' box is always '25' for a tax year 2025 return."
+  //   why: Same fiscal-year-only header field — calendar-year filers leave blank.
+  //   MANUAL EDIT: was constant "25".
+  bindField("form-1040", "form-1040.header.tax_year_end_year", r.unsupported, {
+      "reason": "Fiscal-year (non-calendar) filer header field — leave blank for standard calendar-year returns."
     });
 
   // Combat zone checkbox (filing_scope)
@@ -984,162 +984,11 @@ export function register(): void {
     });
 
   // Tax (see instructions) (deductions_credits)
-  //   why: Progressive tax bracket calculation applied to taxable income (line 15), keyed on filing status, using 2025 tax year rates.
-  bindField("form-1040", "form-1040.line.16", r.bracketLookup, {
+  //   why: IRS Tax Table lookup for 2025 line 16. Sub-$100k income MUST use the published table (per-row tax is computed at the bracket midpoint, so raw bracket math is off by a few dollars). The rule returns `unsupported` for income ≥ $100k until the Tax Computation Worksheet path is built.
+  //   MANUAL EDIT: replaced bracketLookup with taxTable. The Phase D classifier prompt now picks taxTable here too — re-running Phase D should produce the same binding.
+  bindField("form-1040", "form-1040.line.16", r.taxTable, {
       "decisionKey": "decisions.scope.filing_status",
-      "inputFieldId": "form-1040.line.15",
-      "brackets": {
-        "single": [
-          {
-            "upTo": 11925,
-            "rate": 0.1
-          },
-          {
-            "upTo": 48475,
-            "rate": 0.12
-          },
-          {
-            "upTo": 103350,
-            "rate": 0.22
-          },
-          {
-            "upTo": 197300,
-            "rate": 0.24
-          },
-          {
-            "upTo": 250525,
-            "rate": 0.32
-          },
-          {
-            "upTo": 626350,
-            "rate": 0.35
-          },
-          {
-            "upTo": 9999999999,
-            "rate": 0.37
-          }
-        ],
-        "married_filing_jointly": [
-          {
-            "upTo": 23850,
-            "rate": 0.1
-          },
-          {
-            "upTo": 96950,
-            "rate": 0.12
-          },
-          {
-            "upTo": 206700,
-            "rate": 0.22
-          },
-          {
-            "upTo": 394600,
-            "rate": 0.24
-          },
-          {
-            "upTo": 501050,
-            "rate": 0.32
-          },
-          {
-            "upTo": 751600,
-            "rate": 0.35
-          },
-          {
-            "upTo": 9999999999,
-            "rate": 0.37
-          }
-        ],
-        "married_filing_separately": [
-          {
-            "upTo": 11925,
-            "rate": 0.1
-          },
-          {
-            "upTo": 48475,
-            "rate": 0.12
-          },
-          {
-            "upTo": 103350,
-            "rate": 0.22
-          },
-          {
-            "upTo": 197300,
-            "rate": 0.24
-          },
-          {
-            "upTo": 250525,
-            "rate": 0.32
-          },
-          {
-            "upTo": 375800,
-            "rate": 0.35
-          },
-          {
-            "upTo": 9999999999,
-            "rate": 0.37
-          }
-        ],
-        "head_of_household": [
-          {
-            "upTo": 17000,
-            "rate": 0.1
-          },
-          {
-            "upTo": 64850,
-            "rate": 0.12
-          },
-          {
-            "upTo": 103350,
-            "rate": 0.22
-          },
-          {
-            "upTo": 197300,
-            "rate": 0.24
-          },
-          {
-            "upTo": 250500,
-            "rate": 0.32
-          },
-          {
-            "upTo": 626350,
-            "rate": 0.35
-          },
-          {
-            "upTo": 9999999999,
-            "rate": 0.37
-          }
-        ],
-        "qualifying_surviving_spouse": [
-          {
-            "upTo": 23850,
-            "rate": 0.1
-          },
-          {
-            "upTo": 96950,
-            "rate": 0.12
-          },
-          {
-            "upTo": 206700,
-            "rate": 0.22
-          },
-          {
-            "upTo": 394600,
-            "rate": 0.24
-          },
-          {
-            "upTo": 501050,
-            "rate": 0.32
-          },
-          {
-            "upTo": 751600,
-            "rate": 0.35
-          },
-          {
-            "upTo": 9999999999,
-            "rate": 0.37
-          }
-        ]
-      }
+      "inputFieldId": "form-1040.line.15"
     });
 
   // Amount from Schedule 2, line 3 (deductions_credits)
@@ -1503,9 +1352,10 @@ export function register(): void {
     });
 
   // Your occupation (other)
-  //   why: Occupation is entered by the taxpayer at signing time and has no corresponding fact key in our ingestion model.
-  bindField("form-1040", "form-1040.signing.taxpayer_occupation", r.unsupported, {
-      "reason": "Taxpayer occupation is a free-text signing-block field — no occupation fact ingestion path exists yet."
+  //   why: Reads identity.occupation fact. Thom asks during identity intake; surfaced in caseState.pendingFacts until provided.
+  //   MANUAL EDIT: was unsupported; now backed by identity.occupation fact key.
+  bindField("form-1040", "form-1040.signing.taxpayer_occupation", r.lookupFact, {
+      "factKey": "identity.occupation"
     });
 
   // Spouse's signature date (other)
@@ -1521,15 +1371,18 @@ export function register(): void {
     });
 
   // Your phone number (other)
-  //   why: Phone number is provided by the taxpayer at signing time; the identity fact set only includes name, SSN, DOB, and address.
-  bindField("form-1040", "form-1040.signing.taxpayer_phone", r.unsupported, {
-      "reason": "Taxpayer daytime phone number is a signing-block entry — no phone number fact key exists in the identity ingestion model yet."
+  //   why: Reads identity.phone fact. Thom asks during identity intake; surfaced in caseState.pendingFacts until provided.
+  //   MANUAL EDIT: was unsupported; now backed by identity.phone fact key.
+  bindField("form-1040", "form-1040.signing.taxpayer_phone", r.lookupFact, {
+      "factKey": "identity.phone"
     });
 
   // Your email address (other)
-  //   why: Email address is provided by the taxpayer at signing time; the identity fact set only includes name, SSN, DOB, and address.
-  bindField("form-1040", "form-1040.signing.taxpayer_email", r.unsupported, {
-      "reason": "Taxpayer email address is a signing-block entry — no email fact key exists in the identity ingestion model yet."
+  //   why: Reads identity.email fact. Thom auto-populates this from the Supabase auth email at doc-gen time (with acknowledgment to the user). Marked optional so a missing fact renders as blank rather than blocking the form.
+  //   MANUAL EDIT: was unsupported; now backed by identity.email fact key (optional).
+  bindField("form-1040", "form-1040.signing.taxpayer_email", r.lookupFact, {
+      "factKey": "identity.email",
+      "optional": true
     });
 
   // Paid preparer: Self-employed checkbox (other)

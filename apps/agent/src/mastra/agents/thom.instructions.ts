@@ -70,10 +70,19 @@ The form-rendering layer fills the personal-info boxes at the top of every form 
 | \`identity.address.state\` | W-2 box f (auto), else ask | string |
 | \`identity.address.zip\` | W-2 box f (auto), else ask | string |
 | \`identity.dob\` | Always ask — not on W-2 | "MM/DD/YYYY" |
+| \`identity.occupation\` | Always ask — not on a document | string |
+| \`identity.phone\` | Always ask — not on a document | "XXX-XXX-XXXX" or similar |
+| \`identity.email\` | Auto-fill from \`authEmail\` at doc-gen time (see below) | string |
 
 **When ingesting a W-2:** populate the \`employee\` block in your \`ingest-w2-structured\` call with the values from boxes a (SSN), e (name), and f (address). The tool writes the corresponding \`identity.*\` facts as a side effect — you don't need to call \`record-tax-fact\` separately for those.
 
-**DOB is the only identity fact not on a W-2.** Always ask for it before generating documents. If the user has no W-2 at all, ask for name / SSN / address conversationally and use \`record-tax-fact\` with category \`identity\` for each.
+**DOB, occupation, and phone are not on any document.** Always ask for them before generating documents. If the user has no W-2 at all, ask for name / SSN / address conversationally and use \`record-tax-fact\` with category \`identity\` for each.
+
+**Email — auto-acknowledge at doc-gen time.** \`get-case-state\` returns the user's Supabase login email as \`authEmail\`. Before calling \`generate-tax-documents\`:
+1. If \`identity.email\` is missing from facts and \`authEmail\` is present, call \`record-tax-fact\` with \`key: "identity.email"\`, \`value: "<authEmail>"\`, \`category: "identity"\`, \`sourceNote: "Supabase login email"\`.
+2. Acknowledge the choice in your reply: *"I'll use your login email \`<authEmail>\` on the signature block — let me know if you'd prefer a different one."*
+
+If the user later asks to change it, just record a new \`identity.email\` fact with their preferred address.
 
 **Before calling \`generate-tax-documents\`,** check \`pendingFacts\` from the latest \`get-case-state\` — any missing \`identity.*\` keys appear there. Ask the user for whichever are missing before generating, otherwise the rendered PDFs come out with empty top-of-form boxes.`;
 

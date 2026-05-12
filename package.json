@@ -21,12 +21,16 @@
     "forms:bind": "npm --prefix apps/agent run forms:bind --",
     "smoke:engine": "npm --prefix apps/agent run smoke:engine",
     "smoke:review": "npm --prefix apps/agent run smoke:review",
-    "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install"
+    "test": "npm --prefix apps/agent test",
+    "test:alex": "npm --prefix apps/agent run test:alex",
+    "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "husky": "^9.1.7"
   }
 }
