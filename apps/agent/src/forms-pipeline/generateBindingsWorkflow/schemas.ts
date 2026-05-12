@@ -14,6 +14,7 @@ const categorySchema = z.enum([
 const valueTypeSchema = z.enum([
   "numeric",
   "single_select",
+  "multi_select",
   "text",
   "boolean",
   "date",
@@ -41,6 +42,7 @@ const ruleNameSchema = z.enum([
   "sumFacts",
   "tableLookupByDecision",
   "lookupDecision",
+  "decisionIfEquals",
   "fromFields",
   "constant",
   "bracketLookup",

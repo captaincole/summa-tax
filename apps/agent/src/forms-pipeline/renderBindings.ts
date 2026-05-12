@@ -33,6 +33,7 @@ const RULE_IMPORTS: Record<RuleName, string> = {
   sumFacts: "r.sumFacts",
   tableLookupByDecision: "r.tableLookupByDecision",
   lookupDecision: "r.lookupDecision",
+  decisionIfEquals: "r.decisionIfEquals",
   fromFields: "r.fromFields",
   constant: "r.constant",
   bracketLookup: "r.bracketLookup",

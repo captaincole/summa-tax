@@ -64,7 +64,11 @@ The form-rendering layer fills the personal-info boxes at the top of every form 
 | \`identity.name.first\` | W-2 box e (auto), else ask | string |
 | \`identity.name.last\` | W-2 box e (auto), else ask | string |
 | \`identity.ssn\` | W-2 box a (auto), else ask | "###-##-####" |
-| \`identity.address\` | W-2 box f (auto), else ask | \`{ line1, line2?, city, state, zip }\` |
+| \`identity.address.street\` | W-2 box f (auto), else ask | string |
+| \`identity.address.apt\` | W-2 box f (auto, optional) | string |
+| \`identity.address.city\` | W-2 box f (auto), else ask | string |
+| \`identity.address.state\` | W-2 box f (auto), else ask | string |
+| \`identity.address.zip\` | W-2 box f (auto), else ask | string |
 | \`identity.dob\` | Always ask — not on W-2 | "MM/DD/YYYY" |
 
 **When ingesting a W-2:** populate the \`employee\` block in your \`ingest-w2-structured\` call with the values from boxes a (SSN), e (name), and f (address). The tool writes the corresponding \`identity.*\` facts as a side effect — you don't need to call \`record-tax-fact\` separately for those.

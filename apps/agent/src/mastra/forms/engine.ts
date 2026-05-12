@@ -21,7 +21,7 @@ import {
   type DerivationResult,
   type EvaluatedForm,
 } from "./types.js";
-import type { Catalog } from "./catalog.js";
+import type { Catalog, FieldInventory } from "./catalog.js";
 
 // ─── Public shapes ───────────────────────────────────────────────────────
 
@@ -38,6 +38,13 @@ export interface EngineContext extends DerivationContext {
   fieldResult: (fieldId: string) => DerivationResult<unknown> | undefined;
   /** Look up another form's must-file result. */
   formMustFile: (formId: string) => DerivationResult<boolean> | undefined;
+  /**
+   * The catalog field currently being evaluated. Most rules ignore this;
+   * rules whose behavior depends on per-field metadata (e.g. multi_select
+   * options) read it here. Undefined when a rule is invoked outside of a
+   * field-evaluation pass (e.g. must-file bindings).
+   */
+  field?: FieldInventory;
 }
 
 // Helper for rule modules: define a rule with type-safe params.
@@ -189,7 +196,11 @@ export function evaluateForm(
           `Either remove it from the Catalog or add a bindField call.`,
       );
     } else {
-      result = binding.rule.evaluate(binding.params, engineCtx);
+      // Per-field context — same engine context, plus a pointer to the
+      // current field's inventory. Lets rules like decisionIfEquals read
+      // `ctx.field.options` without needing it duplicated in params.
+      const fieldCtx: EngineContext = { ...engineCtx, field: inv };
+      result = binding.rule.evaluate(binding.params, fieldCtx);
     }
     fieldResults.set(inv.fieldId, result);
     fields.push({

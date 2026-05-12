@@ -32,7 +32,13 @@ export type Category =
   | "income"
   | "deductions_credits"
   | "other";
-export type ValueType = "numeric" | "single_select" | "text" | "boolean" | "date";
+export type ValueType =
+  | "numeric"
+  | "single_select"
+  | "multi_select"
+  | "text"
+  | "boolean"
+  | "date";
 
 export interface ClassifiedField {
   /** Echo of the widget we asked about — joins back to ExtractedWidget. */
@@ -42,6 +48,19 @@ export interface ClassifiedField {
   label: string;
   category: Category;
   valueType: ValueType;
+  /**
+   * Set when valueType === "multi_select". Multiple rows can share the same
+   * fieldId; each row's optionValue identifies which option that widget
+   * represents (e.g. "single" / "mfj" / "yes" / "checking"). Downstream
+   * collapses these rows into one catalog entry with an options[] array.
+   */
+  optionValue?: string;
+  /**
+   * Optional human label for the multi_select option (e.g. "Single",
+   * "Married filing jointly"). Distinct from the row's top-level `label`,
+   * which carries the form field's group-level name ("Filing status").
+   */
+  optionLabel?: string;
 }
 
 export interface ClassifiedSkip {
@@ -85,9 +104,9 @@ Field IDs follow the convention "<formId>.<section>.<key>" where:
 
 Examples for form-1040:
   - form field f1_14 → "form-1040.header.first_name", label "First name", category "personal_info", valueType "text"
-  - form field c1_8[0] → "form-1040.header.filing_status_single", label "Filing status: Single", category "filing_scope", valueType "boolean"
   - form field f1_47 → "form-1040.line.1a", label "Total amount from Form(s) W-2, box 1", category "income", valueType "numeric"
   - form field f2_06 → "form-1040.line.15", label "Taxable income (line 11 − line 14, not less than 0)", category "income", valueType "numeric"
+  - PDF widgets c1_8[0..2] + c1_9[0] + f1_30[0] all belong to ONE form field "form-1040.header.filing_status", valueType "multi_select". Emit one row per PDF widget, all with the same fieldId, each row's option_value naming the option that widget represents (e.g. "single", "mfj", "mfs", "hoh", "qss"). See multi_select rule below.
 
 Categories (pick the closest fit — this is a loose UI bucket, not a precision call):
   - personal_info — taxpayer name, SSN, address, DOB; top-of-form header bits
@@ -98,10 +117,18 @@ Categories (pick the closest fit — this is a loose UI bucket, not a precision 
 
 ValueTypes:
   - numeric — money amounts and counts
-  - single_select — one-of-many choices
+  - single_select — one-of-many choice that fills a single PDF widget with a value (rare on tax forms)
+  - multi_select — a radio group or pick-one set of checkboxes (one form field whose underlying PDF widgets fan out across mutually-exclusive options: filing status, yes/no questions, deposit type, etc.)
   - text — free-text strings (names, address segments)
-  - boolean — yes/no or single checkbox
+  - boolean — STANDALONE yes/no checkbox not part of any radio group (e.g. "MFS lived apart from spouse" alone, "born before Jan 2, 1961")
   - date — calendar dates
+
+**Radio groups → ONE multi_select form field.** When several PDF widgets represent a single pick-one choice (filing status's 5 options, digital-assets yes/no, direct-deposit checking/savings), they all belong to the same form field. Emit one row per PDF widget — all rows share the same fieldId, all have valueType "multi_select", and each carries:
+  - option_value: the stable identifier for that option (e.g. "single", "mfj", "yes", "no", "checking")
+  - option_label: the human label for that option (e.g. "Single", "Married filing jointly", "Yes")
+  - label (the row's top-level label): the GROUP name shared across all rows in this multi_select (e.g. "Filing status", "Digital assets", "Direct deposit account type"). Same string on every row in the group.
+
+Downstream collapses these rows into ONE catalog entry whose options array carries per-option pdfWidgetName + option_value + option_label. Do NOT emit each checkbox as its own boolean form field — that loses the radio-group semantics. The clue is mutual exclusion: if one underlying tax decision determines which checkbox to mark, the widgets belong to ONE multi_select form field.
 
 Use the page text alongside each form field to figure out the surrounding label. The form field's bounding box (x, y) and short name (e.g. "f1_47") tell you where it sits.`;
 
@@ -181,7 +208,24 @@ Classify every form field into either a field or a skip entry. Return one entry 
                     },
                     value_type: {
                       type: "string",
-                      enum: ["numeric", "single_select", "text", "boolean", "date"],
+                      enum: [
+                        "numeric",
+                        "single_select",
+                        "multi_select",
+                        "text",
+                        "boolean",
+                        "date",
+                      ],
+                    },
+                    option_value: {
+                      type: "string",
+                      description:
+                        "REQUIRED when value_type === 'multi_select'. The stable option value this widget represents (e.g. 'single' / 'mfj' / 'yes' / 'no' / 'checking'). Multiple rows can share the same field_id; downstream collapses them into one catalog entry whose options carry per-widget mappings.",
+                    },
+                    option_label: {
+                      type: "string",
+                      description:
+                        "Optional. When value_type === 'multi_select', the human label for THIS option (e.g. 'Single', 'Married filing jointly'). The row's top-level `label` should carry the form field's group-level name (e.g. 'Filing status') and stays the same across rows in the group.",
                     },
                   },
                   required: [
@@ -244,6 +288,8 @@ Classify every form field into either a field or a skip entry. Return one entry 
             label: string;
             category: Category;
             value_type: ValueType;
+            option_value?: string;
+            option_label?: string;
           }>;
           skipped?: Array<{ pdf_widget_name: string; skip_reason: string }>;
         }
@@ -263,6 +309,8 @@ Classify every form field into either a field or a skip entry. Return one entry 
         label: f.label,
         category: f.category,
         valueType: f.value_type,
+        optionValue: f.option_value,
+        optionLabel: f.option_label,
       });
       // Track on first occurrence; subsequent widgets pointing at the same
       // fieldId just reaffirm it (collisions are the intended outcome).

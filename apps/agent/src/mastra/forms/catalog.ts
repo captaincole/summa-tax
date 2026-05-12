@@ -28,6 +28,15 @@ export interface FormDefinition {
   title: string;
 }
 
+export interface FieldOption {
+  /** Stable selection value, e.g. "single" / "mfj" / "yes" / "checking". */
+  value: string;
+  /** PDF AcroForm widget name that gets checked when this option is selected. */
+  pdfWidgetName: string;
+  /** Optional human label for the option (UI display, not required for fill). */
+  label?: string;
+}
+
 export interface FieldInventory {
   fieldId: string;
   formId: string;
@@ -36,6 +45,14 @@ export interface FieldInventory {
   valueType: FieldValueType;
   pdfWidgetName?: string;
   position?: { page: number; x: number; y: number };
+  /**
+   * For multi_select fields: the set of selectable values and the PDF
+   * AcroForm widget each one toggles. Required when valueType ===
+   * "multi_select"; ignored otherwise. Each option carries its own
+   * pdfWidgetName because one form field can map to multiple underlying
+   * widgets (e.g. filing_status has 5 options across 3 AcroForm fields).
+   */
+  options?: FieldOption[];
   /** Stable ordinal among the form's fields. Drives evaluation + display order. */
   ordinal: number;
 }
@@ -143,6 +160,9 @@ export async function loadFromDb(
     title: r.title as string,
   }));
 
+  // TODO(db): add an `options` column (jsonb) to `form_fields` and read it
+  // here once multi_select fields need to live in the DB. Runtime currently
+  // uses loadFromFixtures, so the JSON path is authoritative.
   const { data: fieldRows, error: fieldErr } = await supabase
     .from("form_fields")
     .select(

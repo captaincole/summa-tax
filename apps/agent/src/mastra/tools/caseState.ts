@@ -137,7 +137,10 @@ export async function buildCaseState(
     "identity.name.last",
     "identity.ssn",
     "identity.dob",
-    "identity.address",
+    "identity.address.street",
+    "identity.address.city",
+    "identity.address.state",
+    "identity.address.zip",
   ];
   for (const key of REQUIRED_IDENTITY_KEYS) {
     if (!ctx.facts.get(key)) pendingFacts.add(key);

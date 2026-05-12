@@ -140,15 +140,17 @@ export function register(): void {
     });
 
   // Home address (number and street) (personal_info)
-  //   why: Read taxpayer street address directly from identity address fact.
+  //   why: Street line comes from the identity.address.street sub-fact.
   bindField("form-1040", "form-1040.header.address_street", r.lookupFact, {
-      "factKey": "identity.address"
+      "factKey": "identity.address.street"
     });
 
   // Apt. no. (personal_info)
-  //   why: Apt number not separately ingested in current identity fact schema.
-  bindField("form-1040", "form-1040.header.address_apt", r.unsupported, {
-      "reason": "Apartment number is a sub-field of the address fact that we have not modeled separately in identity ingestion yet; no scenario forces it."
+  //   why: Optional sub-fact — most users don't have an apt. lookupFact
+  //   returns "" when missing so the field doesn't block on it.
+  bindField("form-1040", "form-1040.header.address_apt", r.lookupFact, {
+      "factKey": "identity.address.apt",
+      "optional": true
     });
 
   // Presidential Election Campaign – Spouse (filing_scope)
@@ -158,15 +160,15 @@ export function register(): void {
     });
 
   // City, town, or post office (personal_info)
-  //   why: City not separately ingested in current identity address fact schema.
-  bindField("form-1040", "form-1040.header.address_city", r.unsupported, {
-      "reason": "City is a sub-field of the identity address fact that we have not modeled separately in identity ingestion yet; no scenario forces it."
+  //   why: City comes from the identity.address.city sub-fact.
+  bindField("form-1040", "form-1040.header.address_city", r.lookupFact, {
+      "factKey": "identity.address.city"
     });
 
   // ZIP code (personal_info)
-  //   why: ZIP code not separately ingested in current identity address fact schema.
-  bindField("form-1040", "form-1040.header.address_zip", r.unsupported, {
-      "reason": "ZIP code is a sub-field of the identity address fact that we have not modeled separately in identity ingestion yet; no scenario forces it."
+  //   why: ZIP comes from the identity.address.zip sub-fact.
+  bindField("form-1040", "form-1040.header.address_zip", r.lookupFact, {
+      "factKey": "identity.address.zip"
     });
 
   // Main home (and spouse's if joint) was in the U.S. for more than half of 2025 (filing_scope)
@@ -194,9 +196,9 @@ export function register(): void {
     });
 
   // State (personal_info)
-  //   why: State not separately ingested in current identity address fact schema.
-  bindField("form-1040", "form-1040.header.address_state", r.unsupported, {
-      "reason": "State is a sub-field of the identity address fact that we have not modeled separately in identity ingestion yet; no scenario forces it."
+  //   why: State comes from the identity.address.state sub-fact.
+  bindField("form-1040", "form-1040.header.address_state", r.lookupFact, {
+      "factKey": "identity.address.state"
     });
 
   // Presidential Election Campaign – You (filing_scope)
@@ -223,9 +225,11 @@ export function register(): void {
       "reason": "Presidential Election Campaign fund checkbox for spouse requires a MFJ scenario and a corresponding fact/decision key; neither exists yet."
     });
 
-  // Filing status: Single (filing_scope)
-  //   why: Derived from the filing_status decision; the engine will render true when the decision value equals 'single'.
-  bindField("form-1040", "form-1040.header.filing_status_single", r.lookupDecision, {
+  // Filing status (filing_scope) — multi_select
+  //   why: Single underlying decision (decisions.scope.filing_status) drives
+  //   one of five mutually-exclusive checkboxes. The rule reads the catalog's
+  //   options and returns the subset of values that match the decision.
+  bindField("form-1040", "form-1040.header.filing_status", r.decisionIfEquals, {
       "decisionKey": "decisions.scope.filing_status"
     });
 
@@ -235,22 +239,10 @@ export function register(): void {
       "reason": "Whether the taxpayer (MFS or HOH) lived apart from their spouse for the last 6 months of 2025 requires a dedicated fact or decision we have not yet modeled."
     });
 
-  // Filing status: Married filing jointly (filing_scope)
-  //   why: Derived from the filing_status decision; the engine will render true when the decision value equals 'married_filing_jointly'.
-  bindField("form-1040", "form-1040.header.filing_status_mfj", r.lookupDecision, {
-      "decisionKey": "decisions.scope.filing_status"
-    });
-
   // Treating nonresident/dual-status alien spouse as U.S. resident checkbox (filing_scope)
   //   why: No MFJ nonresident alien spouse scenario or decision key available — unsupported until that scenario is modeled.
   bindField("form-1040", "form-1040.header.nonresident_alien_spouse_checkbox", r.unsupported, {
       "reason": "Treating nonresident/dual-status alien spouse as U.S. resident is an election requiring a MFJ-with-nonresident-spouse scenario and fact ingestion; no such scenario exists yet."
-    });
-
-  // Filing status: Married filing separately (MFS) (filing_scope)
-  //   why: Derived from the filing_status decision; the engine will render true when the decision value equals 'married_filing_separately'.
-  bindField("form-1040", "form-1040.header.filing_status_mfs", r.lookupDecision, {
-      "decisionKey": "decisions.scope.filing_status"
     });
 
   // MFS: Spouse's full name (personal_info)
@@ -265,28 +257,11 @@ export function register(): void {
       "reason": "Qualifying child's name for HOH/QSS requires dependent ingestion — no HOH or QSS scenario with a named qualifying child has been built yet."
     });
 
-  // Filing status: Head of household (HOH) (filing_scope)
-  //   why: Boolean derived from the filing_status decision — true when value equals 'head_of_household'.
-  bindField("form-1040", "form-1040.header.filing_status_hoh", r.lookupDecision, {
-      "decisionKey": "decisions.scope.filing_status"
-    });
-
-  // Filing status: Qualifying surviving spouse (QSS) (filing_scope)
-  //   why: Boolean derived from the filing_status decision — true when value equals 'qualifying_surviving_spouse'.
-  bindField("form-1040", "form-1040.header.filing_status_qss", r.lookupDecision, {
-      "decisionKey": "decisions.scope.filing_status"
-    });
-
-  // Digital assets: Yes (filing_scope)
-  //   why: Digital asset activity determination requires fact ingestion we haven't modeled yet.
-  bindField("form-1040", "form-1040.header.digital_assets_yes", r.unsupported, {
-      "reason": "No digital-asset fact ingestion path built yet — requires a scenario covering digital asset transactions (mining, staking, sales, etc.) to determine whether the Yes box should be checked."
-    });
-
-  // Digital assets: No (filing_scope)
-  //   why: Digital asset activity determination requires fact ingestion we haven't modeled yet; No is the complement of Yes.
-  bindField("form-1040", "form-1040.header.digital_assets_no", r.unsupported, {
-      "reason": "No digital-asset fact ingestion path built yet — the No box is the complement of digital_assets_yes and cannot be set until we have a digital-asset activity decision."
+  // Digital assets (filing_scope) — multi_select
+  //   why: Single yes/no decision drives one of two checkboxes. Marked
+  //   unsupported until the digital-asset activity decision is captured.
+  bindField("form-1040", "form-1040.header.digital_assets", r.unsupported, {
+      "reason": "No digital-asset activity decision built yet — requires a scenario covering digital asset transactions (mining, staking, sales, etc.) to determine yes/no."
     });
 
   // Dependent 1: First name (filing_scope)
@@ -1449,16 +1424,11 @@ export function register(): void {
       "reason": "Bank routing number is a taxpayer-provided direct deposit detail with no fact ingestion path yet."
     });
 
-  // Direct deposit account type: Checking (deductions_credits)
-  //   why: Whether the refund account is checking depends on taxpayer-provided bank account details not yet ingested.
-  bindField("form-1040", "form-1040.line.35c_checking", r.unsupported, {
-      "reason": "Account type (checking) is a taxpayer-provided direct deposit preference with no fact ingestion path yet."
-    });
-
-  // Direct deposit account type: Savings (deductions_credits)
-  //   why: Whether the refund account is savings depends on taxpayer-provided bank account details not yet ingested.
-  bindField("form-1040", "form-1040.line.35c_savings", r.unsupported, {
-      "reason": "Account type (savings) is a taxpayer-provided direct deposit preference with no fact ingestion path yet."
+  // Direct deposit account type (deductions_credits) — multi_select
+  //   why: Single account-type decision (checking/savings) drives one of two
+  //   checkboxes. Marked unsupported until bank account details are ingested.
+  bindField("form-1040", "form-1040.line.35c_account_type", r.unsupported, {
+      "reason": "Account type (checking vs savings) is a taxpayer-provided direct deposit preference with no fact ingestion path yet."
     });
 
   // Direct deposit: Account number (deductions_credits)

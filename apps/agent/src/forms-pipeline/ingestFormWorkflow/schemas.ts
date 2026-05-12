@@ -35,6 +35,7 @@ const categorySchema = z.enum([
 const valueTypeSchema = z.enum([
   "numeric",
   "single_select",
+  "multi_select",
   "text",
   "boolean",
   "date",
@@ -46,6 +47,10 @@ const classifiedFieldSchema = z.object({
   label: z.string(),
   category: categorySchema,
   valueType: valueTypeSchema,
+  /** Present on multi_select rows — see ClassifiedField.optionValue. */
+  optionValue: z.string().optional(),
+  /** Present on multi_select rows — see ClassifiedField.optionLabel. */
+  optionLabel: z.string().optional(),
 });
 
 const classifiedSkipSchema = z.object({

@@ -38,10 +38,18 @@ export default function ChatPage() {
   const [activityTick, setActivityTick] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
+
+  // Streaming disables the input, which makes the browser drop focus.
+  // Restore it whenever streaming flips back to false so the user can
+  // keep typing without clicking back into the box.
+  useEffect(() => {
+    if (!streaming) messageInputRef.current?.focus();
+  }, [streaming]);
 
   async function sendMessage(e: FormEvent) {
     e.preventDefault();
@@ -273,6 +281,7 @@ export default function ChatPage() {
                 📎
               </button>
               <input
+                ref={messageInputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

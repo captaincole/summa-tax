@@ -43,66 +43,12 @@ function getCatalog(): Promise<Catalog> {
   return catalogPromise;
 }
 
-// Filing-status checkboxes — the AI's current bindings have all five
-// bound to lookupDecision("decisions.scope.filing_status"), which returns
-// the same string for every widget. Until we add an equalsDecision rule
-// or similar, the renderer maps the string to the matching checkbox.
-//
-// TODO(rules): add an `equalsDecision({ decisionKey, value })` rule that
-// returns a boolean — true when the decision matches the value. Re-bind
-// each filing_status_* field to that rule and delete this map. Same
-// pattern will apply to any other radio-group widgets we encounter.
-const FILING_STATUS_FIELD_IDS: Record<string, string> = {
-  single: "form-1040.header.filing_status_single",
-  married_filing_jointly: "form-1040.header.filing_status_mfj",
-  mfj: "form-1040.header.filing_status_mfj",
-  married_filing_separately: "form-1040.header.filing_status_mfs",
-  mfs: "form-1040.header.filing_status_mfs",
-  head_of_household: "form-1040.header.filing_status_hoh",
-  hoh: "form-1040.header.filing_status_hoh",
-  qualifying_surviving_spouse: "form-1040.header.filing_status_qss",
-  qss: "form-1040.header.filing_status_qss",
-};
-
 function fmtMoney(n: number | null | undefined): string {
   if (n === null || n === undefined) return "";
   if (n === 0) return "0";
   return Math.round(n).toString();
 }
 
-interface AddressShape {
-  line1?: string;
-  street?: string;
-  line2?: string;
-  apt?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  zipCode?: string;
-}
-
-function parseAddress(addr: unknown): {
-  street: string;
-  apt: string;
-  city: string;
-  state: string;
-  zip: string;
-} {
-  if (typeof addr === "string") {
-    return { street: addr, apt: "", city: "", state: "", zip: "" };
-  }
-  if (addr && typeof addr === "object") {
-    const a = addr as AddressShape;
-    return {
-      street: String(a.line1 ?? a.street ?? ""),
-      apt: String(a.line2 ?? a.apt ?? ""),
-      city: String(a.city ?? ""),
-      state: String(a.state ?? ""),
-      zip: String(a.zip ?? a.zipCode ?? ""),
-    };
-  }
-  return { street: "", apt: "", city: "", state: "", zip: "" };
-}
 
 function lineValue(
   form: EvaluatedForm<AnyFormField>,
@@ -175,16 +121,6 @@ export const generateTaxDocuments = createTool({
       listDecisions(supabase, { taxYear: year, limit: 500 }),
     ]);
 
-    const factMap = new Map<string, unknown>();
-    for (const r of factRows) if (!factMap.has(r.key)) factMap.set(r.key, r.value);
-
-    const filingStatusDecision = decisionRows.find(
-      (d) => d.decisionKey === "decisions.scope.filing_status",
-    );
-    const filingStatus = filingStatusDecision
-      ? String(filingStatusDecision.decision)
-      : "";
-
     // ─── Run the new engine on form-1040 ───
     const ctx: DerivationContext = {
       taxYear: year,
@@ -236,55 +172,13 @@ export const generateTaxDocuments = createTool({
       const value = field.result.value;
       if (value === null || value === undefined) continue;
 
+      // multi_select fields don't have a single pdfWidgetName — each option
+      // maps to its own widget. fillByType iterates options when valueType
+      // is multi_select; for other types it fills the resolved widgetName.
       const widgetName =
         verifiedWidget("form-1040", field.fieldId) ?? inv.pdfWidgetName;
-      if (!widgetName) continue;
-
-      const filled = fillByType(setText, check, widgetName, inv.valueType, value);
+      const filled = fillByType(setText, check, widgetName, inv, value);
       if (filled) linesPopulated++;
-    }
-
-    // ─── Special-case: filing status checkboxes ───
-    // Override the generic walk by checking the one widget matching the
-    // taxpayer's filing-status decision. Until we add an equalsDecision
-    // rule, this lives in the renderer.
-    const fsFieldId = FILING_STATUS_FIELD_IDS[filingStatus];
-    if (fsFieldId) {
-      const widgetName =
-        verifiedWidget("form-1040", fsFieldId) ??
-        catalog.getField(fsFieldId)?.pdfWidgetName;
-      if (widgetName) {
-        check(widgetName);
-        linesPopulated++;
-      }
-    }
-
-    // ─── Special-case: address decomposition ───
-    // identity.address is a structured fact { line1, city, state, zip };
-    // the catalog has separate widgets for street/apt/city/state/zip but
-    // only the street widget got bound to the address fact (the others
-    // are marked unsupported). Decompose here so all five fields fill.
-    //
-    // TODO(facts): split identity.address into separate sub-facts
-    // (identity.address.street, .city, .state, .zip) at ingest time so the
-    // AI can bind each subfield to lookupFact directly. Then drop this
-    // renderer-side special case and let the generic walk handle them.
-    const addr = parseAddress(factMap.get("identity.address"));
-    const addrParts: Array<[string, string]> = [
-      ["form-1040.header.address_street", addr.street],
-      ["form-1040.header.address_apt", addr.apt],
-      ["form-1040.header.address_city", addr.city],
-      ["form-1040.header.address_state", addr.state],
-      ["form-1040.header.address_zip", addr.zip],
-    ];
-    for (const [fieldId, value] of addrParts) {
-      if (!value) continue;
-      const widgetName =
-        verifiedWidget("form-1040", fieldId) ??
-        catalog.getField(fieldId)?.pdfWidgetName;
-      if (!widgetName) continue;
-      setText(widgetName, value);
-      linesPopulated++;
     }
 
     pdfForm.flatten();
@@ -360,8 +254,13 @@ export const generateTaxDocuments = createTool({
   },
 });
 
-// Fill a single widget based on the field's valueType + the engine's
-// evaluated value. Returns true if a widget was actually touched.
+// Fill widgets based on the field's valueType + the engine's evaluated
+// value. Returns true if at least one widget was touched.
+//
+// For single-widget types (numeric/text/boolean/date) the caller supplies
+// the resolved widgetName (verified overlay or catalog default). For
+// multi_select the widget mapping lives per-option in the catalog, so this
+// function ignores the passed widgetName and iterates inv.options instead.
 //
 // Numeric zeros are written as "0" — they distinguish "engine computed
 // zero" from "engine didn't compute this at all" (the latter is
@@ -369,12 +268,13 @@ export const generateTaxDocuments = createTool({
 function fillByType(
   setText: (widgetName: string, value: string) => void,
   check: (widgetName: string) => void,
-  widgetName: string,
-  valueType: FieldInventory["valueType"],
+  widgetName: string | undefined,
+  inv: FieldInventory,
   value: unknown,
 ): boolean {
-  switch (valueType) {
+  switch (inv.valueType) {
     case "numeric": {
+      if (!widgetName) return false;
       if (typeof value === "number" && Number.isFinite(value)) {
         setText(widgetName, fmtMoney(value));
         return true;
@@ -382,6 +282,7 @@ function fillByType(
       return false;
     }
     case "text": {
+      if (!widgetName) return false;
       if (typeof value === "string" && value.length > 0) {
         setText(widgetName, value);
         return true;
@@ -389,6 +290,7 @@ function fillByType(
       return false;
     }
     case "boolean": {
+      if (!widgetName) return false;
       if (value === true) {
         check(widgetName);
         return true;
@@ -396,14 +298,30 @@ function fillByType(
       return false;
     }
     case "date": {
+      if (!widgetName) return false;
       if (typeof value === "string" && value.length > 0) {
         setText(widgetName, value);
         return true;
       }
       return false;
     }
+    case "multi_select": {
+      // value should be string[] — the selected option values. Check each
+      // option's PDF widget by looking it up in inv.options.
+      if (!Array.isArray(value) || !inv.options) return false;
+      let touched = false;
+      for (const selected of value) {
+        const opt = inv.options.find((o) => o.value === selected);
+        if (!opt) continue;
+        check(opt.pdfWidgetName);
+        touched = true;
+      }
+      return touched;
+    }
     case "single_select":
-      // Handled by the renderer's filing-status special-case for now.
+      // No live single_select renderer path — all current radio groups are
+      // modeled as multi_select. If we ever introduce a true single_select
+      // (one widget, one decision-driven value), add the branch here.
       return false;
   }
   return false;

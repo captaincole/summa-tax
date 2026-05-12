@@ -123,6 +123,7 @@ export type Category =
 export type FieldValueType =
   | "numeric"
   | "single_select"
+  | "multi_select"
   | "text"
   | "boolean"
   | "date";

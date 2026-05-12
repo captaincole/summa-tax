@@ -26,6 +26,7 @@ export type RuleName =
   | "sumFacts"
   | "tableLookupByDecision"
   | "lookupDecision"
+  | "decisionIfEquals"
   | "fromFields"
   | "constant"
   | "bracketLookup"
@@ -68,8 +69,8 @@ export interface ClassifyBindingsOpts {
 const RULE_LIBRARY_SPEC = `Rule library — pick one rule per field:
 
 lookupFact — Read a single fact by key.
-  params: { factKey: string }
-  Use for header/identity fields and any 1-to-1 fact mapping.
+  params: { factKey: string, optional?: boolean }
+  Use for header/identity fields and any 1-to-1 fact mapping. Pass optional=true for sub-facts that the user often won't have (e.g. identity.address.apt) — missing optional facts return "" instead of blocking so Thom doesn't ask the user.
 
 sumFacts — Aggregate a numeric field across all facts in a category (optionally filtered by key prefix).
   params: { category: string, keyPrefix?: string, fieldPath: string }
@@ -82,7 +83,11 @@ sumFacts — Aggregate a numeric field across all facts in a category (optionall
 
 lookupDecision — Pass through an ai_decision value as-is.
   params: { decisionKey: string }
-  Use for single-select fields (filing status) and must-file bindings.
+  Use for single-select fields and must-file bindings — NOT for radio groups (use decisionIfEquals + multi_select for those).
+
+decisionIfEquals — Multi_select binding driven by a single decision.
+  params: { decisionKey: string }
+  Use ONLY on form fields with valueType === "multi_select". The catalog declares the option set + each option's pdfWidgetName; the rule returns the subset of option values matching the decision (typically 0 or 1). Example: filing_status form field with options [single, mfj, mfs, hoh, qss] + decisionKey "decisions.scope.filing_status" → engine returns ["single"] when the decision is "single", renderer checks that option's PDF widget. Use the same pattern for any radio / yes-no / pick-one form field (digital_assets, deposit type, etc.).
 
 tableLookupByDecision — Look up a numeric value from a flat table keyed on a decision's value.
   params: { decisionKey: string, table: Record<string, number> }
@@ -120,7 +125,8 @@ unsupported — Mark a field as a known engine gap. We don't compute it yet beca
   IMPORTANT: prefer \`unsupported\` over \`constant 0\` whenever the field's value depends on facts we haven't built ingestion for. \`constant\` is for fixed values; \`unsupported\` is for "we'll model this when a real scenario forces it." Downstream sums treat unsupported terms as 0 so the form still renders.`;
 
 const AVAILABLE_DATA_SPEC = `Available tax_facts (fact_key patterns):
-  - identity.name.first, identity.name.last, identity.ssn, identity.dob, identity.address
+  - identity.name.first, identity.name.last, identity.ssn, identity.dob
+  - identity.address.street, identity.address.apt (optional), identity.address.city, identity.address.state, identity.address.zip
   - wages, key "employer.{slug}" → { box1, box2, box3, …, box16, box17 } (one per W-2)
   - investment_income, key "account.{slug}.dividends" → { box1a, box1b, box2a, … } (one per 1099-DIV)
   - investment_income, key "account.{slug}.trade.{tradeId}" → { proceeds, costBasis, dateAcquired, dateSold, … }
@@ -142,12 +148,15 @@ ${AVAILABLE_DATA_SPEC}
 Picking rules:
   - Identity / single-fact reads → lookupFact
   - Sum across many similar facts → sumFacts
-  - Pass through a decision (filing status, residency selector) → lookupDecision
+  - Pass through a decision into a single_select / text field → lookupDecision
+  - multi_select form fields (radio groups, yes/no checkboxes) → decisionIfEquals
   - Filing-status-keyed constant (standard deduction) → tableLookupByDecision
   - Math over other lines → fromFields
   - Tax bracket math (only line 16) → bracketLookup
   - Genuinely fixed value (tax year date, IRS-defined boilerplate) → constant
   - Anything else we haven't built ingestion / scenarios for → unsupported
+
+If a field's valueType is "multi_select" you MUST use decisionIfEquals (or unsupported when no decision exists yet). Never bind a multi_select field with lookupDecision — that returns the raw string and skips the catalog's option→widget mapping.
 
 When using fromFields, every term's fieldId must match an inventory entry exactly — full path including the formId prefix. For intra-form math (e.g. line 11 = line 9 − line 10) every term references the current form's fields. For cross-form refs, the referenced form must also be in the catalog inventory; if it isn't, bind to \`unsupported\` with a reason explaining "source form not yet ingested."
 
@@ -286,6 +295,7 @@ For each field, emit a binding via the emit_bindings tool. ${batchIndex === 0 ? 
                       "sumFacts",
                       "tableLookupByDecision",
                       "lookupDecision",
+                      "decisionIfEquals",
                       "fromFields",
                       "constant",
                       "bracketLookup",

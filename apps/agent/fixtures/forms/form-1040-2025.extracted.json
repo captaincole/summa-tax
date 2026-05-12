@@ -415,11 +415,17 @@
       }
     },
     {
-      "fieldId": "form-1040.header.filing_status_single",
-      "label": "Filing status: Single",
+      "fieldId": "form-1040.header.filing_status",
+      "label": "Filing status",
       "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]",
+      "valueType": "multi_select",
+      "options": [
+        { "value": "single", "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]", "label": "Single" },
+        { "value": "mfj", "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]", "label": "Married filing jointly" },
+        { "value": "mfs", "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]", "label": "Married filing separately" },
+        { "value": "hoh", "pdfWidgetName": "topmostSubform[0].Page1[0].c1_9[0]", "label": "Head of household" },
+        { "value": "qss", "pdfWidgetName": "topmostSubform[0].Page1[0].f1_30[0]", "label": "Qualifying surviving spouse" }
+      ],
       "position": {
         "page": 0,
         "x": 97.599,
@@ -439,18 +445,6 @@
       }
     },
     {
-      "fieldId": "form-1040.header.filing_status_mfj",
-      "label": "Filing status: Married filing jointly",
-      "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]",
-      "position": {
-        "page": 0,
-        "x": 97.599,
-        "y": 566.001
-      }
-    },
-    {
       "fieldId": "form-1040.header.nonresident_alien_spouse_checkbox",
       "label": "Treating nonresident/dual-status alien spouse as U.S. resident checkbox",
       "category": "filing_scope",
@@ -460,18 +454,6 @@
         "page": 0,
         "x": 349.599,
         "y": 566.001
-      }
-    },
-    {
-      "fieldId": "form-1040.header.filing_status_mfs",
-      "label": "Filing status: Married filing separately (MFS)",
-      "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]",
-      "position": {
-        "page": 0,
-        "x": 97.599,
-        "y": 554.002
       }
     },
     {
@@ -499,50 +481,17 @@
       }
     },
     {
-      "fieldId": "form-1040.header.filing_status_hoh",
-      "label": "Filing status: Head of household (HOH)",
+      "fieldId": "form-1040.header.digital_assets",
+      "label": "Digital assets: did the taxpayer transact in digital assets?",
       "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_9[0]",
-      "position": {
-        "page": 0,
-        "x": 97.599,
-        "y": 525.875
-      }
-    },
-    {
-      "fieldId": "form-1040.header.filing_status_qss",
-      "label": "Filing status: Qualifying surviving spouse (QSS)",
-      "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_30[0]",
-      "position": {
-        "page": 0,
-        "x": 313.2,
-        "y": 513.5
-      }
-    },
-    {
-      "fieldId": "form-1040.header.digital_assets_yes",
-      "label": "Digital assets: Yes",
-      "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[0]",
+      "valueType": "multi_select",
+      "options": [
+        { "value": "yes", "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[0]", "label": "Yes" },
+        { "value": "no", "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[1]", "label": "No" }
+      ],
       "position": {
         "page": 0,
         "x": 518.4,
-        "y": 497
-      }
-    },
-    {
-      "fieldId": "form-1040.header.digital_assets_no",
-      "label": "Digital assets: No",
-      "category": "filing_scope",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[1]",
-      "position": {
-        "page": 0,
-        "x": 554.4,
         "y": 497
       }
     },
@@ -2083,26 +2032,17 @@
       }
     },
     {
-      "fieldId": "form-1040.line.35c_checking",
-      "label": "Direct deposit account type: Checking",
+      "fieldId": "form-1040.line.35c_account_type",
+      "label": "Direct deposit account type",
       "category": "deductions_credits",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[0]",
+      "valueType": "multi_select",
+      "options": [
+        { "value": "checking", "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[0]", "label": "Checking" },
+        { "value": "savings", "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[1]", "label": "Savings" }
+      ],
       "position": {
         "page": 1,
         "x": 377.4,
-        "y": 278.001
-      }
-    },
-    {
-      "fieldId": "form-1040.line.35c_savings",
-      "label": "Direct deposit account type: Savings",
-      "category": "deductions_credits",
-      "valueType": "boolean",
-      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[1]",
-      "position": {
-        "page": 1,
-        "x": 435,
         "y": 278.001
       }
     },

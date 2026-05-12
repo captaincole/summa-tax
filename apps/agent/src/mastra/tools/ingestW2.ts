@@ -52,7 +52,7 @@ export const ingestW2 = createTool({
       })
       .optional()
       .describe(
-        "Employee identity from boxes a, e, and f of the W-2. Pass this whenever you can read it from the W-2 — the tool will also write identity.name.first / identity.name.last / identity.ssn / identity.address as facts so the form renderers can fill the personal-information boxes at the top of every form.",
+        "Employee identity from boxes a, e, and f of the W-2. Pass this whenever you can read it from the W-2 — the tool will also write identity.name.first / identity.name.last / identity.ssn and the per-line address sub-facts (identity.address.street, .apt, .city, .state, .zip) so the form renderers can fill the personal-information boxes at the top of every form.",
       ),
     employerSlug: z
       .string()
@@ -162,7 +162,16 @@ export const ingestW2 = createTool({
       await writeIdentity("identity.name.first", e.firstName);
       await writeIdentity("identity.name.last", e.lastName);
       await writeIdentity("identity.ssn", e.ssn);
-      if (e.address) await writeIdentity("identity.address", e.address);
+      // Address gets stored as one fact per line so each form field can
+      // bind to its own sub-fact via lookupFact. Keeps the renderer dumb —
+      // no parsing or decomposition at fill time.
+      if (e.address) {
+        await writeIdentity("identity.address.street", e.address.line1);
+        await writeIdentity("identity.address.apt", e.address.line2);
+        await writeIdentity("identity.address.city", e.address.city);
+        await writeIdentity("identity.address.state", e.address.state);
+        await writeIdentity("identity.address.zip", e.address.zip);
+      }
     }
 
     return { factsWritten, employerSlug: slug, factKey };
