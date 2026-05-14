@@ -7,7 +7,7 @@
 //   key:      "employer.{employerSlug}"
 //   value:    W2FactValue
 
-import type { FactsView } from "../../forms/types.js";
+import type { FactsView } from "../../engine/types.js";
 import type { TaxFactRow } from "../../db/taxFacts.js";
 
 export interface W2Address {

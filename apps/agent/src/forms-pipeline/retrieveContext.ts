@@ -8,7 +8,7 @@
 // with a concurrency cap so we don't burst the Voyage API.
 
 import { hybridSearchRefDocs } from "../mastra/db/refDocs.js";
-import type { FieldInventory } from "../mastra/forms/catalog.js";
+import type { FieldInventory } from "../mastra/engine/catalog.js";
 
 // Minimal block shape — the classifier only needs the citation (for the
 // rationale's "ref:" tags) and the text body. Keeping this small means the

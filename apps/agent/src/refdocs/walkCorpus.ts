@@ -3,13 +3,15 @@ import { readdir, readFile } from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import { resolve, join, relative } from "node:path";
 
-// Walks reference-docs/**/*.pdf and pairs each PDF with its sibling
-// `<basename>.meta.json` sidecar. The sidecar is the source of truth for
+// Walks forms/**/instructions.pdf and pairs each PDF with its sibling
+// `instructions.meta.json` sidecar. The sidecar is the source of truth for
 // docId/title/publisher/taxYear/sourceUrl; the filesystem is the source of
 // truth for which docs *should* exist.
 //
-// A PDF without a sidecar is reported as `unconfigured` rather than silently
-// skipped — adding a PDF without metadata is almost always a mistake.
+// An instructions.pdf without a sidecar is reported as `unconfigured` rather
+// than silently skipped — adding a PDF without metadata is almost always a
+// mistake. `blank.pdf` files (fillable form templates) are intentionally
+// ignored — they're rendered to, not ingested into the corpus.
 
 export interface RefDocSidecar {
   docId: string;
@@ -32,7 +34,8 @@ export interface WalkResult {
   unconfigured: { pdfPath: string; pdfRelPath: string; reason: string }[];
 }
 
-const REF_DOCS_DIR = "reference-docs";
+const REF_DOCS_DIR = "forms";
+const INSTRUCTIONS_FILENAME = "instructions.pdf";
 
 async function walkPdfs(dir: string): Promise<string[]> {
   const out: string[] = [];
@@ -46,7 +49,7 @@ async function walkPdfs(dir: string): Promise<string[]> {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...(await walkPdfs(full)));
-    } else if (entry.isFile() && entry.name.toLowerCase().endsWith(".pdf")) {
+    } else if (entry.isFile() && entry.name === INSTRUCTIONS_FILENAME) {
       out.push(full);
     }
   }

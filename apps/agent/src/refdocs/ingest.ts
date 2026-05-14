@@ -22,7 +22,6 @@ export interface IngestInput {
   publisher: string;
   taxYear: number | null;
   sourceUrl?: string | null;
-  canonicalOutDir: string;
   force?: boolean;
   /** Skip the per-block Haiku contextualization step. Useful for fast dev
    *  iteration where you only care about the parser. Without contextualization
@@ -57,7 +56,9 @@ async function shaOfFile(path: string): Promise<string> {
 
 export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
   const pdfPath = resolve(input.pdfPath);
-  const canonicalOutDir = resolve(input.canonicalOutDir);
+  // Canonical text colocates with its source PDF: forms/<…>/instructions.pdf
+  // → forms/<…>/instructions.canonical.txt. Same dir, same basename, .canonical.txt extension.
+  const canonicalTextPath = pdfPath.replace(/\.pdf$/i, ".canonical.txt");
 
   // Sha-skip: hash the file before any expensive step. If the existing row's
   // sha matches and the caller didn't pass --force, we have nothing to do.
@@ -93,7 +94,6 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
     replaced = true;
   }
 
-  const canonicalTextPath = `${canonicalOutDir}/${input.docId}.canonical.txt`;
   await mkdir(dirname(canonicalTextPath), { recursive: true });
   await writeFile(canonicalTextPath, extracted.canonicalText, "utf8");
 

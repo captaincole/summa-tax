@@ -4,7 +4,7 @@ import { getDocument } from "../src/mastra/db/refDocs";
 import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
 import { projectRoot } from "../src/mastra/paths";
 
-// Read-only diff between reference-docs/**/*.pdf and ref_documents in Supabase.
+// Read-only diff between forms/**/instructions.pdf and ref_documents in Supabase.
 // Exits 0 unless --strict is passed and there's any drift.
 
 interface Categorized {

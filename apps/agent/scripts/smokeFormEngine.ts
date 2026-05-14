@@ -8,17 +8,17 @@
 // Run: npx tsx scripts/smokeFormEngine.ts
 
 import { resolve } from "node:path";
-import { register as registerForm1040 } from "../src/mastra/forms/federal/1040/bindings.js";
-import { evaluateForm } from "../src/mastra/forms/engine.js";
+import { register as registerForm1040 } from "../src/mastra/engine/federal/1040/bindings.js";
+import { evaluateForm } from "../src/mastra/engine/engine.js";
 
 registerForm1040();
-import { loadFromFixtures } from "../src/mastra/forms/catalog.js";
+import { loadFromFixtures } from "../src/mastra/engine/catalog.js";
 import { projectRoot } from "../src/mastra/paths.js";
 import {
   makeDecisionsView,
   makeFactsView,
   type DerivationContext,
-} from "../src/mastra/forms/types.js";
+} from "../src/mastra/engine/types.js";
 import {
   makeDividendFactKey,
   makeW2FactKey,
@@ -210,7 +210,7 @@ async function main() {
   // AI-extracted form-1040 catalog, 197 fields. Pairs with the AI-generated
   // bindings in forms/generated/form-1040.ts.
   const catalog = await loadFromFixtures([
-    resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
+    resolve(projectRoot, "forms/federal/1040/catalog.json"),
   ]);
 
   const form = evaluateForm("form-1040", ctx, catalog);

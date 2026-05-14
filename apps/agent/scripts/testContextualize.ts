@@ -8,7 +8,7 @@ import { summarizeBlock } from "../src/refdocs/contextualize";
 
 async function main() {
   const docText = await readFile(
-    "reference-docs/extracted/irs-1040-inst-2025.canonical.txt",
+    "forms/federal/1040/instructions.canonical.txt",
     "utf8",
   );
   // The "Single" filing-status section starts at line 982 in the canonical

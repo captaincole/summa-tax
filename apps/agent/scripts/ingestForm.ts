@@ -1,14 +1,15 @@
 // Phase C CLI — thin wrapper around the ingestFormWorkflow Mastra workflow.
 //
 //   npx tsx scripts/ingestForm.ts \
-//     --pdf=ref/forms/f1040-2025.pdf \
+//     --pdf=forms/federal/1040/blank.pdf \
 //     --form-id=form-1040 \
 //     --tax-year=2025 \
 //     --jurisdiction=federal \
 //     --title="U.S. Individual Income Tax Return"
 //
 // Writes the classified catalog to
-//   apps/agent/ref/forms/<form-id>-<tax-year>.catalog.json
+//   apps/agent/forms/<jurisdiction>/<short>/catalog.json
+// where <short> is the formId with "form-" stripped.
 // Pass --write-db to additionally upsert into the forms / form_fields tables.
 
 import { resolve } from "node:path";
@@ -50,22 +51,24 @@ function parseArgs(argv: string[]): Args {
   };
 }
 
-// Co-locate the catalog with its source PDF: federal forms at
-// ref/forms/<file>, state forms under ref/forms/state/<state>/<file>.
-function defaultOutputDir(jurisdiction: string): string {
-  if (jurisdiction === "federal") return "ref/forms";
+// Co-locate the catalog with its source PDF: each form has its own folder
+// under forms/<jurisdiction>/<short>/ containing blank.pdf + catalog.json
+// (and the instructions sidecar, when ingested).
+function defaultOutputDir(jurisdiction: string, formId: string): string {
+  const shortName = formId.replace(/^form-/, "");
+  if (jurisdiction === "federal") return `forms/federal/${shortName}`;
   if (jurisdiction.startsWith("state-")) {
     const state = jurisdiction.slice("state-".length);
-    return `ref/forms/state/${state}`;
+    return `forms/state/${state}/${shortName}`;
   }
-  return "ref/forms";
+  return `forms/federal/${shortName}`;
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const outputPath = resolve(
     projectRoot,
-    `${defaultOutputDir(args.jurisdiction)}/${args.formId}-${args.taxYear}.catalog.json`,
+    `${defaultOutputDir(args.jurisdiction, args.formId)}/catalog.json`,
   );
 
   console.log(`Phase C ingest: ${args.formId} (${args.taxYear})`);

@@ -1,4 +1,4 @@
-// Catalog index — scans ref/forms/**/*.catalog.json on disk and indexes
+// Catalog index — scans forms/**/catalog.json on disk and indexes
 // every form by its `form.formId`. Used by the binding classifier's
 // `lookup_form_fields` tool so the AI can fetch fieldIds + labels from
 // other forms on demand when binding cross-form references.
@@ -30,10 +30,10 @@ export interface IndexedForm {
 
 export type CatalogIndex = Map<string, IndexedForm>;
 
-const CATALOG_ROOT = "ref/forms";
+const CATALOG_ROOT = "forms";
 
 /**
- * Walk `ref/forms/**` for `*.catalog.json` files and build a Map keyed on
+ * Walk `forms/**` for `catalog.json` files and build a Map keyed on
  * formId. Excludes the form currently being bound (so the AI can't
  * accidentally cite itself as a cross-form reference).
  */
@@ -84,7 +84,7 @@ async function walkCatalogFiles(dir: string): Promise<string[]> {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...(await walkCatalogFiles(full)));
-    } else if (entry.isFile() && entry.name.endsWith(".catalog.json")) {
+    } else if (entry.isFile() && entry.name === "catalog.json") {
       out.push(full);
     }
   }

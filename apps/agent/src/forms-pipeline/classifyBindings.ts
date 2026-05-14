@@ -14,7 +14,7 @@
 // long forms don't burst-fail rate limits.
 
 import Anthropic from "@anthropic-ai/sdk";
-import type { FieldInventory } from "../mastra/forms/catalog.js";
+import type { FieldInventory } from "../mastra/engine/catalog.js";
 import type { RetrievedFieldContext } from "./retrieveContext.js";
 import {
   loadCatalogIndex,

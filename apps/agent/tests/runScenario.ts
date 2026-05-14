@@ -8,20 +8,20 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { evaluateAllForms } from "../src/mastra/forms/engine.js";
+import { evaluateAllForms } from "../src/mastra/engine/engine.js";
 import {
   loadFromFixtures,
   makeCatalog,
   type Catalog,
-} from "../src/mastra/forms/catalog.js";
+} from "../src/mastra/engine/catalog.js";
 import { projectRoot } from "../src/mastra/paths.js";
 import {
   makeDecisionsView,
   makeFactsView,
   type DerivationContext,
-} from "../src/mastra/forms/types.js";
-import { resolveFilingInfo } from "../src/mastra/forms/filingInfo.js";
-import { fillForm1040 } from "../src/mastra/forms/render/fillForm1040.js";
+} from "../src/mastra/engine/types.js";
+import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
+import { fillForm1040 } from "../src/mastra/engine/render/fillForm1040.js";
 import {
   assertEngineNumber,
   assertMatchesGolden,

@@ -11,7 +11,6 @@ async function main() {
       publisher: { type: "string", default: "IRS" },
       "tax-year": { type: "string" },
       "source-url": { type: "string" },
-      "out-dir": { type: "string", default: "reference-docs/extracted" },
       force: { type: "boolean", default: false },
       "no-contextualize": { type: "boolean", default: false },
       "no-embed": { type: "boolean", default: false },
@@ -23,7 +22,7 @@ async function main() {
   if (!values.pdf || !values["doc-id"] || !values.title) {
     console.error(
       "usage: tsx scripts/ingestRefDoc.ts --pdf <path> --doc-id <id> --title <title>" +
-        " [--publisher IRS] [--tax-year 2025] [--source-url <url>] [--out-dir <dir>] [--force]",
+        " [--publisher IRS] [--tax-year 2025] [--source-url <url>] [--force]",
     );
     process.exit(1);
   }
@@ -35,7 +34,6 @@ async function main() {
     publisher: values.publisher ?? "IRS",
     taxYear: values["tax-year"] ? Number(values["tax-year"]) : null,
     sourceUrl: values["source-url"] ?? null,
-    canonicalOutDir: values["out-dir"] ?? "reference-docs/extracted",
     force: values.force,
     noContextualize: values["no-contextualize"],
     noEmbed: values["no-embed"],

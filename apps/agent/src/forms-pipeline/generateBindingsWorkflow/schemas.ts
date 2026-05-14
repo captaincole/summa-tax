@@ -92,11 +92,11 @@ const usageSchema = z.object({
 export const workflowInputSchema = z.object({
   formId: z.string(),
   taxYear: z.number().int(),
-  /** Path to the JSON catalog (e.g. ref/forms/form-1040-2025.catalog.json). */
+  /** Path to the JSON catalog (e.g. forms/federal/1040/catalog.json). */
   catalogPath: z.string(),
   /**
    * Where to write the generated TS — e.g.
-   * src/mastra/forms/federal/1040/bindings.ts.
+   * src/mastra/engine/federal/1040/bindings.ts.
    */
   outputPath: z.string(),
   /**

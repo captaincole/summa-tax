@@ -31,8 +31,11 @@ apps/
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
 │   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
-│   ├── ref/                     # blank PDF templates the form engine fills (1040, 8949, …)
-│   ├── reference-docs/          # IRS / FTB PDFs ingested into the Supabase corpus
+│   ├── forms/                   # one folder per tax form: blank.pdf (fillable template),
+│   │                              catalog.json (widget inventory), instructions.pdf
+│   │                              (IRS booklet), instructions.meta.json (corpus metadata),
+│   │                              instructions.canonical.txt (extracted text). Federal
+│   │                              forms under federal/<short>/, state under state/<st>/<short>/.
 │   ├── package.json             # agent deps + scripts (mastra dev, fixtures:build, refdocs:*)
 │   └── tsconfig.json
 └── web/                         # Next.js 16 (App Router) frontend → deployed to Vercel
@@ -121,7 +124,7 @@ The web "Reset session" button in the side nav is the only reset path. It hits `
 - Storage objects under `user-documents/{userId}/…` — `storage.objects` RLS scopes by folder name to the user. The handler captures `storage_path` from `user_documents` *before* deleting the rows so it doesn't orphan bytes.
 - The user's Mastra threads — listed via `memory.listThreads({ filter: { resourceId: userId } })` and removed via `memory.deleteThread(id)`. Cascades to messages, observational memory, and any vector embeddings Mastra owns.
 
-**What survives:** the reference corpus (`public.ref_documents`, `public.ref_pages`, `public.ref_sections`, `public.ref_blocks`) and any file under `apps/agent/ref/`. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
+**What survives:** the reference corpus (`public.ref_documents`, `public.ref_pages`, `public.ref_sections`, `public.ref_blocks`) and any file under `apps/agent/forms/`. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
 
 **No wholesale-truncate path.** Per-user reset is the only operator-facing reset. To nuke the database (e.g. start over from scratch), run `TRUNCATE` directly in the Supabase SQL editor against `mastra.*` + `public.{tax_facts, open_questions, ai_decisions, user_documents}`. Once we have a local Supabase instance with seed scripts, that becomes the dev-side equivalent.
 
@@ -182,7 +185,7 @@ TypeScript enforces both. Adding a field without declaring them is a compile err
 
 **Header fields** (top-of-form personal info, filing-status checkboxes) are modeled as FormFields too — text/single-select kinds that derive from identity facts / scope decisions. They sit in the same `EvaluatedForm.fields` array as the numeric lines. PDF renderers continue to read raw facts directly; the header fields exist for the Filing Status panel rollup.
 
-**Where this is going.** The hand-coded per-form TS files (`form1040.ts`, `form540.ts`, …) are scaffolding. The plan is to replace them with an AI ingestion pipeline that extracts field inventories from form PDFs into the DB and generates binding files from form instructions. See `apps/agent/src/mastra/forms/PIPELINE.md` for the full design — including the three worked examples (sum-of-facts, table lookup, cross-form reference), the rule library, and the explicit list of things we chose not to do.
+**Where this is going.** The hand-coded per-form TS files (`form1040.ts`, `form540.ts`, …) are scaffolding. The plan is to replace them with an AI ingestion pipeline that extracts field inventories from form PDFs into the DB and generates binding files from form instructions. Implementation lives under `apps/agent/src/forms-pipeline/` (ingest + bind workflows); design notes alongside if added.
 
 ## Vercel logs (production debugging)
 
@@ -254,11 +257,11 @@ Stable IDs — used everywhere as citations:
 - `irs-1040-inst-2025::sec::single` (section)
 - `irs-1040-inst-2025::p13::b00013` (block)
 
-Canonical text lives on disk at `apps/agent/reference-docs/extracted/<doc-id>.canonical.txt`; DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
+Canonical text lives on disk next to its source PDF: `apps/agent/forms/<jurisdiction>/<short>/instructions.canonical.txt`. DB stores char offsets pointing into it. Source-of-truth is the canonical file; everything else is a derivation.
 
 ### Adding or updating a reference document
 
-The PDFs in `apps/agent/reference-docs/` are the manifest. Each PDF has a sibling `<basename>.meta.json` with the doc metadata:
+Each form's instructions live at `apps/agent/forms/<jurisdiction>/<short>/instructions.pdf` with a sibling `instructions.meta.json` carrying the doc metadata:
 
 ```json
 {
@@ -273,7 +276,8 @@ The PDFs in `apps/agent/reference-docs/` are the manifest. Each PDF has a siblin
 Operator flow:
 
 ```bash
-# 1. Drop new/updated PDF + sidecar into apps/agent/reference-docs/
+# 1. Drop new/updated instructions.pdf + instructions.meta.json into the form's folder
+#    (apps/agent/forms/<jurisdiction>/<short>/)
 # 2. See what's drifted vs Supabase:
 npm run refdocs:status           # diff: present / missing / sha-drift / extra / unconfigured
 npm run refdocs:status -- --strict  # exit non-zero on any drift (for CI/pre-push later)

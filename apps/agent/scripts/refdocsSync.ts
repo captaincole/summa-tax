@@ -4,7 +4,7 @@ import { ingestRefDoc } from "../src/refdocs/ingest";
 import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
 import { projectRoot } from "../src/mastra/paths";
 
-// Idempotent corpus sync. Walks reference-docs/**/*.pdf, ingests anything
+// Idempotent corpus sync. Walks forms/**/instructions.pdf, ingests anything
 // missing or sha-drifted. The ingest pipeline's own sha-skip handles re-runs
 // where the PDF hasn't changed, so this is also cheap to run on every dev tick.
 //
@@ -31,7 +31,6 @@ async function syncOne(entry: CorpusEntry): Promise<{
     publisher: entry.sidecar.publisher,
     taxYear: entry.sidecar.taxYear,
     sourceUrl: entry.sidecar.sourceUrl,
-    canonicalOutDir: "reference-docs/extracted",
   });
 
   if (result.skipped) {

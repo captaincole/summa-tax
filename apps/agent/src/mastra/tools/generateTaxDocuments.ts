@@ -12,29 +12,29 @@ import {
   type AnyFormField,
   type DerivationContext,
   type EvaluatedForm,
-} from "../forms/types";
-import { evaluateAllForms } from "../forms/engine";
-import { resolveFilingInfo } from "../forms/filingInfo";
-import { loadFromFixtures, type Catalog } from "../forms/catalog";
+} from "../engine/types";
+import { evaluateAllForms } from "../engine/engine";
+import { resolveFilingInfo } from "../engine/filingInfo";
+import { loadFromFixtures, type Catalog } from "../engine/catalog";
 // Explicit register() calls so the bundler / dev server can't tree-shake
 // the side-effect-import idiom. Idempotent — bindings overwrite themselves
 // if called twice.
-import { register as registerForm1040 } from "../forms/federal/1040/bindings";
-import { register as registerForm540 } from "../forms/state/ca/540/bindings";
+import { register as registerForm1040 } from "../engine/federal/1040/bindings";
+import { register as registerForm540 } from "../engine/state/ca/540/bindings";
 registerForm1040();
 registerForm540();
-import { fillForm1040 } from "../forms/render/fillForm1040";
+import { fillForm1040 } from "../engine/render/fillForm1040";
 import { requireUserContext } from "./userContext";
 
-const BLANK_1040_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
-const BLANK_540_PATH = resolve(projectRoot, "ref/forms/state/ca/2025-540.pdf");
+const BLANK_1040_PATH = resolve(projectRoot, "forms/federal/1040/blank.pdf");
+const BLANK_540_PATH = resolve(projectRoot, "forms/state/ca/540/blank.pdf");
 
 // Combined catalog — both federal and CA forms loaded into one Catalog so
 // cross-form refs (540 line 13 → 1040 line 11b) resolve during the
 // fixpoint evaluation.
 const CATALOG_FILES = [
-  resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
-  resolve(projectRoot, "ref/forms/state/ca/form-540-2025.catalog.json"),
+  resolve(projectRoot, "forms/federal/1040/catalog.json"),
+  resolve(projectRoot, "forms/state/ca/540/catalog.json"),
 ];
 const SCENARIO_FORM_IDS = ["form-1040", "form-540"];
 

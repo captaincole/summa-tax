@@ -1,5 +1,5 @@
 // Phase D — render typed bindings into TypeScript source for a per-form
-// `bindings.ts` file under `src/mastra/forms/<jurisdiction>/<short>/`.
+// `bindings.ts` file under `src/mastra/engine/<jurisdiction>/<short>/`.
 //
 // The classifier outputs structured bindings (one of N rule shapes per
 // field) plus a confidence rating. This renderer translates each binding
@@ -48,7 +48,7 @@ import type {
   Confidence,
   RuleName,
 } from "./classifyBindings.js";
-import type { FieldInventory } from "../mastra/forms/catalog.js";
+import type { FieldInventory } from "../mastra/engine/catalog.js";
 
 // ─── FilingInfo slot translation tables ──────────────────────────────────
 // Maps the AI's rule params (which reference raw fact / decision keys) to
@@ -214,11 +214,11 @@ export function renderBindings(opts: RenderBindingsOpts): RenderBindingsReport {
 
   const engineImport = relImport(
     opts.outputPath,
-    "src/mastra/forms/engine.ts",
+    "src/mastra/engine/engine.ts",
   );
   const taxTableImport = relImport(
     opts.outputPath,
-    "src/mastra/forms/data/taxTable.ts",
+    "src/mastra/engine/data/taxTable.ts",
   );
 
   const engineSymbols = ["defineForm"];
@@ -591,7 +591,7 @@ function quote(s: string): string {
  * works under tsx + the compiled output.
  */
 function relImport(fromFilePath: string, toRelativePath: string): string {
-  // toRelativePath is "src/mastra/forms/engine.ts" — turn into an absolute
+  // toRelativePath is "src/mastra/engine/engine.ts" — turn into an absolute
   // path under the same root as fromFilePath.
   const fromAbs = fromFilePath;
   const matchRoot = fromAbs.match(/^(.*?)(\/apps\/agent\/)/);

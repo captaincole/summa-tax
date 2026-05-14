@@ -9,21 +9,21 @@ import {
   makeFactsView,
   type BaseFormField,
   type DerivationContext,
-} from "../forms/types";
-import { evaluateAllForms } from "../forms/engine";
-import { resolveFilingInfo } from "../forms/filingInfo";
-import { loadFromFixtures, type Catalog } from "../forms/catalog";
+} from "../engine/types";
+import { evaluateAllForms } from "../engine/engine";
+import { resolveFilingInfo } from "../engine/filingInfo";
+import { loadFromFixtures, type Catalog } from "../engine/catalog";
 import { projectRoot } from "../paths";
 // Explicit register() calls so the bundler / dev server can't tree-shake
 // the side-effect-import idiom. Idempotent — bindings overwrite themselves
 // if called twice.
-import { register as registerForm1040 } from "../forms/federal/1040/bindings";
-import { register as registerForm540 } from "../forms/state/ca/540/bindings";
+import { register as registerForm1040 } from "../engine/federal/1040/bindings";
+import { register as registerForm540 } from "../engine/state/ca/540/bindings";
 registerForm1040();
 registerForm540();
 import { requireUserContext } from "./userContext";
 
-// Catalogs (form inventories) live in `ref/forms/[state/<state>/]<formId>-<taxYear>.catalog.json`.
+// Catalogs (form inventories) live in `forms/<jurisdiction>/<short>/catalog.json`.
 // One combined Catalog loads all of them so cross-form references resolve
 // during evaluateAllForms — e.g. form-540.line.13_federal_agi reads
 // form-1040.line.11b after the federal AGI is computed.
@@ -31,8 +31,8 @@ import { requireUserContext } from "./userContext";
 // Regeneration: `npm run forms:ingest --form-id=X` rewrites the catalog JSON
 // for X; `npm run forms:bind --form-id=X` rewrites X's bindings.
 const CATALOG_FILES = [
-  resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
-  resolve(projectRoot, "ref/forms/state/ca/form-540-2025.catalog.json"),
+  resolve(projectRoot, "forms/federal/1040/catalog.json"),
+  resolve(projectRoot, "forms/state/ca/540/catalog.json"),
 ];
 const SCENARIO_FORM_IDS = ["form-1040", "form-540"];
 

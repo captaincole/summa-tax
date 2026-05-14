@@ -5,11 +5,11 @@
 //     --tax-year=2025
 //
 // Defaults:
-//   --catalog defaults to ref/forms/[state/<state>/]<form-id>-<tax-year>.catalog.json
-//             (auto-discovered: federal flat, then state/ca, state/ny, …)
+//   --catalog defaults to forms/<jurisdiction>/<short>/catalog.json
+//             (auto-discovered: federal/<short>, then state/ca/<short>, state/ny/<short>, …)
 //   --output  derived from catalog location + formId:
-//               federal  → src/mastra/forms/federal/<short>/bindings.ts
-//               state/CA → src/mastra/forms/state/ca/<short>/bindings.ts
+//               federal  → src/mastra/engine/federal/<short>/bindings.ts
+//               state/CA → src/mastra/engine/state/ca/<short>/bindings.ts
 //             where <short> is the formId with "form-" stripped.
 //
 // Both can be overridden with --catalog=… and --output=… flags.
@@ -19,15 +19,17 @@ import { resolve } from "node:path";
 import { runGenerateBindings } from "../src/forms-pipeline/generateBindingsWorkflow/index.js";
 import { projectRoot } from "../src/mastra/paths.js";
 
-// Auto-discover the catalog file in the conventional locations. Federal
-// catalogs live flat under ref/forms/; state catalogs live under
-// ref/forms/state/<state>/. First match wins; pass --catalog to override.
-function findDefaultCatalog(formId: string, taxYear: number): string {
-  const filename = `${formId}-${taxYear}.catalog.json`;
+// Auto-discover the catalog file in the conventional locations. Each form
+// has its own folder under forms/<jurisdiction>/<short>/ holding catalog.json.
+// First match wins; pass --catalog to override. (taxYear is currently
+// unused for path resolution — kept in the signature so the CLI's required
+// --tax-year arg still drives the workflow even when not in the path.)
+function findDefaultCatalog(formId: string, _taxYear: number): string {
+  const shortName = formId.replace(/^form-/, "");
   const candidates = [
-    `ref/forms/${filename}`,
-    `ref/forms/state/ca/${filename}`,
-    `ref/forms/state/ny/${filename}`,
+    `forms/federal/${shortName}/catalog.json`,
+    `forms/state/ca/${shortName}/catalog.json`,
+    `forms/state/ny/${shortName}/catalog.json`,
   ];
   for (const c of candidates) {
     const abs = resolve(projectRoot, c);
@@ -35,7 +37,7 @@ function findDefaultCatalog(formId: string, taxYear: number): string {
   }
   // Fall back to the federal path; runGenerateBindings will fail with a
   // clear "file not found" error rather than swallowing the mismatch.
-  return resolve(projectRoot, `ref/forms/${filename}`);
+  return resolve(projectRoot, `forms/federal/${shortName}/catalog.json`);
 }
 
 interface Args {
@@ -47,21 +49,21 @@ interface Args {
 }
 
 // Derive the bindings output path from the catalog path + formId.
-// Catalog under ref/forms/state/<state>/ → output under
-// src/mastra/forms/state/<state>/<short>/bindings.ts. Federal catalog
-// (flat in ref/forms/) → src/mastra/forms/federal/<short>/bindings.ts.
+// Catalog under forms/state/<state>/<short>/ → output under
+// src/mastra/engine/state/<state>/<short>/bindings.ts. Federal catalog
+// (forms/federal/<short>/) → src/mastra/engine/federal/<short>/bindings.ts.
 function findDefaultOutput(formId: string, catalogPath: string): string {
   const shortName = formId.replace(/^form-/, "");
-  const stateMatch = /\bref\/forms\/state\/([a-z]+)\//.exec(catalogPath);
+  const stateMatch = /\bforms\/state\/([a-z]+)\//.exec(catalogPath);
   if (stateMatch) {
     return resolve(
       projectRoot,
-      `src/mastra/forms/state/${stateMatch[1]}/${shortName}/bindings.ts`,
+      `src/mastra/engine/state/${stateMatch[1]}/${shortName}/bindings.ts`,
     );
   }
   return resolve(
     projectRoot,
-    `src/mastra/forms/federal/${shortName}/bindings.ts`,
+    `src/mastra/engine/federal/${shortName}/bindings.ts`,
   );
 }
 

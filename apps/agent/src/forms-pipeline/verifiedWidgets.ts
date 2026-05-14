@@ -24,7 +24,7 @@
 
 export const VERIFIED_WIDGETS: Record<string, Record<string, string>> = {
   // 2025 IRS Form 1040. Mappings verified by manual inspection of
-  // ref/forms/f1040-2025.pdf — these are the same widget names the
+  // forms/federal/1040/blank.pdf — these are the same widget names the
   // pre-pipeline generateTaxDocuments hand-coded.
   "form-1040": {
     // Primary identity
