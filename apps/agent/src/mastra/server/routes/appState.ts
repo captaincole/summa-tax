@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
-import { listFactsByKeys } from "../../db/taxFacts";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
 import { buildCaseState } from "../../tools/caseState";
 import { thom } from "../../agents/thom";
@@ -32,10 +31,12 @@ async function readThomPlan(): Promise<PlanItem[]> {
   }
 }
 
-// Live status for the right rail — open asks, progress, money summary, and
-// links to the most recent draft of each form. Document links resolve through
-// /documents/{uuid}; we look up the most recent draft per formId via the
-// user_documents metadata table (RLS scopes to the current user).
+// Live case state for the web app. Pass-through over buildCaseState plus
+// document URLs and Thom's plan. The previous handler adapted the engine
+// output to a legacy shape (openAsks / progress / draftUrl / 8949Url /
+// scheduleDUrl) that the new engine doesn't speak. The web app reads the
+// engine's native shape directly now — anything the engine doesn't compute
+// (Form 8949, Schedule D) is simply absent rather than rendered as null.
 export const appStateRoute = registerApiRoute("/app/state", {
   method: "GET",
   handler: async (c) => {
@@ -48,20 +49,15 @@ export const appStateRoute = registerApiRoute("/app/state", {
       | undefined;
     if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
 
-    const [result, plan] = await Promise.all([
+    const [caseState, plan, drafts] = await Promise.all([
       buildCaseState(supabase, DEMO_TAX_YEAR),
       readThomPlan(),
+      listDocuments(supabase, { category: "drafts", taxYear: DEMO_TAX_YEAR }),
     ]);
 
-    // Most recent draft per formId. listDocuments returns newest-first, so we
-    // walk once and keep the first hit per formId — that's "the most recent
-    // version the user has." Each generate-tax-documents run inserts new rows;
-    // older versions remain reachable by their direct /documents/{uuid} URLs
-    // in chat history.
-    const drafts = await listDocuments(supabase, {
-      category: "drafts",
-      taxYear: DEMO_TAX_YEAR,
-    });
+    // Most recent draft per formId. listDocuments returns newest-first, so
+    // first-seen-wins gives us the latest version per form. Older versions
+    // remain reachable by their direct /documents/{uuid} URLs in chat history.
     const latestByForm = new Map<string, UserDocumentRow>();
     for (const d of drafts) {
       const formId = (d.metadata as { formId?: string } | null)?.formId;
@@ -72,68 +68,21 @@ export const appStateRoute = registerApiRoute("/app/state", {
       return d ? `/documents/${d.id}` : null;
     };
 
-    // Pull the first-name fact for the header greeting.
-    const nameRows = await listFactsByKeys(supabase, DEMO_TAX_YEAR, [
-      "identity.name.first",
-    ]);
-    const taxpayerFirstName =
-      nameRows.length > 0 && typeof nameRows[0].value === "string"
-        ? (nameRows[0].value as string)
-        : null;
-
-    // Adapter: bridge new caseState shape back to the legacy fields the
-    // current Layout/Activity UI consumes. When we update the UI to read
-    // forms[] directly, this collapses.
-    const openAsks = result.pendingDecisions.map((d) => ({
-      factKey: d,
-      prompt: `Need decision: ${d}`,
-      origin: "form-engine",
-      stage: "decisions",
-    }));
-    const totalForms = result.summaries.length;
-    const computedForms = result.summaries.filter(
-      (f) =>
-        f.mustFile.ok &&
-        (f.mustFile.value === false || f.blockedFieldCount === 0),
-    ).length;
-    const overallPct =
-      totalForms > 0 ? Math.round((computedForms / totalForms) * 100) : 0;
-    const progress = {
-      intakePct: overallPct,
-      scopingPct: overallPct,
-      docsPct: overallPct,
-      overallPct,
-    };
-    const refundOrBalance =
-      result.money.federalRefund > 0
-        ? { direction: "refund", amount: result.money.federalRefund }
-        : result.money.federalOwed > 0
-          ? { direction: "balance_due", amount: result.money.federalOwed }
-          : null;
-    const moneyLegacy = {
-      totalWages: result.money.totalWages,
-      agi: result.money.federalAgi,
-      taxableIncome: result.money.federalTaxableIncome,
-      federalTaxOwed: result.money.federalTax,
-      federalWithholding: result.money.federalWithholding,
-      refundOrBalance,
-    };
-
     return c.json({
-      withinMvp: true,
-      mvpViolations: [] as string[],
-      openAsks,
-      progress,
-      money: moneyLegacy,
-      factCount: result.factCount,
-      decisionCount: result.decisionRows.length,
-      draftUrl: urlFor("1040"),
-      form8949Url: urlFor("8949"),
-      scheduleDUrl: urlFor("schedule-d"),
-      form540Url: urlFor("540"),
-      sidecarUrl: urlFor("sidecar"),
-      taxpayerFirstName,
+      taxpayerFirstName: caseState.filingInfo.taxpayerFirstName ?? null,
+      authEmail: caseState.authEmail,
       plan,
+      factCount: caseState.factCount,
+      decisionCount: caseState.decisionRows.length,
+      pendingDecisions: caseState.pendingDecisions,
+      pendingFacts: caseState.pendingFacts,
+      forms: caseState.summaries,
+      money: caseState.money,
+      documents: {
+        form1040Url: urlFor("1040"),
+        form540Url: urlFor("540"),
+        sidecarUrl: urlFor("sidecar"),
+      },
     });
   },
 });

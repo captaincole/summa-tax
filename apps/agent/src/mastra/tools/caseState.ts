@@ -11,6 +11,7 @@ import {
   type DerivationContext,
 } from "../forms/types";
 import { evaluateAllForms } from "../forms/engine";
+import { resolveFilingInfo } from "../forms/filingInfo";
 import { loadFromFixtures, type Catalog } from "../forms/catalog";
 import { projectRoot } from "../paths";
 // Explicit register() calls so the bundler / dev server can't tree-shake
@@ -109,10 +110,19 @@ export async function buildCaseState(
     }
   }
 
+  const filingInfo = resolveFilingInfo({
+    facts: facts.map((f) => ({ key: f.key, value: f.value, category: f.category })),
+    decisions: decisions.map((d) => ({ decisionKey: d.decisionKey, decision: d.decision })),
+  });
   const ctx: DerivationContext = {
     taxYear: year,
     facts: makeFactsView(facts),
     decisions: makeDecisionsView(decisions),
+    // The typed-binding engine reads every input through ctx.filingInfo —
+    // the resolver projects raw facts/decisions into a Form*FilingInfo
+    // shape. Without this, every binding short-circuits to a "filingInfo
+    // missing" block and forms render empty.
+    filingInfo,
   };
 
   // Fixpoint evaluation across every form in the catalog. Cross-form
@@ -142,28 +152,27 @@ export async function buildCaseState(
     }
   }
 
-  // Identity facts aren't tracked by the form engine (they're just text to
-  // fill PDF cells, not derivation inputs), but the renderers need them.
-  // If any are missing, surface them as pendingFacts so Thom knows to ask
-  // before generating documents.
-  // Required for a signed 1040. identity.email is intentionally NOT in this
-  // list — it's a courtesy field on the signing block, and Thom auto-fills
-  // it from the Supabase auth user (with on-screen acknowledgment) at
-  // doc-generation time. See thom.instructions.ts.
-  const REQUIRED_IDENTITY_KEYS = [
-    "identity.name.first",
-    "identity.name.last",
-    "identity.ssn",
-    "identity.dob",
-    "identity.address.street",
-    "identity.address.city",
-    "identity.address.state",
-    "identity.address.zip",
-    "identity.occupation",
-    "identity.phone",
+  // Identity gaps surface as pendingFacts. We check the RESOLVED filingInfo
+  // slot rather than raw fact presence — otherwise a fact recorded under the
+  // right key but the wrong value shape (e.g. identity.phone written as an
+  // object) passes the gate even though the resolver can't read it. Using
+  // filingInfo means pendingFacts reflects exactly what the engine consumes.
+  // identity.email is intentionally NOT in this list — it's a courtesy
+  // field that Thom auto-fills from authEmail at doc-generation time.
+  const REQUIRED_IDENTITY_SLOTS: Array<[string, () => unknown]> = [
+    ["identity.name.first", () => filingInfo.taxpayerFirstName],
+    ["identity.name.last", () => filingInfo.taxpayerLastName],
+    ["identity.ssn", () => filingInfo.taxpayerSSN],
+    ["identity.dob", () => filingInfo.taxpayerDateOfBirth],
+    ["identity.address.street", () => filingInfo.homeAddressLine1],
+    ["identity.address.city", () => filingInfo.homeAddressCity],
+    ["identity.address.state", () => filingInfo.homeAddressState],
+    ["identity.address.zip", () => filingInfo.homeAddressZip],
+    ["identity.occupation", () => filingInfo.taxpayerOccupation],
+    ["identity.phone", () => filingInfo.taxpayerPhone],
   ];
-  for (const key of REQUIRED_IDENTITY_KEYS) {
-    if (!ctx.facts.get(key)) pendingFacts.add(key);
+  for (const [key, get] of REQUIRED_IDENTITY_SLOTS) {
+    if (!get()) pendingFacts.add(key);
   }
 
   // Money convenience fields — federal from 1040, state from 540.
@@ -191,6 +200,10 @@ export async function buildCaseState(
     factCount: facts.length,
     decisionRows,
     authEmail,
+    // The resolved filing info — handy for surfacing identity bits to the
+    // web app (e.g. taxpayer first name for the header greeting) without
+    // re-querying the DB.
+    filingInfo,
     // Raw evaluated forms — for downstream rollups like the Filing Status
     // panel that need access to every field, not just blockers.
     evaluatedForms: [form1040, form540],

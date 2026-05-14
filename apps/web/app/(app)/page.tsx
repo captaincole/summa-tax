@@ -3,7 +3,7 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { makeMastraClient } from "@/lib/mastraClient";
-import { UnauthorizedError } from "@/lib/api";
+import { UnauthorizedError, computeOverallPct } from "@/lib/api";
 import { getUserId } from "@/lib/auth";
 import { uploadDocument } from "@/lib/uploads";
 import { Markdown } from "@/components/Markdown";
@@ -173,13 +173,14 @@ export default function ChatPage() {
           <div className="flex items-center gap-3 text-xs text-ink-muted">
             {state && (
               <span className="tabular-nums">
-                {state.factCount} facts · {state.openAsks.length} open ·{" "}
-                {state.progress.overallPct}%
+                {state.factCount} facts ·{" "}
+                {state.pendingDecisions.length + state.pendingFacts.length} open ·{" "}
+                {computeOverallPct(state.forms)}%
               </span>
             )}
-            {state?.draftUrl && (
+            {state?.documents.form1040Url && (
               <a
-                href={state.draftUrl}
+                href={state.documents.form1040Url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-accent hover:text-accent-hover"

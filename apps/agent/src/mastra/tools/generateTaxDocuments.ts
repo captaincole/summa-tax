@@ -14,6 +14,7 @@ import {
   type EvaluatedForm,
 } from "../forms/types";
 import { evaluateAllForms } from "../forms/engine";
+import { resolveFilingInfo } from "../forms/filingInfo";
 import { loadFromFixtures, type Catalog } from "../forms/catalog";
 // Explicit register() calls so the bundler / dev server can't tree-shake
 // the side-effect-import idiom. Idempotent — bindings overwrite themselves
@@ -144,16 +145,42 @@ export const generateTaxDocuments = createTool({
     const { year } = input;
 
     // ─── Read state from DB ───
-    const [factRows, decisionRows] = await Promise.all([
+    const [factRowsRaw, decisionRowsRaw] = await Promise.all([
       listFacts(supabase, { taxYear: year, limit: 500 }),
       listDecisions(supabase, { taxYear: year, limit: 500 }),
     ]);
+
+    // Supersede on conflict: listFacts/listDecisions return newest-first,
+    // so first-seen-wins keeps the most recent value per key. Matches the
+    // pattern in caseState.ts — without dedupe, re-ingests double up (e.g.
+    // two W-2 rows with the same employerSlug both sum into w2WagesTotal).
+    const factRows = [];
+    const seenFactKeys = new Set<string>();
+    for (const row of factRowsRaw) {
+      if (seenFactKeys.has(row.key)) continue;
+      seenFactKeys.add(row.key);
+      factRows.push(row);
+    }
+    const decisionRows = [];
+    const seenDecisionKeys = new Set<string>();
+    for (const row of decisionRowsRaw) {
+      if (seenDecisionKeys.has(row.decisionKey)) continue;
+      seenDecisionKeys.add(row.decisionKey);
+      decisionRows.push(row);
+    }
 
     // ─── Run the multi-form engine (fixpoint) ───
     const ctx: DerivationContext = {
       taxYear: year,
       facts: makeFactsView(factRows),
       decisions: makeDecisionsView(decisionRows),
+      // Bindings read every input through ctx.filingInfo (resolver-projected
+      // view of facts+decisions). Skipping this leaves every field blocked
+      // with a "filingInfo missing" reason — silent blank PDFs.
+      filingInfo: resolveFilingInfo({
+        facts: factRows.map((f) => ({ key: f.key, value: f.value, category: f.category })),
+        decisions: decisionRows.map((d) => ({ decisionKey: d.decisionKey, decision: d.decision })),
+      }),
     };
     const catalog = await getCatalog();
     const { forms } = evaluateAllForms(SCENARIO_FORM_IDS, ctx, catalog);

@@ -105,7 +105,15 @@ export function resolveFilingInfo(opts: {
 
   const text = (key: string): string | undefined => {
     const v = factByKey.get(key);
-    return typeof v === "string" ? v : undefined;
+    if (v === undefined || v === null || v === "") return undefined;
+    if (typeof v !== "string") {
+      throw new Error(
+        `resolveFilingInfo: fact "${key}" expected string, got ${typeof v} ` +
+          `(value=${JSON.stringify(v).slice(0, 100)}). Re-record this fact as a ` +
+          `plain string via record-tax-fact.`,
+      );
+    }
+    return v;
   };
 
   const sumW2Box = (boxKey: string): number => {

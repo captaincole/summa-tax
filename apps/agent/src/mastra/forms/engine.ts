@@ -279,6 +279,19 @@ export function evaluateAllForms(
   passes: number;
   resolvedPerPass: number[];
 } {
+  // Fail fast on a missing resolver. Without filingInfo every typed binding
+  // short-circuits with the same "ctx.filingInfo is missing" block, so the
+  // forms render empty and forms with a filingInfo-dependent mustFile get
+  // skipped entirely. We've shipped this bug once; surface it loudly at
+  // boot rather than letting it manifest as silent blank PDFs.
+  if (!ctx.filingInfo) {
+    throw new Error(
+      "evaluateAllForms: ctx.filingInfo is missing. " +
+        "Call resolveFilingInfo({ facts, decisions }) and attach the result " +
+        "to DerivationContext.filingInfo before invoking the engine.",
+    );
+  }
+
   const shared: EvaluateFormSharedState = {
     fieldResults: new Map(),
     formMustFiles: new Map(),
