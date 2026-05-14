@@ -10,33 +10,35 @@ import {
   type BaseFormField,
   type DerivationContext,
 } from "../forms/types";
-import { evaluateForm } from "../forms/engine";
+import { evaluateAllForms } from "../forms/engine";
 import { loadFromFixtures, type Catalog } from "../forms/catalog";
 import { projectRoot } from "../paths";
-// Explicit register() call so the bundler / dev server can't tree-shake
-// the side-effect-import idiom we used previously. Idempotent — bindings
-// overwrite themselves if called twice. Phase F adds register() calls
-// for 540, 8949, Schedule D here as they're re-implemented in the new style.
-import { register as registerForm1040 } from "../forms/generated/form-1040";
+// Explicit register() calls so the bundler / dev server can't tree-shake
+// the side-effect-import idiom. Idempotent — bindings overwrite themselves
+// if called twice.
+import { register as registerForm1040 } from "../forms/federal/1040/bindings";
+import { register as registerForm540 } from "../forms/state/ca/540/bindings";
 registerForm1040();
+registerForm540();
 import { requireUserContext } from "./userContext";
 
-// Catalog (form inventory) lives in JSON fixtures. We point at the
-// Phase C AI-extracted catalog (197 fields) because that's what the
-// AI-generated bindings in `forms/generated/form-1040.ts` were produced
-// against — catalog + bindings have to share the same fieldId set or the
-// engine surfaces "no binding registered" blocks for the mismatched fields.
+// Catalogs (form inventories) live in `ref/forms/[state/<state>/]<formId>-<taxYear>.catalog.json`.
+// One combined Catalog loads all of them so cross-form references resolve
+// during evaluateAllForms — e.g. form-540.line.13_federal_agi reads
+// form-1040.line.11b after the federal AGI is computed.
 //
-// Regeneration: `npm run forms:ingest` rewrites the .extracted.json,
-// `npm run forms:bind` rewrites the bindings. Both should run together.
-const CATALOG_FIXTURES = [
-  resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
+// Regeneration: `npm run forms:ingest --form-id=X` rewrites the catalog JSON
+// for X; `npm run forms:bind --form-id=X` rewrites X's bindings.
+const CATALOG_FILES = [
+  resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
+  resolve(projectRoot, "ref/forms/state/ca/form-540-2025.catalog.json"),
 ];
+const SCENARIO_FORM_IDS = ["form-1040", "form-540"];
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {
   if (!catalogPromise) {
-    catalogPromise = loadFromFixtures(CATALOG_FIXTURES);
+    catalogPromise = loadFromFixtures(CATALOG_FILES);
   }
   return catalogPromise;
 }
@@ -113,13 +115,18 @@ export async function buildCaseState(
     decisions: makeDecisionsView(decisions),
   };
 
-  // Phase B: only Form 1040 runs through the new engine, against the
-  // fixture-loaded Catalog. 8949, Schedule D, and 540 are disabled —
-  // Phase F reintroduces them in the new shape.
+  // Fixpoint evaluation across every form in the catalog. Cross-form
+  // refs (540 line 13 → 1040 line 11b) resolve automatically — the
+  // orchestrator iterates until results stop changing.
   const catalog = await getCatalog();
-  const form1040 = evaluateForm("form-1040", ctx, catalog);
+  const { forms } = evaluateAllForms(SCENARIO_FORM_IDS, ctx, catalog);
+  const form1040 = forms.get("form-1040")!;
+  const form540 = forms.get("form-540")!;
 
-  const summaries: EvaluatedFormSummary[] = [summarizeForm(form1040)];
+  const summaries: EvaluatedFormSummary[] = [
+    summarizeForm(form1040),
+    summarizeForm(form540),
+  ];
 
   // Aggregate unique pending decisions / facts across all blockers (incl.
   // mustFile blockers). Thom asks the user about these.
@@ -159,8 +166,7 @@ export async function buildCaseState(
     if (!ctx.facts.get(key)) pendingFacts.add(key);
   }
 
-  // Money convenience fields — read specific 1040 lines if present. State
-  // (540) money is zero in Phase A; restored in Phase F.
+  // Money convenience fields — federal from 1040, state from 540.
   const money = {
     totalWages: numericField(form1040.fields, "form-1040.line.1z") ?? 0,
     federalAgi: numericField(form1040.fields, "form-1040.line.11") ?? 0,
@@ -169,10 +175,12 @@ export async function buildCaseState(
     federalWithholding: numericField(form1040.fields, "form-1040.line.25a") ?? 0,
     federalRefund: numericField(form1040.fields, "form-1040.line.34") ?? 0,
     federalOwed: numericField(form1040.fields, "form-1040.line.37") ?? 0,
-    stateTax: 0,
-    stateWithholding: 0,
-    stateRefund: 0,
-    stateOwed: 0,
+    stateTax: numericField(form540.fields, "form-540.line.64_total_tax") ?? 0,
+    stateWithholding:
+      numericField(form540.fields, "form-540.line.71_ca_income_tax_withheld") ?? 0,
+    stateRefund:
+      numericField(form540.fields, "form-540.line.115_refund_or_no_amount_due") ?? 0,
+    stateOwed: numericField(form540.fields, "form-540.line.111_amount_you_owe") ?? 0,
   };
 
   return {
@@ -185,7 +193,7 @@ export async function buildCaseState(
     authEmail,
     // Raw evaluated forms — for downstream rollups like the Filing Status
     // panel that need access to every field, not just blockers.
-    evaluatedForms: [form1040],
+    evaluatedForms: [form1040, form540],
   };
 }
 

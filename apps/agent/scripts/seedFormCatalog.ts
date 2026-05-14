@@ -1,13 +1,14 @@
-// Seed the `forms` + `form_fields` tables from the JSON fixtures in
-// `apps/agent/fixtures/forms/`. Idempotent — re-running upserts the same
-// rows by (form_id, tax_year) / (field_id, tax_year).
+// Seed the `forms` + `form_fields` tables from the hand-written scaffold
+// at `apps/agent/ref/forms/<formId>-<taxYear>.scaffold.json`. Idempotent —
+// re-running upserts the same rows by (form_id, tax_year) /
+// (field_id, tax_year).
 //
 // Run: npx tsx scripts/seedFormCatalog.ts
 //
-// In Phase B the fixtures are authoritative and this script keeps the DB
-// in sync so the DB loader path can be exercised. In Phase C+ the AI
-// ingestion pipeline writes directly to these tables and this script
-// becomes legacy (still useful for re-seeding a wiped dev environment).
+// Legacy: the AI ingestion pipeline (`forms:ingest`) writes catalogs
+// directly to `ref/forms/<formId>-<taxYear>.catalog.json`. This script
+// stays around for re-seeding a wiped dev environment from the smaller
+// hand-written scaffold.
 
 import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
@@ -15,8 +16,8 @@ import { getServiceRoleClient } from "../src/mastra/db/supabase.js";
 import { projectRoot } from "../src/mastra/paths.js";
 import type { FixtureFile } from "../src/mastra/forms/catalog.js";
 
-const FIXTURE_PATHS = [
-  resolve(projectRoot, "fixtures/forms/form-1040-2025.json"),
+const SCAFFOLD_PATHS = [
+  resolve(projectRoot, "ref/forms/form-1040-2025.scaffold.json"),
 ];
 
 async function main() {
@@ -25,7 +26,7 @@ async function main() {
   let formsUpserted = 0;
   let fieldsUpserted = 0;
 
-  for (const path of FIXTURE_PATHS) {
+  for (const path of SCAFFOLD_PATHS) {
     const raw = await fs.readFile(path, "utf8");
     const fixture = JSON.parse(raw) as FixtureFile;
     const { form, fields } = fixture;

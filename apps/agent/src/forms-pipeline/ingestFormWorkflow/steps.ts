@@ -1,10 +1,18 @@
-// Phase C workflow steps. Three sequential steps:
-//   extract  — pdf-lib (AcroForm widgets) + unpdf (per-page text), deterministic
-//   classify — Claude with batched tool-use, AI-judgment layer
-//   persist  — JSON output (always) + optional Supabase upsert
+// Form-ingest workflow steps. Three sequential phases:
+//   extract  — pdf.js (via unpdf): widget discovery + label resolution. Two
+//              label tiers (/TU when present, vision LLM when not). Throws
+//              if any widget can't be labeled.
+//   classify — Claude enrichment per field: fieldId, category, valueType,
+//              stable option values for radios. Labels arrive deterministic;
+//              the classifier doesn't try to infer them.
+//   persist  — Merge deterministic + enrichment into the catalog shape,
+//              round-trip-validate (every widget ends up in the catalog),
+//              write JSON, optionally upsert to Supabase.
 //
-// Each step's outputSchema is the next step's inputSchema, accumulating state
-// via .extend() on the carrier schema.
+// Round-trip invariant: every ExtractedField is in the persisted catalog.
+// Fields the AI couldn't enrich get a placeholder fieldId
+// (form-<id>.unclassified.<shortName>); the deterministic structure
+// (pdfWidgetName, label, valueType from kind, options[] for radios) is preserved.
 
 import { promises as fs } from "node:fs";
 import { createStep } from "@mastra/core/workflows";
@@ -14,9 +22,16 @@ import {
   afterClassifySchema,
   workflowOutputSchema,
 } from "./schemas.js";
-import { extractAcroForm } from "../extractAcroForm.js";
-import { extractFormText } from "../extractFormText.js";
-import { classifyWidgets } from "../classifyWidgets.js";
+import {
+  extractFormFields,
+  type ExtractedField,
+  type FieldKind,
+} from "../extractFormFields.js";
+import {
+  classifyFields,
+  type FieldEnrichment,
+  type ValueType,
+} from "../classifyFields.js";
 import { getServiceRoleClient } from "../../mastra/db/supabase.js";
 
 // ─── extract ─────────────────────────────────────────────────────────────
@@ -26,13 +41,11 @@ export const extractStep = createStep({
   inputSchema: workflowInputSchema,
   outputSchema: afterExtractSchema,
   execute: async ({ inputData }) => {
-    const acro = await extractAcroForm(inputData.pdfPath);
-    const pages = await extractFormText(inputData.pdfPath);
+    const form = await extractFormFields(inputData.pdfPath);
     return {
       ...inputData,
-      widgets: acro.widgets,
-      totalPages: acro.totalPages,
-      pages,
+      fields: form.fields,
+      totalPages: form.totalPages,
     };
   },
 });
@@ -44,17 +57,16 @@ export const classifyStep = createStep({
   inputSchema: afterExtractSchema,
   outputSchema: afterClassifySchema,
   execute: async ({ inputData }) => {
-    const result = await classifyWidgets({
+    const result = await classifyFields({
       formId: inputData.formId,
       taxYear: inputData.taxYear,
       jurisdiction: inputData.jurisdiction,
       formTitle: inputData.formTitle,
-      widgets: inputData.widgets,
-      pages: inputData.pages,
+      fields: inputData.fields,
     });
     return {
       ...inputData,
-      classifiedFields: result.fields,
+      enrichments: result.enrichments,
       skipped: result.skipped,
       usage: {
         input_tokens: result.usage.input_tokens,
@@ -68,95 +80,110 @@ export const classifyStep = createStep({
 
 // ─── persist ─────────────────────────────────────────────────────────────
 
+interface CatalogOption {
+  value: string;
+  pdfWidgetName?: string;
+  radioOption?: string;
+  label?: string;
+}
+
+interface CatalogRow {
+  fieldId: string;
+  label: string;
+  /**
+   * Provenance of the label — "tu" (annotation /TU), "vision" (Claude vision),
+   * or absent on rows built before the new extractor was introduced.
+   */
+  labelSource?: string;
+  category: string;
+  /**
+   * Coarse value-type used by the existing runtime engine + renderer. Today's
+   * vocabulary: numeric / single_select / multi_select / text / boolean / date.
+   * Mapped down from the classifier's richer valueType (see valueTypeRich).
+   */
+  valueType: string;
+  /**
+   * Richer value-type produced by the classifier: money / count / text / ssn /
+   * phone / zip / email / date / boolean / single_select / multi_select /
+   * signature. Carries formatter hints (e.g. "money" → comma separators) that
+   * the renderer doesn't consume yet but will when we make formatters
+   * data-driven. Persisted alongside `valueType` so we don't lose information.
+   */
+  valueTypeRich?: string;
+  /**
+   * Deterministic structural type from pdf.js — text / checkbox / radio /
+   * signature / other. Source of truth for "is this mutually-exclusive?",
+   * "is this multi-line?", etc. Never derived from AI.
+   */
+  pdfFieldKind: string;
+  pdfWidgetName?: string;
+  options?: CatalogOption[];
+  position: { page: number; x: number; y: number };
+  maxLength?: number;
+  multiline?: boolean;
+}
+
+/** Map the classifier's expanded enum down to the existing runtime vocabulary. */
+function narrowValueType(rich: string): string {
+  switch (rich) {
+    case "money":
+    case "count":
+      return "numeric";
+    case "ssn":
+    case "phone":
+    case "zip":
+    case "email":
+    case "signature":
+      return "text";
+    case "text":
+    case "date":
+    case "boolean":
+    case "single_select":
+    case "multi_select":
+      return rich;
+    default:
+      return rich;
+  }
+}
+
 export const persistStep = createStep({
   id: "persist",
   inputSchema: afterClassifySchema,
   outputSchema: workflowOutputSchema,
   execute: async ({ inputData }) => {
-    // Join inventory (deterministic extraction) with classifications (AI).
-    // Order in the output reflects AcroForm reading order — same ordinal we
-    // want in the DB so engine evaluation runs top-to-bottom.
-    const classifiedByWidget = new Map(
-      inputData.classifiedFields.map((f) => [f.pdfWidgetName, f]),
+    const enrichmentByName = new Map<string, FieldEnrichment>();
+    for (const e of inputData.enrichments) enrichmentByName.set(e.pdfFieldName, e);
+    const skippedByName = new Set<string>(
+      inputData.skipped.map((s) => s.pdfFieldName),
     );
-    type IntermediateRow = {
-      fieldId: string;
-      label: string;
-      category: string;
-      valueType: string;
-      pdfWidgetName: string;
-      position: { page: number; x: number; y: number };
-      optionValue?: string;
-      optionLabel?: string;
-    };
-    type CatalogRow = {
-      fieldId: string;
-      label: string;
-      category: string;
-      valueType: string;
-      pdfWidgetName?: string;
-      options?: Array<{ value: string; pdfWidgetName: string; label?: string }>;
-      position: { page: number; x: number; y: number };
-    };
-    const rows: IntermediateRow[] = [];
-    for (const w of inputData.widgets) {
-      const c = classifiedByWidget.get(w.fullName);
-      if (!c) continue; // widget was skipped by the classifier
-      rows.push({
-        fieldId: c.fieldId,
-        label: c.label,
-        category: c.category,
-        valueType: c.valueType,
-        pdfWidgetName: w.fullName,
-        position: { page: w.page, x: w.position.x, y: w.position.y },
-        optionValue: c.optionValue,
-        optionLabel: c.optionLabel,
-      });
-    }
-    // Multiple PDF widgets can share a fieldId. Two cases:
-    //   - non-multi_select: same form field shows up in multiple AcroForm
-    //     widgets (e.g. AGI on pages 1 and 2). First occurrence wins.
-    //   - multi_select: each row is one option in a radio group. Collapse
-    //     all rows with the same fieldId into one CatalogRow whose options
-    //     array carries per-option {value, pdfWidgetName, label}.
-    const byFieldId = new Map<string, IntermediateRow[]>();
-    const order: string[] = [];
-    for (const r of rows) {
-      if (!byFieldId.has(r.fieldId)) {
-        byFieldId.set(r.fieldId, []);
-        order.push(r.fieldId);
-      }
-      byFieldId.get(r.fieldId)!.push(r);
-    }
-    const dedupedFields: CatalogRow[] = order.map((fieldId) => {
-      const group = byFieldId.get(fieldId)!;
-      const first = group[0];
-      if (first.valueType === "multi_select") {
-        // Drop top-level pdfWidgetName; each option carries its own.
-        return {
-          fieldId,
-          label: first.label,
-          category: first.category,
-          valueType: first.valueType,
-          options: group.map((g) => ({
-            value: g.optionValue ?? g.pdfWidgetName,
-            pdfWidgetName: g.pdfWidgetName,
-            ...(g.optionLabel ? { label: g.optionLabel } : {}),
-          })),
-          position: first.position,
-        };
-      }
-      return {
-        fieldId,
-        label: first.label,
-        category: first.category,
-        valueType: first.valueType,
-        pdfWidgetName: first.pdfWidgetName,
-        position: first.position,
-      };
-    });
 
-    // Write the JSON artifact — always.
+    const catalog: CatalogRow[] = [];
+    const unenriched: string[] = [];
+
+    for (const field of inputData.fields) {
+      if (skippedByName.has(field.fieldName)) continue;
+      const enrichment = enrichmentByName.get(field.fieldName);
+      const row = buildCatalogRow(inputData.formId, field, enrichment);
+      catalog.push(row);
+      if (!enrichment) unenriched.push(field.fieldName);
+    }
+
+    // Round-trip invariant: every non-skipped field must appear in the catalog.
+    const expectedNames = new Set(
+      inputData.fields
+        .filter((f) => !skippedByName.has(f.fieldName))
+        .map((f) => f.fieldName),
+    );
+    const actualNames = new Set(
+      catalog.map((r) => r.pdfWidgetName ?? "").filter(Boolean),
+    );
+    const missing = [...expectedNames].filter((n) => !actualNames.has(n));
+    if (missing.length > 0) {
+      throw new Error(
+        `Round-trip invariant violated: ${missing.length} field(s) missing from catalog: ${missing.slice(0, 5).join(", ")}${missing.length > 5 ? "…" : ""}`,
+      );
+    }
+
     const payload = {
       form: {
         formId: inputData.formId,
@@ -164,14 +191,15 @@ export const persistStep = createStep({
         jurisdiction: inputData.jurisdiction,
         title: inputData.formTitle,
       },
-      fields: dedupedFields,
+      fields: catalog,
       _meta: {
         sourcePdf: inputData.pdfPath,
         ingestedAt: new Date().toISOString(),
-        totalWidgets: inputData.widgets.length,
-        classified: inputData.classifiedFields.length,
+        totalFields: inputData.fields.length,
+        enriched: inputData.enrichments.length,
+        unenriched: unenriched.length,
         skipped: inputData.skipped.length,
-        uniqueFields: dedupedFields.length,
+        catalogEntries: catalog.length,
         tokensIn: inputData.usage.input_tokens,
         tokensOut: inputData.usage.output_tokens,
         cacheRead: inputData.usage.cache_read_input_tokens,
@@ -184,7 +212,6 @@ export const persistStep = createStep({
       "utf8",
     );
 
-    // DB upsert — optional. Mirrors seedFormCatalog's shape.
     let dbWritten = false;
     if (inputData.writeDb) {
       const sb = getServiceRoleClient();
@@ -199,11 +226,7 @@ export const persistStep = createStep({
         { onConflict: "form_id,tax_year" },
       );
       if (formErr) throw new Error(`forms upsert failed: ${formErr.message}`);
-      // form_fields doesn't yet have an `options` column — multi_select
-      // fields write without their option mapping for now. Runtime uses
-      // the JSON fixture (which DOES carry options), so this is a known
-      // gap until the DB schema catches up. See catalog.ts loadFromDb TODO.
-      const rows = dedupedFields.map((f, i) => ({
+      const dbRows = catalog.map((f, i) => ({
         field_id: f.fieldId,
         form_id: inputData.formId,
         tax_year: inputData.taxYear,
@@ -215,7 +238,7 @@ export const persistStep = createStep({
         position: f.position,
         updated_at: new Date().toISOString(),
       }));
-      const { error: fieldErr } = await sb.from("form_fields").upsert(rows, {
+      const { error: fieldErr } = await sb.from("form_fields").upsert(dbRows, {
         onConflict: "field_id,tax_year",
       });
       if (fieldErr) {
@@ -226,13 +249,106 @@ export const persistStep = createStep({
 
     return {
       outputPath: inputData.outputPath,
-      totalWidgets: inputData.widgets.length,
-      classifiedCount: inputData.classifiedFields.length,
+      totalFields: inputData.fields.length,
+      enrichedCount: inputData.enrichments.length,
+      unenrichedCount: unenriched.length,
       skippedCount: inputData.skipped.length,
-      uniqueFieldCount: dedupedFields.length,
+      catalogEntryCount: catalog.length,
       dbWritten,
       usage: inputData.usage,
       skipSample: inputData.skipped.slice(0, 8),
+      unenrichedSample: unenriched.slice(0, 8),
     };
   },
 });
+
+// ─── Merge: deterministic field + AI enrichment → catalog row ────────────
+
+function buildCatalogRow(
+  formId: string,
+  field: ExtractedField,
+  enrichment: FieldEnrichment | undefined,
+): CatalogRow {
+  const primary = field.widgets[0];
+  const position = primary
+    ? { page: primary.page, x: primary.position.x, y: primary.position.y }
+    : { page: 0, x: 0, y: 0 };
+
+  const fieldId = enrichment
+    ? enrichment.fieldId
+    : `${formId}.unclassified.${slugifyShortName(field.shortName)}`;
+  // Label is deterministic (from extractFormFields tier-1 /TU or tier-2 vision).
+  // The classifier doesn't produce it.
+  const label = field.label;
+  const labelSource = field.labelSource;
+  const category = enrichment ? enrichment.category : "other";
+  const valueTypeRich: string = enrichment
+    ? enrichment.valueType
+    : defaultValueTypeFor(field.fieldKind);
+  const valueType = narrowValueType(valueTypeRich);
+
+  const row: CatalogRow = {
+    fieldId,
+    label,
+    labelSource,
+    category,
+    valueType,
+    valueTypeRich,
+    pdfFieldKind: field.fieldKind,
+    pdfWidgetName: field.fieldName,
+    position,
+  };
+
+  if (field.fieldKind === "text") {
+    if (typeof field.maxLength === "number") row.maxLength = field.maxLength;
+    if (field.multiline) row.multiline = true;
+  }
+
+  if (field.fieldKind === "radio" && field.radioOptions) {
+    // Zip the deterministic option labels with the AI's stable values.
+    // If enrichment is missing or misaligned, fall back to slugifying the
+    // option label itself — at least the rendering binding can still target
+    // the right radio option.
+    const enrichmentByRadioOption = new Map<string, string>(
+      (enrichment?.options ?? []).map((o) => [o.radioOption, o.value]),
+    );
+    row.options = field.radioOptions.map((radioOption) => ({
+      value:
+        enrichmentByRadioOption.get(radioOption) ?? slugifyOption(radioOption),
+      radioOption,
+      label: radioOption,
+    }));
+  }
+
+  return row;
+}
+
+function defaultValueTypeFor(kind: FieldKind): ValueType {
+  switch (kind) {
+    case "text":
+      return "text";
+    case "checkbox":
+      return "boolean";
+    case "radio":
+      return "single_select";
+    case "signature":
+      return "signature";
+    case "other":
+      return "text";
+  }
+}
+
+function slugifyShortName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function slugifyOption(label: string): string {
+  return label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 32);
+}

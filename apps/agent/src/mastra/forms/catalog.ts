@@ -1,9 +1,10 @@
 // Form Catalog — the read model the engine evaluates against.
 //
-// In Phase A every form's inventory (label, category, valueType, position)
-// lived inline in `bindField` calls. Phase B factors inventory out into a
-// `Catalog`, leaving the generated TS to declare only the *behavior* layer
-// (rule + params) for each field. The Catalog has two backing stores:
+// Inventory (label, category, valueType, position) lives here and is
+// shared across forms. The per-form bindings files (forms/<jurisdiction>/
+// <short>/bindings.ts) declare only the *behavior* layer (typed
+// (f, info) => value functions registered via defineForm). The Catalog
+// has two backing stores:
 //
 //   - JSON fixture (apps/agent/fixtures/forms/<formId>-<taxYear>.json) —
 //     the source of truth checked into the repo. Always loadable in tests,
@@ -31,11 +32,25 @@ export interface FormDefinition {
 export interface FieldOption {
   /** Stable selection value, e.g. "single" / "mfj" / "yes" / "checking". */
   value: string;
-  /** PDF AcroForm widget name that gets checked when this option is selected. */
-  pdfWidgetName: string;
+  /**
+   * PDF AcroForm widget name that gets checked when this option is selected.
+   * Set when each option is its own checkbox widget (e.g. Form 1040's
+   * filing-status checkboxes). Unset for true PDFRadioGroup fields where the
+   * group is a single AcroForm field — the parent FieldInventory.pdfWidgetName
+   * names the group and the renderer calls `.select(radioOption)` instead.
+   */
+  pdfWidgetName?: string;
+  /**
+   * For PDFRadioGroup-backed options: the exact option label from
+   * `PDFRadioGroup.getOptions()`. The renderer passes this verbatim to
+   * `.select(...)`. Mutually exclusive with `pdfWidgetName`.
+   */
+  radioOption?: string;
   /** Optional human label for the option (UI display, not required for fill). */
   label?: string;
 }
+
+export type PdfFieldKind = "text" | "checkbox" | "radio" | "signature" | "other";
 
 export interface FieldInventory {
   fieldId: string;
@@ -43,6 +58,14 @@ export interface FieldInventory {
   label: string;
   category: Category;
   valueType: FieldValueType;
+  /**
+   * Deterministic structural type from pdf-lib. Optional for backwards-compat
+   * with catalogs ingested before this field existed (pre-pipeline-rewrite
+   * 1040 catalog). New catalogs always carry it; consumers that need the
+   * structural truth (e.g. "is this a real radio group?") read this rather
+   * than valueType.
+   */
+  pdfFieldKind?: PdfFieldKind;
   pdfWidgetName?: string;
   position?: { page: number; x: number; y: number };
   /**

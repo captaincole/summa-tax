@@ -15,7 +15,6 @@ import {
   afterRetrieveSchema,
   afterClassifySchema,
   workflowOutputSchema,
-  type AfterClassify,
   type AfterRetrieve,
 } from "./schemas.js";
 import { loadFromFixture, type FieldInventory } from "../../mastra/forms/catalog.js";
@@ -121,13 +120,27 @@ export const classifyStep = createStep({
 
 // ─── write ───────────────────────────────────────────────────────────────
 
+/**
+ * Derive the per-form TS interface name from the formId.
+ *   form-540    → "Form540"
+ *   form-1040   → "Form1040"
+ *   schedule-d  → "ScheduleD"
+ */
+function pascalFormName(formId: string): string {
+  return formId
+    .split(/[-_]/)
+    .map((s) => (s.length > 0 ? s[0].toUpperCase() + s.slice(1) : ""))
+    .join("");
+}
+
 export const writeStep = createStep({
   id: "write",
   inputSchema: afterClassifySchema,
   outputSchema: workflowOutputSchema,
   execute: async ({ inputData }) => {
     const fields: FieldInventory[] = inputData.fields;
-    const source = renderBindings({
+    const interfaceBase = pascalFormName(inputData.formId);
+    const report = renderBindings({
       formId: inputData.formId,
       taxYear: inputData.taxYear,
       jurisdiction: inputData.jurisdiction,
@@ -135,34 +148,27 @@ export const writeStep = createStep({
       fields,
       bindings: inputData.bindings,
       mustFile: inputData.mustFile,
+      outputPath: inputData.outputPath,
+      minConfidence: inputData.minConfidence,
+      typeInterfaceName: interfaceBase,
+      filingInfoInterfaceName: `${interfaceBase}FilingInfo`,
     });
-    await fs.writeFile(inputData.outputPath, source, "utf8");
-
-    const ruleBreakdown = countByRule(inputData);
-    const boundFieldIds = new Set(inputData.bindings.map((b) => b.fieldId));
-    const unboundCount = inputData.fields.filter(
-      (f) => !boundFieldIds.has(f.fieldId),
-    ).length;
+    await fs.writeFile(inputData.outputPath, report.source, "utf8");
 
     return {
       outputPath: inputData.outputPath,
       fieldCount: inputData.fields.length,
-      bindingsCount: inputData.bindings.length,
-      unboundCount,
-      ruleBreakdown,
+      emittedCount: report.emittedCount,
+      todoCount: report.todoCount,
+      unsupportedCount: report.unsupportedCount,
+      unboundCount: report.unboundCount,
+      ruleBreakdown: report.ruleBreakdown,
+      confidenceBreakdown: report.confidenceBreakdown,
       retrievalCount: inputData.retrievedContext.length,
       usage: inputData.usage,
     };
   },
 });
-
-function countByRule(c: AfterClassify): Record<string, number> {
-  const counts: Record<string, number> = {};
-  for (const b of c.bindings) {
-    counts[b.ruleName] = (counts[b.ruleName] ?? 0) + 1;
-  }
-  return counts;
-}
 
 // Unused — kept for the type re-export so adjacent modules don't have to
 // re-import the carrier types directly.

@@ -25,11 +25,13 @@ const CATEGORIES = [
   "mortgage",
   "state_local_tax",
   "medical",
+  "health_coverage",
   "education",
   "estimated_payments",
   "crypto",
   "foreign",
   "trust_estate",
+  "use_tax",
   "other",
 ] as const;
 

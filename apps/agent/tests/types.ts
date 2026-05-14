@@ -11,19 +11,37 @@
 import type { TaxFactRow } from "../src/mastra/db/taxFacts.js";
 import type { AIDecisionRow } from "../src/mastra/db/aiDecisions.js";
 
+export interface ScenarioForm {
+  formId: string;
+  /** Path to the catalog JSON relative to the agent's project root. */
+  catalogPath: string;
+  /** Path to the blank PDF used by the renderer (relative to project root). */
+  blankPdfPath: string;
+  /**
+   * Path to a CPA-completed "golden" PDF for this scenario+form. The runner
+   * reads every filled widget out of this PDF and diffs against our render
+   * — bypasses the catalog's fieldId→widget mapping, so catalog mislabels
+   * surface immediately. Optional; when absent, only the fixture-based
+   * assertions run.
+   */
+  goldenPdfPath?: string;
+  /** Function that registers this form's bindings into the engine registry. */
+  register: () => void;
+  expected: ExpectedResults;
+}
+
 export interface Scenario {
   /** Short id used in CLI output (e.g. "alex"). Must be unique. */
   name: string;
   /** One-line human description for the summary banner. */
   description: string;
-  /** Currently always "form-1040"; reserved for future multi-form scenarios. */
-  formId: string;
   taxYear: number;
   /** Stable id used as the synthetic user for these in-memory fixtures. */
   userId: string;
   facts: TaxFactRow[];
   decisions: AIDecisionRow[];
-  expected: ExpectedResults;
+  /** Forms this scenario evaluates + asserts on. Order is reporting order. */
+  forms: ScenarioForm[];
 }
 
 export interface ExpectedResults {
@@ -65,4 +83,8 @@ export interface RunResult {
   failures: string[];
   /** How long this scenario took, in ms. Useful for pre-commit budgeting. */
   durationMs: number;
+  /** How many fixpoint passes the engine needed for cross-form refs to settle. */
+  fixpointPasses?: number;
+  /** Newly-resolved `ok` results per pass. Last entry should be 0 (convergence). */
+  resolvedPerPass?: number[];
 }

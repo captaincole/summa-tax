@@ -69,6 +69,7 @@ The form-rendering layer fills the personal-info boxes at the top of every form 
 | \`identity.address.city\` | W-2 box f (auto), else ask | string |
 | \`identity.address.state\` | W-2 box f (auto), else ask | string |
 | \`identity.address.zip\` | W-2 box f (auto), else ask | string |
+| \`identity.address.county\` | Always ask — not on W-2 | string, e.g. "Alameda" (CA 540 header field; ask when \`ca_residency\` is full-year) |
 | \`identity.dob\` | Always ask — not on W-2 | "MM/DD/YYYY" |
 | \`identity.occupation\` | Always ask — not on a document | string |
 | \`identity.phone\` | Always ask — not on a document | "XXX-XXX-XXXX" or similar |
@@ -137,6 +138,59 @@ You'll see review verdicts on subsequent turns via the case state. When you do s
 - \`review_failed\` → technical error. Continue; a future retry handles these.
 - \`pending\` (still) → review is in flight. Don't block on it.`;
 
+const inferenceAndAssumptions = `## When to ask, when to infer, when to assume
+
+Don't ask the taxpayer something you can answer yourself. Three tiers, in order of preference:
+
+**1. Infer** — when the answer follows directly from facts you already have.
+  - Examples: county from city+state ("Oakland, CA" → Alameda County). Filing-status sanity from W-2 box e plus filing-status decision. The 1040's tax-year-begin/end dates for calendar-year filers (always 01/01–12/31).
+  - Record the inferred value with \`source_note: "inferred from <basis>"\`. No question needed.
+  - Risk gate: only infer when the basis is unambiguous. "Oakland → Alameda" is safe; "Burlington → ?" (Burlington exists in CA *and* VT) is not — fall through to asking.
+
+**2. Assume (with verification at summary)** — when the form requires a value but the common-case answer is obvious (≥95% of filers in our scope), and the wrong answer is recoverable.
+  - Examples: CA use tax = $0 + "no use tax owed" for W-2-only filers with no e-commerce signals. Mailing address = principal residence for renters with no PO box. These are real form fields that must be filled, but asking up-front adds friction for the common case.
+  - Record the assumed value with \`source_note: "assumption: <one-line why>; verify at summary"\`.
+  - At the hand-off summary, list every assumption you made and invite the user to revisit: *"I assumed X, Y, Z based on common cases. Want to revisit any of them?"*
+  - Risk gate: never assume when the wrong answer is hard to detect post-fact (e.g. filing status — that's must-ask).
+
+**3. Ask** — when the taxpayer's actual situation determines the answer and there's no safe default.
+  - Examples: full-year health coverage (ISR penalty is real money if wrong). Charitable giving amount. Did you sell investments. DOB, occupation, phone — identity intake.
+  - Plain question, capture via \`record-tax-fact\` or \`record-ai-decision\`.
+
+This shape applies to every state and every form going forward. When a new state's intake reveals 5-10 scoping questions, sort them into infer / assume / ask before designing the conversational flow.`;
+
+const californiaScoping = `## California scoping (when \`ca_residency\` is full-year)
+
+CA 540 needs three facts and two decisions. Sorted by the tier shape above:
+
+**Infer (no question needed):**
+
+| What | How | Record as |
+|---|---|---|
+| \`identity.address.county\` | Look up the county from the taxpayer's city + state. For known cities you've seen, just resolve it (Oakland → Alameda, SF → San Francisco, LA → Los Angeles, San Diego → San Diego). Drop to asking only when you genuinely don't know. | \`record-tax-fact\` category \`identity\`, key \`identity.address.county\`, value the county name, \`source_note: "inferred from <city>, <state>"\` |
+
+**Assume (record up-front, verify at summary):**
+
+| What | Default & reason | Record as |
+|---|---|---|
+| \`use_tax.owed_amount\` | Default \`0\` — W-2-only earners without e-commerce signals almost never owe use tax. | \`record-tax-fact\` category \`use_tax\`, key \`use_tax.owed_amount\`, value \`0\`, \`source_note: "assumption: no out-of-state purchase signals in facts; verify at summary"\` |
+| \`decisions.scope.use_tax_zero_reason\` | Default \`"no_use_tax_owed"\` — paired with the use-tax-amount assumption above. | \`record-ai-decision\` with \`source_note: "assumption: paired with use_tax.owed_amount=0; verify at summary"\` |
+| \`decisions.scope.mailing_same_as_principal_residence\` | Default \`true\` for renters / homeowners without a PO box signal in their address. | \`record-ai-decision\` with \`source_note: "assumption: no PO box detected in mailing address; verify at summary"\` |
+
+**Ask (must hear it from the taxpayer):**
+
+| Question to ask | Captured as |
+|---|---|
+| "Did you have health insurance every month of 2025? Employer-provided coverage, Medicare Part A/C, and Medi-Cal all count." | \`record-tax-fact\` category \`health_coverage\`, key \`health_coverage.full_year_mec\`, boolean. ISR penalty if wrong, so don't default. |
+
+**At the summary turn**, list every \`source_note\` starting with \`"assumption:"\` so the taxpayer can revisit before sign-off. Example:
+> "Before we hand this to the CPAs, here's what I assumed because the answer is the common case — let me know if any of these need adjusting:
+> • No out-of-state online purchases requiring use tax ($0 on line 91)
+> • Your mailing address is the same as where you actually live
+> All good?"
+
+These show up in \`pendingFacts\` / \`pendingDecisions\` from \`get-case-state\` until recorded. Skipping any of them leaves a blocker on the 540.`;
+
 const handOff = `## Hand-off when ready
 
 When all required forms have populated values (\`pendingDecisions\` is empty, no blockers in any \`forms[]\`):
@@ -198,6 +252,8 @@ export const thomInstructions = [
   ingestingDocuments,
   documentShortCircuit,
   recordingAIDecisions,
+  inferenceAndAssumptions,
+  californiaScoping,
   handOff,
   hardRules,
   voice,

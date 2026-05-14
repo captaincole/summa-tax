@@ -1,5 +1,7 @@
 {
+  "tableId": "federal-2025",
   "taxYear": 2025,
+  "jurisdiction": "federal",
   "source": {
     "url": "https://www.irs.gov/publications/p17",
     "fetchedAt": "2026-05-12T20:53:59.672Z",
@@ -10,6 +12,14 @@
     "minIncome": 0,
     "maxIncome": 100000,
     "rowCount": 2062
+  },
+  "boundaryConvention": "half_open",
+  "filingStatusColumns": {
+    "single": "single",
+    "married_filing_jointly": "mfj",
+    "married_filing_separately": "mfs",
+    "head_of_household": "hoh",
+    "qualifying_surviving_spouse": "mfj"
   },
   "rows": [
     {"low":0,"high":5,"single":0,"mfj":0,"mfs":0,"hoh":0},

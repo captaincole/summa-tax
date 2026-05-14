@@ -13,28 +13,33 @@ import {
   type DerivationContext,
   type EvaluatedForm,
 } from "../forms/types";
-import { evaluateForm } from "../forms/engine";
+import { evaluateAllForms } from "../forms/engine";
 import { loadFromFixtures, type Catalog } from "../forms/catalog";
-// Explicit register() call so the bundler / dev server can't tree-shake
-// the side-effect-import idiom we used previously. Idempotent — bindings
-// overwrite themselves if called twice.
-import { register as registerForm1040 } from "../forms/generated/form-1040";
+// Explicit register() calls so the bundler / dev server can't tree-shake
+// the side-effect-import idiom. Idempotent — bindings overwrite themselves
+// if called twice.
+import { register as registerForm1040 } from "../forms/federal/1040/bindings";
+import { register as registerForm540 } from "../forms/state/ca/540/bindings";
 registerForm1040();
+registerForm540();
 import { fillForm1040 } from "../forms/render/fillForm1040";
 import { requireUserContext } from "./userContext";
 
-const BLANK_FORM_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
+const BLANK_1040_PATH = resolve(projectRoot, "ref/forms/f1040-2025.pdf");
+const BLANK_540_PATH = resolve(projectRoot, "ref/forms/state/ca/2025-540.pdf");
 
-// Phase B/C catalog fixture. Pairs with the AI-generated bindings in
-// forms/generated/form-1040.ts. When we flip caseState to loadFromDb in
-// Phase F+, this generator should do the same so prod stays consistent.
-const CATALOG_FIXTURES = [
-  resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
+// Combined catalog — both federal and CA forms loaded into one Catalog so
+// cross-form refs (540 line 13 → 1040 line 11b) resolve during the
+// fixpoint evaluation.
+const CATALOG_FILES = [
+  resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
+  resolve(projectRoot, "ref/forms/state/ca/form-540-2025.catalog.json"),
 ];
+const SCENARIO_FORM_IDS = ["form-1040", "form-540"];
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {
-  if (!catalogPromise) catalogPromise = loadFromFixtures(CATALOG_FIXTURES);
+  if (!catalogPromise) catalogPromise = loadFromFixtures(CATALOG_FILES);
   return catalogPromise;
 }
 
@@ -78,21 +83,56 @@ function serializeForm<F extends AnyFormField>(
   };
 }
 
+function refundOrOwed(
+  form: EvaluatedForm<AnyFormField>,
+  refundFieldId: string,
+  owedFieldId: string,
+): { kind: "refund" | "owed" | "balanced"; amount: number } {
+  const refund = lineValue(form, refundFieldId);
+  const owed = lineValue(form, owedFieldId);
+  if (refund !== null && refund > 0) return { kind: "refund", amount: refund };
+  if (owed !== null && owed > 0) return { kind: "owed", amount: owed };
+  return { kind: "balanced", amount: 0 };
+}
+
+function countFields(form: EvaluatedForm<AnyFormField>): {
+  ok: number;
+  blocked: number;
+  unsupported: number;
+} {
+  const ok = form.fields.filter((f) => f.result.ok).length;
+  const unsupported = form.fields.filter(
+    (f) => !f.result.ok && f.result.unsupported,
+  ).length;
+  return {
+    ok,
+    blocked: form.fields.length - ok - unsupported,
+    unsupported,
+  };
+}
+
 export const generateTaxDocuments = createTool({
   id: "generate-tax-documents",
   description:
-    "Render the taxpayer's 1040 as a filled-out PDF using the form engine. Run the 1040 evaluator against the current facts and decisions, look up each catalog field's PDF widget, and write the value. Returns a /documents/{id} URL plus a JSON sidecar with the evaluated form. Call at hand-off (no pending decisions, all required facts present). Marked draft / not-for-filing — a CPA reviews before submission. Currently 1040 only; Schedule D, Form 8949, and CA Form 540 are out of scope until those forms are reintroduced in the new engine.",
+    "Render the taxpayer's filed forms as PDFs using the form engine. Runs the multi-form evaluator against the current facts and decisions, looks up each catalog field's PDF widget, and writes the value. Returns /documents/{id} URLs for each filed form plus a JSON sidecar with the evaluated forms. Call at hand-off (no pending decisions, all required facts present). Marked draft / not-for-filing — a CPA reviews before submission. Currently produces Form 1040 always; CA Form 540 when the taxpayer is a CA resident (must_file_ca_540 = true). Form 8949 and Schedule D are out of scope until those forms are ingested into the catalog.",
   inputSchema: z.object({
     year: z.number().int(),
   }),
   outputSchema: z.object({
     url: z.string(),
+    form540Url: z.string().nullable(),
     sidecarUrl: z.string(),
     linesPopulated: z.number(),
     federalRefundOrOwed: z.object({
       kind: z.enum(["refund", "owed", "balanced"]),
       amount: z.number(),
     }),
+    stateRefundOrOwed: z
+      .object({
+        kind: z.enum(["refund", "owed", "balanced"]),
+        amount: z.number(),
+      })
+      .nullable(),
     fieldCounts: z.object({
       ok: z.number(),
       blocked: z.number(),
@@ -109,29 +149,33 @@ export const generateTaxDocuments = createTool({
       listDecisions(supabase, { taxYear: year, limit: 500 }),
     ]);
 
-    // ─── Run the new engine on form-1040 ───
+    // ─── Run the multi-form engine (fixpoint) ───
     const ctx: DerivationContext = {
       taxYear: year,
       facts: makeFactsView(factRows),
       decisions: makeDecisionsView(decisionRows),
     };
     const catalog = await getCatalog();
-    const form1040 = evaluateForm("form-1040", ctx, catalog);
+    const { forms } = evaluateAllForms(SCENARIO_FORM_IDS, ctx, catalog);
+    const form1040 = forms.get("form-1040")!;
+    const form540 = forms.get("form-540")!;
 
     // ─── Fill the 1040 PDF ───
-    // Delegates to fillForm1040 so the integration test (scripts/integrationAlex.ts)
-    // exercises the same code path. Any soft warnings (widget missing,
-    // maxLength exceeded) get logged but don't fail the tool — the tool's
-    // contract is "render best-effort"; the test treats warnings as fatal.
-    const blankBytes = readFileSync(BLANK_FORM_PATH);
-    const { pdfBytes: outBytes, rendered, warnings } = await fillForm1040({
-      blankPdfBytes: blankBytes,
+    // Delegates to fillForm1040 (form-agnostic despite its name — walks
+    // the catalog inventory and writes each value to its widget). Soft
+    // warnings (widget missing, maxLength exceeded) log but don't fail.
+    const blank1040 = readFileSync(BLANK_1040_PATH);
+    const {
+      pdfBytes: out1040,
+      rendered: rendered1040,
+      warnings: warn1040,
+    } = await fillForm1040({
+      blankPdfBytes: blank1040,
       form: form1040,
       catalog,
     });
-    const linesPopulated = rendered.size;
-    for (const w of warnings) {
-      console.warn(`[generate-tax-documents] ${w}`);
+    for (const w of warn1040) {
+      console.warn(`[generate-tax-documents][1040] ${w}`);
     }
     const f1040Doc = await createDocument(supabase, {
       userId,
@@ -139,20 +183,64 @@ export const generateTaxDocuments = createTool({
       filename: `Form 1040 — ${year}`,
       storageSlug: `1040-${year}`,
       extension: "pdf",
-      bytes: outBytes,
+      bytes: out1040,
       mimeType: "application/pdf",
       expiresInDays: 30,
       metadata: { formId: "1040", taxYear: year },
     });
     const url = `/documents/${f1040Doc.id}`;
 
-    // ─── Sidecar — evaluated 1040 only ───
+    // ─── Fill the 540 PDF (only when mustFile=true) ───
+    let form540Url: string | null = null;
+    let stateRefundOrOwed: {
+      kind: "refund" | "owed" | "balanced";
+      amount: number;
+    } | null = null;
+    let rendered540Count = 0;
+    if (form540.mustFile.ok && form540.mustFile.value) {
+      const blank540 = readFileSync(BLANK_540_PATH);
+      const {
+        pdfBytes: out540,
+        rendered: rendered540,
+        warnings: warn540,
+      } = await fillForm1040({
+        blankPdfBytes: blank540,
+        form: form540,
+        catalog,
+      });
+      for (const w of warn540) {
+        console.warn(`[generate-tax-documents][540] ${w}`);
+      }
+      const f540Doc = await createDocument(supabase, {
+        userId,
+        category: "drafts",
+        filename: `Form 540 — ${year}`,
+        storageSlug: `540-${year}`,
+        extension: "pdf",
+        bytes: out540,
+        mimeType: "application/pdf",
+        expiresInDays: 30,
+        metadata: { formId: "540", taxYear: year },
+      });
+      form540Url = `/documents/${f540Doc.id}`;
+      rendered540Count = rendered540.size;
+      stateRefundOrOwed = refundOrOwed(
+        form540,
+        "form-540.line.115_refund_or_no_amount_due",
+        "form-540.line.111_amount_you_owe",
+      );
+    }
+
+    // ─── Sidecar — both evaluated forms ───
     const sidecar = {
       userId,
       year,
       generatedAt: new Date().toISOString(),
       forms: {
         "form-1040": serializeForm(form1040),
+        ...(form540.mustFile.ok && form540.mustFile.value
+          ? { "form-540": serializeForm(form540) }
+          : {}),
       },
     };
     const sidecarBytes = Buffer.from(JSON.stringify(sidecar, null, 2), "utf-8");
@@ -169,36 +257,30 @@ export const generateTaxDocuments = createTool({
     });
     const sidecarUrl = `/documents/${sidecarDoc.id}`;
 
-    // ─── Refund / owed summary ───
-    const refund = lineValue(form1040, "form-1040.line.34");
-    const owed = lineValue(form1040, "form-1040.line.37");
-    const federalRefundOrOwed = (() => {
-      if (refund !== null && refund > 0) {
-        return { kind: "refund" as const, amount: refund };
-      }
-      if (owed !== null && owed > 0) {
-        return { kind: "owed" as const, amount: owed };
-      }
-      return { kind: "balanced" as const, amount: 0 };
-    })();
-
-    const okCount = form1040.fields.filter((f) => f.result.ok).length;
-    const unsupportedCount = form1040.fields.filter(
-      (f) => !f.result.ok && f.result.unsupported,
-    ).length;
-    const blockedCount = form1040.fields.length - okCount - unsupportedCount;
+    // ─── Field counts — combined across both forms ───
+    const c1040 = countFields(form1040);
+    const c540 =
+      form540.mustFile.ok && form540.mustFile.value
+        ? countFields(form540)
+        : { ok: 0, blocked: 0, unsupported: 0 };
+    const fieldCounts = {
+      ok: c1040.ok + c540.ok,
+      blocked: c1040.blocked + c540.blocked,
+      unsupported: c1040.unsupported + c540.unsupported,
+    };
 
     return {
       url,
+      form540Url,
       sidecarUrl,
-      linesPopulated,
-      federalRefundOrOwed,
-      fieldCounts: {
-        ok: okCount,
-        blocked: blockedCount,
-        unsupported: unsupportedCount,
-      },
+      linesPopulated: rendered1040.size + rendered540Count,
+      federalRefundOrOwed: refundOrOwed(
+        form1040,
+        "form-1040.line.34",
+        "form-1040.line.37",
+      ),
+      stateRefundOrOwed,
+      fieldCounts,
     };
   },
 });
-

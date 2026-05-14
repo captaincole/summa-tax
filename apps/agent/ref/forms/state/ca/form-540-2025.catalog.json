@@ -1,0 +1,2729 @@
+{
+  "form": {
+    "formId": "form-540",
+    "taxYear": 2025,
+    "jurisdiction": "state-ca",
+    "title": "California Resident Income Tax Return"
+  },
+  "fields": [
+    {
+      "fieldId": "form-540.header.is_amended_return",
+      "label": "Check here if this is an AMENDED return.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_1001 CB",
+      "position": {
+        "page": 0,
+        "x": 36.72,
+        "y": 697.8
+      }
+    },
+    {
+      "fieldId": "form-540.header.fiscal_year_end_month",
+      "label": "Fiscal year filers only. Enter month of year end. Enter month as two digits for year 2026.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1002",
+      "position": {
+        "page": 0,
+        "x": 501.836,
+        "y": 700.4
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-540.header.first_name",
+      "label": "Your first name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1003",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 666.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.middle_initial",
+      "label": "Middle Initial.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1004",
+      "position": {
+        "page": 0,
+        "x": 180.25,
+        "y": 666.25
+      },
+      "maxLength": 1
+    },
+    {
+      "fieldId": "form-540.header.last_name",
+      "label": "Last name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1005",
+      "position": {
+        "page": 0,
+        "x": 203,
+        "y": 666.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.suffix",
+      "label": "Suffix.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1006",
+      "position": {
+        "page": 0,
+        "x": 385.25,
+        "y": 666.25
+      },
+      "maxLength": 4
+    },
+    {
+      "fieldId": "form-540.header.ssn",
+      "label": "Your Social Security Number (S S N) or Individual Taxpayer Identification Number (I T I N).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1007",
+      "position": {
+        "page": 0,
+        "x": 432.25,
+        "y": 666.25
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.header.spouse_first_name",
+      "label": "If joint tax return, spouse’s or Registered Domestic Partner's (R D P 's) first name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1008",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 638.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.spouse_middle_initial",
+      "label": "Spouse's or R D P 's Middle Initial.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1009",
+      "position": {
+        "page": 0,
+        "x": 180.25,
+        "y": 638.25
+      },
+      "maxLength": 1
+    },
+    {
+      "fieldId": "form-540.header.spouse_last_name",
+      "label": "Spouse's or R D P 's Last name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1010",
+      "position": {
+        "page": 0,
+        "x": 203,
+        "y": 638.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.spouse_suffix",
+      "label": "Spouse's or R D P 's Suffix.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1011",
+      "position": {
+        "page": 0,
+        "x": 385.25,
+        "y": 638.25
+      },
+      "maxLength": 4
+    },
+    {
+      "fieldId": "form-540.header.spouse_ssn",
+      "label": "Spouse's or R D P's S S N or I T I N.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1012",
+      "position": {
+        "page": 0,
+        "x": 432.25,
+        "y": 638.25
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.header.additional_information",
+      "label": "Additional information (see instructions).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1013",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 609.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.principal_business_activity_code",
+      "label": "Principal Business Activity code.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1014",
+      "position": {
+        "page": 0,
+        "x": 466.25,
+        "y": 609.25
+      },
+      "maxLength": 6
+    },
+    {
+      "fieldId": "form-540.header.home_address",
+      "label": "Street address (number and street) or Post Office Box.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1015",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 581.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.apartment",
+      "label": "Apartment number or suite number.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1016",
+      "position": {
+        "page": 0,
+        "x": 388.25,
+        "y": 581.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.private_mailbox",
+      "label": "Private Mailbox.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1017",
+      "position": {
+        "page": 0,
+        "x": 466.25,
+        "y": 581.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.city",
+      "label": "City (If you have a foreign address, see instructions).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1018",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 553.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.state",
+      "label": "State. Enter two letter State abbreviation.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1019",
+      "position": {
+        "page": 0,
+        "x": 401.25,
+        "y": 553.25
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-540.header.zip",
+      "label": "Zip code.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "zip",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1020",
+      "position": {
+        "page": 0,
+        "x": 430.25,
+        "y": 553.25
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.header.foreign_country_name",
+      "label": "Foreign country name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1021",
+      "position": {
+        "page": 0,
+        "x": 36.25,
+        "y": 525.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.foreign_province_state_county",
+      "label": "Foreign province/state/county.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1022",
+      "position": {
+        "page": 0,
+        "x": 254.25,
+        "y": 525.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.foreign_postal_code",
+      "label": "Foreign postal code.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1023",
+      "position": {
+        "page": 0,
+        "x": 462.25,
+        "y": 524.25
+      }
+    },
+    {
+      "fieldId": "form-540.header.date_of_birth",
+      "label": "Date of Birth. Your Date of Birth. Enter date as m m / d d / y y y y .",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1024",
+      "position": {
+        "page": 0,
+        "x": 69.68,
+        "y": 476.88
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.header.spouse_date_of_birth",
+      "label": "Spouse's or R D P's Date of Birth. Enter date as m m / d d / y y y y .",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1025",
+      "position": {
+        "page": 0,
+        "x": 321.831,
+        "y": 476.88
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.header.prior_name",
+      "label": "Prior Name. Your Prior Name (see instructions).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1026",
+      "position": {
+        "page": 0,
+        "x": 69.6,
+        "y": 441
+      }
+    },
+    {
+      "fieldId": "form-540.header.spouse_prior_name",
+      "label": "Spouse's or R D P’s prior name (see instructions).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1027",
+      "position": {
+        "page": 0,
+        "x": 321.4,
+        "y": 441.48
+      }
+    },
+    {
+      "fieldId": "form-540.header.county_at_filing",
+      "label": "Principal Residence. Enter your county at time of filing (see instructions).",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1028",
+      "position": {
+        "page": 0,
+        "x": 70,
+        "y": 405.1
+      }
+    },
+    {
+      "fieldId": "form-540.header.mailing_same_as_residence",
+      "label": "If your address above is the same as your principal/physical residence address at the time of filing, check this box. If not, enter below your principal/physical residence address at the time of filing.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_1029 CB",
+      "position": {
+        "page": 0,
+        "x": 499.5,
+        "y": 393.5
+      }
+    },
+    {
+      "fieldId": "form-540.header.residence_street_address",
+      "label": "Street address (number and street) (If foreign address, see instructions.)",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1030",
+      "position": {
+        "page": 0,
+        "x": 70,
+        "y": 345.3
+      }
+    },
+    {
+      "fieldId": "form-540.header.residence_apartment",
+      "label": "Apartment number or suite number.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1031",
+      "position": {
+        "page": 0,
+        "x": 436.2,
+        "y": 345.3
+      }
+    },
+    {
+      "fieldId": "form-540.header.residence_city",
+      "label": "City.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1032",
+      "position": {
+        "page": 0,
+        "x": 69.3,
+        "y": 309.3
+      }
+    },
+    {
+      "fieldId": "form-540.header.residence_state",
+      "label": "State. Enter two letter State abbreviation.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1033",
+      "position": {
+        "page": 0,
+        "x": 436.255,
+        "y": 309.3
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-540.header.residence_zip",
+      "label": "Zip code.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "zip",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1034",
+      "position": {
+        "page": 0,
+        "x": 472.7,
+        "y": 309.3
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.header.ca_filing_status_differs_from_federal",
+      "label": "Filing status. If your California filing status is different from your federal filing status, check the box here.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_1035 CB",
+      "position": {
+        "page": 0,
+        "x": 463.32,
+        "y": 285.5
+      }
+    },
+    {
+      "fieldId": "form-540.header.filing_status",
+      "label": "1 . Single.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "single_select",
+      "valueTypeRich": "single_select",
+      "pdfFieldKind": "radio",
+      "pdfWidgetName": "540_form_1036 RB",
+      "position": {
+        "page": 0,
+        "x": 74.5,
+        "y": 261.5
+      },
+      "options": [
+        {
+          "value": "single",
+          "radioOption": "1 . Single.",
+          "label": "1 . Single."
+        },
+        {
+          "value": "married_rdp_filing_jointly",
+          "radioOption": "2 . Married/R D P filing jointly (even if only one spouse / R D P had income). See instructions.",
+          "label": "2 . Married/R D P filing jointly (even if only one spouse / R D P had income). See instructions."
+        },
+        {
+          "value": "married_rdp_filing_separately",
+          "radioOption": "3 . Married or R D P filing separately.",
+          "label": "3 . Married or R D P filing separately."
+        },
+        {
+          "value": "head_of_household",
+          "radioOption": "4 . Head of household (with qualifying person). See instructions.",
+          "label": "4 . Head of household (with qualifying person). See instructions."
+        },
+        {
+          "value": "qualifying_surviving_spouse_rdp",
+          "radioOption": "5 . Qualifying surviving spouse or R D P .",
+          "label": "5 . Qualifying surviving spouse or R D P ."
+        }
+      ]
+    },
+    {
+      "fieldId": "form-540.header.spouse_rdp_year_of_death",
+      "label": "Line 5. Enter year spouse or R D P died.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1038",
+      "position": {
+        "page": 0,
+        "x": 501.9,
+        "y": 237
+      },
+      "maxLength": 4
+    },
+    {
+      "fieldId": "form-540.header.qualifying_surviving_spouse_instructions_ref",
+      "label": "Line 5. See instructions.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1039",
+      "position": {
+        "page": 0,
+        "x": 336.724,
+        "y": 213
+      }
+    },
+    {
+      "fieldId": "form-540.header.mfs_spouse_rdp_name_and_ssn",
+      "label": "Line 3. Enter spouse’s or R D P 's S S N or I T I N above and full name here.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1037",
+      "position": {
+        "page": 0,
+        "x": 421.8,
+        "y": 189.6
+      }
+    },
+    {
+      "fieldId": "form-540.header.claimed_as_dependent",
+      "label": "Line 6. If someone can claim you (or your spouse or R D P) as a dependent, check the box here. See instructions.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_1040 CB",
+      "position": {
+        "page": 0,
+        "x": 463.32,
+        "y": 165.6
+      }
+    },
+    {
+      "fieldId": "form-540.line.7_personal_exemption_count",
+      "label": "Exemptions. For line 7, line 8, line 9, and line 10: Multiply the number you enter in the box by the pre-printed dollar amount for that line. Whole dollars only. Line 7. Personal: If you checked box 1, 3, or 4 above, enter 1 in the box. If you checked box 2 or 5, enter 2, in the box. If you checked the box on line 6, see instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "count",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1041",
+      "position": {
+        "page": 0,
+        "x": 379.08,
+        "y": 117.48
+      },
+      "maxLength": 1
+    },
+    {
+      "fieldId": "form-540.line.7_personal_exemption_amount",
+      "label": "Multiply the number you put in the line 7 box by $153. Enter this number into this field. Whole dollars only.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1042",
+      "position": {
+        "page": 0,
+        "x": 458.34,
+        "y": 117.3
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.8_blind_exemption_count",
+      "label": "Line 8. Blind: If you (or your spouse / R D P ) are visually impaired, enter 1; if both are visually impaired, enter 2. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "count",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1043",
+      "position": {
+        "page": 0,
+        "x": 379.08,
+        "y": 93.52
+      },
+      "maxLength": 1
+    },
+    {
+      "fieldId": "form-540.line.8_blind_exemption_amount",
+      "label": "Multiply the number you put in the line 8 box by $153. Enter this number into this field. Whole dollars only.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1044",
+      "position": {
+        "page": 0,
+        "x": 458.34,
+        "y": 92.9261
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.9_senior_exemption_count",
+      "label": "Line 9. Senior: If you (or your spouse / R D P) are 65 or older, enter 1; if both are 65 or older, enter 2. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "count",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1045",
+      "position": {
+        "page": 0,
+        "x": 379.08,
+        "y": 69.52
+      },
+      "maxLength": 1
+    },
+    {
+      "fieldId": "form-540.line.9_senior_exemption_amount",
+      "label": "Multiply the number you put in the line 9 box by $153. Enter this number into this field. Whole dollars only.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_1046",
+      "position": {
+        "page": 0,
+        "x": 458.34,
+        "y": 68.9261
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.page2.taxpayer_name",
+      "label": "Your name:",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2001",
+      "position": {
+        "page": 1,
+        "x": 91.7,
+        "y": 729
+      }
+    },
+    {
+      "fieldId": "form-540.page2.taxpayer_ssn",
+      "label": "Your S S N or I T I N .",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2002",
+      "position": {
+        "page": 1,
+        "x": 307.5,
+        "y": 729.6
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.dependents.dep1_first_name",
+      "label": "Line 10. Dependents. Do not include yourself or your spouse / R D P . Dependent One, first name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2003",
+      "position": {
+        "page": 1,
+        "x": 134.4,
+        "y": 681.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep2_first_name",
+      "label": "Dependent Two, first name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2007",
+      "position": {
+        "page": 1,
+        "x": 285.6,
+        "y": 681.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep3_first_name",
+      "label": "Dependent Three, first name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2011",
+      "position": {
+        "page": 1,
+        "x": 436.75,
+        "y": 681.66
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep1_last_name",
+      "label": "Dependent One, Last name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2004",
+      "position": {
+        "page": 1,
+        "x": 134.4,
+        "y": 657.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep2_last_name",
+      "label": "Dependent Two, Last name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2008",
+      "position": {
+        "page": 1,
+        "x": 285.6,
+        "y": 657.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep3_last_name",
+      "label": "Dependent Three, Last name",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2012",
+      "position": {
+        "page": 1,
+        "x": 436.75,
+        "y": 657.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep1_ssn",
+      "label": "Dependent One, S S N. See instructions.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2005",
+      "position": {
+        "page": 1,
+        "x": 134.4,
+        "y": 633.6
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.dependents.dep2_ssn",
+      "label": "Dependent Two, S S N . See instructions.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2009",
+      "position": {
+        "page": 1,
+        "x": 285.6,
+        "y": 633.6
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.dependents.dep3_ssn",
+      "label": "Dependent Three, S S N . See instructions.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2013",
+      "position": {
+        "page": 1,
+        "x": 436.75,
+        "y": 633.6
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-540.dependents.dep1_relationship",
+      "label": "Dependent One. Dependent's relationship to you",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2006",
+      "position": {
+        "page": 1,
+        "x": 134.4,
+        "y": 609.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep2_relationship",
+      "label": "Dependent Two, Dependent's relationship to you",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2010",
+      "position": {
+        "page": 1,
+        "x": 285.6,
+        "y": 609.6
+      }
+    },
+    {
+      "fieldId": "form-540.dependents.dep3_relationship",
+      "label": "Dependent Three, Dependent's relationship to you",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2014",
+      "position": {
+        "page": 1,
+        "x": 436.75,
+        "y": 609.6
+      }
+    },
+    {
+      "fieldId": "form-540.line.10_dependent_exemption_count",
+      "label": "Line 10. Total dependent exemptions",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "count",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2015",
+      "position": {
+        "page": 1,
+        "x": 357.6,
+        "y": 585.6
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-540.line.10_dependent_exemption_amount",
+      "label": "Multiply the number of total dependent exemptions you put in the line 10 box by $475. Enter this number into this field. Whole dollars only.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2016",
+      "position": {
+        "page": 1,
+        "x": 451.2,
+        "y": 585.6
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.11_total_exemption_amount",
+      "label": "Line 11. Exemption amount: Add line 7 through line 10. Transfer this amount to line 32. Whole dollars only.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2017",
+      "position": {
+        "page": 1,
+        "x": 451.2,
+        "y": 561.588
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.12_state_wages",
+      "label": "Taxable Income. Line 12. State wages from your federal Form or Forms W-2, box 16 .",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2018",
+      "position": {
+        "page": 1,
+        "x": 278.904,
+        "y": 525.718
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.13_federal_agi",
+      "label": "Line 13. Enter federal adjusted gross income (A G I) from federal Form 1040 or 1040-SR, line 11b.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2019",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 501.618
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.14_ca_adjustments_subtractions",
+      "label": "Line 14. California adjustments – subtractions. Enter the amount from Schedule CA (540), Part 1, line 27, column B",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2020",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 477.606
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.15_ca_agi_before_additions",
+      "label": "Line 15. Subtract line 14 from line 13. If less than zero, enter the result in parentheses. See instructions",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2021",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 453.63
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.16_ca_adjustments_additions",
+      "label": "Line 16. California adjustments – additions. Enter the amount from Schedule CA (540), Part 1, line 27, column C",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2022",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 429.606
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.17_ca_agi",
+      "label": "Line 17.  California adjusted gross income. Combine line 15 and line 16.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2023",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 405.606
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.18_deductions",
+      "label": "Line 18. Enter the larger of your California itemized deductions from Schedule CA (540), Part Two, line 30, or Your California standard deduction shown for your filing status. California standard deduction is $5,706 for filing single, or for married or R D P filing separately. California standard deduction is $11,412 for filing married or R D P filing jointly, or for Head of household, or for Qualifying surviving spouse or R D P. If married or R D P filing separately or the box on line 6 is checked, STOP. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2024",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 333.498
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.19_taxable_income",
+      "label": "Line 19. Subtract line 18 from line 17. This is your taxable income. If less than zero, enter 0.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2025",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 309.498
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.31_tax_from_tax_table",
+      "label": "Tax. Line 31. Tax.  Check the box if tax is from tax table.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2026 CB",
+      "position": {
+        "page": 1,
+        "x": 182.52,
+        "y": 273.5
+      }
+    },
+    {
+      "fieldId": "form-540.line.31_tax_from_rate_schedule",
+      "label": "Line 31. Tax.  Check the box if tax is from Tax Rate Schedule.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2027 CB",
+      "position": {
+        "page": 1,
+        "x": 268.79,
+        "y": 273.5
+      }
+    },
+    {
+      "fieldId": "form-540.line.31_tax_from_ftb_3800",
+      "label": "Line 31. Tax. Check the box if tax is from FTB 3800.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2028 CB",
+      "position": {
+        "page": 1,
+        "x": 182.52,
+        "y": 249.55
+      }
+    },
+    {
+      "fieldId": "form-540.line.31_tax_from_ftb_3803",
+      "label": "Line 31. Tax.  Check the box if tax is from FTB 3803.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2029 CB",
+      "position": {
+        "page": 1,
+        "x": 268.79,
+        "y": 249.55
+      }
+    },
+    {
+      "fieldId": "form-540.line.31_tax_amount",
+      "label": "Line 31. Tax amount.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2030",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 249.6
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.32_exemption_credits",
+      "label": "Line 32. Exemption credits. Enter the amount from line 11. If your federal adjusted gross income is more than $252,203, see instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2031",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 225.618
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.33_tax_after_exemption_credits",
+      "label": "Line 33. Subtract line 32 from line 31. If less than zero, enter 0.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2032",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 201.618
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.34_tax_from_schedule_g1",
+      "label": "Line 34. Tax. See instructions.  Check the box if tax is from Schedule G-1.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2033 CB",
+      "position": {
+        "page": 1,
+        "x": 240.18,
+        "y": 177.48
+      }
+    },
+    {
+      "fieldId": "form-540.line.34_tax_from_ftb_5870a",
+      "label": "Line 34.  Check the box if tax is from FTB 5870A.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_2034 CB",
+      "position": {
+        "page": 1,
+        "x": 326.458,
+        "y": 177.48
+      }
+    },
+    {
+      "fieldId": "form-540.line.34_tax_amount",
+      "label": "Line 34. Tax. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2035",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 177.618
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.35_total_tax_after_credits",
+      "label": "Line 35. Add line 33 and line 34.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2036",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 153.618
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.40_child_dependent_care_credit",
+      "label": "Special Credits. Line 40. Nonrefundable Child and Dependent Care Expenses Credit. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2037",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 117.6
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.43_credit_name",
+      "label": "Line 43. Enter credit name",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2038",
+      "position": {
+        "page": 1,
+        "x": 141.53,
+        "y": 93.6
+      }
+    },
+    {
+      "fieldId": "form-540.line.43_credit_code",
+      "label": "Line 43. Enter credit code",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2039",
+      "position": {
+        "page": 1,
+        "x": 307,
+        "y": 93.6
+      },
+      "maxLength": 3
+    },
+    {
+      "fieldId": "form-540.line.43_credit_amount",
+      "label": "Line 43. Enter credit amount",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2040",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 93.6
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.44_credit_name",
+      "label": "Line 44. Enter credit name",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2041",
+      "position": {
+        "page": 1,
+        "x": 141.53,
+        "y": 69.6
+      }
+    },
+    {
+      "fieldId": "form-540.line.44_credit_code",
+      "label": "Line 44. Enter credit code",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2042",
+      "position": {
+        "page": 1,
+        "x": 307,
+        "y": 69.6
+      },
+      "maxLength": 3
+    },
+    {
+      "fieldId": "form-540.line.44_credit_amount",
+      "label": "Line 44. Enter credit amount",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_2043",
+      "position": {
+        "page": 1,
+        "x": 436.56,
+        "y": 69.48
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.45_schedule_p_credits",
+      "label": "Line 45. To claim more than two credits, see instructions. Attach Schedule P (540).",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3003",
+      "position": {
+        "page": 2,
+        "x": 436.56,
+        "y": 705.48
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.46_renters_credit",
+      "label": "Line 46. Nonrefundable Renter’s Credit. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3004",
+      "position": {
+        "page": 2,
+        "x": 436.56,
+        "y": 681.492
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.47_total_credits",
+      "label": "Line 47. Add line 40 through line 46. These are your total credits.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3005",
+      "position": {
+        "page": 2,
+        "x": 436.56,
+        "y": 657.492
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.48_tax_after_credits",
+      "label": "Line 48. Subtract line 47 from line 35. If less than zero, enter 0.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3006",
+      "position": {
+        "page": 2,
+        "x": 436.56,
+        "y": 633.492
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.61_alternative_minimum_tax",
+      "label": "Other Taxes. Line 61. Alternative Minimum Tax. Attach Schedule P (540).",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3007",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 597.04
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.62_behavioral_health_services_tax",
+      "label": "Line 62. Behavioral Health Services Tax. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3008",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 573.04
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.63_other_taxes_credit_recapture",
+      "label": "Line 63. Other taxes and credit recapture. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3009",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 548.884
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.64_total_tax",
+      "label": "Line 64. Add line 48, line 61, line 62, and line 63. This is your total tax.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3010",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 525
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.71_ca_income_tax_withheld",
+      "label": "Payments. Line 71. California income tax withheld. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3011",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 489
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.72_ca_estimated_tax_payments",
+      "label": "Line 72. 2025 California estimated tax and other payments. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3012",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 464.94
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.73_withholding_592b_593",
+      "label": "Line 73. Withholding (Form 592-B and/or Form 593). See instructions",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3013",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 440.964
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.74_motion_picture_production_credit",
+      "label": "Line 74. Refundable Program 4.0 California Motion Picture and Television Production Credit. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3014",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 416.94
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.75_eitc",
+      "label": "Line 75. Earned Income Tax Credit (E I T C). See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3015",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 392.928
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.76_young_child_tax_credit",
+      "label": "Line 76. Young Child Tax Credit (YCTC). See instructions",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3016",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 369
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.77_foster_youth_tax_credit",
+      "label": "Line 77. Foster Youth Tax Credit (FYTC). See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3017",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 344.76
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.78_total_payments",
+      "label": "Line 78. Add line 71 through line 77. These are your total payments. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3018",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 321
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.91_use_tax",
+      "label": "Use Tax. Line 91. Use Tax. Do not leave blank. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3019",
+      "position": {
+        "page": 2,
+        "x": 372.48,
+        "y": 285
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.91_no_use_tax_owed",
+      "label": "No use tax is owed.",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "single_select",
+      "valueTypeRich": "single_select",
+      "pdfFieldKind": "radio",
+      "pdfWidgetName": "540_form_3020 RB",
+      "position": {
+        "page": 2,
+        "x": 182.4,
+        "y": 261.36
+      },
+      "options": [
+        {
+          "value": "no_use_tax_owed",
+          "radioOption": "No use tax is owed.",
+          "label": "No use tax is owed."
+        },
+        {
+          "value": "paid_directly_to_cdtfa",
+          "radioOption": "You paid your use tax obligation directly to  California Department of Tax and Fee Administration ",
+          "label": "Paid directly to CDTFA"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-540.line.92_full_year_health_coverage",
+      "label": "Individual Shared Responsibility Penalty. Line 92. If you and your household had full-year health care coverage, check the box. See instructions. Medicare Part A or C coverage is qualifying health care coverage. If you did not check the box, see instructions.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_3021 CB",
+      "position": {
+        "page": 2,
+        "x": 420.264,
+        "y": 225.288
+      }
+    },
+    {
+      "fieldId": "form-540.line.92_isr_penalty",
+      "label": "Line 92. Individual Shared Responsibility (I S R) Penalty. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3022",
+      "position": {
+        "page": 2,
+        "x": 372,
+        "y": 200.764
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.93_payments_balance",
+      "label": "Overpaid Tax or Tax Due. Line 93 Payments balance. If line 78 is more than line 91, subtract line 91 from line 78",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3023",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 165
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.94_use_tax_balance",
+      "label": "Line 94. Use Tax balance. If line 91 is more than line 78, subtract line 78 from line 91",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3024",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 141.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.95_payments_after_isr_penalty",
+      "label": "Line 95. Payments after Individual Shared Responsibility penalty. If line 93 is more than line 92, subtract line 92 from line 93.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3025",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 116.908
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.96_isr_penalty_balance",
+      "label": "Line 96. Individual Shared Responsibility Penalty Balance. If line 92 is more than line 93, subtract line 93 from line 92.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3026",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 92.9081
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.97_overpaid_tax",
+      "label": "Line 97. Overpaid tax. If line 95 is more than line 64, subtract line 64 from line 95.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_3027",
+      "position": {
+        "page": 2,
+        "x": 436.8,
+        "y": 69.024
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.98_applied_to_2026_estimated_tax",
+      "label": "Line 98. Amount of line 97 you want applied to your 2026 estimated tax.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4003",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 705
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.99_overpaid_tax_available",
+      "label": "Line 99. Overpaid tax available this year. Subtract line 98 from line 97.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4004",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 680.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.100_tax_due",
+      "label": "Line 100. Tax due. If line 95 is less than line 64, subtract line 95 from line 64.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4005",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 657.12
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_400_ca_seniors_special_fund",
+      "label": "Contributions. Code 400. California Seniors Special Fund. See instructions.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4006",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 621.158
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_401_alzheimers_fund",
+      "label": "Code 401. Alzheimer’s Disease and Related Dementia Voluntary Tax Contribution Fund.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4007",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 597.158
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_403_rare_endangered_species_fund",
+      "label": "Code 403. Rare and Endangered Species Preservation Voluntary Tax Contribution Program.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4008",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 573.158
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_405_breast_cancer_research_fund",
+      "label": "Code 405. California Breast Cancer Research Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4009",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 549.177
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_406_firefighters_memorial_fund",
+      "label": "Code 406. California Firefighters’ Memorial Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4010",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 525.177
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_407_emergency_food_for_families_fund",
+      "label": "Code 407. Emergency Food for Families Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4011",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 501.177
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_408_peace_officer_memorial_fund",
+      "label": "Code 408. California Peace Officer Memorial Foundation Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4012",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 477.177
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_413_ca_cancer_research_fund",
+      "label": "Code 413. California Cancer Research Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4013",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 453.157
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_422_school_supplies_homeless_children_fund",
+      "label": "Code 422. School Supplies for Homeless Children Voluntary Tax Contribution Fund.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4014",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 429.157
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_423_state_parks_protection_fund",
+      "label": "Code 423. State Parks Protection Fund and Parks Pass Purchase",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4015",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 405.157
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_424_protect_our_coast_and_oceans_fund",
+      "label": "Code 424. Protect Our Coast and Oceans Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4016",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 381.157
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_431_prevention_animal_homelessness_fund",
+      "label": "Code 431. Prevention of Animal Homelessness and Cruelty Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4017",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 357.1
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_438_senior_citizen_advocacy_fund",
+      "label": "Code 438. California Senior Citizen Advocacy Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4018",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 333.106
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_439_native_ca_wildlife_rehabilitation_fund",
+      "label": "Code 439. Native California Wildlife Rehabilitation Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4019",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 309.106
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_445_mental_health_crisis_prevention_fund",
+      "label": "Code 445. Mental Health Crisis Prevention Voluntary Tax Contribution Fund.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4020",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 284.993
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_447_ca_als_research_network_fund",
+      "label": "Code 447. California A L S Research Network Voluntary Tax Contribution Fund.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4021",
+      "position": {
+        "page": 3,
+        "x": 436.78,
+        "y": 260.993
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_448_ca_pediatric_cancer_research_fund",
+      "label": "Code 448. California Pediatric Cancer Research Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4022",
+      "position": {
+        "page": 3,
+        "x": 436.56,
+        "y": 237.1
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.contrib_449_parkinsons_disease_research_fund",
+      "label": "Code 449. Parkinson's Disease Research Voluntary Tax Contribution Fund",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4023",
+      "position": {
+        "page": 3,
+        "x": 436.8,
+        "y": 213.1
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.110_total_contributions",
+      "label": "Line 110. Add amounts in code 400 through code 449. This is your total contribution",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_4024",
+      "position": {
+        "page": 3,
+        "x": 436.56,
+        "y": 189.24
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.111_amount_you_owe",
+      "label": "Amount You Owe. Line 111. Amount You Owe. If you do not have an amount on line 99, add line 94, line 96, line 100, and line 110. See instructions. Do not send cash.  You can mail payments to: Franchise Tax Board, Post Office Box, 942867, Sacramento, California, 94267-0001. To pay online, go to ftb.ca.gov/pay for more information.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5002",
+      "position": {
+        "page": 4,
+        "x": 436.66,
+        "y": 693.761
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.112_interest_and_late_penalties",
+      "label": "Interest and Penalties. Line 112. Interest, late return penalties, and late payment penalties.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5003",
+      "position": {
+        "page": 4,
+        "x": 436.8,
+        "y": 658.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.112_ftb_5805_attached",
+      "label": "FTB 5805 attached",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5004A CB",
+      "position": {
+        "page": 4,
+        "x": 139.287,
+        "y": 621.622
+      }
+    },
+    {
+      "fieldId": "form-540.line.112_ftb_5805f_attached",
+      "label": "FTB 5805F attached",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5004B CB",
+      "position": {
+        "page": 4,
+        "x": 247.155,
+        "y": 621.622
+      }
+    },
+    {
+      "fieldId": "form-540.line.113_underpayment_estimated_tax",
+      "label": "Line 113. Underpayment of estimated tax.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5005",
+      "position": {
+        "page": 4,
+        "x": 436.8,
+        "y": 622.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.114_total_amount_due",
+      "label": "Line 114. Total amount due. See instructions. Enclose, but do not staple, any payment.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5006",
+      "position": {
+        "page": 4,
+        "x": 436.8,
+        "y": 598.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.115_refund_or_no_amount_due",
+      "label": "Refund and Direct Deposit. Line 115. Refund or no amount due. Subtract the sum of line 110, line 112, and line 113 from line 99. See instructions. You can mail to: Franchise Tax Board, Post Office Box 942840, Sacramento, California, 94240-0001",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5007",
+      "position": {
+        "page": 4,
+        "x": 436.56,
+        "y": 550.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.116_account_type_checking",
+      "label": "Line 116. Account type. Check only one box. Checking.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5009A CB",
+      "position": {
+        "page": 4,
+        "x": 153.425,
+        "y": 466.539
+      }
+    },
+    {
+      "fieldId": "form-540.line.116_routing_number",
+      "label": "Line 116. Enter the account’s routing number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5008",
+      "position": {
+        "page": 4,
+        "x": 76.68,
+        "y": 454.465
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-540.line.116_account_number",
+      "label": "Line 116. Account number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5010",
+      "position": {
+        "page": 4,
+        "x": 220.8,
+        "y": 454.56
+      },
+      "maxLength": 19
+    },
+    {
+      "fieldId": "form-540.line.116_direct_deposit_amount",
+      "label": "Fill in the information to authorize direct deposit of your refund into one or two accounts. Do not attach a voided check or a deposit slip. See instructions. Have you verified the routing and account numbers? Use whole dollars only. All or the following amount of my refund (line 115) is authorized for direct deposit into the account shown below. Line 116. Direct deposit amount.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5011",
+      "position": {
+        "page": 4,
+        "x": 436.8,
+        "y": 454.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.116_account_type_savings",
+      "label": "Line 116. Account type. Savings.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5009B CB",
+      "position": {
+        "page": 4,
+        "x": 152.901,
+        "y": 442.016
+      }
+    },
+    {
+      "fieldId": "form-540.line.117_secondary_account_type_checking",
+      "label": "Line 117. Secondary Account type. Check only one box. Checking.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5013A CB",
+      "position": {
+        "page": 4,
+        "x": 153.425,
+        "y": 393.841
+      }
+    },
+    {
+      "fieldId": "form-540.line.117_secondary_routing_number",
+      "label": "Line 117. Routing Number for secondary account.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5012",
+      "position": {
+        "page": 4,
+        "x": 76.68,
+        "y": 382.6
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-540.line.117_secondary_account_number",
+      "label": "Line 117. Secondary Account number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5014",
+      "position": {
+        "page": 4,
+        "x": 220.8,
+        "y": 382.6
+      },
+      "maxLength": 19
+    },
+    {
+      "fieldId": "form-540.line.117_secondary_direct_deposit_amount",
+      "label": "The remaining amount of my refund (line 115) is authorized for direct deposit into the account shown below. Line 117. Secondary Direct deposit amount.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_5015",
+      "position": {
+        "page": 4,
+        "x": 436.8,
+        "y": 382.56
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "form-540.line.117_secondary_account_type_savings",
+      "label": "Line 117. Secondary Account type.  Savings.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5013B CB",
+      "position": {
+        "page": 4,
+        "x": 153.425,
+        "y": 369.754
+      }
+    },
+    {
+      "fieldId": "form-540.signing.voter_registration_info_request",
+      "label": "Voter information. For voter registration information, check the box and go to sos.ca.gov/elections. See instructions.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5016 CB",
+      "position": {
+        "page": 4,
+        "x": 499.25,
+        "y": 333.5
+      }
+    },
+    {
+      "fieldId": "form-540.signing.wants_health_care_coverage_info",
+      "label": "Yes — Do you want information on no-cost or low-cost health care coverage?",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "single_select",
+      "valueTypeRich": "single_select",
+      "pdfFieldKind": "radio",
+      "pdfWidgetName": "540_form_5017 RB",
+      "position": {
+        "page": 4,
+        "x": 499.25,
+        "y": 261.744
+      },
+      "options": [
+        {
+          "value": "no",
+          "radioOption": "0",
+          "label": "0"
+        },
+        {
+          "value": "yes",
+          "radioOption": "1",
+          "label": "1"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-540.signing.organ_donor_primary_taxpayer",
+      "label": "Organ Donor Election. By checking the applicable box you authorize written consent for Donate Life California to enroll you in the Donate Life California Organ and Tissue Donor Registry, and for the Franchise Tax Board to share limited information from your tax return with Donate Life California. If your individual information has changed since the last time you filed a tax return, and are already registered with Donate Life California, re-checking the box will send your most updated individual information to Donate Life California. If you do not check the box, Donate Life California will not enroll you in the registry at this time. To remove your name from the registry contact Donate Life California directly. For more information, see the Consent Language in the instructions. Primary taxpayer.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5018 CB",
+      "position": {
+        "page": 4,
+        "x": 499.44,
+        "y": 177.728
+      }
+    },
+    {
+      "fieldId": "form-540.signing.organ_donor_spouse_rdp",
+      "label": "Spouse / R D P (if joint tax return).",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540_form_5019 CB",
+      "position": {
+        "page": 4,
+        "x": 499.44,
+        "y": 153.728
+      }
+    },
+    {
+      "fieldId": "form-540.signing.date_signed",
+      "label": "Date. Enter date signed. Enter date as m m / d d/ y y y y .",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6001",
+      "position": {
+        "page": 5,
+        "x": 271,
+        "y": 632.88
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.signing.taxpayer_email",
+      "label": "Your email address. Enter only one email address.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "email",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6002",
+      "position": {
+        "page": 5,
+        "x": 98.16,
+        "y": 596.82
+      }
+    },
+    {
+      "fieldId": "form-540.signing.taxpayer_phone",
+      "label": "Preferred phone number.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6003",
+      "position": {
+        "page": 5,
+        "x": 465.45,
+        "y": 596.64
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.signing.preparer_name",
+      "label": "Print paid preparer’s name.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6003B",
+      "position": {
+        "page": 5,
+        "x": 98.16,
+        "y": 561
+      }
+    },
+    {
+      "fieldId": "form-540.signing.preparer_phone",
+      "label": "Paid preparer’s phone number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6003C",
+      "position": {
+        "page": 5,
+        "x": 465.45,
+        "y": 561.226
+      },
+      "maxLength": 10
+    },
+    {
+      "fieldId": "form-540.signing.preparer_firm_name",
+      "label": "Firm’s name (or yours, if self-employed)",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6004",
+      "position": {
+        "page": 5,
+        "x": 98.16,
+        "y": 488.16
+      }
+    },
+    {
+      "fieldId": "form-540.signing.preparer_ptin",
+      "label": "Preparer Tax Identification Number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6005",
+      "position": {
+        "page": 5,
+        "x": 501.45,
+        "y": 488.28
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-540.signing.preparer_firm_address",
+      "label": "Firm's address.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6006",
+      "position": {
+        "page": 5,
+        "x": 98.16,
+        "y": 452.28
+      }
+    },
+    {
+      "fieldId": "form-540.signing.preparer_firm_ein",
+      "label": "Firm's Federal Employer Identification Number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6007",
+      "position": {
+        "page": 5,
+        "x": 501.5,
+        "y": 452.28
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-540.signing.third_party_designee_authorized",
+      "label": "Yes",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "single_select",
+      "valueTypeRich": "single_select",
+      "pdfFieldKind": "radio",
+      "pdfWidgetName": "540_form_6008 RB",
+      "position": {
+        "page": 5,
+        "x": 448.68,
+        "y": 428.16
+      },
+      "options": [
+        {
+          "value": "no",
+          "radioOption": "0",
+          "label": "0"
+        },
+        {
+          "value": "yes",
+          "radioOption": "1",
+          "label": "1"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-540.signing.third_party_designee_name",
+      "label": "Print Third Party Designee’s Name",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6009",
+      "position": {
+        "page": 5,
+        "x": 98.16,
+        "y": 392.22
+      }
+    },
+    {
+      "fieldId": "form-540.signing.third_party_designee_phone",
+      "label": "Third party designee's telephone number.",
+      "labelSource": "tu",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540_form_6010",
+      "position": {
+        "page": 5,
+        "x": 465.3,
+        "y": 392.22
+      },
+      "maxLength": 10
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/ref/forms/state/ca/2025-540.pdf",
+    "ingestedAt": "2026-05-14T16:52:59.474Z",
+    "totalFields": 169,
+    "enriched": 169,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 169,
+    "tokensIn": 38422,
+    "tokensOut": 11543,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

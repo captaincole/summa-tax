@@ -8,7 +8,7 @@
 //     --title="U.S. Individual Income Tax Return"
 //
 // Writes the classified catalog to
-//   apps/agent/fixtures/forms/<form-id>-<tax-year>.extracted.json
+//   apps/agent/ref/forms/<form-id>-<tax-year>.catalog.json
 // Pass --write-db to additionally upsert into the forms / form_fields tables.
 
 import { resolve } from "node:path";
@@ -50,11 +50,22 @@ function parseArgs(argv: string[]): Args {
   };
 }
 
+// Co-locate the catalog with its source PDF: federal forms at
+// ref/forms/<file>, state forms under ref/forms/state/<state>/<file>.
+function defaultOutputDir(jurisdiction: string): string {
+  if (jurisdiction === "federal") return "ref/forms";
+  if (jurisdiction.startsWith("state-")) {
+    const state = jurisdiction.slice("state-".length);
+    return `ref/forms/state/${state}`;
+  }
+  return "ref/forms";
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const outputPath = resolve(
     projectRoot,
-    `fixtures/forms/${args.formId}-${args.taxYear}.extracted.json`,
+    `${defaultOutputDir(args.jurisdiction)}/${args.formId}-${args.taxYear}.catalog.json`,
   );
 
   console.log(`Phase C ingest: ${args.formId} (${args.taxYear})`);
@@ -74,18 +85,25 @@ async function main() {
   });
 
   console.log(
-    `  ${result.classifiedCount} classified, ${result.skippedCount} skipped, ${result.uniqueFieldCount} unique fields after dedup`,
+    `  ${result.totalFields} fields total: ${result.enrichedCount} enriched, ${result.unenrichedCount} placeholder, ${result.skippedCount} skipped → ${result.catalogEntryCount} catalog entries`,
   );
   console.log(
     `  usage: input=${result.usage.input_tokens} output=${result.usage.output_tokens} cached_read=${result.usage.cache_read_input_tokens} cached_create=${result.usage.cache_creation_input_tokens}`,
   );
   if (result.dbWritten) {
-    console.log(`  DB: forms + form_fields upserted (${result.uniqueFieldCount} rows)`);
+    console.log(`  DB: forms + form_fields upserted (${result.catalogEntryCount} rows)`);
+  }
+  if (result.unenrichedSample.length > 0) {
+    console.log(`  Unenriched fields (first ${result.unenrichedSample.length}):`);
+    for (const n of result.unenrichedSample) console.log(`    - ${n}`);
+    if (result.unenrichedCount > result.unenrichedSample.length) {
+      console.log(`    … and ${result.unenrichedCount - result.unenrichedSample.length} more`);
+    }
   }
   if (result.skipSample.length > 0) {
-    console.log(`  Skipped widgets (first ${result.skipSample.length}):`);
+    console.log(`  Skipped fields (first ${result.skipSample.length}):`);
     for (const s of result.skipSample) {
-      console.log(`    - ${s.pdfWidgetName}: ${s.skipReason}`);
+      console.log(`    - ${s.pdfFieldName}: ${s.skipReason}`);
     }
     if (result.skippedCount > result.skipSample.length) {
       console.log(`    … and ${result.skippedCount - result.skipSample.length} more`);

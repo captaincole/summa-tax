@@ -1,15 +1,22 @@
-// Zod schemas for the Phase C ingest workflow. Each step's outputSchema is
-// the next step's inputSchema — we accumulate state via .extend() so the
-// workflow never has to thread "optional fields filled in later" through.
+// Zod schemas for the form-ingest workflow. Each step's outputSchema is the
+// next step's inputSchema — we accumulate state via .extend() so the workflow
+// never has to thread "optional fields filled in later" through.
 
 import { z } from "zod";
 
 // ─── Primitive shapes shared across steps ────────────────────────────────
 
-const widgetSchema = z.object({
-  fullName: z.string(),
-  shortName: z.string(),
-  kind: z.enum(["text", "checkbox", "radio", "other"]),
+const fieldKindSchema = z.enum([
+  "text",
+  "checkbox",
+  "radio",
+  "signature",
+  "other",
+]);
+
+const labelSourceSchema = z.enum(["tu", "vision"]);
+
+const fieldWidgetSchema = z.object({
   page: z.number().int(),
   position: z.object({
     x: z.number(),
@@ -17,11 +24,21 @@ const widgetSchema = z.object({
     width: z.number(),
     height: z.number(),
   }),
+  buttonValue: z.string().optional(),
 });
 
-const pageSchema = z.object({
-  page: z.number().int(),
-  text: z.string(),
+const extractedFieldSchema = z.object({
+  fieldName: z.string(),
+  shortName: z.string(),
+  fieldKind: fieldKindSchema,
+  label: z.string(),
+  labelSource: labelSourceSchema,
+  maxLength: z.number().int().nullable().optional(),
+  multiline: z.boolean().optional(),
+  comb: z.boolean().optional(),
+  radioOptions: z.array(z.string()).optional(),
+  checkboxOnValue: z.string().optional(),
+  widgets: z.array(fieldWidgetSchema),
 });
 
 const categorySchema = z.enum([
@@ -33,28 +50,35 @@ const categorySchema = z.enum([
 ]);
 
 const valueTypeSchema = z.enum([
-  "numeric",
+  "money",
+  "count",
+  "text",
+  "ssn",
+  "phone",
+  "zip",
+  "email",
+  "date",
+  "boolean",
   "single_select",
   "multi_select",
-  "text",
-  "boolean",
-  "date",
+  "signature",
 ]);
 
-const classifiedFieldSchema = z.object({
-  pdfWidgetName: z.string(),
-  fieldId: z.string(),
-  label: z.string(),
-  category: categorySchema,
-  valueType: valueTypeSchema,
-  /** Present on multi_select rows — see ClassifiedField.optionValue. */
-  optionValue: z.string().optional(),
-  /** Present on multi_select rows — see ClassifiedField.optionLabel. */
-  optionLabel: z.string().optional(),
+const enrichmentOptionSchema = z.object({
+  value: z.string(),
+  radioOption: z.string(),
 });
 
-const classifiedSkipSchema = z.object({
-  pdfWidgetName: z.string(),
+const fieldEnrichmentSchema = z.object({
+  pdfFieldName: z.string(),
+  fieldId: z.string(),
+  category: categorySchema,
+  valueType: valueTypeSchema,
+  options: z.array(enrichmentOptionSchema).optional(),
+});
+
+const fieldSkipSchema = z.object({
+  pdfFieldName: z.string(),
   skipReason: z.string(),
 });
 
@@ -78,26 +102,28 @@ export const workflowInputSchema = z.object({
 });
 
 export const afterExtractSchema = workflowInputSchema.extend({
-  widgets: z.array(widgetSchema),
+  fields: z.array(extractedFieldSchema),
   totalPages: z.number().int(),
-  pages: z.array(pageSchema),
 });
 
 export const afterClassifySchema = afterExtractSchema.extend({
-  classifiedFields: z.array(classifiedFieldSchema),
-  skipped: z.array(classifiedSkipSchema),
+  enrichments: z.array(fieldEnrichmentSchema),
+  skipped: z.array(fieldSkipSchema),
   usage: usageSchema,
 });
 
 export const workflowOutputSchema = z.object({
   outputPath: z.string(),
-  totalWidgets: z.number().int(),
-  classifiedCount: z.number().int(),
+  totalFields: z.number().int(),
+  enrichedCount: z.number().int(),
+  unenrichedCount: z.number().int(),
   skippedCount: z.number().int(),
-  uniqueFieldCount: z.number().int(),
+  catalogEntryCount: z.number().int(),
   dbWritten: z.boolean(),
   usage: usageSchema,
-  skipSample: z.array(classifiedSkipSchema),
+  skipSample: z.array(fieldSkipSchema),
+  /** pdfFieldNames that had no enrichment and got a placeholder fieldId. */
+  unenrichedSample: z.array(z.string()),
 });
 
 export type WorkflowInput = z.infer<typeof workflowInputSchema>;

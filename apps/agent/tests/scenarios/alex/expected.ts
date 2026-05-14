@@ -3,8 +3,8 @@
 // Every numeric expected value below is the literal number from the
 // perfect Alex 1040 (the user's reference Alex-1040-Finished.pdf, kept
 // outside the repo). Any divergence between the rendered 1040 and these
-// values is a regression in the engine, rules, catalog, bindings, or
-// renderer.
+// values is a regression in the engine, catalog, bindings, FilingInfo
+// resolver, or renderer.
 
 import type { ExpectedResults } from "../../types.js";
 
@@ -34,29 +34,30 @@ export const alexExpected: ExpectedResults = {
   // fmtMoney. SSN gets separator-stripped by the renderer because the PDF
   // widget is 9-char digit-only (`maxLength=9`).
   renderedText: {
-    "form-1040.header.first_name": "Alex",
+    "form-1040.header.first_name_mi": "Alex",
     "form-1040.header.last_name": "Morales",
     "form-1040.header.ssn": "123456789", // stripped from "123-45-6789"
-    "form-1040.header.address_street": "2245 Lakeshore Ave",
-    "form-1040.header.address_city": "Oakland",
-    "form-1040.header.address_state": "CA",
-    "form-1040.header.address_zip": "94606",
-    "form-1040.line.16": "8835",
+    "form-1040.header.home_address": "2245 Lakeshore Ave",
+    "form-1040.header.city": "Oakland",
+    "form-1040.header.state": "CA",
+    "form-1040.header.zip": "94606",
+    "form-1040.line.16": "8,835",
     "form-1040.line.34": "585",
     "form-1040.signing.taxpayer_occupation": "Engineer",
-    "form-1040.signing.taxpayer_phone": "703-953-0253",
-    "form-1040.signing.taxpayer_email": "rand@wheeloftime.com",
+    "form-1040.signing.taxpayer_phone": "7039530253",
+    "form-1040.signing.taxpayer_email": "alex@morales.com",
   },
 
   // Header dates the binding leaves blank for calendar-year filers.
   renderedBlank: [
-    "form-1040.header.tax_year_begin",
-    "form-1040.header.tax_year_end",
-    "form-1040.header.tax_year_end_year",
+    "form-1040.header.tax_year_beginning_mm",
+    "form-1040.header.tax_year_ending_mm",
+    "form-1040.header.tax_year_ending_yy",
   ],
 
-  // Multi_select fields that must end up with at least one checked option.
+  // Checkboxes that must end up checked. Filing status is now 5 separate
+  // boolean fields; only the matching one (Single for Alex) gets checked.
   renderedChecked: [
-    "form-1040.header.filing_status", // filing_status decision → single checkbox
+    "form-1040.header.filing_status_single",
   ],
 };

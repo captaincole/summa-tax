@@ -1,7 +1,7 @@
 // Alex Morales — facts (the "data").
 //
-// Sourced from `apps/agent/fixtures/docs/01-alex-w2.pdf` (Brightside
-// Logistics W-2). Box 1 ($79,000) sits below box 3/5 ($85,000) because of
+// Sourced from `apps/agent/tests/scenarios/alex/docs/01-alex-w2.pdf`
+// (Brightside Logistics W-2). Box 1 ($79,000) sits below box 3/5 ($85,000) because of
 // the $6,000 traditional 401(k) in box 12a code D. Identity facts are
 // what Thom captures during intake (occupation/phone/email aren't on the
 // W-2 — they come from the conversation; identity.email is auto-sourced
@@ -49,15 +49,16 @@ export const alexFacts: TaxFactRow[] = [
   idFact("name.first", "Alex"),
   idFact("name.last", "Morales"),
   idFact("ssn", "123-45-6789"),
-  idFact("dob", "06/15/1986"),
+  idFact("dob", "01/01/2002"),
   idFact("address.street", "2245 Lakeshore Ave"),
   idFact("address.apt", "Apt 3"),
   idFact("address.city", "Oakland"),
   idFact("address.state", "CA"),
   idFact("address.zip", "94606"),
+  idFact("address.county", "Alameda"),
   idFact("occupation", "Engineer"),
   idFact("phone", "703-953-0253"),
-  idFact("email", "rand@wheeloftime.com"),
+  idFact("email", "alex@morales.com"),
   {
     id: "f-w2",
     userId: ALEX_USER_ID,
@@ -66,6 +67,26 @@ export const alexFacts: TaxFactRow[] = [
     key: makeW2FactKey("brightside-logistics"),
     value: w2,
     sourceNote: "W-2 from Brightside Logistics, Inc.",
+    createdAt: "2026-04-29T00:00:00Z",
+  },
+  {
+    id: "f-mec",
+    userId: ALEX_USER_ID,
+    taxYear: ALEX_TAX_YEAR,
+    category: "health_coverage",
+    key: "health_coverage.full_year_mec",
+    value: true,
+    sourceNote: "Verbal confirmation during intake — employer-provided plan covered all 12 months of 2025.",
+    createdAt: "2026-04-29T00:00:00Z",
+  },
+  {
+    id: "f-use-tax",
+    userId: ALEX_USER_ID,
+    taxYear: ALEX_TAX_YEAR,
+    category: "use_tax",
+    key: "use_tax.owed_amount",
+    value: 0,
+    sourceNote: "Verbal confirmation during intake — no out-of-state online purchases requiring use tax.",
     createdAt: "2026-04-29T00:00:00Z",
   },
 ];

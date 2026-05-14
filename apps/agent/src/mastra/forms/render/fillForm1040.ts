@@ -20,7 +20,7 @@
 //   - multi_select fields iterate inv.options to check per-option widgets
 //   - numeric values render via fmtMoney (whole dollars, "0" for zero)
 
-import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
+import { PDFDocument, PDFTextField, PDFCheckBox, PDFRadioGroup } from "pdf-lib";
 import {
   type AnyFormField,
   type EvaluatedForm,
@@ -29,6 +29,7 @@ import {
   type Catalog,
   type FieldInventory,
 } from "../catalog.js";
+import { getFormatter } from "../engine.js";
 import { verifiedWidget } from "../../../forms-pipeline/verifiedWidgets.js";
 
 export interface RenderedWidget {
@@ -112,6 +113,28 @@ export async function fillForm1040(opts: {
       );
     }
   };
+  // Radio-group select: the parent field is a PDFRadioGroup whose options
+  // come from PDFRadioGroup.getOptions(). The catalog records the exact
+  // option label per option; we call select(label) to pick it.
+  const selectRadio = (fieldId: string, widgetName: string, radioOption: string) => {
+    try {
+      const f = pdfForm.getField(widgetName);
+      if (f instanceof PDFRadioGroup) {
+        f.select(radioOption);
+        appendRendered(rendered, fieldId, { widgetName, text: radioOption });
+      } else {
+        warnings.push(
+          `fieldId=${fieldId} widget=${widgetName} is ${f.constructor.name}, expected PDFRadioGroup.`,
+        );
+      }
+    } catch (err) {
+      warnings.push(
+        `fieldId=${fieldId} widget=${widgetName} radio select(${radioOption}) failed: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
+  };
 
   for (const field of form.fields) {
     const inv = catalog.getField(field.fieldId);
@@ -122,7 +145,7 @@ export async function fillForm1040(opts: {
 
     const widgetName =
       verifiedWidget(form.formId, field.fieldId) ?? inv.pdfWidgetName;
-    fillByType(setText, check, widgetName, inv, value);
+    fillByType(setText, check, selectRadio, widgetName, inv, value);
   }
 
   pdfForm.flatten();
@@ -130,8 +153,12 @@ export async function fillForm1040(opts: {
   return { pdfBytes, rendered, warnings };
 }
 
-// Try setText(value); on length-overflow, retry with separators stripped.
-// Returns the actually-written string, or null if both attempts failed.
+// Try setText(value); on length-overflow, retry with separators stripped;
+// on still-overflow, expand the widget's maxLength to fit and retry one
+// more time. Since the renderer flattens the form before saving, expanding
+// maxLength has no visual consequence — it just lets pdf-lib write the
+// longer value through its strict validator. Returns the actually-written
+// string, or null if all attempts failed.
 function trySetTextWithFallback(f: PDFTextField, value: string): string | null {
   try {
     f.setText(value);
@@ -140,10 +167,23 @@ function trySetTextWithFallback(f: PDFTextField, value: string): string | null {
     if (!isLengthOverflow(err)) return null;
   }
   const stripped = value.replace(/[\s\-_.()]/g, "");
-  if (stripped === value) return null; // nothing to strip; original failure stands
+  if (stripped !== value) {
+    try {
+      f.setText(stripped);
+      return stripped;
+    } catch (err) {
+      if (!isLengthOverflow(err)) return null;
+    }
+  }
+  // Final attempt: expand the widget's maxLength to fit the value. PDF
+  // viewers (and real users typing into the form) accept longer text than
+  // the maxLength claims; the widget's declared limit is often
+  // pessimistic (e.g. email widgets restricted to 12-15 chars despite
+  // accepting 30+ in practice). Flattening hides the maxLength entirely.
   try {
-    f.setText(stripped);
-    return stripped;
+    f.setMaxLength(value.length);
+    f.setText(value);
+    return value;
   } catch {
     return null;
   }
@@ -166,21 +206,46 @@ function appendRendered(
 function fmtMoney(n: number | null | undefined): string {
   if (n === null || n === undefined) return "";
   if (n === 0) return "0";
-  return Math.round(n).toString();
+  // Comma-grouped whole dollars: 79000 → "79,000". Matches the IRS-form
+  // convention the CPA-completed golden PDFs use.
+  return Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
+// Pre-render value coercion for text fields. IRS/FTB convention: SSN,
+// ITIN, and phone fields are digit-only regardless of the PDF widget's
+// maxLength constraint — facts carry the readable form ("###-##-####",
+// "###-###-####"), but every form (1040, 540, …) renders the bare digits.
+// Detect by label rather than maxLength because some widgets are wide
+// enough to fit separators even though the form text instructs digit-only.
+function coerceTextValue(inv: FieldInventory, value: string): string {
+  if (/\b(ssn|itin|phone)\b/i.test(inv.label)) {
+    return value.replace(/[^0-9]/g, "");
+  }
+  return value;
 }
 
 function fillByType(
   setText: (fieldId: string, widgetName: string, value: string) => void,
   check: (fieldId: string, widgetName: string) => void,
+  selectRadio: (fieldId: string, widgetName: string, radioOption: string) => void,
   widgetName: string | undefined,
   inv: FieldInventory,
   value: unknown,
 ): boolean {
+  // Per-field formatter override (registered via FormSpec.formatters in
+  // a defineForm call). When present, the override decides exactly what
+  // text gets written — bypasses the value-type defaults (fmtMoney,
+  // coerceTextValue) so a form can opt into different conventions per
+  // field. Example: 540 page 2 SSN renders with dashes via
+  // formatters: { "page2.taxpayer_ssn": SSN.format }.
+  const override = getFormatter(inv.fieldId);
+
   switch (inv.valueType) {
     case "numeric": {
       if (!widgetName) return false;
       if (typeof value === "number" && Number.isFinite(value)) {
-        setText(inv.fieldId, widgetName, fmtMoney(value));
+        const text = override ? override(value as never) : fmtMoney(value);
+        setText(inv.fieldId, widgetName, text);
         return true;
       }
       return false;
@@ -188,7 +253,10 @@ function fillByType(
     case "text": {
       if (!widgetName) return false;
       if (typeof value === "string" && value.length > 0) {
-        setText(inv.fieldId, widgetName, value);
+        const text = override
+          ? override(value as never)
+          : coerceTextValue(inv, value);
+        setText(inv.fieldId, widgetName, text);
         return true;
       }
       return false;
@@ -209,19 +277,30 @@ function fillByType(
       }
       return false;
     }
-    case "multi_select": {
-      if (!Array.isArray(value) || !inv.options) return false;
+    case "multi_select":
+    case "single_select": {
+      // Both render the same way: walk the selected value(s) and toggle
+      // the matching option's widget (per-checkbox 1040-style) or call
+      // PDFRadioGroup.select(label) (radio-group 540-style). single_select
+      // semantically means "exactly one selected"; multi_select means
+      // "zero or more." The renderer doesn't care about the distinction —
+      // it just iterates whichever value(s) are present.
+      if (!inv.options) return false;
+      const selectedValues = Array.isArray(value) ? value : [value];
       let touched = false;
-      for (const selected of value) {
+      for (const selected of selectedValues) {
         const opt = inv.options.find((o) => o.value === selected);
         if (!opt) continue;
-        check(inv.fieldId, opt.pdfWidgetName);
-        touched = true;
+        if (opt.radioOption && widgetName) {
+          selectRadio(inv.fieldId, widgetName, opt.radioOption);
+          touched = true;
+        } else if (opt.pdfWidgetName) {
+          check(inv.fieldId, opt.pdfWidgetName);
+          touched = true;
+        }
       }
       return touched;
     }
-    case "single_select":
-      return false;
   }
   return false;
 }

@@ -8,7 +8,7 @@
 // Run: npx tsx scripts/smokeFormEngine.ts
 
 import { resolve } from "node:path";
-import { register as registerForm1040 } from "../src/mastra/forms/generated/form-1040.js";
+import { register as registerForm1040 } from "../src/mastra/forms/federal/1040/bindings.js";
 import { evaluateForm } from "../src/mastra/forms/engine.js";
 
 registerForm1040();
@@ -207,10 +207,10 @@ async function main() {
     decisions: makeDecisionsView(decisions),
   };
 
-  // Phase D catalog: the AI-extracted form-1040 fields, 197 entries.
-  // Pairs with the AI-generated bindings in forms/generated/form-1040.ts.
+  // AI-extracted form-1040 catalog, 197 fields. Pairs with the AI-generated
+  // bindings in forms/generated/form-1040.ts.
   const catalog = await loadFromFixtures([
-    resolve(projectRoot, "fixtures/forms/form-1040-2025.extracted.json"),
+    resolve(projectRoot, "ref/forms/form-1040-2025.catalog.json"),
   ]);
 
   const form = evaluateForm("form-1040", ctx, catalog);

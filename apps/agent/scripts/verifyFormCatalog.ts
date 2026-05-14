@@ -1,5 +1,5 @@
-// Verify the DB-backed Catalog matches the JSON fixtures it was seeded
-// from. Run after `seedFormCatalog.ts` to confirm the round-trip.
+// Verify the DB-backed Catalog matches the hand-written scaffold it was
+// seeded from. Run after `seedFormCatalog.ts` to confirm the round-trip.
 //
 // Run: npx tsx scripts/verifyFormCatalog.ts
 
@@ -13,20 +13,20 @@ import {
   type FormDefinition,
 } from "../src/mastra/forms/catalog.js";
 
-const FIXTURE_PATHS = [
-  resolve(projectRoot, "fixtures/forms/form-1040-2025.json"),
+const SCAFFOLD_PATHS = [
+  resolve(projectRoot, "ref/forms/form-1040-2025.scaffold.json"),
 ];
 const TAX_YEAR = 2025;
 
 async function main() {
   const sb = getServiceRoleClient();
 
-  const fromFixture = await loadFromFixtures(FIXTURE_PATHS);
+  const fromScaffold = await loadFromFixtures(SCAFFOLD_PATHS);
   const fromDb = await loadFromDb(sb, TAX_YEAR);
 
   const failures: string[] = [];
 
-  for (const ff of fromFixture.listForms()) {
+  for (const ff of fromScaffold.listForms()) {
     const db = fromDb.getForm(ff.formId);
     if (!db) {
       failures.push(`form ${ff.formId} missing in DB`);
@@ -34,11 +34,11 @@ async function main() {
     }
     diffForm(ff, db, failures);
 
-    const ffFields = fromFixture.getFields(ff.formId);
+    const ffFields = fromScaffold.getFields(ff.formId);
     const dbFields = fromDb.getFields(ff.formId);
     if (ffFields.length !== dbFields.length) {
       failures.push(
-        `form ${ff.formId}: ${ffFields.length} fields in fixture vs ${dbFields.length} in DB`,
+        `form ${ff.formId}: ${ffFields.length} fields in scaffold vs ${dbFields.length} in DB`,
       );
     }
     for (const ffField of ffFields) {

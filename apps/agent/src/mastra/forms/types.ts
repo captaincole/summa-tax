@@ -11,6 +11,7 @@
 
 import type { TaxFactRow } from "../db/taxFacts.js";
 import type { AIDecisionRow } from "../db/aiDecisions.js";
+import type { FilingInfo } from "./filingInfo.js";
 
 // ─── Result of evaluating a single derivation ────────────────────────────
 
@@ -80,6 +81,13 @@ export interface DerivationContext {
   taxYear: number;
   facts: FactsView;
   decisions: DecisionsView;
+  /**
+   * Resolved filing info — the typed view of facts+decisions that
+   * `defineForm` bindings read via `info.X`. Stand-in for the upcoming AI
+   * resolver layer; for now it's hand-computed by `resolveFilingInfo()`
+   * before the engine runs.
+   */
+  filingInfo?: FilingInfo;
   /**
    * Cross-form / cross-field lookup. Returns the previously-evaluated result
    * for a (formId, fieldId), or undefined if not yet evaluated. The engine

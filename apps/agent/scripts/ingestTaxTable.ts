@@ -150,12 +150,22 @@ async function main() {
   }
 
   const header = {
+    tableId: `federal-${year}`,
     taxYear: year,
+    jurisdiction: "federal",
     source: prov,
     coverage: {
       minIncome: coverage.minIncome,
       maxIncome: coverage.maxIncome,
       rowCount: coverage.rowCount,
+    },
+    boundaryConvention: "half_open",
+    filingStatusColumns: {
+      single: "single",
+      married_filing_jointly: "mfj",
+      married_filing_separately: "mfs",
+      head_of_household: "hoh",
+      qualifying_surviving_spouse: "mfj",
     },
   };
   await fs.writeFile(jsonPath, serializeWithCompactRows(header, rows), "utf8");
