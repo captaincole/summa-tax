@@ -147,7 +147,7 @@ export async function fillFromCatalog(opts: {
 
     const widgetName =
       verifiedWidget(form.formId, field.fieldId) ?? inv.pdfWidgetName;
-    fillByType(setText, check, selectRadio, widgetName, inv, value);
+    fillByType(setText, check, selectRadio, widgetName, inv, value, form.jurisdiction);
   }
 
   pdfForm.flatten();
@@ -213,16 +213,25 @@ function fmtMoney(n: number | null | undefined): string {
   return Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 }
 
-// Pre-render value coercion for text fields. IRS/FTB convention: SSN and
-// phone fields are digit-only regardless of the PDF widget's maxLength
-// constraint — facts carry the readable form ("###-##-####",
-// "###-###-####"), but every form (1040, 540, …) renders the bare digits.
+// Pre-render value coercion for text fields. SSN/phone widgets diverge by
+// jurisdiction: federal forms use comb widgets (one box per digit; the
+// visual gaps look like dashes, so the value must be digits-only), state
+// forms use single text widgets that expect the separators embedded
+// ("###-##-####", "###-###-####"). Facts always carry the readable form;
+// we strip separators only on federal renders.
+//
 // Branches on valueTypeRich (the classifier's structural verdict) rather
-// than label-regex because the vision tier sometimes captures whole
-// instructional sentences as the label (e.g. an 8949 page-2 "name" field
-// whose label included the word "SSN" from neighbouring text).
-function coerceTextValue(inv: FieldInventory, value: string): string {
-  if (inv.valueTypeRich === "ssn" || inv.valueTypeRich === "phone") {
+// than label-regex — the vision tier sometimes captures whole instructional
+// sentences as the label (e.g. an 8949 page-2 name field whose label
+// included the word "SSN" from neighbouring text).
+function coerceTextValue(
+  inv: FieldInventory,
+  value: string,
+  jurisdiction: string,
+): string {
+  const isFormatted =
+    inv.valueTypeRich === "ssn" || inv.valueTypeRich === "phone";
+  if (isFormatted && jurisdiction === "federal") {
     return value.replace(/[^0-9]/g, "");
   }
   return value;
@@ -235,6 +244,7 @@ function fillByType(
   widgetName: string | undefined,
   inv: FieldInventory,
   value: unknown,
+  jurisdiction: string,
 ): boolean {
   // Per-field formatter override (registered via FormSpec.formatters in
   // a defineForm call). When present, the override decides exactly what
@@ -259,7 +269,7 @@ function fillByType(
       if (typeof value === "string" && value.length > 0) {
         const text = override
           ? override(value as never)
-          : coerceTextValue(inv, value);
+          : coerceTextValue(inv, value, jurisdiction);
         setText(inv.fieldId, widgetName, text);
         return true;
       }
