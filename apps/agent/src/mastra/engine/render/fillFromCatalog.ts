@@ -1,7 +1,9 @@
-// Pure PDF-fill pipeline for Form 1040. Lifted out of the
-// generate-tax-documents tool so the same code path is exercised by:
+// Catalog-driven PDF-fill pipeline. Walks an EvaluatedForm + matching
+// Catalog and writes each ok field result into its widget. Same code path
+// is exercised by:
 //   - the live tool (Supabase-fed facts → rendered PDF stored to Storage)
 //   - the integration test suite (in-memory facts → in-memory PDF → assert)
+//   - the smoke:form-fill harness (synthetic field results → golden diff)
 // No I/O beyond the caller-supplied blank-PDF bytes; no database, no
 // network. Side-effect-free except for mutating the in-memory PDF.
 //
@@ -40,18 +42,18 @@ export interface RenderedWidget {
   checked?: boolean;
 }
 
-export interface FillForm1040Result {
+export interface FillFromCatalogResult {
   pdfBytes: Buffer;
   /** fieldId → list of widgets we wrote to (1+ entries; multi_select has many). */
   rendered: Map<string, RenderedWidget[]>;
   warnings: string[];
 }
 
-export async function fillForm1040(opts: {
+export async function fillFromCatalog(opts: {
   blankPdfBytes: Buffer | Uint8Array;
   form: EvaluatedForm<AnyFormField>;
   catalog: Catalog;
-}): Promise<FillForm1040Result> {
+}): Promise<FillFromCatalogResult> {
   const { blankPdfBytes, form, catalog } = opts;
   const pdf = await PDFDocument.load(blankPdfBytes);
   const pdfForm = pdf.getForm();
@@ -211,14 +213,16 @@ function fmtMoney(n: number | null | undefined): string {
   return Math.round(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
 }
 
-// Pre-render value coercion for text fields. IRS/FTB convention: SSN,
-// ITIN, and phone fields are digit-only regardless of the PDF widget's
-// maxLength constraint — facts carry the readable form ("###-##-####",
+// Pre-render value coercion for text fields. IRS/FTB convention: SSN and
+// phone fields are digit-only regardless of the PDF widget's maxLength
+// constraint — facts carry the readable form ("###-##-####",
 // "###-###-####"), but every form (1040, 540, …) renders the bare digits.
-// Detect by label rather than maxLength because some widgets are wide
-// enough to fit separators even though the form text instructs digit-only.
+// Branches on valueTypeRich (the classifier's structural verdict) rather
+// than label-regex because the vision tier sometimes captures whole
+// instructional sentences as the label (e.g. an 8949 page-2 "name" field
+// whose label included the word "SSN" from neighbouring text).
 function coerceTextValue(inv: FieldInventory, value: string): string {
-  if (/\b(ssn|itin|phone)\b/i.test(inv.label)) {
+  if (inv.valueTypeRich === "ssn" || inv.valueTypeRich === "phone") {
     return value.replace(/[^0-9]/g, "");
   }
   return value;

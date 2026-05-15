@@ -1,8 +1,8 @@
 // Form-field extraction via pdf.js (through unpdf).
 //
-// Replaces extractAcroForm.ts + extractFormText.ts. The pipeline is
-// deterministic in structure; only LABEL resolution involves AI (and only
-// for widgets that don't carry their own /TU alt-text).
+// The pipeline is deterministic in structure; only LABEL resolution
+// involves AI (and only for widgets that don't carry their own /TU
+// alt-text).
 //
 // Two label tiers:
 //   tier 1 — annotation.alternativeText (/TU). Author-provided user name.
@@ -128,6 +128,11 @@ export async function extractFormFields(pdfPath: string): Promise<ExtractedForm>
 
     for (const a of annots) {
       if (a.subtype !== "Widget") continue;
+      // Skip ReadOnly widgets — computed-output cells the form marks
+      // non-fillable (e.g. Form 8949 column (f) on the Totals row). Real
+      // PDF viewers render them greyed out; including them lets a renderer
+      // write values into widgets that look non-fillable to humans.
+      if (a.readOnly === true) continue;
       const rect = a.rect as [number, number, number, number];
       const fieldName = a.fieldName as string;
 

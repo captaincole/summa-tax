@@ -23,7 +23,7 @@ import { register as registerForm1040 } from "../engine/federal/1040/bindings";
 import { register as registerForm540 } from "../engine/state/ca/540/bindings";
 registerForm1040();
 registerForm540();
-import { fillForm1040 } from "../engine/render/fillForm1040";
+import { fillFromCatalog } from "../engine/render/fillFromCatalog";
 import { requireUserContext } from "./userContext";
 
 const BLANK_1040_PATH = resolve(projectRoot, "forms/federal/1040/blank.pdf");
@@ -188,15 +188,14 @@ export const generateTaxDocuments = createTool({
     const form540 = forms.get("form-540")!;
 
     // ─── Fill the 1040 PDF ───
-    // Delegates to fillForm1040 (form-agnostic despite its name — walks
-    // the catalog inventory and writes each value to its widget). Soft
-    // warnings (widget missing, maxLength exceeded) log but don't fail.
+    // Walks the catalog inventory and writes each value to its widget.
+    // Soft warnings (widget missing, maxLength exceeded) log but don't fail.
     const blank1040 = readFileSync(BLANK_1040_PATH);
     const {
       pdfBytes: out1040,
       rendered: rendered1040,
       warnings: warn1040,
-    } = await fillForm1040({
+    } = await fillFromCatalog({
       blankPdfBytes: blank1040,
       form: form1040,
       catalog,
@@ -230,7 +229,7 @@ export const generateTaxDocuments = createTool({
         pdfBytes: out540,
         rendered: rendered540,
         warnings: warn540,
-      } = await fillForm1040({
+      } = await fillFromCatalog({
         blankPdfBytes: blank540,
         form: form540,
         catalog,

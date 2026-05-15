@@ -1,0 +1,1806 @@
+{
+  "formId": "form-8949",
+  "fieldCount": 200,
+  "entries": [
+    {
+      "fieldId": "form-8949.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+          "text": "T-TXDSK"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_a_short_term_basis_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_b_short_term_basis_not_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_c_short_term_not_on_1099b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[2]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_g_short_term_1099da_basis_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[3]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_h_short_term_1099da_basis_not_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[4]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_i_short_term_digital_not_on_1099da",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[5]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_09[0]",
+          "text": "3,616"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_08[0]",
+          "text": "T-1E9L1"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_07[0]",
+          "text": "8,194"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_04[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_05[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_03[0]",
+          "text": "T-NX5N8"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_10[0]",
+          "text": "4,699"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_06[0]",
+          "text": "5,772"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_81[0]",
+          "text": "4,461"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_80[0]",
+          "text": "T-I3LI7"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_79[0]",
+          "text": "1,055"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_76[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_77[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_75[0]",
+          "text": "T-T52E9"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_82[0]",
+          "text": "5,783"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_78[0]",
+          "text": "3,133"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_89[0]",
+          "text": "7,388"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_88[0]",
+          "text": "T-6RZC5"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_87[0]",
+          "text": "1,147"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_84[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_85[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_83[0]",
+          "text": "T-1DWYF"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_90[0]",
+          "text": "8,077"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_86[0]",
+          "text": "6,644"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_17[0]",
+          "text": "5,166"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_16[0]",
+          "text": "T-12D2Z"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_15[0]",
+          "text": "6,876"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_12[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_13[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_11[0]",
+          "text": "T-UO3RC"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_18[0]",
+          "text": "1,027"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_14[0]",
+          "text": "3,439"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_25[0]",
+          "text": "7,838"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_24[0]",
+          "text": "T-YOVAG"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_23[0]",
+          "text": "5,938"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_20[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_21[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_19[0]",
+          "text": "T-ORWI9"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_26[0]",
+          "text": "4,732"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_22[0]",
+          "text": "8,632"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_33[0]",
+          "text": "1,994"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_32[0]",
+          "text": "T-1E491"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_31[0]",
+          "text": "2,418"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_28[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_29[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_27[0]",
+          "text": "T-1AI4Y"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_34[0]",
+          "text": "6,310"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_30[0]",
+          "text": "1,651"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_41[0]",
+          "text": "5,222"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_40[0]",
+          "text": "T-1XER5"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_39[0]",
+          "text": "3,289"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_36[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_37[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_35[0]",
+          "text": "T-53P9A"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_42[0]",
+          "text": "2,985"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_38[0]",
+          "text": "3,647"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_49[0]",
+          "text": "5,704"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_48[0]",
+          "text": "T-1Y49U"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_47[0]",
+          "text": "5,324"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_44[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_45[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_43[0]",
+          "text": "T-1RKE3"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_50[0]",
+          "text": "3,156"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_46[0]",
+          "text": "8,494"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_57[0]",
+          "text": "2,467"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_56[0]",
+          "text": "T-NIDTD"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_55[0]",
+          "text": "6,401"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_52[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_53[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_51[0]",
+          "text": "T-8RUQY"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_58[0]",
+          "text": "3,877"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_54[0]",
+          "text": "5,463"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_65[0]",
+          "text": "4,698"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_64[0]",
+          "text": "T-199ZN"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_63[0]",
+          "text": "6,431"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_60[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_61[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_59[0]",
+          "text": "T-1L1PE"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_66[0]",
+          "text": "6,551"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_62[0]",
+          "text": "1,290"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_73[0]",
+          "text": "5,966"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_72[0]",
+          "text": "T-1GGB4"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_71[0]",
+          "text": "5,909"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_68[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_69[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_67[0]",
+          "text": "T-D4410"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_74[0]",
+          "text": "8,325"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_70[0]",
+          "text": "4,065"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_94[0]",
+          "text": "8,125"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_92[0]",
+          "text": "3,247"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_95[0]",
+          "text": "3,729"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_91[0]",
+          "text": "7,203"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_02[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_01[0]",
+          "text": "T-VSB7T"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_d_long_term_basis_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_e_long_term_basis_not_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_f_long_term_not_on_1099b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[2]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_j_long_term_1099da_basis_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[3]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_k_long_term_1099da_basis_not_reported",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[4]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_l_long_term_digital_not_on_1099da",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[5]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_09[0]",
+          "text": "6,892"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_08[0]",
+          "text": "T-18HHW"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_07[0]",
+          "text": "2,844"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_04[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_05[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_03[0]",
+          "text": "T-1GA6Q"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_10[0]",
+          "text": "6,243"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_06[0]",
+          "text": "9,155"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_81[0]",
+          "text": "6,706"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_80[0]",
+          "text": "T-XNFVM"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_79[0]",
+          "text": "7,929"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_76[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_77[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_75[0]",
+          "text": "T-WW0VU"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_82[0]",
+          "text": "3,188"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_78[0]",
+          "text": "1,938"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_89[0]",
+          "text": "3,461"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_88[0]",
+          "text": "T-14XXC"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_87[0]",
+          "text": "6,969"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_84[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_85[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_83[0]",
+          "text": "T-1TPZG"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_90[0]",
+          "text": "9,427"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_86[0]",
+          "text": "6,031"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_17[0]",
+          "text": "2,105"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_16[0]",
+          "text": "T-1HYXW"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_15[0]",
+          "text": "7,017"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_12[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_13[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_11[0]",
+          "text": "T-1FDYX"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_18[0]",
+          "text": "4,195"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_14[0]",
+          "text": "4,151"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_25[0]",
+          "text": "6,628"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_24[0]",
+          "text": "T-ZGYZV"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_23[0]",
+          "text": "6,955"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_20[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_21[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_19[0]",
+          "text": "T-CV6JR"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_26[0]",
+          "text": "9,974"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_22[0]",
+          "text": "2,558"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_33[0]",
+          "text": "3,936"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_32[0]",
+          "text": "T-6GT2V"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_31[0]",
+          "text": "5,709"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_28[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_29[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_27[0]",
+          "text": "T-1QHJ9"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_34[0]",
+          "text": "9,802"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_30[0]",
+          "text": "9,443"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_41[0]",
+          "text": "9,222"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_40[0]",
+          "text": "T-MZ4B2"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_39[0]",
+          "text": "6,558"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_36[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_37[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_35[0]",
+          "text": "T-1HFMG"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_42[0]",
+          "text": "9,720"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_38[0]",
+          "text": "1,045"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_49[0]",
+          "text": "1,288"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_48[0]",
+          "text": "T-1QFT4"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_47[0]",
+          "text": "7,492"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_44[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_45[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_43[0]",
+          "text": "T-Q20HI"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_50[0]",
+          "text": "2,816"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_46[0]",
+          "text": "6,507"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_57[0]",
+          "text": "9,750"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_56[0]",
+          "text": "T-1I75L"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_55[0]",
+          "text": "8,813"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_52[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_53[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_51[0]",
+          "text": "T-11B8U"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_58[0]",
+          "text": "8,222"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_54[0]",
+          "text": "9,590"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_65[0]",
+          "text": "1,905"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_64[0]",
+          "text": "T-H8MDF"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_63[0]",
+          "text": "8,734"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_60[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_61[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_59[0]",
+          "text": "T-1VF9R"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_66[0]",
+          "text": "6,350"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_62[0]",
+          "text": "2,847"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_73[0]",
+          "text": "7,245"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_adjustment_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_72[0]",
+          "text": "T-1F8VW"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_71[0]",
+          "text": "6,165"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_date_acquired",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_68[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_date_sold",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_69[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_67[0]",
+          "text": "T-1N2OT"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_74[0]",
+          "text": "4,508"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_70[0]",
+          "text": "7,448"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_adjustment_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_94[0]",
+          "text": "4,624"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_cost_basis",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_92[0]",
+          "text": "7,930"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_95[0]",
+          "text": "9,124"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_91[0]",
+          "text": "7,962"
+        }
+      ]
+    }
+  ]
+}

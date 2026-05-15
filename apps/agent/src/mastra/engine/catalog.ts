@@ -59,6 +59,16 @@ export interface FieldInventory {
   category: Category;
   valueType: FieldValueType;
   /**
+   * Richer value-type from the classifier — distinguishes within the coarse
+   * buckets (e.g. "money" vs "count" both narrow to numeric; "ssn" / "phone"
+   * / "zip" / "email" / "signature" all narrow to text). Consumers that
+   * format values per shape (renderer SSN-digit-stripping, smoke-test
+   * synthetic-value generator) branch on this rather than label-regexing.
+   * Optional for backwards-compat; every post-pipeline-rewrite catalog
+   * carries it.
+   */
+  valueTypeRich?: string;
+  /**
    * Deterministic structural type from pdf-lib. Optional for backwards-compat
    * with catalogs ingested before this field existed (pre-pipeline-rewrite
    * 1040 catalog). New catalogs always carry it; consumers that need the

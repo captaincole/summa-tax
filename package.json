@@ -21,6 +21,7 @@
     "smoke:review": "npm --prefix apps/agent run smoke:review",
     "test": "npm --prefix apps/agent test",
     "test:alex": "npm --prefix apps/agent run test:alex",
+    "test:catalog-fill": "npm --prefix apps/agent run test:catalog-fill --",
     "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install",
     "prepare": "husky"
   },

@@ -21,7 +21,7 @@ import {
   type DerivationContext,
 } from "../src/mastra/engine/types.js";
 import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
-import { fillForm1040 } from "../src/mastra/engine/render/fillForm1040.js";
+import { fillFromCatalog } from "../src/mastra/engine/render/fillFromCatalog.js";
 import {
   assertEngineNumber,
   assertMatchesGolden,
@@ -135,10 +135,9 @@ async function assertForm(
   catalog: Catalog,
   failures: string[],
 ): Promise<void> {
-  // fillForm1040 is form-agnostic despite its name — it walks the catalog
-  // inventory and writes each value into the corresponding PDF widget. Same
-  // function handles the 1040 and the 540; rename pending.
-  const { rendered, warnings } = await fillForm1040({
+  // fillFromCatalog walks the catalog inventory and writes each value into
+  // the corresponding PDF widget. Same function handles the 1040 and the 540.
+  const { rendered, warnings } = await fillFromCatalog({
     blankPdfBytes: getBlankPdf(sf.blankPdfPath),
     form,
     catalog,

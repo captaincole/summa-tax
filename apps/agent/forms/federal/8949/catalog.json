@@ -1,0 +1,3047 @@
+{
+  "form": {
+    "formId": "form-8949",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Sales and Other Dispositions of Capital Assets"
+  },
+  "fields": [
+    {
+      "fieldId": "form-8949.0.header.taxpayer_name",
+      "label": "Name(s) shown on return",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 683.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.header.ssn",
+      "label": "Social security number or taxpayer identification number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+      "position": {
+        "page": 0,
+        "x": 368.2,
+        "y": 683.969
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_a_short_term_basis_reported",
+      "label": "(A) Short-term transactions reported on Form(s) 1099-B showing basis was reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 530.22
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_b_short_term_basis_not_reported",
+      "label": "(B) Short-term transactions reported on Form(s) 1099-B showing basis was not reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[1]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 518.221
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_c_short_term_not_on_1099b",
+      "label": "(C) Short-term transactions, other than digital asset transactions, not reported to you on Form 1099-B or Form 1099-DA",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[2]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 506.269
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_g_short_term_1099da_basis_reported",
+      "label": "(G) Short-term transactions reported on Form(s) 1099-DA showing basis was reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[3]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 494.22
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_h_short_term_1099da_basis_not_reported",
+      "label": "(H) Short-term transactions reported on Form(s) 1099-DA showing basis was not reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[4]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 482.221
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.box_i_short_term_digital_not_on_1099da",
+      "label": "(I) Short-term digital asset transactions not reported to you on Form 1099-DA or Form 1099-B",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[5]",
+      "position": {
+        "page": 0,
+        "x": 50.4,
+        "y": 470.219
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_description",
+      "label": "Row 1 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_03[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 371.971
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_date_acquired",
+      "label": "Row 1 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_04[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_date_sold",
+      "label": "Row 1 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_05[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_proceeds",
+      "label": "Row 1 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_06[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_cost_basis",
+      "label": "Row 1 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_07[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_adjustment_code",
+      "label": "Row 1 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_08[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_adjustment_amount",
+      "label": "Row 1 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_09[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row1_gain_loss",
+      "label": "Row 1 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 371.971
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_description",
+      "label": "Row 2 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 347.97
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_date_acquired",
+      "label": "Row 2 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_date_sold",
+      "label": "Row 2 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_proceeds",
+      "label": "Row 2 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_cost_basis",
+      "label": "Row 2 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_adjustment_code",
+      "label": "Row 2 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_adjustment_amount",
+      "label": "Row 2 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row2_gain_loss",
+      "label": "Row 2 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row2[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 347.97
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_description",
+      "label": "Row 3 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 323.969
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_date_acquired",
+      "label": "Row 3 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_date_sold",
+      "label": "Row 3 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_proceeds",
+      "label": "Row 3 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_cost_basis",
+      "label": "Row 3 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_adjustment_code",
+      "label": "Row 3 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_adjustment_amount",
+      "label": "Row 3 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row3_gain_loss",
+      "label": "Row 3 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row3[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 323.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_description",
+      "label": "Row 4 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 299.968
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_date_acquired",
+      "label": "Row 4 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_date_sold",
+      "label": "Row 4 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_proceeds",
+      "label": "Row 4 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_cost_basis",
+      "label": "Row 4 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_31[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_adjustment_code",
+      "label": "Row 4 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_32[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_adjustment_amount",
+      "label": "Row 4 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_33[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row4_gain_loss",
+      "label": "Row 4 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row4[0].f1_34[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 299.968
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_description",
+      "label": "Row 5 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_35[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 275.967
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_date_acquired",
+      "label": "Row 5 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_36[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_date_sold",
+      "label": "Row 5 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_37[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_proceeds",
+      "label": "Row 5 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_38[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_cost_basis",
+      "label": "Row 5 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_39[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_adjustment_code",
+      "label": "Row 5 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_40[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_adjustment_amount",
+      "label": "Row 5 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_41[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row5_gain_loss",
+      "label": "Row 5 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row5[0].f1_42[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 275.967
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_description",
+      "label": "Row 6 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_43[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 251.966
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_date_acquired",
+      "label": "Row 6 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_44[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_date_sold",
+      "label": "Row 6 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_45[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_proceeds",
+      "label": "Row 6 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_46[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_cost_basis",
+      "label": "Row 6 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_47[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_adjustment_code",
+      "label": "Row 6 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_48[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_adjustment_amount",
+      "label": "Row 6 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_49[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row6_gain_loss",
+      "label": "Row 6 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row6[0].f1_50[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 251.966
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_description",
+      "label": "Row 7 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_51[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 227.965
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_date_acquired",
+      "label": "Row 7 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_52[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_date_sold",
+      "label": "Row 7 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_53[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_proceeds",
+      "label": "Row 7 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_54[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_cost_basis",
+      "label": "Row 7 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_55[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_adjustment_code",
+      "label": "Row 7 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_56[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_adjustment_amount",
+      "label": "Row 7 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_57[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row7_gain_loss",
+      "label": "Row 7 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row7[0].f1_58[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 227.965
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_description",
+      "label": "Row 8 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_59[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 203.964
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_date_acquired",
+      "label": "Row 8 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_60[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_date_sold",
+      "label": "Row 8 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_61[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_proceeds",
+      "label": "Row 8 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_62[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_cost_basis",
+      "label": "Row 8 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_63[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_adjustment_code",
+      "label": "Row 8 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_64[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_adjustment_amount",
+      "label": "Row 8 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_65[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row8_gain_loss",
+      "label": "Row 8 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row8[0].f1_66[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 203.964
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_description",
+      "label": "Row 9 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_67[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 179.963
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_date_acquired",
+      "label": "Row 9 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_68[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_date_sold",
+      "label": "Row 9 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_69[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_proceeds",
+      "label": "Row 9 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_70[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_cost_basis",
+      "label": "Row 9 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_71[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_adjustment_code",
+      "label": "Row 9 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_72[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_adjustment_amount",
+      "label": "Row 9 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_73[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row9_gain_loss",
+      "label": "Row 9 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row9[0].f1_74[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 179.963
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_description",
+      "label": "Row 10 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_75[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 155.962
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_date_acquired",
+      "label": "Row 10 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_76[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_date_sold",
+      "label": "Row 10 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_77[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_proceeds",
+      "label": "Row 10 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_78[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_cost_basis",
+      "label": "Row 10 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_79[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_adjustment_code",
+      "label": "Row 10 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_80[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_adjustment_amount",
+      "label": "Row 10 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_81[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row10_gain_loss",
+      "label": "Row 10 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row10[0].f1_82[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 155.962
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_description",
+      "label": "Row 11 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_83[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 131.961
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_date_acquired",
+      "label": "Row 11 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_84[0]",
+      "position": {
+        "page": 0,
+        "x": 172.8,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_date_sold",
+      "label": "Row 11 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_85[0]",
+      "position": {
+        "page": 0,
+        "x": 223.2,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_proceeds",
+      "label": "Row 11 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_86[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_cost_basis",
+      "label": "Row 11 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_87[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_adjustment_code",
+      "label": "Row 11 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_88[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_adjustment_amount",
+      "label": "Row 11 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_89[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.row11_gain_loss",
+      "label": "Row 11 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Line1_Part1[0].Row11[0].f1_90[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 131.961
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_proceeds",
+      "label": "Line 2 Totals — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_91[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 71.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_cost_basis",
+      "label": "Line 2 Totals — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_92[0]",
+      "position": {
+        "page": 0,
+        "x": 338.4,
+        "y": 71.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_adjustment_amount",
+      "label": "Line 2 Totals — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_94[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 71.969
+      }
+    },
+    {
+      "fieldId": "form-8949.0.part1.totals_gain_loss",
+      "label": "Line 2 Totals — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_95[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 71.969
+      }
+    },
+    {
+      "fieldId": "form-8949.1.header.taxpayer_name",
+      "label": "Name(s) shown on return. Name and SSN or taxpayer identification no. not required if shown on other side",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_01[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 719.969
+      }
+    },
+    {
+      "fieldId": "form-8949.1.header.ssn",
+      "label": "Social security number or taxpayer identification number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_02[0]",
+      "position": {
+        "page": 1,
+        "x": 368.2,
+        "y": 719.969
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_d_long_term_basis_reported",
+      "label": "(D) Long-term transactions reported on Form(s) 1099-B showing basis was reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 566.22
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_e_long_term_basis_not_reported",
+      "label": "(E) Long-term transactions reported on Form(s) 1099-B showing basis was not reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[1]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 554.221
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_f_long_term_not_on_1099b",
+      "label": "(F) Long-term transactions, other than digital asset transactions, not reported to you on Form 1099-B or Form 1099-DA",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[2]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 542.219
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_j_long_term_1099da_basis_reported",
+      "label": "(J) Long-term transactions reported on Form(s) 1099-DA showing basis was reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[3]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 530.22
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_k_long_term_1099da_basis_not_reported",
+      "label": "(K) Long-term transactions reported on Form(s) 1099-DA showing basis was not reported to the IRS",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[4]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 518.221
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.box_l_long_term_digital_not_on_1099da",
+      "label": "(L) Long-term digital asset transactions not reported to you on Form 1099-DA or Form 1099-B",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[5]",
+      "position": {
+        "page": 1,
+        "x": 50.4,
+        "y": 506.219
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_description",
+      "label": "Row 1 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_03[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 407.968
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_date_acquired",
+      "label": "Row 1 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_04[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_date_sold",
+      "label": "Row 1 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_05[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_proceeds",
+      "label": "Row 1 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_06[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_cost_basis",
+      "label": "Row 1 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_07[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_adjustment_code",
+      "label": "Row 1 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_08[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_adjustment_amount",
+      "label": "Row 1 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_09[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row1_gain_loss",
+      "label": "Row 1 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row1[0].f2_10[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 407.968
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_description",
+      "label": "Row 2 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_11[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 383.967
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_date_acquired",
+      "label": "Row 2 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_12[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_date_sold",
+      "label": "Row 2 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_13[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_proceeds",
+      "label": "Row 2 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_14[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_cost_basis",
+      "label": "Row 2 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_15[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_adjustment_code",
+      "label": "Row 2 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_16[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_adjustment_amount",
+      "label": "Row 2 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_17[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row2_gain_loss",
+      "label": "Row 2 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row2[0].f2_18[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 383.967
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_description",
+      "label": "Row 3 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_19[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 359.966
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_date_acquired",
+      "label": "Row 3 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_20[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_date_sold",
+      "label": "Row 3 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_21[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_proceeds",
+      "label": "Row 3 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_22[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_cost_basis",
+      "label": "Row 3 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_23[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_adjustment_code",
+      "label": "Row 3 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_24[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_adjustment_amount",
+      "label": "Row 3 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_25[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row3_gain_loss",
+      "label": "Row 3 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row3[0].f2_26[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 359.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_description",
+      "label": "Row 4 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_27[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 335.965
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_date_acquired",
+      "label": "Row 4 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_28[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_date_sold",
+      "label": "Row 4 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_29[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_proceeds",
+      "label": "Row 4 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_30[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_cost_basis",
+      "label": "Row 4 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_31[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_adjustment_code",
+      "label": "Row 4 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_32[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_adjustment_amount",
+      "label": "Row 4 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_33[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row4_gain_loss",
+      "label": "Row 4 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row4[0].f2_34[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 335.965
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_description",
+      "label": "Row 5 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_35[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 311.964
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_date_acquired",
+      "label": "Row 5 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_36[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_date_sold",
+      "label": "Row 5 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_37[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_proceeds",
+      "label": "Row 5 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_38[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_cost_basis",
+      "label": "Row 5 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_39[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_adjustment_code",
+      "label": "Row 5 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_40[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_adjustment_amount",
+      "label": "Row 5 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_41[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row5_gain_loss",
+      "label": "Row 5 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row5[0].f2_42[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 311.964
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_description",
+      "label": "Row 6 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_43[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 287.963
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_date_acquired",
+      "label": "Row 6 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_44[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_date_sold",
+      "label": "Row 6 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_45[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_proceeds",
+      "label": "Row 6 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_46[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_cost_basis",
+      "label": "Row 6 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_47[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_adjustment_code",
+      "label": "Row 6 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_48[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_adjustment_amount",
+      "label": "Row 6 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_49[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row6_gain_loss",
+      "label": "Row 6 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row6[0].f2_50[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 287.963
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_description",
+      "label": "Row 7 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_51[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 263.962
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_date_acquired",
+      "label": "Row 7 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_52[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_date_sold",
+      "label": "Row 7 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_53[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_proceeds",
+      "label": "Row 7 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_54[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_cost_basis",
+      "label": "Row 7 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_55[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_adjustment_code",
+      "label": "Row 7 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_56[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_adjustment_amount",
+      "label": "Row 7 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_57[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row7_gain_loss",
+      "label": "Row 7 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row7[0].f2_58[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 263.962
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_description",
+      "label": "Row 8 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_59[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 239.961
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_date_acquired",
+      "label": "Row 8 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_60[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_date_sold",
+      "label": "Row 8 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_61[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_proceeds",
+      "label": "Row 8 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_62[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_cost_basis",
+      "label": "Row 8 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_63[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_adjustment_code",
+      "label": "Row 8 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_64[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_adjustment_amount",
+      "label": "Row 8 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_65[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row8_gain_loss",
+      "label": "Row 8 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row8[0].f2_66[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 239.961
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_description",
+      "label": "Row 9 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_67[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 215.96
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_date_acquired",
+      "label": "Row 9 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_68[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_date_sold",
+      "label": "Row 9 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_69[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_proceeds",
+      "label": "Row 9 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_70[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_cost_basis",
+      "label": "Row 9 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_71[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_adjustment_code",
+      "label": "Row 9 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_72[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_adjustment_amount",
+      "label": "Row 9 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_73[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row9_gain_loss",
+      "label": "Row 9 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row9[0].f2_74[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 215.96
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_description",
+      "label": "Row 10 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_75[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 191.959
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_date_acquired",
+      "label": "Row 10 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_76[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_date_sold",
+      "label": "Row 10 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_77[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_proceeds",
+      "label": "Row 10 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_78[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_cost_basis",
+      "label": "Row 10 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_79[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_adjustment_code",
+      "label": "Row 10 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_80[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_adjustment_amount",
+      "label": "Row 10 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_81[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row10_gain_loss",
+      "label": "Row 10 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row10[0].f2_82[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 191.959
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_description",
+      "label": "Row 11 — (a) Description of property",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_83[0]",
+      "position": {
+        "page": 1,
+        "x": 36,
+        "y": 167.958
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_date_acquired",
+      "label": "Row 11 — (b) Date acquired (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_84[0]",
+      "position": {
+        "page": 1,
+        "x": 172.8,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_date_sold",
+      "label": "Row 11 — (c) Date sold or disposed of (Mo., day, yr.)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_85[0]",
+      "position": {
+        "page": 1,
+        "x": 223.2,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_proceeds",
+      "label": "Row 11 — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_86[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_cost_basis",
+      "label": "Row 11 — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_87[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_adjustment_code",
+      "label": "Row 11 — (f) Code(s) from instructions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_88[0]",
+      "position": {
+        "page": 1,
+        "x": 403.2,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_adjustment_amount",
+      "label": "Row 11 — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_89[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.row11_gain_loss",
+      "label": "Row 11 — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Table_Line1_Part2[0].Row11[0].f2_90[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 167.958
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_proceeds",
+      "label": "Line 2 Totals — (d) Proceeds (sales price)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_91[0]",
+      "position": {
+        "page": 1,
+        "x": 273.6,
+        "y": 107.969
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_cost_basis",
+      "label": "Line 2 Totals — (e) Cost or other basis",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_92[0]",
+      "position": {
+        "page": 1,
+        "x": 338.4,
+        "y": 107.966
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_adjustment_amount",
+      "label": "Line 2 Totals — (g) Amount of adjustment",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_94[0]",
+      "position": {
+        "page": 1,
+        "x": 446.4,
+        "y": 107.969
+      }
+    },
+    {
+      "fieldId": "form-8949.1.part2.totals_gain_loss",
+      "label": "Line 2 Totals — (h) Gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_95[0]",
+      "position": {
+        "page": 1,
+        "x": 511.2,
+        "y": 107.969
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/8949/blank.pdf",
+    "ingestedAt": "2026-05-15T22:15:13.751Z",
+    "totalFields": 200,
+    "enriched": 200,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 200,
+    "tokensIn": 42850,
+    "tokensOut": 18540,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

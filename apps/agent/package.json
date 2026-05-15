@@ -20,7 +20,8 @@
     "smoke:engine": "tsx scripts/smokeFormEngine.ts",
     "smoke:review": "tsx scripts/smokeReview.ts",
     "test": "tsx tests/runAll.ts",
-    "test:alex": "tsx tests/scenarios/alex/run.ts"
+    "test:alex": "tsx tests/scenarios/alex/run.ts",
+    "test:catalog-fill": "tsx tests/catalogFill.ts"
   },
   "engines": {
     "node": ">=20.0.0"

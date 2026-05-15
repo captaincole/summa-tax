@@ -274,9 +274,18 @@ function buildCatalogRow(
     ? { page: primary.page, x: primary.position.x, y: primary.position.y }
     : { page: 0, x: 0, y: 0 };
 
-  const fieldId = enrichment
+  const baseFieldId = enrichment
     ? enrichment.fieldId
     : `${formId}.unclassified.${slugifyShortName(field.shortName)}`;
+  // Inject the widget's page index between the formId and the rest of the
+  // fieldId: "form-8949.header.taxpayer_name" → "form-8949.0.header.taxpayer_name".
+  // The classifier is instructed to reuse fieldIds across batches when fields
+  // are semantically equivalent, which means multi-page forms (8949 Part I/II,
+  // 540 pages 1+/2, …) emit the same name for distinct widgets. Page-prefixing
+  // restores per-widget uniqueness without making the classifier handle the
+  // physical layout. Catalogs ingested before this change kept their flat
+  // shape; their bindings reference fieldIds without the page slot.
+  const fieldId = withPagePrefix(baseFieldId, formId, position.page);
   // Label is deterministic (from extractFormFields tier-1 /TU or tier-2 vision).
   // The classifier doesn't produce it.
   const label = field.label;
@@ -336,6 +345,12 @@ function defaultValueTypeFor(kind: FieldKind): ValueType {
     case "other":
       return "text";
   }
+}
+
+function withPagePrefix(baseFieldId: string, formId: string, page: number): string {
+  const prefix = `${formId}.`;
+  if (!baseFieldId.startsWith(prefix)) return baseFieldId;
+  return `${formId}.${page}.${baseFieldId.slice(prefix.length)}`;
 }
 
 function slugifyShortName(name: string): string {

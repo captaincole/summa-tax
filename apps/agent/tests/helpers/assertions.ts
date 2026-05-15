@@ -7,7 +7,7 @@
 // to failure messages so multi-form scenarios are unambiguous.
 
 import type { EvaluatedForm, AnyFormField } from "../../src/mastra/engine/types.js";
-import type { RenderedWidget } from "../../src/mastra/engine/render/fillForm1040.js";
+import type { RenderedWidget } from "../../src/mastra/engine/render/fillFromCatalog.js";
 import type { GoldenValue } from "./goldenPdf.js";
 import { normalizeForCompare } from "./goldenPdf.js";
 
