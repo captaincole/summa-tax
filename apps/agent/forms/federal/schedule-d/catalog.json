@@ -1,0 +1,819 @@
+{
+  "form": {
+    "formId": "schedule-d",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Capital Gains and Losses"
+  },
+  "fields": [
+    {
+      "fieldId": "schedule-d.0.header.taxpayer_name",
+      "label": "Name(s) shown on return",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 671.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 453.6,
+        "y": 671.998
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-d.0.header.qof_disposal_yes",
+      "label": "Did you dispose of any investment(s) in a qualified opportunity fund during the tax year? Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 496.8,
+        "y": 662.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.header.qof_disposal_no",
+      "label": "Did you dispose of any investment(s) in a qualified opportunity fund during the tax year? No",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[1]",
+      "position": {
+        "page": 0,
+        "x": 540,
+        "y": 662.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_proceeds",
+      "label": "Line 1a — Proceeds (sales price) — Totals for all short-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_cost",
+      "label": "Line 1a — Cost (or other basis) — Totals for all short-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_4[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_gain_loss",
+      "label": "Line 1a — Gain or (loss) — Totals for all short-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_6[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_proceeds",
+      "label": "Line 1b — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box A or Box G checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_7[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 479.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_cost",
+      "label": "Line 1b — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box A or Box G checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_8[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 479.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_adjustments",
+      "label": "Line 1b — Adjustments to gain or loss from Form(s) 8949, Part I, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box A or Box G checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_9[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 479.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_gain_loss",
+      "label": "Line 1b — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box A or Box G checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 479.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_proceeds",
+      "label": "Line 2 — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box B or Box H checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 455.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_cost",
+      "label": "Line 2 — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box B or Box H checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 455.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_adjustments",
+      "label": "Line 2 — Adjustments to gain or loss from Form(s) 8949, Part I, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box B or Box H checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 455.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_gain_loss",
+      "label": "Line 2 — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box B or Box H checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 455.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_proceeds",
+      "label": "Line 3 — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box C or Box I checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 431.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_cost",
+      "label": "Line 3 — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box C or Box I checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 431.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_adjustments",
+      "label": "Line 3 — Adjustments to gain or loss from Form(s) 8949, Part I, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box C or Box I checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 431.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_gain_loss",
+      "label": "Line 3 — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box C or Box I checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 431.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.4_short_term_gain_other_forms",
+      "label": "Line 4 — Short-term gain from Form 6252 and short-term gain or (loss) from Forms 4684, 6781, and 8824",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 420.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.5_net_short_term_passthrough",
+      "label": "Line 5 — Net short-term gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 408.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.6_short_term_loss_carryover",
+      "label": "Line 6 — Short-term capital loss carryover",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 507,
+        "y": 384.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.7_net_short_term_gain_loss",
+      "label": "Line 7 — Net short-term capital gain or (loss). Combine lines 1a through 6 in column (h)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 360
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_proceeds",
+      "label": "Line 8a — Proceeds (sales price) — Totals for all long-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 216
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_cost",
+      "label": "Line 8a — Cost (or other basis) — Totals for all long-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 216
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_gain_loss",
+      "label": "Line 8a — Gain or (loss) — Totals for all long-term transactions reported on Form 1099-B or Form 1099-DA for which basis was reported to the IRS and for which you have no adjustments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 216
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_proceeds",
+      "label": "Line 8b — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box D or Box J checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 191.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_cost",
+      "label": "Line 8b — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box D or Box J checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 191.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_adjustments",
+      "label": "Line 8b — Adjustments to gain or loss from Form(s) 8949, Part II, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box D or Box J checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 191.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_gain_loss",
+      "label": "Line 8b — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box D or Box J checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 191.999
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_proceeds",
+      "label": "Line 9 — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box E or Box K checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_31[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 167.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_cost",
+      "label": "Line 9 — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box E or Box K checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_32[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 167.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_adjustments",
+      "label": "Line 9 — Adjustments to gain or loss from Form(s) 8949, Part II, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box E or Box K checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_33[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 167.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_gain_loss",
+      "label": "Line 9 — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box E or Box K checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_34[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 167.998
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_proceeds",
+      "label": "Line 10 — Proceeds (sales price) — Totals for all transactions reported on Form(s) 8949 with Box F or Box L checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_35[0]",
+      "position": {
+        "page": 0,
+        "x": 288,
+        "y": 143.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_cost",
+      "label": "Line 10 — Cost (or other basis) — Totals for all transactions reported on Form(s) 8949 with Box F or Box L checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_36[0]",
+      "position": {
+        "page": 0,
+        "x": 360,
+        "y": 143.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_adjustments",
+      "label": "Line 10 — Adjustments to gain or loss from Form(s) 8949, Part II, line 2, column (g) — Totals for all transactions reported on Form(s) 8949 with Box F or Box L checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_37[0]",
+      "position": {
+        "page": 0,
+        "x": 432,
+        "y": 143.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_gain_loss",
+      "label": "Line 10 — Gain or (loss) — Totals for all transactions reported on Form(s) 8949 with Box F or Box L checked",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_38[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 143.997
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.11_long_term_gain_other_forms",
+      "label": "Line 11 — Gain from Form 4797, Part I; long-term gain from Forms 2439 and 6252; and long-term gain or (loss) from Forms 4684, 6781, and 8824",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_39[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 120.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.12_net_long_term_passthrough",
+      "label": "Line 12 — Net long-term gain or (loss) from partnerships, S corporations, estates, and trusts from Schedule(s) K-1",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_40[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 108
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.13_capital_gain_distributions",
+      "label": "Line 13 — Capital gain distributions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_41[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 96.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.14_long_term_loss_carryover",
+      "label": "Line 14 — Long-term capital loss carryover",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_42[0]",
+      "position": {
+        "page": 0,
+        "x": 507,
+        "y": 72
+      }
+    },
+    {
+      "fieldId": "schedule-d.0.line.15_net_long_term_gain_loss",
+      "label": "Line 15 — Net long-term capital gain or (loss). Combine lines 8a through 14 in column (h)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_43[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 48.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.16_combined_gain_loss",
+      "label": "Line 16 — Combine lines 7 and 15 and enter the result",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_1[0]",
+      "position": {
+        "page": 1,
+        "x": 489.6,
+        "y": 696.002
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.17_both_gains_yes",
+      "label": "Line 17 Yes — Are lines 15 and 16 both gains? Yes. Go to line 18.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 578
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.17_both_gains_no",
+      "label": "Line 17 No — Are lines 15 and 16 both gains? No. Skip lines 18 through 21, and go to line 22.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[1]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 566.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.18_rate_gain_worksheet_amount",
+      "label": "Line 18 — If you are required to complete the 28% Rate Gain Worksheet, enter the amount, if any, from line 7 of that worksheet",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_2[0]",
+      "position": {
+        "page": 1,
+        "x": 489.6,
+        "y": 528.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.19_unrecaptured_sec1250_gain",
+      "label": "Line 19 — If you are required to complete the Unrecaptured Section 1250 Gain Worksheet, enter the amount, if any, from line 18 of that worksheet",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_3[0]",
+      "position": {
+        "page": 1,
+        "x": 489.6,
+        "y": 492.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.20_use_qual_div_worksheet_yes",
+      "label": "Line 20 Yes — Are lines 18 and 19 both zero or blank and you are not filing Form 4952? Yes. Complete the Qualified Dividends and Capital Gain Tax Worksheet.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_2[0]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 458.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.20_use_qual_div_worksheet_no",
+      "label": "Line 20 No — Are lines 18 and 19 both zero or blank and you are not filing Form 4952? No. Complete the Schedule D Tax Worksheet.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_2[1]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 422.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.21_allowable_loss",
+      "label": "Line 21 — If line 16 is a loss, enter here and on Form 1040, 1040-SR, or 1040-NR, line 7a, the smaller of: the loss on line 16; or ($3,000), or if married filing separately, ($1,500)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_4[0]",
+      "position": {
+        "page": 1,
+        "x": 492.6,
+        "y": 360
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.22_qualified_dividends_yes",
+      "label": "Line 22 Yes — Do you have qualified dividends on Form 1040, 1040-SR, or 1040-NR, line 3a? Yes. Complete the Qualified Dividends and Capital Gain Tax Worksheet.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_3[0]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 278.001
+      }
+    },
+    {
+      "fieldId": "schedule-d.1.line.22_qualified_dividends_no",
+      "label": "Line 22 No — Do you have qualified dividends on Form 1040, 1040-SR, or 1040-NR, line 3a? No. Complete the rest of Form 1040, 1040-SR, or 1040-NR.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_3[1]",
+      "position": {
+        "page": 1,
+        "x": 66.799,
+        "y": 242.001
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/schedule-d/blank.pdf",
+    "ingestedAt": "2026-05-15T22:22:37.820Z",
+    "totalFields": 53,
+    "enriched": 53,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 53,
+    "tokensIn": 12432,
+    "tokensOut": 4566,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

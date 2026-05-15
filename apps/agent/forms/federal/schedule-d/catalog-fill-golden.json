@@ -1,0 +1,483 @@
+{
+  "formId": "schedule-d",
+  "fieldCount": 53,
+  "entries": [
+    {
+      "fieldId": "schedule-d.0.header.qof_disposal_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.header.qof_disposal_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_2[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_1[0]",
+          "text": "T-19MTM"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_37[0]",
+          "text": "5,152"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_36[0]",
+          "text": "4,960"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_38[0]",
+          "text": "6,465"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.10_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row10[0].f1_35[0]",
+          "text": "9,675"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.11_long_term_gain_other_forms",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_39[0]",
+          "text": "7,273"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.12_net_long_term_passthrough",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_40[0]",
+          "text": "3,204"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.13_capital_gain_distributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_41[0]",
+          "text": "2,991"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.14_long_term_loss_carryover",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_42[0]",
+          "text": "9,285"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.15_net_long_term_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_43[0]",
+          "text": "8,782"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_4[0]",
+          "text": "6,029"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_6[0]",
+          "text": "3,934"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1a_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1a[0].f1_3[0]",
+          "text": "8,534"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_9[0]",
+          "text": "8,650"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_8[0]",
+          "text": "2,683"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_10[0]",
+          "text": "3,325"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.1b_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row1b[0].f1_7[0]",
+          "text": "4,792"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_13[0]",
+          "text": "9,853"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_12[0]",
+          "text": "2,286"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_14[0]",
+          "text": "4,826"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.2_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row2[0].f1_11[0]",
+          "text": "7,842"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_17[0]",
+          "text": "4,404"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_16[0]",
+          "text": "2,457"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_18[0]",
+          "text": "8,105"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.3_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartI[0].Row3[0].f1_15[0]",
+          "text": "9,200"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.4_short_term_gain_other_forms",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+          "text": "5,141"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.5_net_short_term_passthrough",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+          "text": "5,674"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.6_short_term_loss_carryover",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+          "text": "3,992"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.7_net_short_term_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+          "text": "6,085"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_24[0]",
+          "text": "6,558"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_26[0]",
+          "text": "1,001"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8a_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8a[0].f1_23[0]",
+          "text": "7,756"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_29[0]",
+          "text": "5,027"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_28[0]",
+          "text": "4,159"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_30[0]",
+          "text": "6,977"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.8b_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row8b[0].f1_27[0]",
+          "text": "3,205"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_adjustments",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_33[0]",
+          "text": "6,141"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_cost",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_32[0]",
+          "text": "7,954"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_34[0]",
+          "text": "1,740"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.0.line.9_proceeds",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_PartII[0].Row9[0].f1_31[0]",
+          "text": "5,929"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.16_combined_gain_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_1[0]",
+          "text": "9,859"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.17_both_gains_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.17_both_gains_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.18_rate_gain_worksheet_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_2[0]",
+          "text": "1,318"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.19_unrecaptured_sec1250_gain",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_3[0]",
+          "text": "4,148"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.20_use_qual_div_worksheet_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_2[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.20_use_qual_div_worksheet_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.21_allowable_loss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_4[0]",
+          "text": "7,792"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.22_qualified_dividends_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_3[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-d.1.line.22_qualified_dividends_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_3[0]",
+          "checked": true
+        }
+      ]
+    }
+  ]
+}
