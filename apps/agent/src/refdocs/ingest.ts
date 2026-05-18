@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve, dirname } from "node:path";
 import { extractPdf } from "./extract";
-import { parseDoc } from "./parse";
+import { parseDoc, type ParserStyle } from "./parse";
 import { summarizeBlocks, sha1 } from "./contextualize";
 import { embed, batchByLimits } from "./voyage";
 import {
@@ -30,6 +30,10 @@ export interface IngestInput {
   /** Skip the Voyage embedding step. Set automatically when VOYAGE_API_KEY is
    *  not present, so the system gracefully degrades to FTS-only retrieval. */
   noEmbed?: boolean;
+  /** Heading-detection profile. Defaults to "irs"; FTB-published docs (e.g.
+   *  Schedule CA instructions) need "ftb" for their en-dash inline-body
+   *  convention. See `ParserStyle` in `./parse`. */
+  parserStyle?: ParserStyle;
 }
 
 export interface IngestResult {
@@ -100,7 +104,7 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
   const { sections: parsedSections, blocks: parsedBlocks } = parseDoc(
     extracted.canonicalText,
     extracted.pages,
-    { docId: input.docId },
+    { docId: input.docId, style: input.parserStyle },
   );
 
   const pages: RefPage[] = extracted.pages.map((p) => ({

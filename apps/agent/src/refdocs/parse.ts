@@ -5,7 +5,30 @@ import type { RefBlock, RefSection } from "../mastra/db/refDocs";
 // qualifies as the start of a new section. Keep the rules conservative —
 // a miss degrades gracefully (content gets attached to the previous section),
 // a false positive fragments the doc.
-type HeadingMatch = { heading: string; slug: string };
+//
+// `inlineBodyOffset`, when set, marks where the body content starts within the
+// source line — i.e. the heading consumes only the prefix of the line, not the
+// whole line. Used by FTB-style inline-dash headings ("Wildfire Disaster
+// Settlement Exclusion – For taxable years…"). Without it, the body would be
+// lost when the heading line is consumed.
+type HeadingMatch = {
+  heading: string;
+  slug: string;
+  inlineBodyOffset?: number;
+};
+
+/**
+ * Which publication style governs heading detection.
+ *  - "irs" (default): em-dash conventions (`Line 25a—Form(s) W-2`), Part/Schedule
+ *    headings, plus the 5-entry filing-status prose set.
+ *  - "ftb": additive — keeps every IRS rule, then layers en-dash inline-body
+ *    headings (`Wildfire Disaster Settlement Exclusion – For taxable years…`),
+ *    en-dash line headings (`Line 2a – Alimony Received`), and an FTB-specific
+ *    prose set ("What's New", "General Information", "Conformity").
+ *
+ * Threaded in from `ingestRefDoc({ parserStyle })` → CLI `--parser-style`.
+ */
+export type ParserStyle = "irs" | "ftb";
 
 // Known prose subject-headings that appear standalone on a line and would
 // otherwise be swept into the preceding section as body text. These follow no
@@ -41,7 +64,28 @@ const LINES_RANGE_HEADING_RE = /^Lines \d+[a-z]? through \d+[a-z]?$/;
 const PART_HEADING_RE = /^Part [IVXLCDM]+$/;
 const SCHEDULE_HEADING_RE = /^Schedule \d+[A-Z]?$/;
 
-function detectHeading(line: string): HeadingMatch | null {
+// FTB conventions — en-dash where IRS uses em-dash. Plus a small standalone
+// section-header set ("What's New" etc.). The inline-body pattern captures
+// a Title Case prefix (up to 80 chars) followed by " – <body>"; the prefix
+// becomes the heading, the body stays as block content. Title Case is
+// enforced after match to reject lowercase echoes of headings that appear
+// in body prose (e.g. "wildfire mitigation payment – California law allows…"
+// on a later page).
+const FTB_LINE_EN_DASH_RE = /^Line \d+[a-z]? – .+$/;
+const FTB_INLINE_DASH_RE = /^([A-Z][^\n]{0,79}?)\s–\s(\S.*)$/;
+const FTB_KNOWN_PROSE_HEADINGS = new Set<string>([
+  "What's New",
+  // PDF extractor preserves the curly apostrophe (U+2019). Match both so the
+  // detector survives whichever variant a future extractor revision yields.
+  "What’s New",
+  "General Information",
+  "Conformity",
+]);
+
+function detectHeading(
+  line: string,
+  style: ParserStyle = "irs",
+): HeadingMatch | null {
   const t = line.trim();
   if (
     LINE_HEADING_RE.test(t) ||
@@ -53,6 +97,36 @@ function detectHeading(line: string): HeadingMatch | null {
     KNOWN_PROSE_HEADINGS.has(t)
   ) {
     return { heading: t, slug: slugifyHeading(t) };
+  }
+  if (style === "ftb") {
+    if (FTB_KNOWN_PROSE_HEADINGS.has(t)) {
+      return { heading: t, slug: slugifyHeading(t) };
+    }
+    if (FTB_LINE_EN_DASH_RE.test(t)) {
+      return { heading: t, slug: slugifyHeading(t) };
+    }
+    const m = t.match(FTB_INLINE_DASH_RE);
+    if (m) {
+      const prefix = m[1].trim();
+      if (isTitleCaseLine(prefix)) {
+        // Locate the en-dash in the un-trimmed line so the offset is correct
+        // relative to line.charStart in parseDoc. The regex anchors to the
+        // trimmed string but we need to point into the raw source.
+        const dashIdx = line.indexOf("–");
+        if (dashIdx >= 0) {
+          // Body begins after the dash and any following whitespace.
+          let bodyOffset = dashIdx + 1;
+          while (bodyOffset < line.length && /\s/.test(line[bodyOffset])) {
+            bodyOffset += 1;
+          }
+          return {
+            heading: prefix,
+            slug: slugifyHeading(prefix),
+            inlineBodyOffset: bodyOffset,
+          };
+        }
+      }
+    }
   }
   return null;
 }
@@ -144,6 +218,8 @@ export interface ParsedDoc {
 
 export interface ParseOpts {
   docId: string; // used only to build ids; not returned in section/block
+  /** See `ParserStyle`. Defaults to "irs" — additive layers ride on top. */
+  style?: ParserStyle;
 }
 
 /**
@@ -248,9 +324,29 @@ export function parseDoc(
         continue;
       }
 
-      const heading = detectHeading(line.text);
+      const heading = detectHeading(line.text, opts.style);
       if (heading) {
-        // Consume continuation lines that form the rest of the heading.
+        // Inline-body headings (FTB "Title – body" pattern) consume only the
+        // prefix of the line. Skip multi-line continuation logic and start
+        // the body block mid-line at the dash boundary.
+        if (heading.inlineBodyOffset !== undefined) {
+          startSection(
+            heading.heading,
+            heading.slug,
+            line.charStart,
+            page.pageNum,
+          );
+          const bodyStart = line.charStart + heading.inlineBodyOffset;
+          pendingBlock = {
+            pageNum: page.pageNum,
+            firstLineStart: bodyStart,
+            lastLineEnd: line.charEnd,
+          };
+          i += 1;
+          continue;
+        }
+
+        // Whole-line heading. Consume continuation lines that form the rest.
         const continuationTexts: string[] = [];
         let j = i + 1;
         let consumed = 0;

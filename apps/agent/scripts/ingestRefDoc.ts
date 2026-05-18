@@ -14,6 +14,7 @@ async function main() {
       force: { type: "boolean", default: false },
       "no-contextualize": { type: "boolean", default: false },
       "no-embed": { type: "boolean", default: false },
+      "parser-style": { type: "string", default: "irs" },
     },
     strict: true,
     allowPositionals: false,
@@ -22,8 +23,15 @@ async function main() {
   if (!values.pdf || !values["doc-id"] || !values.title) {
     console.error(
       "usage: tsx scripts/ingestRefDoc.ts --pdf <path> --doc-id <id> --title <title>" +
-        " [--publisher IRS] [--tax-year 2025] [--source-url <url>] [--force]",
+        " [--publisher IRS] [--tax-year 2025] [--source-url <url>] [--force]" +
+        " [--parser-style irs|ftb]",
     );
+    process.exit(1);
+  }
+
+  const parserStyle = values["parser-style"];
+  if (parserStyle !== "irs" && parserStyle !== "ftb") {
+    console.error(`--parser-style must be "irs" or "ftb" (got "${parserStyle}")`);
     process.exit(1);
   }
 
@@ -37,6 +45,7 @@ async function main() {
     force: values.force,
     noContextualize: values["no-contextualize"],
     noEmbed: values["no-embed"],
+    parserStyle,
   });
 
   console.log("ingested:");

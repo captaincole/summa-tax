@@ -1,0 +1,1781 @@
+Schedule CA (540) Instructions 2025 Page 1
+2025 Instructions for Schedule CA (540)
+California Adjustments — Residents
+References in these instructions are to the Internal Revenue Code (IRC) as of January 1, 2025, and the California Revenue and Taxation Code (R&TC).
+What’s New
+Wildfire Disaster Settlement Exclusion – For taxable years beginning
+on or after January 1, 2021, and before January 1, 2030, California
+law allows a qualified taxpayer an exclusion from gross income for any
+qualified amount received from a settlement entity in connection with a
+qualified wildfire disaster in California. If a qualified taxpayer included
+income for a qualified amount received from a settlement entity in a
+prior taxable year, the taxpayer can file an amended return for that
+year within the normal statute of limitations. For more information, see
+Schedule CA (540), California Adjustments – Residents, specific line
+instructions in Part I, Section B, line 8z and California Revenue and
+Taxation Code (R&TC) Section 17138.7.
+Chiquita Canyon Elevated Temperature Landfill Event Exclusion –
+For taxable years beginning on or after January 1, 2024, and before
+January 1, 2029, California law allows an exclusion from gross income
+for any Chiquita Canyon elevated temperature landfill event payment
+amount received by a taxpayer. If a taxpayer included income for a
+Chiquita Canyon elevated temperature landfill event payment amount
+received in a prior taxable year, the taxpayer can file an amended
+return for that year within the normal statute of limitations. For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 8z and R&TC Section 17157.5.
+Military Retirement Exclusion – For taxable years beginning on or
+after January 1, 2025, and before January 1, 2030, California law allows
+an exclusion from gross income for a qualified taxpayer that received
+retirement pay from the federal government for service in the uniformed
+services or annuity payments pursuant to a United States Department
+of Defense Survivor Benefit Plan during the taxable year, not to exceed
+$20,000. For more information, see Schedule CA (540) specific line
+instructions in Part I, Section A, line 5a and line 5b, see R&TC Sections
+17132.9 and 17132.10, and get FTB Pub. 1032, Tax Information for
+Military Personnel.
+Federal Tax Changes Under One Big Beautiful Bill Act (OBBBA)
+– In general, California R&TC does not conform to the OBBBA. For
+adjustments due to the OBBBA, see the specific line instructions for the
+following items:
+• Increased limitation on individual deductions for certain state and
+local taxes
+• Additional expenses treated as qualified higher education expenses for
+purposes of Internal Revenue Code (IRC) Section 529 accounts
+• Certain postsecondary credentialing expenses treated as qualified
+higher education expenses for purposes of IRC Section 529 accounts
+• Expansion of qualified small business stock gain exclusion
+• Extension of rules for treatment of certain disaster-related personal
+casualty losses
+Alimony – California law has until now conformed to federal law
+related to alimony and separate maintenance payments as it read
+on January 1, 2015. Specifically, California did not follow the federal
+repeal of IRC Sections 71 and 215, effective for taxable years after
+2018. For taxable years beginning on or after January 1, 2025,
+California is conforming to the federal repeal of IRC Sections 71 and
+215, which means that alimony and separate maintenance payments
+are not includable in the income of the receiving spouse and are not
+deductible by the payor spouse if made under any divorce or separation
+agreement executed after December 31, 2025, or executed on or before
+December 31, 2025, and modified after that date (if the modification
+expressly provides that the amendments apply). For this type of alimony
+and separate maintenance payments, California law is the same as federal
+law and no adjustment is needed.
+For alimony and separate maintenance payments made under any divorce
+or separation agreement executed after December 31, 2018, and on or
+before December 31, 2025, or executed on or before December 31, 2018,
+and modified after that date and on or before December 31, 2025 (if the
+modification expressly provides that the amendments apply), California
+law is not the same as federal law and an adjustment is needed. For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 2a and Section C, line 19a.
+General Information
+In general, for taxable years beginning on or after January 1, 2025,
+California law conforms to the IRC as of January 1, 2025. However,
+there are continuing differences between California and federal law.
+When California conforms to federal tax law changes, we do not always
+adopt all of the changes made at the federal level. For more information,
+go to ftb.ca.gov and search for conformity. Additional information
+can be found in FTB Pub. 1001, Supplemental Guidelines to California
+Adjustments, and the Business Entity tax booklets.
+The instructions provided with California tax forms are a summary of
+California tax law and are only intended to aid taxpayers in preparing
+their state income tax returns. We include information that is most useful
+to the greatest number of taxpayers in the limited space available. It is
+not possible to include all requirements of the R&TC in the instructions.
+Taxpayers should not consider the instructions as authoritative law.
+Conformity
+For updates regarding federal acts, go to ftb.ca.gov and search for
+conformity.
+Federal Acts – In general, the R&TC does not conform to the changes
+under the following federal acts. For specific adjustments due to the
+following acts, see Schedule CA (540) specific line instructions:
+• One Big Beautiful Bill Act (OBBBA) (enacted on July 4, 2025)
+• Federal Disaster Tax Relief Act of 2023 (enacted on December 12, 2024)
+• American Rescue Plan Act (ARPA) of 2021 (enacted on
+March 11, 2021)
+• Consolidated Appropriations Act (CAA), 2021 (enacted on
+December 27, 2020)
+• Setting Every Community Up for Retirement Enhancement (SECURE)
+Act (enacted on December 20, 2019)
+Wildfire Relief Payment – For taxable years beginning after
+December 31, 2019, and before January 1, 2026, the Federal Disaster Tax
+Relief Act of 2023 allows an exclusion from gross income for any amount
+received by an individual as a qualified wildfire relief payment. Generally,
+California law does not conform. If any qualified amount was excluded
+from income for federal purposes and California law provides no similar
+exclusion, include that amount in income for California purposes. For
+more information, see Schedule CA (540) specific line instructions in
+Part I, Section B, line 8z. For specific wildfire relief payments excluded for
+California purposes, see What’s New and General Information.
+Net Operating Loss Suspension – For taxable years beginning on or after
+January 1, 2024, and before January 1, 2027, California has suspended
+the net operating loss (NOL) carryover deduction. Taxpayers may
+continue to compute and carryover an NOL during the suspension period.
+However, taxpayers with net business income or modified adjusted gross
+income of less than $1,000,000 or with disaster loss carryovers are not
+affected by the NOL suspension rules.
+For more information, see R&TC Section 17276.24, and get form
+FTB 3805V, Net Operating Loss (NOL) Computation and NOL and
+Disaster Loss Limitations – Individuals, Estates, and Trusts.
+Special Rules for Certain Distributions from Qualified IRC Section 529
+Tuition Plans – The federal Consolidated Appropriations Act (CAA), 2023,
+allows qualified IRC Section 529 tuition plans that have been maintained
+for 15 years to rollover to a Roth Individual Retirement Arrangement
+(IRA) without a tax or penalty. Under the federal law, rollover distributions
+from an IRC Section 529 plan to a Roth IRA after December 31, 2023,
+will be treated in the same manner as the earnings and contributions of
+a Roth IRA. California law does not conform to this federal provision.
+Rollover distribution from an IRC Section 529 plan to a Roth IRA is
+
+
+
+Page 2 Schedule CA (540) Instructions 2025
+includible in California taxable income and subject to an additional tax
+of 2½%. For more information, see Schedule CA (540) specific line
+instructions in Part I, Section B, line 8z.
+Wildfire Mitigation Payment – For taxable years beginning on or after
+January 1, 2024, and before January 1, 2029, California law allows
+a qualified taxpayer an exclusion from gross income for any amount
+received as a California qualified wildfire loss mitigation payment through
+the California Wildfire Mitigation Financial Assistance Program. For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 8z and R&TC Section 17138.8.
+California Hope, Opportunity, Perseverance, and Empowerment
+(HOPE) for Children Trust Account Program – The California HOPE for
+Children Trust Account Act created the California HOPE for Children
+Trust Account Program for the purpose of providing an eligible child
+with a HOPE trust account. For taxable years beginning on or after
+January 1, 2023, California law allows an exclusion from gross income
+for any funds deposited, any investment returns accrued, and any
+accrued interest in a HOPE trust account and for any funds from a HOPE
+trust account that is withdrawn or transferred by an eligible youth. For
+more information, see Schedule CA (540) specific line instructions in
+Part I, Section B, line 8z and R&TC Section 17141.5.
+Interagency Council on Homelessness Payment Exclusion – For taxable
+years beginning on or after January 1, 2023, California law allows an
+exclusion from gross income for payments received pursuant to the
+California Welfare and Institutions Code Section 8257 by members of
+the Interagency Council on Homelessness, its advisory committee, or its
+working groups who are or have been homeless. For more information,
+see Schedule CA (540) specific line instructions in Part I, Section B,
+line 8z and R&TC Section 17131.13.
+Kincade Wildfire Exclusion – For taxable years beginning on or after
+January 1, 2020, and before January 1, 2028, California law allows a
+qualified taxpayer an exclusion from gross income for any qualified
+amount received in a settlement from Pacific Gas and Electric (PG&E)
+Company or its subsidiary relating to the 2019 Kincade Fire. If a qualified
+taxpayer included income for a qualified amount received from this
+settlement in a prior taxable year, the taxpayer can file an amended tax
+return for that year within the normal statute of limitations. For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 8z and R&TC Section 17139.2.
+Zogg Wildfire Exclusion – For taxable years beginning on or after
+January 1, 2020, and before January 1, 2028, California law allows a
+qualified taxpayer an exclusion from gross income for any qualified
+amount received in a settlement from PG&E Company or its subsidiary
+relating to the 2020 Zogg Fire. If a qualified taxpayer included income
+for a qualified amount received from this settlement in a prior
+taxable year, the taxpayer can file an amended tax return for that year
+within the normal statute of limitations. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 8z
+and R&TC Section 17139.3.
+Discharge of Student Fees – For taxable years beginning on or after
+January 1, 2022, and before January 1, 2027, California law allows an
+exclusion from gross income for any amount of unpaid fees due or owed
+by a student to a community college that was discharged pursuant to
+California Education Code Section 32527. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 8z
+and R&TC Section 17131.21.
+Guaranteed Income Pilot Program Payment Exclusion – Beginning
+on June 30, 2022, and before July 1, 2026, California law allows an
+exclusion from gross income for any payments received by an individual
+from a guaranteed income pilot program or project that receives a grant
+pursuant to California Welfare and Institution Code Section 18997. For
+more information, see Schedule CA (540) specific line instructions in
+Part I, Section B, line 8z and R&TC Section 17131.12.
+Small Business and Nonprofit COVID-19 Supplemental Paid Sick Leave
+Relief Grant – For taxable years beginning on or after January 1, 2021,
+and before January 1, 2030, California law allows an exclusion from
+gross income for grant allocations received by a taxpayer pursuant to
+the California Small Business and Nonprofit COVID-19 Supplemental
+Paid Sick Leave Relief Grant Program that is established by Section
+12100.975 of the Government Code. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 8z
+and R&TC Section 17158.
+Turf Replacement Water Conservation Program – For taxable years
+beginning on or after January 1, 2022, and before January 1, 2027,
+California law allows an exclusion from gross income for any amount
+received as a rebate, voucher, or other financial incentive issued by a
+public water system, as defined, local government, or state agency for
+participation in a turf replacement water conservation program. For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 8z and R&TC Section 17138.2.
+Fire Victims Trust Exclusion – For taxable years beginning before
+January 1, 2028, California law allows a qualified taxpayer an exclusion
+from gross income for any amount received from the Fire Victims
+Trust, established pursuant to the order of the United States Bankruptcy
+Court for the Northern District of California dated June 20, 2020, case
+number 19-30088, docket number 8053. If a qualified taxpayer included
+income for an amount received from the Fire Victims Trust in a prior
+taxable year, the taxpayer can file an amended tax return for that year
+within the normal statute of limitations. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 8z
+and R&TC Section 17138.5.
+Thomas and Woolsey Wildfires Exclusion – For taxable years beginning
+before January 1, 2027, California law allows a qualified taxpayer an
+exclusion from gross income for any amount received in a settlement
+from Southern California Edison for claims relating to the 2017 Thomas
+Fire or the 2018 Woolsey Fire. If a qualified taxpayer included income for
+an amount received from these settlements in a prior taxable year, the
+taxpayer can file an amended tax return for that year within the normal
+statute of limitations. For more information, see Schedule CA (540)
+specific line instructions in Part I, Section B, line 8z and R&TC
+Section 17138.6.
+Reporting Requirements – Taxpayers may need to file form FTB 4197,
+Information on Tax Expenditure Items, with the tax return to report tax
+expenditure items as part of the Franchise Tax Board's (FTB) annual
+reporting requirements under R&TC Section 41. To determine if you have
+an R&TC Section 41 reporting requirement, see the R&TC Section 41
+Reporting Requirements section in 540, Personal Income Tax Booklet, or
+get form FTB 4197.
+California Venues Grant – For taxable years beginning on or after
+September 1, 2020, and before January 1, 2030, California law allows an
+exclusion from gross income for grant allocations received by a taxpayer
+pursuant to the California Venues Grant Program that is administered by
+the Office of Small Business Advocate (CalOSBA). For more information,
+see Schedule CA (540) specific line instructions in Part I, Section B,
+line 8z and R&TC Section 17158.
+Other Loan Forgiveness – For taxable years beginning on or after
+January 1, 2019, California law allows an exclusion from gross
+income for borrowers of forgiveness of indebtedness described in
+Section 1109(d)(2)(D) of the federal Coronavirus Aid, Relief, and
+Economic Security (CARES) Act as stated by section 278, Division N of
+the CAA, 2021. The CAA, 2021, allows deductions for eligible expenses
+paid for with covered loan amounts. California law conforms to this
+federal provision, with modifications. For California purposes, these
+deductions generally do not apply to an ineligible entity. “Ineligible
+entity” means a taxpayer that is either a publicly-traded company or
+does not meet the 25% reduction from gross receipts requirements
+under Section 311 of the CAA, 2021. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 3 or
+go to ftb.ca.gov and search for AB 80.
+
+
+
+Schedule CA (540) Instructions 2025 (REV 02-26) Page 3
+Shuttered Venue Operator Grant – For taxable years beginning on or
+after January 1, 2019, California law allows an exclusion from gross
+income for amounts awarded as a shuttered venue operator grant
+under the CAA, 2021. The CAA, 2021, allows deductions for eligible
+expenses paid for with grant amounts. California law conforms to
+this federal provision, with modifications. For California purposes,
+these deductions do not apply to an ineligible entity. “Ineligible entity”
+means a taxpayer that is either a publicly-traded company or does
+not meet the 25% reduction from gross receipts requirements under
+Section 311 of Division N of the CAA, 2021. For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 3
+and R&TC Section 17158.3.
+Small Business COVID-19 Relief Grant Program – For taxable years
+beginning on or after January 1, 2020, and before January 1, 2030,
+California law allows an exclusion from gross income for grant
+allocations received by a taxpayer pursuant to the COVID-19 Relief Grant
+under Executive Order No. E 20/21-182 and the California Small Business
+COVID-19 Relief Grant Program established by Section 12100.83 of the
+Government Code. For more information, see Schedule CA (540) specific
+line instructions in Part I, Section B, line 8z.
+Moving Expense Deduction – For taxable years beginning on or after
+January 1, 2021, taxpayers should file California form FTB 3913, Moving
+Expense Deduction, to claim moving expense deductions. Attach the
+completed form FTB 3913 to Form 540, California Resident Income
+Tax Return. For more information, see Schedule CA (540) specific line
+instructions in Part I, Section C, line 14, and get form FTB 3913.
+Paycheck Protection Program (PPP) Loans Forgiveness – For taxable
+years beginning on or after January 1, 2019, California law allows an
+exclusion from gross income for covered loan amounts forgiven under
+the federal CARES Act, Paycheck Protection Program and Health Care
+Enhancement Act, Paycheck Protection Program Flexibility Act of 2020,
+the CAA, 2021, or the PPP Extension Act of 2021.
+Also, the ARPA expands PPP eligibility to include “additional covered
+nonprofit entities” which includes certain Code 501(c) nonprofit
+organizations and Internet-only news publishers and Internet-only
+periodical publishers. California law does not conform to this expansion
+of PPP eligibility.
+The CAA, 2021, allows deductions for eligible expenses paid for with
+covered loan amounts. California law conforms to this federal provision,
+with modifications. For California purposes, these deductions do not apply
+to an ineligible entity. “Ineligible entity” means a taxpayer that is either a
+publicly-traded company or does not meet the 25% reduction from gross
+receipts requirements under Section 311 of Division N of the CAA, 2021.
+For more information, see specific line instructions for Schedule CA (540)
+in Part I, Section B, line 3 and R&TC Section 17131.8 or go to ftb.ca.gov
+and search for AB 80.
+Coronavirus Aid, Relief, and Economic Security (CARES) Act – The
+CARES Act was enacted on March 27, 2020. In general, the R&TC does
+not conform to the changes. California law does not conform to the
+following federal provisions under the CARES Act:
+• Exclusion for certain employer payment of student loans
+• Health-savings account changes
+This list is not intended to be all-inclusive of the federal and state
+conformities and differences. For more information, see specific line
+instructions or refer to the R&TC.
+Worker Status: Employees and Independent Contractors – Some
+individuals may be classified as independent contractors for federal
+purposes and employees for California purposes, which may also
+cause changes in how their income and deductions are classified.
+Proposition 22 was operative as of December 16, 2020, and may affect
+a taxpayer’s worker classification. For more information, see Schedule
+CA (540) specific line instructions in Part I, Section A, line 1a; Part I,
+Section B, line 3; Part I, Section C, line 15 and line 17; and Part II, line 4.
+Rental Real Estate Activities – For taxable years beginning on or after
+January 1, 2020, the dollar limitation for the offset for rental real estate
+activities shall not apply to the low income housing credit program.
+For more information, see R&TC Section 17561(d)(1). Get form
+FTB 3801-CR, Passive Activity Credit Limitations, for more information.
+Commercial Cannabis Activity – For taxable years beginning on or
+after January 1, 2020, and before January 1, 2030, California allows
+individuals and other taxpayers operating under the personal income
+tax law to claim credits and deductions of business expenses paid or
+incurred during the taxable year in conducting commercial cannabis
+activity. Sole proprietors are those that conduct a commercial cannabis
+activity that is licensed under California Medicinal and Adult-Use
+Cannabis Regulation and Safety Act (CA MAUCRSA). For more
+information, see Schedule CA (540) specific line instructions in Part I,
+Section B, line 3, and get form FTB 4197.
+Excess Business Loss Limitation – The CARES Act made amendments
+to IRC Section 461(l) by eliminating the excess business loss limitation
+of noncorporate taxpayers for taxable year 2020 and retroactively
+removing the limitation for taxable years 2018 and 2019. California
+law does not conform to those amendments. Also, California law
+does not conform to the federal changes in the ARPA and the federal
+Inflation Reduction Act of 2022 that extend the limitation on excess
+business losses of noncorporate taxpayers for taxable years beginning
+after December 31, 2020, and ending before January 1, 2029.
+Complete form FTB 3461, California Limitation on Business Losses,
+if you are a noncorporate taxpayer and your net losses from all of
+your trades or businesses are more than $313,000 ($626,000 for
+married/RDP taxpayers filing a joint return). For more information, see
+Schedule CA (540) specific line instructions in Part I, Section B, line 8p,
+and get form FTB 3461.
+Federal Tax Reform – In general, California R&TC does not conform
+to all of the changes under the TCJA. For adjustments due to the TCJA,
+see the specific line instructions for the following items:
+• Combat zone extended to Egypt’s Sinai Peninsula
+• Moving expenses and reimbursements
+• Limitation on employer’s deduction for fringe benefit expenses
+• Limitation on wagering losses
+• Global intangible low-taxed income (GILTI) under IRC Section 951A
+• Expanded use of IRC Section 529 account funds
+• Limitation on state and local tax deduction
+• Mortgage and home equity indebtedness interest deduction
+• Limitation on charitable contribution deduction
+• Casualty or theft loss(es)
+• Miscellaneous itemized deductions
+Registered Domestic Partners (RDPs) – RDPs will compute their
+limitations based on the combined federal adjusted gross income (AGI)
+of each partner’s individual tax return filed with the Internal Revenue
+Service (IRS).
+For column A, Part I and Part II, combine each line item of your federal
+amounts from each partner’s individual federal tax return. For more
+information on RDPs, get FTB Pub. 737, Tax Information for Registered
+Domestic Partners. The combined federal AGI used to compute
+limitations is different from the recalculated federal AGI used on
+Form 540, line 13. In situations where RDPs have no RDP adjustments,
+these amounts may be the same.
+Military Personnel – Servicemembers domiciled outside of California,
+and their spouses/RDPs may exclude the servicemember’s military
+compensation from gross income when computing the tax rate on
+nonmilitary income. Requirements for military servicemembers domiciled
+in California remain unchanged. Military servicemembers domiciled in
+California must include their military pay in total income. In addition,
+they must include their military pay as California source income when
+stationed in California. However, military pay is not California source
+income when a servicemember is permanently stationed outside of
+California. Beginning 2009, the federal Military Spouses Residency Relief
+Act may affect the California income tax filing requirements for spouses
+of military personnel.
+
+
+
+Page 4 Schedule CA (540) Instructions 2025
+The federal Veterans Auto and Education Improvement Act (VAEIA) of
+2022 was enacted on January 5, 2023, and made amendments to the
+federal Servicemembers Civil Relief Act (SCRA). California conforms to
+the following VAEIA provisions:
+• A spouse of a servicemember shall neither lose nor acquire a
+residence or domicile for purposes of taxation with respect to the
+person, personal property, or income of the spouse by reason of being
+absent or present in any tax jurisdiction of the United States solely to
+be with the servicemember in compliance with the servicemember’s
+military orders.
+• For any taxable year of the marriage, a servicemember and the spouse
+of such servicemember may elect to use for purposes of taxation,
+regardless of the date on which the marriage of the servicemember
+and the spouse occurred, any of the following:
+> The residence or domicile of the servicemember.
+> The residence or domicile of the spouse.
+> The permanent duty station of the servicemember.
+For more information, get Form 540NR, California Nonresident or
+Part-Year Resident Income Tax Return, and FTB Pub. 1032.
+Single Member Limited Liability Company (SMLLC) – If you are a single
+member limited liability company, that is organized or doing business
+in California, or registered with the California Secretary of State (SOS),
+you are required to file Form 568, Limited Liability Company Return
+of Income, pay the annual tax and LLC Fee (if applicable), in addition
+to filing your tax return. Get Form 568, Limited Liability Company Tax
+Booklet, for more information.
+Purpose
+Use Schedule CA (540) to make adjustments to your federal adjusted
+gross income and to your federal itemized deductions using California
+law.
+Specific Line Instructions
+Part I Income Adjustment Schedule
+Column A — Federal Amounts
+Section A, Line 1a through Line 7a, and Section B, Line 1 through
+Line 9a
+Enter in Section A, line 1a through line 7a, and Section B, line 1 through
+line 9a the same amounts entered on your federal Form 1040, U.S.
+Individual Income Tax Return, or Form 1040-SR, U.S. Income Tax Return
+for Seniors, line 1a through line 7a; and federal Schedule 1 (Form 1040),
+Additional Income and Adjustments to Income, line 1 through line 9.
+Section B, Line 2a and Line 2b
+Enter on line 2a the same amount entered on your federal Schedule 1
+(Form 1040), line 2a. Enter on line 2b the month and year of your original
+divorce or separation agreement that relates to the alimony payment,
+if any. If you have alimony payments from more than one divorce or
+separation agreement, enter on line 2b the month and year of the divorce
+or separation agreement for which you received the most income. Attach
+a statement listing the month and year of the other agreements.
+Line 10 – Total
+Combine the amounts in Section A, line 1z through line 7a, and
+Section B, line 1 through line 7, and line 9a.
+Section C, Line 11 through Line 18 and Line 20 through Line 25
+Enter the same amounts entered on your federal Schedule 1 (Form 1040),
+line 11 through line 18 and line 20 through line 25.
+Line 19a, Line 19b, and Line 19c
+Enter on line 19a the same amount entered on your federal Schedule 1
+(Form 1040), line 19a. Enter on line 19b the social security number
+(SSN) or individual taxpayer identification number (ITIN) and last name
+of the person to whom you paid alimony. On line 19c, enter the month
+and year of your original divorce or separation agreement that relates to
+this deduction for alimony paid.
+Line 26 – Add line 11 through line 23 and line 25.
+Line 27 – Total
+Subtract line 26 from line 10. This amount should match the amount
+entered on federal Form 1040 or 1040-SR, line 11b.
+Column B and Column C — Subtractions and
+Additions
+Use these columns to enter subtractions and additions to the federal
+amounts in column A that are necessary because of differences between
+California and federal law. Enter all amounts as positive numbers unless
+instructed otherwise.
+You may need one or more of the following FTB publications to complete
+column B and column C:
+• 1001, Supplemental Guidelines to California Adjustments
+• 1005, Pension and Annuity Guidelines
+• 1031, Guidelines for Determining Resident Status
+• 1032, Tax Information for Military Personnel
+• 1100, Taxation of Nonresidents and Individuals Who Change
+Residency
+To get forms and publications, go to ftb.ca.gov/forms.
+Section A – Income
+Line 1a through Line 1i and Line 1z
+Generally, you will not make any adjustments on these lines. If you did
+not receive any of the following types of income, make no entry on
+line 1a through line 1i and line 1z in either column B or column C.
+Active duty military pay – Special rules apply to active duty military
+taxpayers. Get FTB Pub. 1032 for more information.
+Combat zone foreign earned income exclusion – For taxable years
+beginning on and after January 1, 2018, California does not conform
+to the federal foreign earned income exclusion for amounts received
+by certain U.S. citizens or resident aliens with an abode in the U.S.,
+specifically contractors or employees of contractors supporting the U.S.
+Armed Forces in designated combat zones. Enter the amount excluded
+from federal income on Part I, Section B, line 8d, column C.
+Native American earned income exemption – California does not tax
+federally recognized tribal members living in California Indian country
+who earn income from any federally recognized California Indian country.
+Military compensation is considered income from reservation sources.
+Enrolled members who receive reservation sourced per capita income
+must reside in their affiliated tribe’s Indian country to qualify for tax
+exempt status. Enter on applicable line 1a through line 1h, column B the
+earnings included in federal income that are exempt for California. Attach
+form FTB 3504, Enrolled Tribal Member Certification, to Form 540. For
+more information, get form FTB 3504.
+Tax treaty – If you excluded income exempted by U.S. tax treaties on
+your federal Form 1040 or 1040-SR (unless specifically exempted for
+state purposes), enter the excluded amount on applicable line 1a through
+line 1h, column C.
+Sick pay received under the Federal Insurance Contributions Act and
+Railroad Retirement Act – California excludes this item from income.
+Enter on line 1a or line 1h as applicable, column B the amount of sick
+pay benefits received under the Federal Insurance Contributions Act and
+Railroad Retirement Act included in the amount in column A.
+a. Total Amount from Federal Form(s) W-2, Box 1
+Employees and independent contractors – Some taxpayers may be
+classified as independent contractors for federal purposes and as
+employees for California purposes. If the taxpayer is classified as an
+employee for California purposes, enter the amount reported as gross
+income of the business from federal Schedule C (Form 1040), Profit or
+Loss from Business, line 7, as wages on line 1a, column C.
+d. Medicaid Waiver Payments Not Reported on Federal Form(s) W-2
+Income exclusion for In-Home Supportive Services (IHSS)
+supplementary payments – If you are an IHSS provider who received
+IHSS supplementary payments that were included in federal wages, enter
+the IHSS supplementary payments on line 1d, column B. IHSS providers
+only receive a supplementary payment if they paid a sales tax on the
+
+
+
+Schedule CA (540) Instructions 2025 (REV 04-26) Page 5
+IHSS services they provide. The supplementary payment is equal to the
+sales tax paid plus any increase in the federal payroll withholding paid
+due to the supplementary payment.
+h. Other Earned Income
+Identify the type of other earned income reported in the space provided.
+If there is more than one item to report on line 1h, attach a statement that
+lists each item and enter the total of all individual items in column B or
+column C as instructed below.
+Ridesharing fringe benefit differences – Under federal law, certain
+qualified transportation benefits are excluded from gross income. Under
+the R&TC, there are no monthly limits for the exclusion of these benefits
+and California’s definitions are more expansive. Enter the amount of
+ridesharing benefits received and included in federal income on line 1h,
+column B.
+Exclusion for compensation from exercising a California Qualified
+Stock Option (CQSO) – To claim this exclusion:
+• Your earned income is $40,000 or less from the corporation granting
+the CQSO.
+• The market value of the options granted to you must be less than
+$100,000.
+• The total number of shares must be 1,000 or less.
+• The corporation issuing the stock must designate that the stock issued
+is a CQSO at the time the option is granted.
+If you included an amount qualifying for this exclusion in federal income,
+enter that amount on line 1h, column B.
+Employer health savings account (HSA) contribution – Enter the amount
+of any employer HSA contribution from federal Form W-2, Wage and Tax
+Statement, box 12, code W on line 1h, column C.
+i. Nontaxable Combat Pay Election
+Combat zone extended to Egypt’s Sinai Peninsula – Federal law
+extended combat zone tax benefits to the Sinai Peninsula of Egypt.
+California law does not conform. Enter the amount of combat pay
+excluded from federal income on line 1i, column C. Get FTB Pub. 1032
+for more information.
+Line 2 – Taxable Interest
+If you did not receive any of the kinds of income listed (within this line
+instructions), make no entry on this line in either column B or column C.
+Enter in column B the interest you received from:
+• U.S. savings bonds (except for interest from series EE U.S. savings
+bonds issued after 1989 that qualified for the Education Savings Bond
+Program exclusion).
+• U.S. Treasury bills, notes, and bonds.
+• Any other bonds or obligations of the United States and its territories.
+• Interest from Ottoman Turkish Empire settlement payments.
+• Interest income from children under age 19 or full-time students under
+age 24 included on the child’s federal tax return and reported on the
+California tax return by the parent. For more information, get form
+FTB 3803, Parents’ Election to Report Child’s Interest and Dividends.
+Certain mutual funds pay “exempt-interest dividends.” If the mutual fund
+has at least 50% of its assets invested in tax-exempt U.S. obligations
+and/or in California or its municipal obligations, that amount of dividend
+is exempt from California tax. The proportion of dividends that are
+tax-exempt will be shown on your annual statement or statement issued
+with federal Form 1099-DIV, Dividends and Distributions. For more
+information, get FTB Pub. 1001.
+Enter in column C the interest you identified as tax-exempt interest on
+your federal Form 1040 or 1040-SR, line 2a, and which you received
+from:
+• The federally exempt interest dividends from other states, or their
+municipal obligations and/or from mutual funds that do not meet the
+50% rule as previously discussed.
+• Non-California state bonds.
+• Non-California municipal bonds issued by a county, city, town, or other
+local government unit.
+• Obligations of the District of Columbia issued after December 27, 1973.
+• Non-California bonds if the interest was passed through to you from
+S corporations, trusts, partnerships, or Limited Liability Companies
+(LLCs).
+• Interest or other earnings earned from an HSA are not treated as tax
+deferred. Interest or earnings in an HSA are taxable in the year earned.
+• Interest on any bond or other obligation issued by the Government of
+American Samoa.
+• Interest income from children under age 19 or full-time students under
+age 24 included on the parent’s federal tax return and reported on the
+California tax return by the child.
+Make no entries in either column B or column C for interest you
+earned on Federal National Mortgage Association (Fannie Mae) Bonds,
+Government National Mortgage Association (Ginnie Mae) Bonds, and
+Federal Home Loan Mortgage Corporations (FHLMC) securities, or grants
+paid to low income individuals.
+Get FTB Pub. 1001 if you received interest income from the items
+listed (within this line instructions) that is passed through to you from
+S corporations, trusts, estates, partnerships, or LLCs.
+Line 3 – Ordinary Dividends
+Generally, no difference exists between the amount of dividends reported
+in column A and the amount reported using California law. However,
+California taxes dividends derived from other states and their municipal
+obligations.
+Add dividends received from the following and enter in column B:
+• Dividend income from children under age 19 or full-time students
+under age 24 included on the parent’s or child’s federal tax return and
+reported on the California tax return by the opposite taxpayer. For more
+information, get form FTB 3803.
+Add dividends received from the following and enter in column C:
+• Controlled foreign corporation (CFC) dividends in the year distributed.
+• Regulated investment company (RIC) capital gains in the year
+distributed.
+• Distributions of pre-1987 earnings from an S corporation.
+• Dividend income from children under age 19 or full-time students
+under age 24 excluded on the parent’s or child’s federal tax return and
+reported on the California tax return by the opposite taxpayer. For more
+information, get form FTB 3803.
+Get FTB Pub. 1001 if you received dividends from:
+• Non-cash patronage dividends from farmers’ cooperatives or
+mutual associations.
+• A CFC.
+• Distributions of pre-1987 earnings from S corporations.
+• Undistributed capital gains for RIC shareholders.
+Line 4a and Line 4b – IRA Distributions
+Generally, no adjustments are made on this line. However, there may be
+significant differences in the taxable amount of a distribution (including
+a distribution from conversion of a traditional IRA to a Roth IRA),
+depending on when you made your contributions to the IRA. Differences
+also occur if your California IRA deductions were different from your
+federal deductions because of differences between California and federal
+self-employment income.
+If the taxable amount using California law is:
+• Less than the amount taxable under federal law, enter the difference
+in column B.
+• More than the amount taxable under federal law, enter the difference
+in column C.
+Get FTB Pub. 1005 for more information and worksheets for figuring the
+adjustment to enter on this line, if any.
+If you have an IRA basis and were a nonresident in prior years, you may
+need to restate your California IRA basis. Get FTB Pub. 1100 for more
+information.
+Coverdell Education Savings Account (ESA) formerly known as
+Education (ED) IRA – If column A includes a taxable distribution from
+an ED IRA, you may owe additional tax on that amount. Get form
+FTB 3805P, Additional Taxes on Qualified Plans (Including IRAs) and
+Other Tax-Favored Accounts.
+
+
+
+Page 6 Schedule CA (540) Instructions 2025 (REV 04-26)
+Line 5a and Line 5b – Pensions and Annuities
+Generally, no adjustments are made on this line. However, if you received
+Tier 2 railroad retirement benefits or partially taxable distributions from a
+pension plan, you may need to make the following adjustments.
+If you received a federal Form RRB-1099-R, Annuities or Pensions by the
+Railroad Retirement Board, for railroad retirement benefits and included
+all or part of these benefits in taxable income in column A, enter the
+taxable benefit amount in column B.
+If you began receiving a retirement annuity between July 1, 1986, and
+January 1, 1987, and elected to use the three-year rule for California
+purposes and the annuity rules for federal purposes, enter in column C
+the amount of the annuity payments you excluded for federal purposes.
+You may have to pay an additional tax if you received a taxable
+distribution from a qualified retirement plan before reaching age 59½ and
+the distribution was not rolled over into another qualified plan. Get form
+FTB 3805P for more information.
+If you received retirement pay from the federal government for service
+in the uniformed services or annuity payments pursuant to a United
+States Department of Defense Survivor Benefit Plan during the taxable
+year, and you included all or part of these payments in taxable income in
+column A, enter the taxable payment amount in column B, not to exceed
+$20,000 for each type of payments described in this paragraph. The
+qualified taxpayer’s federal AGI must not exceed $125,000 (or $250,000
+for a surviving spouse or spouses filing a joint return). The exclusion is
+capped at $20,000 for a surviving spouse, spouses filing a joint return,
+and any other individual who did not exceed the federal AGI limits.
+Line 6 – Social Security Benefits
+California excludes U.S. social security benefits or equivalent Tier 1
+railroad retirement benefits from taxable income. Enter in column B
+the amount of taxable U.S. social security benefits or equivalent Tier 1
+railroad retirement benefits shown on line 6b, column A.
+Line 7a – Capital Gain or (Loss)
+Generally, no adjustments are made on this line. California taxes long
+and short term capital gains as regular income. No special rate for long
+term capital gains exists. However, the California basis of the assets
+listed (within this line instructions) may be different from the federal
+basis due to differences between California and federal laws. If there
+are differences, use Schedule D (540), California Capital Gain or Loss
+Adjustment, to calculate the amount to enter on line 7a.
+• Gain or loss from the sale of investments inside an HSA.
+• Gain on sale of qualified small business stock under IRC Section 1045
+and IRC Section 1202.
+• Basis amounts resulting from differences between California and
+federal law in prior years.
+• Gain or loss on stock and bond transactions.
+• Installment sale gain reported on form FTB 3805E, Installment Sale
+Income.
+• Gain on the sale of personal residence where depreciation was
+allowable.
+• Pass-through gain or loss from partnerships, fiduciaries,
+S corporations, or LLCs.
+• Capital loss carryover from your 2024 California Schedule D (540).
+• Capital gain from children under age 19 or full-time students under
+age 24 included on the parent’s or child’s federal tax return and
+reported on the California tax return by the opposite taxpayer. For more
+information, get form FTB 3803.
+Get FTB Pub. 1001 for more information about:
+• Capital gain exclusion for sale of principal residence by a surviving
+spouse.
+• Gain on sale or disposition of qualified assisted housing development
+to low-income residents or to specified entities maintaining housing
+for low-income residents.
+• Undistributed capital gain for RIC shareholders.
+• Gain or loss on the sale of property inherited before January 1, 1987.
+• Capital loss carrybacks.
+Section B – Additional Income
+Line 1 – Taxable Refunds, Credits, or Offsets of State and Local
+Income Taxes
+California does not tax the state income tax refund. Enter in column B the
+amount of state tax refund entered in column A.
+Line 2a – Alimony Received
+If you received alimony not included in your federal income and the
+divorce or separation agreement was executed after December 31, 2018,
+and on or before December 31, 2025, or executed on or before
+December 31, 2018, and modified after that date and on or before
+December 31, 2025 (if the modification expressly provides that the
+amendments apply), enter the alimony received in column C.
+Under California law, alimony and separate maintenance payments are
+not includable in the income of the receiving spouse if made under any
+divorce or separation agreement executed after December 31, 2025, or
+executed on or before December 31, 2025, and modified after that date (if
+the modification expressly provides that the amendments apply). If you
+received this type of alimony, California treatment is the same as federal
+and no adjustment is needed.
+If you are a nonresident alien and received alimony not included in your
+federal income, enter the alimony on this line in column C if the divorce or
+separation agreement were executed after December 31, 2018, and on or
+before December 31, 2025, or executed on or before December 31, 2018,
+and modified after that date and on or before December 31, 2025 (if the
+modification expressly provides that the amendments apply).
+Line 3 – Business Income or (Loss)
+Adjustments to federal business income or loss you reported in column A
+generally are necessary because of the difference between California
+and federal law relating to depreciation methods, special credits, and
+accelerated write-offs. As a result, the recovery period or basis used to
+figure California depreciation may be different from the amount used for
+federal purposes.
+Adjustments are figured on form FTB 3885A, Depreciation and
+Amortization Adjustments, and are most commonly necessary because of
+the following:
+• Before January 1, 1987, California did not allow depreciation under
+the federal accelerated cost recovery system. Continue to figure
+California depreciation for those assets in the same manner as prior
+years.
+• On or after January 1, 1987, California provides special credits and
+accelerated write-offs that affect the California basis of qualifying
+assets. Refer to the bulleted lists of “Basis adjustments related to” and
+“Business deductions related to” at the end of this line instructions.
+Use form FTB 3801, Passive Activity Loss Limitations, to figure the total
+adjustment for line 3 if you have:
+• One or more passive activities that produce a loss.
+• One or more passive activities that produce a loss and any nonpassive
+activity reported on federal Schedule C (Form 1040).
+Use form FTB 3885A to figure the total adjustment for line 3 if you have:
+• Only nonpassive activities which produce either gains or losses (or
+combination of gains and losses).
+• Passive activities that produce gains.
+Other loan forgiveness – Under federal law, the CAA, 2021, allows
+deductions for eligible expenses paid for with covered loan amounts.
+California law conforms to this federal provision, with modifications. For
+California purposes, if you are an ineligible entity and deducted eligible
+expenses for federal purposes, enter the total amount of those expenses
+deducted on line 3, column C.
+Paycheck Protection Program loans forgiveness – Under federal law, the
+CAA, 2021, allows deductions for eligible expenses paid for with covered
+loan amounts. California law conforms to this federal provision with
+modifications. For California purposes, if you are an ineligible entity and
+deducted eligible expenses for federal purposes, enter the total amount of
+those expenses deducted on line 3, column C.
+
+
+
+Schedule CA (540) Instructions 2025 (REV 02-26) Page 7
+Also, the ARPA expands PPP eligibility to include “additional covered
+nonprofit entities” which includes certain Code 501(c) nonprofit
+organizations and Internet-only news publishers and Internet-only
+periodical publishers. California law does not conform to this expansion
+of PPP eligibility. If you met the PPP eligibility requirements and excluded
+the amount from gross income for federal purposes, enter the excluded
+amount on line 3, column C.
+Shuttered venue operator grant – Under federal law, the CAA, 2021,
+allows deductions for eligible expenses paid for with grant amounts.
+California law conforms to this federal provision with modifications. For
+California purposes, if you are an ineligible entity and deducted eligible
+expenses for federal purposes, enter the total amount of those expenses
+deducted on line 3, column C.
+Employees and independent contractors – Some taxpayers may be
+classified as independent contractors for federal purposes and as
+employees for California purposes. If the taxpayer is classified as an
+employee for California purposes, enter the amount of federal business
+income from line 3, column A, on line 3, column B. Enter the amount of
+federal business loss from line 3, column A, on line 3, column C.
+Commercial cannabis activity – Under federal law, deductions for
+business expenses of a trade or business paid or incurred during the
+taxable year in conducting commercial cannabis activity are disallowed.
+California law does not conform. California allows cannabis business
+licensed under CA MAUCRSA to claim these expenses. Enter the amount
+of these expenses on line 3, column B.
+Limitation on employer’s deduction for fringe benefit expenses – Under
+federal law, deductions for entertainment expenses are disallowed; the
+current 50% limit on the deductibility of business meals is expanded
+to meals provided through an in-house cafeteria or otherwise on the
+premises of the employer; deductions for employee transportation fringe
+benefits (e.g., parking and mass transit) are denied; and no deduction is
+allowed for transportation expenses that are the equivalent of commuting
+for employees (e.g., between the employee’s home and the workplace),
+except as provided for the safety of the employee. California law does
+not conform. Figure the difference between the amounts allowed using
+federal law and California law. Enter the difference on line 3, column B or
+column C.
+Limitation on wagering losses – Under federal law, all deductions
+for expenses incurred in carrying out wagering transactions, and not
+just gambling losses, are limited to the extent of gambling winnings.
+California law does not conform. Figure the difference between the
+amounts allowed using federal law and California law. Enter the difference
+on line 3, column B.
+Penalty assessed by professional sports league – California does
+not allow a business expense deduction for any fine or penalty paid or
+incurred by an owner of a professional sports franchise assessed or
+imposed by the professional sports league that includes that franchise. If
+the fine or penalty was deducted for federal purposes, enter this amount
+on line 3, column C.
+Business expense deduction disallowance – California disallows a
+deduction for a business expense related to a payment to the Edge
+College and Career Network, LLC, to a taxpayer who meets all of the
+following:
+• They are charged as a defendant in any of several specified criminal
+complaints as listed in R&TC Section 17275.4.
+• There is a final determination of their guilt with regard to a violation of
+any offense arising out of that criminal complaint.
+• There is a finding that they took the deduction unlawfully.
+For more information, see R&TC Section 17275.4. Enter the amount of
+this deduction on line 3, column C.
+Get FTB Pub. 1001 for more information about:
+Income related to:
+• Business, trade, or profession carried on within California that is
+an integral part of a unitary business carried on both within and
+outside California.
+• Pro-rata share of income received from a CFC by a U.S. shareholder.
+Basis adjustments related to:
+• Property acquired prior to becoming a California resident.
+• Sales or use tax credit for property used in a former Enterprise
+Zone (EZ), Local Agency Military Base Recovery Area (LAMBRA), or
+Targeted Tax Area (TTA).
+• Reduced recovery periods for fruit-bearing grapevines replaced
+in a California vineyard on or after January 1, 1992, as a result of
+phylloxera infestation; or on or after January 1, 1997, as a result of
+Pierce’s disease.
+• Expenditures for tertiary injectants.
+• Property placed in service on an Indian reservation after
+December 31, 2017, and before January 1, 2022.
+• Amortization of pollution control facilities.
+• Discharge of real property business indebtedness.
+• Vehicles used in an employer-sponsored ridesharing program.
+• An enhanced oil recovery system.
+• Joint Strike Fighter property costs.
+• The cost of making a business accessible to disabled individuals.
+• Property for which you received an energy conservation subsidy from
+a public utility on or after January 1, 1995, and before January 1, 1997.
+• Research and experimental expenditures.
+• Reduction of capitalized costs attributable to the federal Work
+Opportunity Credit.
+Business deductions related to:
+• Wages paid in a former EZ, LAMBRA, Manufacturing Enhancement
+Area (MEA), or TTA.
+• Abandonment or tax recoupment fees for open-space easements and
+timberland preserves.
+• Research expense.
+• Employer wage expense for the federal Work Opportunity Credit.
+• Pro-rata share of deductions received from a CFC by a U.S.
+shareholder.
+• Interest paid on indebtedness in connection with company-owned life
+insurance policies.
+• Premiums paid on life insurance policies, annuities, or endowment
+contracts issued after June 8, 1997, where the owner of the business
+is directly or indirectly a policy beneficiary.
+• Commercial Revitalization Deductions for Renewal Communities.
+• Small Employer Health Insurance Credit.
+Line 4 – Other Gains or (Losses)
+Generally, no adjustments are made on this line. However, the California
+basis of your other assets may differ from your federal basis due to
+differences between California and federal law. Therefore, you may have
+to adjust the amount of other gains or losses. Get Schedule D-1, Sales of
+Business Property.
+Line 5 – Rental Real Estate, Royalties, Partnerships, S Corporations,
+Trusts, etc.
+Adjustments to federal income or loss you reported in column A
+generally are necessary because of the difference between California
+and federal law relating to depreciation methods, special credits, and
+accelerated write-offs. As a result, the recovery period or basis used to
+figure California depreciation may be different from the recovery period
+or amount used for federal. For more information, see the instructions for
+Part I, Column B and Column C, Section B, line 3.
+California law does not conform to federal law for material participation
+in rental real estate activities. Beginning in 1994, and for federal purposes
+only, rental real estate activities conducted by persons in real property
+business are not automatically treated as passive activities. Get form
+FTB 3801 for more information.
+Use form FTB 3801 to figure the total adjustment for line 5 if you have:
+• One or more passive activities that produce a loss.
+
+
+
+Page 8 Schedule CA (540) Instructions 2025 (REV 02-26)
+• One or more passive activities that produce a loss and any nonpassive
+activity reported on federal Schedule E (Form 1040), Supplemental
+Income and Loss.
+Use form FTB 3885A to figure the total adjustment for line 5 if you have:
+• Only nonpassive activities which produce either gains or losses (or
+combination of gains and losses).
+• Passive activities that produce gains.
+LLCs that are classified as partnerships for California purposes and
+limited liability partnerships (LLPs) are subject to the same rules as
+other partnerships. LLCs report distributive items to members on
+Schedule K-1 (568), Member’s Share of Income, Deductions, Credits,
+etc. LLPs report to partners on Schedule K-1 (565), Partner’s Share of
+Income, Deductions, Credits, etc.
+Get FTB Pub. 1001 for more information about accumulation distributions
+to beneficiaries for which the trust was not required to pay California tax
+because the beneficiary’s interest was contingent.
+Line 6 – Farm Income or (Loss)
+Adjustments to federal income or loss you report in column A generally
+are necessary because of the difference between California and federal
+law relating to depreciation methods, special credits, NOLs, and
+accelerated write-offs. As a result, the recovery period or basis you use to
+figure California depreciation may be different from the amount used for
+federal purposes, and you may need to make an adjustment to your farm
+income or loss. For more information, see the instructions for Part I,
+Column B and Column C, Section B, line 3.
+Use form FTB 3801 to figure the total adjustment for line 6 if you have:
+• One or more passive activities that produce a loss.
+• One or more passive activities that produce a loss and any nonpassive
+activity reported on federal Schedule F (Form 1040), Profit or Loss
+From Farming.
+Use form FTB 3885A to figure the total adjustment for line 6 if you have:
+• Only nonpassive activities which produce either gains or losses (or
+combination of gains and losses).
+• Passive activities that produce gains.
+Line 7 – Unemployment Compensation
+California excludes unemployment compensation from taxable income.
+Enter on line 7, column B the amount of unemployment compensation
+shown in column A.
+Paid Family Leave Insurance (PFL) benefits, also known as Family
+Temporary Disability Insurance – Payments received from the PFL
+Program are reported on federal Form 1099-G, Certain Government
+Payments. California excludes payments received from the PFL program
+from taxable income. Enter on line 7, column B the amount of PFL
+payments shown in column A. For more information, get FTB Pub. 1001.
+Line 8 – Other Income
+a. Federal Net Operating Loss – Enter the amount of the federal NOL
+included on line 8a, column A, as a positive number in column C. Get
+form FTB 3805V to figure the allowable California NOL.
+b. Gambling
+California lottery winnings – California excludes California lottery
+winnings from taxable income. Enter in column B the amount of
+California lottery winnings included in the federal amount on line 8b,
+column A.
+Make no adjustment for lottery winnings from other states. They are
+taxable by California. If you reduced gambling income for California
+lottery income, you may need to reduce the losses included in the federal
+itemized deductions on Part II, line 16, column A. Enter these losses on
+Part II, line 16, column B.
+c. Cancellation of Debt
+Mortgage forgiveness debt relief – California law does not conform
+to federal law regarding the exclusion of income from discharge of
+indebtedness from the disposition of your principal residence occurring
+after December 31, 2017. Enter the amount of discharge on line 8c,
+column C.
+Certain employer payments of student loans – California does not
+conform to the CARES Act regarding the exclusion of student loan
+payments made on behalf of an employee by an employer. Enter the
+amount of loan payment on line 8c, column C.
+d. Foreign Earned Income Exclusion from Federal Form 2555
+Federal foreign earned income and housing exclusion – Enter in
+column C, as a positive number, the amount excluded from federal
+income on federal Schedule 1 (Form 1040), line 8d.
+Combat zone foreign earned income exclusion – Enter the amount
+excluded from federal income on line 8d, column C, as a positive number.
+e. Income from Federal Form 8853
+Rollover from an Archer MSA to an HSA – Since California does not
+recognize HSAs, a rollover from an Archer MSA to an HSA is treated as
+distribution not used for qualified medical expenses. For California, the
+distribution is included in California taxable income and the additional
+12.5% tax applies. For more information, get form FTB 3805P.
+Enter the amount rolled over from an Archer MSA to an HSA on line 8e,
+column C.
+f. Income from Federal Form 8889
+HSA distributions for unqualified medical expense – Distributions from
+an HSA not used for qualified medical expenses, and included in federal
+income, are not taxable for California purposes. Enter the distribution not
+used for qualified medical expenses on line 8f, column B.
+n. IRC Section 951(a) Inclusion – Under federal law, if you are a U.S.
+shareholder of a CFC, you must include IRC Section 951(a) amount in
+your income. California law does not conform. If you included the amount
+as income for federal purposes on line 8n, column A, enter the amount
+on line 8n, column B.
+o. IRC Section 951A(a) Inclusion – Under federal law, if you are a
+U.S. shareholder of a CFC, you must include your GILTI in your income.
+California law does not conform. If you included GILTI as income for
+federal purposes on line 8o, column A, enter the amount on line 8o,
+column B.
+p. IRC Section 461(l) Excess Business Loss Adjustment – For taxable
+years beginning after December 31, 2018, California law generally
+conforms to the changes under the TCJA in regard to the disallowance
+of excess business loss deductions of non-corporate taxpayers. For
+California purposes, any disallowed loss will be treated as a carryover
+excess business loss instead of an NOL carryover for the subsequent
+taxable year. Also, California law does not conform to amendments under
+the CARES Act, the ARPA, and the Inflation Reduction Act of 2022. See
+General Information for more information.
+If you are a noncorporate taxpayer and your net losses from all of your
+trades or businesses are more than $313,000 ($626,000 for married/RDP
+taxpayers filing a joint return), get form FTB 3461 to figure the excess
+business loss adjustment for California purposes. Enter the amount
+from form FTB 3461, line 16 or line 17, whichever applies, on line 8p,
+column C. Attach form FTB 3461 to the tax return.
+Enter the amount of the federal excess business loss adjustment included
+on line 8p, column A, on line 8p, column B.
+See line 8z for instructions on excess business losses carryover from
+prior years.
+
+
+
+Schedule CA (540) Instructions 2025 Page 9
+z. Other Income
+Identify the type of income reported in the space provided. If there is
+more than one item to report on line 8z, attach a statement that lists each
+item and enter the total of all individual items in column B or column C as
+instructed below.
+Wildfire disaster settlement exclusion – California law allows a qualified
+taxpayer an exclusion from gross income for any qualified amount
+received from a settlement entity in connection with a qualified wildfire
+disaster in California. If any qualified amount was included as income
+for federal purposes on line 8z, column A, enter the amount on line 8z,
+column B.
+Chiquita Canyon elevated temperature landfill event exclusion –
+California law allows an exclusion from gross income for any Chiquita
+Canyon elevated temperature landfill event payment amount received by
+a taxpayer. If any qualified amount was included as income for federal
+purposes on line 8z, column A, enter the amount on line 8z, column B.
+Additional qualified higher education expenses of IRC Section 529
+accounts – Federal law expands qualified higher education expenses
+eligible for tax-exempt distributions from IRC Section 529 accounts
+by including additional expenses in connection with enrollment or
+attendance at an elementary or secondary public, private, or religious
+school. California law does not conform. If the amount distributed for
+these purposes was excluded from income for federal purposes, enter
+that amount on line 8z, column C.
+Certain postsecondary credentialing expenses treated as qualified higher
+education expenses for purposes of IRC Section 529 accounts – Federal
+law allows tax-exempt distributions from IRC Section 529 accounts to
+be used for qualified postsecondary credentialing expenses as defined
+in IRC Section 529(f). California law does not conform. If the amount
+distributed for these purposes was excluded from income for federal
+purposes, enter that amount on line 8z, column C.
+Wildfire relief payment – Federal law allows gross income exclusion
+for any amount received by an individual as a qualified wildfire relief
+payment as described in the Federal Disaster Tax Relief Act of 2023,
+Section 3. California law does not conform. If any qualified amount was
+excluded from income for federal purposes and California law provides
+no similar exclusion, enter that amount on line 8z, column C. For specific
+wildfire relief payments excluded for California purposes, see General
+Information.
+Special rules for certain distributions from qualified IRC Section 529
+tuition plans – The CAA, 2023, allows qualified IRC Section 529 tuition
+plans that have been maintained for 15 years to rollover to a Roth IRA
+without a tax or penalty. Under the federal law, rollover distributions from
+an IRC Section 529 plan to a Roth IRA after December 31, 2023, will be
+treated in the same manner as the earnings and contributions of a Roth
+IRA. California law does not conform to this federal provision. Rollover
+distribution from an IRC Section 529 plan to a Roth IRA is includible
+in California taxable income. For California purposes, enter the rollover
+distribution amount from an IRC Section 529 plan to a Roth IRA that was
+excluded from income for federal purposes on line 8z, column C.
+Wildfire mitigation payment – California law allows a qualified taxpayer
+an exclusion from gross income for any amount received as a California
+qualified wildfire loss mitigation payment through the California Wildfire
+Mitigation Financial Assistance Program. If any qualified amount was
+included as income for federal purposes, enter the amount on line 8z,
+column B.
+California HOPE for Children Trust Account Program – California law
+allows an exclusion from gross income for any funds deposited, any
+investment returns accrued, and any accrued interest in a HOPE trust
+account and for any funds from a HOPE trust account that is withdrawn
+or transferred by an eligible youth. If you included an amount qualifying
+for this exclusion as income for federal purposes, enter the amount on
+line 8z, column B.
+Interagency Council on Homelessness payment exclusion – California
+law allows an exclusion from gross income for payments received
+pursuant to the California Welfare and Institutions Code Section 8257
+by members of the Interagency Council on Homelessness, its advisory
+committee, or its working groups who are or have been homeless. If
+you included this amount as income for federal purposes on line 8z,
+column A, enter the amount on line 8z, column B.
+Kincade wildfire exclusion – California law allows a qualified taxpayer
+an exclusion from gross income for any qualified amount received in a
+settlement from PG&E Company or its subsidiary relating to the 2019
+Kincade Fire. If any qualified amount was included as income for federal
+purposes on line 8z, column A, enter the amount on line 8z, column B.
+Zogg wildfire exclusion – California law allows a qualified taxpayer an
+exclusion from gross income for any qualified amount received in a
+settlement from PG&E Company or its subsidiary relating to the 2020
+Zogg Fire. If any qualified amount was included as income for federal
+purposes on line 8z, column A, enter the amount on line 8z, column B.
+Discharge of student fees – California law allows an exclusion from
+gross income for any amount of unpaid fees due or owed by a student
+to a community college that was discharged. If you include the amount
+discharged as income for federal tax purposes on line 8z, column A, enter
+the amount on line 8z, column B.
+Guaranteed income pilot program payment exclusion – California
+law allows an exclusion from gross income for any payments received
+by an individual from a guaranteed income pilot program or project
+that receives a grant pursuant to California Welfare and Institution
+Code Section 18997. If you included this amount as income for federal
+purposes on line 8z, column A, enter the amount on line 8z, column B.
+Small business and nonprofit COVID-19 supplemental paid sick leave
+relief grant – California law allows an exclusion from gross income
+for grant allocations received by a taxpayer pursuant to the California
+Small Business and Nonprofit COVID-19 Supplemental Paid Sick Leave
+Relief Grant Program that is established by Section 12100.975 of the
+Government Code. If you included an amount qualifying for this exclusion
+as income for federal purposes on line 8z, column A, enter the amount on
+line 8z, column B.
+Turf replacement water conservation program – California law allows
+an exclusion from gross income for any amount received as a rebate,
+voucher, or other financial incentive issued by a public water system,
+local government, or state agency for participation in a turf replacement
+water conservation program. If any amount was included as income
+for federal purposes on line 8z, column A, enter the amount on line 8z,
+column B.
+Fire Victims Trust exclusion – California law allows a qualified taxpayer
+an exclusion from gross income for any amount received from the Fire
+Victims Trust. If any amount was included as income for federal purposes
+on line 8z, column A, enter the amount on line 8z, column B.
+Thomas and Woolsey wildfires exclusion – California law allows a
+qualified taxpayer an exclusion from gross income for any amount
+received in a settlement from Southern California Edison for claims
+relating to the 2017 Thomas Fire or the 2018 Woolsey Fire. If any amount
+was included as income for federal purposes on line 8z, column A, enter
+the amount on line 8z, column B.
+Excess business losses carryover from prior years – If in the current
+year, the taxpayer has enough business income to fully offset all of
+the excess business loss carryover from prior year, then the carryover
+balance is applied to offset the business income. Refer to form FTB 3461
+instructions for line 14b and line 15 for further instructions. Enter the
+excess business losses carryover from prior years on line 8z, column B,
+and write "excess business losses carryover from prior years" on the
+space provided for line 8z.
+California venues grant – California law allows an exclusion from gross
+income for grant allocations received by a taxpayer pursuant to the
+California Venues Grant Program that is administered by the CalOSBA.
+Federal law has no similar exclusion. Enter on line 8z, column B the
+amount of this type of income.
+Small business COVID-19 relief grant program – California law allows
+an exclusion from gross income for grant allocations received by a
+taxpayer pursuant to the COVID-19 Relief Grant under Executive Order
+No. E 20/21-182 and the California Small Business COVID-19 Relief Grant
+
+
+
+Page 10 Schedule CA (540) Instructions 2025
+Program established by Section 12100.83 of the Government Code. If
+you included any amount as income for federal purposes on line 8z,
+column A, enter the amount on line 8z, column B.
+Expanded use of IRC Section 529 account funds – California law does
+not conform to federal law regarding the IRC Section 529 account
+funding for elementary and secondary education or to the maximum
+distribution amount. If the amount was excluded for federal purposes,
+make an adjustment on line 8z, column C.
+Native American earned income exemption – California does not tax
+federally recognized tribal members living in California Indian country
+who earn income from any federally recognized California Indian country.
+Military compensation is considered income from reservation sources.
+Enrolled members who receive reservation sourced per capita income
+must reside in their affiliated tribe’s Indian country to qualify for tax
+exempt status. For more information, get form FTB 3504. Enter on
+line 8z, column B the income included in federal income that is exempt
+for California and write “FTB 3504” on line 8z. Attach form FTB 3504 to
+Form 540.
+Tax treaty – If you are claiming a tax treaty exemption on federal
+Schedule 1 (Form 1040), enter that amount on line 8z, column C as a
+positive number, unless it is specifically exempted for state purposes.
+Parents’ election to report child’s interest and dividends – California
+law conforms to federal law for elections made by parents reporting
+their child’s interest and dividends. Parents may elect to report their
+child’s income on their California income tax return by completing form
+FTB 3803. If you make this election, the child will not have to file a tax
+return. You may report your child’s income on your California income tax
+return even if you do not do so on your federal income tax return.
+If the amount of your child’s income you are reporting on your California
+income tax return is different than the amount you reported on your
+federal income tax return, enter the difference on line 8z, column B or
+column C and write “FTB 3803” on line 8z. Get form FTB 3803 for more
+information.
+Reward from a crime hotline – Enter in column B the amount of a
+reward authorized by a government agency received from a crime hotline
+established by a government agency or nonprofit organization that is
+included in the amount on line 8z, column A.
+You may not make this adjustment if you are an employee of the hotline
+or someone who sponsors rewards for the hotline.
+Beverage container recycling income – Enter in column B the amount of
+recycling income included in the amount on line 8z, column A.
+Rebates or vouchers from a local water agency, energy agency, or
+energy supplier – California law allows an income exclusion for rebates
+or vouchers from a local water agency, energy agency, or energy supplier
+for the purchase and installation of water conservation appliances and
+devices. Enter in column B the amount of this type of income included in
+the amount on line 8z, column A.
+Financial incentive for seismic improvement – California law allows an
+income exclusion for loan forgiveness, grant, credit, rebate, voucher, or
+other financial incentive issued by the California Residential Mitigation
+Program or California Earthquake Authority to assist a residential
+property owner or occupant with expenses paid, or obligation incurred
+for earthquake loss mitigation. Enter in column B the amount of this type
+of income included in the amount on line 8z, column A.
+Original issue discount (OID) for debt instruments issued in 1985 and
+1986 – In the year of sale or other disposition, you must recognize the
+difference between the amount reported on your federal tax return and
+the amount reported for California purposes. Issuers: Enter the difference
+between the federal deductible amount and the California deductible
+amount on line 8z, column B. Holders: Enter the difference between the
+amount included in federal gross income and the amount included for
+California purposes on line 8z, column C.
+Foreign income of nonresident aliens – Adjust federal income to reflect
+worldwide income computed under California law. Enter losses from
+foreign sources on line 8z, column B. Enter foreign source income on
+line 8z, column C.
+Cost-share payments received by forest landowners – Enter on
+line 8z, column B the cost-share payments received from the California
+Department of Forestry and Fire Protection under the California Forest
+Improvement Act of 1978 or from the United States Department of
+Agriculture, Forest Service, under the Forest Stewardship Program and
+the Stewardship Incentives Program, pursuant to the federal Cooperative
+Forestry Assistance Act.
+Coverdell ESA distributions – If you received a distribution from a
+Coverdell ESA, enter the difference between the federal taxable amount
+and the California taxable amount on line 8z, column B or column C.
+Grants paid to low-income individuals – California law excludes grants
+paid to low-income individuals to construct or retrofit buildings to make
+them more energy efficient. Federal law has no similar exclusion. Enter
+on line 8z, column B the amount of this type of income.
+California National Guard Surviving Spouse & Children Relief Act of
+2004 – Death benefits received from the State of California by a surviving
+spouse/RDP or member-designated beneficiary of certain military
+personnel killed in the performance of duty are excluded from gross
+income. Military personnel include the California National Guard, State
+Military Reserve, or the Naval Militia. If you reported a death benefit on
+line 8z, column A, enter the death benefit amount in column B.
+Ottoman Turkish Empire settlement payments – If you received
+settlement payments as a person persecuted by the regime that was
+in control of the Ottoman Turkish Empire from 1915 until 1923, your
+gross income does not include those excludable settlement payments, or
+interest, received by you, your heirs, or your estate for payments received
+on or after January 1, 2005. If you reported settlement payments on
+line 8z, column A, enter the amount of settlement payments in column B.
+Line 9b1 – Disaster Loss Deduction from Form FTB 3805V
+If you have a California disaster loss carryover deduction and there is
+income in the current taxable year, enter the total amount of disaster loss
+carryover deduction from your 2025 form FTB 3805V, Part III, line 2,
+column (f), as a positive number in column B.
+NOL attributable to a qualified disaster – If you deduct a 2025 disaster
+loss in the 2025 taxable year and have remaining disaster loss that
+results in an NOL, the NOL can be carried forward. Get form FTB 3805V
+for more information.
+Line 9b2 – NOL Deduction from Form FTB 3805V
+The allowable NOL carryover under California law is different from the
+allowable NOL carryover under federal law. If you have a California NOL
+carryover from prior years, enter the total allowable California NOL
+carryover deduction for the current year from form FTB 3805V, Part III,
+line 2, column (f), as a positive number in column B. See Net Operating
+Loss Suspension paragraph under General Information for more
+information.
+Line 9b3 – NOL Deduction from Form FTB 3805Z, FTB 3807, or
+FTB 3809
+Enter in column B the total NOL figured on the following forms:
+• FTB 3805Z, Enterprise Zone Deduction and Credit Summary, line 3b
+• FTB 3807, Local Agency Military Base Recovery Area Deduction and
+Credit Summary, line 3b
+• FTB 3809, Targeted Tax Area Deduction and Credit Summary, line 3b
+Line 10 – Total
+Add Section A, line 1z through line 7a, and Section B, line 1 through
+line 7, line 9a and line 9b1 through line 9b3 in column B. Add Section A,
+line 1z through line 7a, and Section B, line 1 through line 7, and line 9a in
+column C. Enter the totals on line 10.
+Section C – Adjustments to Income
+Line 11 through Line 25
+California law is the same as federal law with the exception of the
+following:
+• Line 11 Educator Expenses – California law does not conform to
+federal law regarding educator expenses. Enter the amount from
+line 11, column A on line 11, column B.
+
+
+
+Schedule CA (540) Instructions 2025 (REV 04-26) Page 11
+• Line 12 Certain Business Expenses of Reservists, Performing
+Artists, and Fee-Basis Government Officials – If claiming a
+depreciation deduction as an unreimbursed employee business
+expense on federal Form 2106, Employee Business Expenses, you may
+have an adjustment in column B or column C. For more information,
+get FTB Pub. 1001.
+• Line 13 Health Savings Account Deduction – Federal law allows a
+deduction for contributions to an HSA account. California law does
+not conform. Enter the amount from line 13, column A, on line 13,
+column B.
+• Line 14 Moving Expenses – California law does not conform to federal
+law regarding the suspension of the deduction for moving expenses,
+except for members of the Armed Forces on active duty.
+Non-military and military taxpayers, prepare form FTB 3913. After
+completing form FTB 3913, if you are a non-military taxpayer and
+checked the “No” box on line 5 of form FTB 3913, enter the amount
+from form FTB 3913, line 5 on Schedule CA (540), Part I, Section A,
+line 1h, column C.
+If you are a non-military taxpayer and checked the “Yes” box on line 5
+of form FTB 3913, enter the amount from form FTB 3913, line 5 on
+Schedule CA (540), Part I, line 14, column C.
+• Line 15 Deductible Part of Self-employment Tax – A taxpayer may
+be classified as an independent contractor for federal purposes and as
+an employee for California purposes. This deduction is not allowed to
+an employee. If for California purposes, the taxpayer is classified as
+an employee, an adjustment is needed in column B. Enter the amount
+from line 15, column A, on line 15, column B.
+• Line 17 Self-employed Health Insurance Deduction – A taxpayer may
+be classified as an independent contractor for federal purposes and as
+an employee for California purposes. This deduction is not allowed to
+an employee. If for California purposes, the taxpayer is classified as
+an employee, an adjustment is needed in column B. Enter the amount
+from line 17, column A, on line 17, column B.
+Note: A taxpayer classified as an employee for California purposes who
+makes an adjustment on this line may be able to claim this amount as
+a deduction for medical and dental expenses. For more information,
+see instructions for Part II, line 4.
+• Line 19a Alimony Paid – If you paid alimony and did not deduct it on
+your federal tax return and the divorce or separation agreement was
+executed after December 31, 2018, and on or before December 31, 2025,
+or executed on or before December 31, 2018, and modified after
+that date and on or before December 31, 2025 (if the modification
+expressly provides that the amendments apply), enter the alimony paid
+in column C.
+Under California law, alimony and separate maintenance payments
+are not deductible by the payor spouse if made under any divorce or
+separation agreement executed after December 31, 2025, or executed
+on or before December 31, 2025, and modified after that date (if
+the modification expressly provides that the amendments apply). If
+you made this type of alimony or separate maintenance payments,
+California treatment is the same as federal and no adjustment is
+needed.
+If you are a nonresident alien and did not deduct alimony on your
+federal tax return, enter the amount you paid in column C if the divorce
+or separation agreement were executed after December 31, 2018,
+and on or before December 31, 2025, or executed on or before
+December 31, 2018, and modified after that date and on or before
+December 31, 2025 (if the modification expressly provides that the
+amendments apply).
+• Line 20 – IRA Deduction
+408 election – To take the election, the federal deduction is taken
+on line 20, column A. The election for California will be on line 20,
+column B or C. Get FTB Pub. 1005 for more information.
+• Line 21 Student Loan Interest Deduction – California law conforms
+to federal law regarding student loan interest deduction except for a
+spouse/RDP of a non-California domiciled military taxpayer residing in
+a community property state. Use the Student Loan Interest Deduction
+Worksheet to compute the amount to enter on line 21. For more
+information, get FTB Pub. 1032.
+Student Loan Interest Deduction Worksheet
+1. Enter the total amount from Schedule CA (540),
+line 21, column A. If the amount on line 1 is zero,
+STOP. You are not allowed a deduction for California . . . . .1_________
+2. Enter the total interest you paid in 2025
+on qualified student loans but not more than $2,500 here . .2_________
+3. Add federal Schedule 1 (Form 1040), line 21
+(student loan interest deduction) to
+federal Form 1040 or 1040-SR, line 11b (AGI).
+Enter the result here . . . . . . . . . . . . . . . . . 3 _________
+4. Enter the amount shown below for
+your filing status.
+• Single, head of household, or qualifying
+surviving spouse/RDP – $85,000 4 _________
+• Married/RDP filing jointly – $170,000 }5. Is the amount on line 3 more than the
+amount on line 4?
+□ No. Skip line 5 and line 6, enter -0- on
+line 7, and go to line 8.
+□ Yes. Subtract line 4 from line 3 . . . . . . 5 _________
+6. Divide line 5 by $15,000 ($30,000 if married/RDP filing
+jointly). Enter the result as a decimal (rounded to at least
+three places). If the result is 1.000 or more, enter 1.000 . .6 _ . _ _ _ _
+7. Multiply line 2 by line 6 . . . . . . . . . . . . . . . . . . . . . . . . . . . .7_________
+8. Student loan interest deduction. Subtract line 7
+from line 2. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .8_________
+9. Student loan interest adjustment. If line 1 is less than
+line 8, enter the difference here and
+on Schedule CA (540), line 21, column C.. . . . . . . . . . . . . .9_________
+• Line 24 – Other Adjustments
+b. Deductible expenses related to income reported on line 8l from the
+rental of personal property engaged in for profit – Generally, California
+law conforms with federal law and no adjustment is needed. However, if
+differences exist, enter the difference between the federal and California
+amount in column B or column C.
+c. Nontaxable amount of the value of Olympic and Paralympic medals
+and USOC prize money reported on line 8m – Federal law allows an
+exclusion from gross income for the value of any medal awarded or
+prize money received from the U.S. Olympic Committee on account of
+competition in the Olympic Games or Paralympic Games. The exclusion
+does not apply to a taxpayer for any year in which the taxpayer’s AGI
+exceeds $1 million, or half of that amount in the case of a married
+individual filing a separate return. California law conforms to the federal
+law and no adjustment is needed. Leave column B blank.
+d. Reforestation amortization and expenses – California law allows a
+deduction for reforestation amortization and expenses with respect to
+qualified timber property located in California. Enter the amount from
+column A that is for non-California qualified timber property in column B.
+f. Contributions to IRC Section 501(c)(18)(D) pension plans – If the
+contribution amount for California is different than the federal amount,
+you will need to make an adjustment in column B or column C. For more
+information, get FTB Pub. 1005.
+g. Contributions by certain chaplains to IRC Section 403(b) plans –
+If the contribution amount for California is different than the federal
+amount, you will need to make an adjustment in column B or column C.
+For more information, get FTB Pub. 1005.
+
+
+
+Page 12 Schedule CA (540) Instructions 2025 (REV 02-26)
+i. Attorney fees and court costs you paid in connection with an award
+from the IRS for information you provided that helped the IRS detect
+tax law violations – California law does not conform to federal law
+regarding the deduction of these attorney fees and court costs. Enter the
+amount from column A in column B.
+j. Housing deduction from federal Form 2555 – If you claimed the
+foreign housing deduction for federal purposes, enter the amount from
+column A in column B.
+Line 26 – Add line 11 through line 23 and line 25 in column B and
+column C.
+Line 27 – Total
+Subtract line 26 from line 10 in column B and column C.
+Also, transfer the amount from:
+• Line 27, column B to Form 540, line 14.
+If column B is a negative number, transfer the amount as a positive
+number to Form 540, line 16.
+• Line 27, column C to Form 540, line 16.
+If column C is a negative number, transfer the amount as a positive
+number to Form 540, line 14.
+Part II Adjustments to Federal Itemized Deductions
+Important: If you did not itemize deductions on your federal tax return
+but will itemize deductions on your California tax return, first complete
+federal Schedule A (Form 1040), Itemized Deductions. Then check
+the box at the top of Schedule CA (540), Part II and complete line 1
+through line 30. Attach a copy of federal Schedule A (Form 1040) to
+your Form 540.
+Column A — Federal Amounts
+Line 1 through Line 16
+Enter on line 1 through line 16 the same amounts you entered on your
+federal Schedule A (Form 1040), line 1 through line 16.
+Column B and Column C — Subtractions and
+Additions
+Use these columns to enter subtractions and additions to the federal
+amounts in column A that are necessary because of differences between
+California and federal law. Enter all amounts as positive numbers unless
+instructed otherwise.
+Line 1 through Line 4
+Employees and independent contractors – Taxpayers classified as
+independent contractors for federal purposes and classified as employees
+for California purposes may claim the amount of self-employed health
+insurance deduction for federal purposes as a medical and dental
+expense deduction for California purposes. Combine the amount paid for
+self-employed health insurance with other medical and dental expenses
+(as applicable). The total amount of the medical and dental expenses is
+subject to the 7.5% of federal AGI threshold. Enter the difference between
+the medical and dental expense deduction allowed for California and
+federal on line 4, column C.
+HSA distributions – If you received a tax-free HSA distribution for
+qualified medical expenses, enter the qualified expenses paid that exceed
+7.5% of federal AGI on line 4, column C.
+Line 5a – State and Local Taxes
+California does not allow a deduction for state and local income tax
+(including limited partnership tax and income or franchise tax paid by
+corporations) and State Disability Insurance (SDI) or state and local
+general sales tax. Enter that amount on line 5a, column B.
+Line 5e – The federal deduction for state and local tax is limited to
+$40,000 ($20,000 for married filing separately) for the aggregate of state
+and local income taxes and property taxes. California does not conform.
+If your deduction was limited under federal law, enter an adjustment on
+line 5e, column C for the amount over the federal limit.
+Line 6 – Other Taxes
+California does not allow a deduction for foreign income taxes. Enter that
+amount on line 6, column B.
+Federal law suspended the deduction for foreign property taxes.
+California law does not conform. Enter the amount on line 6, column C.
+Generation skipping transfer tax – Tax paid on generation skipping
+transfers is not deductible under California law. Enter the amount of
+generation skipping tax included in line 6, column A on line 6, column B.
+Line 8 – Home Mortgage Interest
+Federal law limited the mortgage interest deduction acquisition debt
+maximum from $1,000,000 ($500,000 for married filing separately) to
+$750,000 ($375,000 for married filing separately). California law does
+not conform. If your deduction was limited under federal law, enter an
+adjustment on line 8, column C for the amount over the federal limit.
+Federal law suspended the deduction on up to $100,000 ($50,000 for
+married filing separately) for interest on home equity indebtedness,
+unless the loan is used to buy, build, or substantially improve the
+taxpayer’s home that secures the loan. California law does not conform. If
+your deduction was limited under the federal law, enter an adjustment on
+line 8, column C for the amount over the federal limit.
+Mortgage interest credit – If you reduced your federal mortgage interest
+deduction by the amount of your mortgage interest credit (from federal
+Form 8396, Mortgage Interest Credit), increase your California itemized
+deductions by the same amount. Enter the amount of your federal
+mortgage interest credit on line 8, column C.
+Line 9 – Investment Interest
+Your California deduction for investment interest expense may be
+different from your federal deduction. Use form FTB 3526, Investment
+Interest Expense Deduction, to figure the amount to enter on line 9,
+column B or column C.
+Line 11 – Gifts By Cash Or Check
+Qualified charitable contributions – Your California deduction may be
+different from your federal deduction. California limits the amount of
+your deduction to 50% of your federal AGI. Figure the difference between
+the amount allowed using federal law and the amount allowed using
+California law. Enter the difference on line 11, column B.
+College Access Tax Credit – If you deducted a charitable contribution
+amount for the College Access Tax Credit Fund on your federal
+Schedule A (Form 1040) and are claiming the College Access Tax Credit
+on your Form 540, enter the amount used to calculate the College Access
+Tax Credit on line 11, column B.
+Charitable contribution deduction disallowance – California disallows
+a charitable contribution deduction to an educational organization that
+is a postsecondary institution or to the Key Worldwide Foundation to a
+taxpayer who meets all of the following:
+• They are charged as a defendant in any of several specified criminal
+complaints as listed in R&TC Section 17275.4.
+• There is a final determination of their guilt with regard to a violation of
+any offense arising out of that criminal complaint.
+• There is a finding that they took the deduction unlawfully.
+For more information, see R&TC Section 17275.4. Enter the amount of
+this deduction on line 11, column B.
+Line 12 – Other Than By Cash or Check
+Qualified charitable contributions – Your California deduction may be
+different from your federal deduction. California limits the amount of
+your deduction to 50% of your federal AGI. Figure the difference between
+the amount allowed using federal law and the amount allowed using
+California law. Enter the difference on line 12, column B.
+
+
+
+Schedule CA (540) Instructions 2025 Page 13
+Charitable conservation easement contributions – Under federal law,
+the amount of qualified conservation contribution deductions allowed
+is no more than 50% of federal AGI. California law limits the amount of
+qualified conservation contribution deductions to no more than 30% of
+federal AGI. Figure the difference between the deduction amount allowed
+using federal law and the amount allowed using California law. Enter the
+difference on line 12, column B.
+Charitable contribution deduction disallowance – California disallows
+a charitable contribution deduction to an educational organization that
+is a postsecondary institution or to the Key Worldwide Foundation to a
+taxpayer who meets all of the following:
+• They are charged as a defendant in any of several specified criminal
+complaints as listed in R&TC Section 17275.4.
+• There is a final determination of their guilt with regard to a violation of
+any offense arising out of that criminal complaint.
+• There is a finding that they took the deduction unlawfully.
+For more information, see R&TC Section 17275.4. Enter the amount of
+this deduction on line 12, column B.
+Line 13 – Carryover From Prior Year
+Charitable contribution carryover deduction – If deducting a prior
+year charitable contribution carryover, and the California carryover is
+larger than the federal carryover, enter the additional amount on line 13,
+column C.
+Qualified conservation contributions deduction carryover – Under
+federal law, qualified conservation contribution deductions can be carried
+forward for 15 years. California law limits the carryover period to 5 years.
+If the California carryover period for qualified conservation contribution
+deduction has expired, and you are deducting a charitable contribution
+carryover for federal purposes on line 13, column A, enter that carryover
+deduction amount on line 13, column B.
+Carryover deduction of appreciated stock contributed to a private
+foundation prior to January 1, 2002 – If deducting a charitable
+contribution carryover of appreciated stock donated to a private operating
+foundation prior to January 1, 2002, and the fair market value allowed for
+federal purposes is larger than the basis allowed for California purposes,
+enter the difference on line 13, column B.
+Line 15 – Casualty or Theft Loss(es)
+Under federal law, the personal casualty and theft loss deduction is
+suspended, with exception for personal casualty gains. Federal law allows
+a deduction for personal casualty and theft loss incurred in a federally
+declared disaster. California law does not conform.
+California allows personal casualty and theft loss and disaster loss
+deductions. If you have personal casualty and theft loss and/or disaster
+loss, complete another federal Form 4684, Casualties and Thefts,
+using California amounts. Enter the difference between the federal and
+California amount in column B or column C.
+Line 16 – Other Itemized Deductions
+Unreimbursed impairment-related work expenses – If you completed
+federal Form 2106, prepare a second set of forms reflecting your
+employee business expense using California amounts (i.e., following
+California law). Include your entertainment expenses, if any, on line 5 of
+federal Form 2106 for California purposes.
+Generally, California law conforms with federal law and no adjustment is
+needed. However, differences occur when:
+• Assets (requiring depreciation) were placed in service before
+January 1, 1987. Figure the depreciation based on California law.
+• Federal employees were placed on temporary duty status. California
+does not conform to the federal provision that expanded temporary
+duties to include prosecution duties, in addition to investigative
+duties. Therefore, travel expenses paid or incurred in connection with
+temporary duty status (exceeding one year), involving the prosecution
+(or support of the prosecution) of a federal crime, should not be
+included in the California amount.
+Compare federal Form 2106, line 10 and the form completed using
+California amounts. Enter the difference between the federal and
+California amount in column B or column C.
+Gambling losses – California lottery losses are not deductible for
+California. Enter the amount of California lottery losses included in
+line 16, column A on line 16, column B.
+Federal estate tax – Federal estate tax paid on income in respect of a
+decedent is not deductible for California. Enter the amount of federal
+estate tax included in line 16, column A on line 16, column B.
+Claim of right – If you had to repay an amount that you included in your
+income in an earlier year, because at the time you thought you had an
+unrestricted right to it, you may be able to deduct the amount repaid from
+your income for the year in which you repaid it. Or, if the amount you
+repaid is more than $3,000, you may take a credit against your tax for the
+year in which you repaid it, whichever results in the least tax.
+If the amount repaid was not taxed by California, no deduction or credit
+is allowed.
+Social security benefits are not taxable by California and the repayment
+would not qualify for claim of right deduction or credit. If you deducted
+the repayment of Social Security benefits on your federal tax return, enter
+the amount of the federal deduction on line 16, column B.
+If you claimed a credit for the repayment on your federal tax return and
+are deducting the repayment for California, enter the allowable deduction
+on line 16, column C.
+If you deducted the repayment on your federal tax return and are taking a
+credit for California, enter the amount of the federal deduction on line 16,
+column B. To help you determine whether to take a credit or deduction,
+see the Repayment section of federal Pub. 525, Taxable and Nontaxable
+Income. Remember to use the California tax rate in your computations. If
+you choose to take the credit instead of the deduction for California, add
+the credit amount on line 78, the total payment line, of Form 540. To the
+left of the total, write “IRC 1341” and the amount of the credit.
+Line 19 through Line 22 – Job Expenses and Certain Miscellaneous
+Deductions
+Under federal law, the deduction for miscellaneous itemized deductions
+subject to the 2% floor is suspended. California law does not conform.
+Line 19 – Unreimbursed Employee Expenses
+Prepare federal Form 2106 reflecting your employee business expense
+using California amounts (i.e., following California law). Include your
+entertainment expenses, if any, on line 5 of federal Form 2106 for
+California purposes.
+Enter the amount from line 10 of federal Form 2106 on line 19.
+Line 20 – Tax Preparation Fees
+Enter the fees you paid for preparation of your tax return, including fees
+paid for filing your return electronically. If you paid your tax by credit
+or debit card, include the convenience fee you were charged on line 21
+instead of this line.
+Line 21 – Other Expenses
+Enter the total amount you paid to produce or collect taxable income and
+manage or protect property held for earning income.
+List the type of each expense next to line 21 and enter the total of these
+expenses on line 21. If you are filing a paper return and you cannot fit all
+your expenses in the box next to line 21, attach a statement showing the
+type and amount of each expense.
+Examples of expenses to include on line 21 are:
+• Certain legal and accounting fees.
+• Custodial fees (for example, trust account).
+• Casualty and theft losses of property used in performing services as
+an employee from federal Form 4684, line 32 and line 38b, or federal
+Form 4797, Sales of Business Property, line 18a.
+• Deduction for repayment of amounts under a claim of right if $3,000
+or less.
+
+
+
+Page 14 Schedule CA (540) Instructions 2025
+Claim of right – If you had to repay an amount that you included in your
+income in an earlier year, because at the time you thought you had an
+unrestricted right to it, you may be able to deduct the amount repaid
+from your income for the year in which you repaid it. If the amount you
+repaid is less than $3,000, the deduction is subject to the 2% AGI limit
+for California purposes. If you are deducting the repayment for California,
+enter the allowable deduction on line 21.
+If the amount repaid was not taxed by California, no deduction is allowed.
+Line 27 – Other Adjustments
+Adoption-related expenses – If you deducted adoption-related expenses
+on your federal Schedule A (Form 1040) and are claiming the adoption
+cost credit for the same amounts on your Form 540, enter the amount of
+the adoption cost credit claimed as a negative number on line 27.
+Nontaxable income expenses – If, on federal Schedule A (Form 1040),
+you claim expenses related to producing income taxed under federal law
+but not taxed by California, enter the amount as a negative number on
+line 27.
+You may claim expenses related to producing income taxed by California
+law but not taxed under federal law by entering the amount as a positive
+number on line 27.
+State legislator’s travel expenses – Under California law, deductible
+travel expenses for state legislators include only those incurred while
+away from their place of residence overnight. Figure the difference
+between the amount allowed using federal law and the amount allowed
+using California law. Enter the difference as a negative number on line 27.
+Interest on loans from utility companies – Taxpayers are allowed a
+tax deduction for interest paid or incurred on a public utility company
+financed loan that is used to purchase and install energy efficient
+equipment or products, including zone-heating products for a qualified
+residence located in California. Federal law has no equivalent deduction.
+Enter the amount as a positive number on line 27.
+Line 29 – California Itemized Deductions
+Is the amount on Form 540, line 13 more than the amount shown below
+for your filing status?
+Single or married/RDP filing separately . . . . . . . . . . . . . . . . . . $252,203
+Head of household . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . $378,310
+Married/RDP filing jointly or qualifying surviving spouse/RDP . $504,411
+NO Transfer the amount from line 28 to line 29. Do not complete the
+Itemized Deductions Worksheet.
+YES Complete the Itemized Deductions Worksheet at the end of this line
+instructions.
+Note:
+• If married or an RDP and filing a separate tax return, you and your
+spouse/RDP must either both itemize your deductions (even if the
+itemized deductions of one spouse/RDP are less than the standard
+deduction) or both take the standard deduction.
+• Also, if someone else can claim you as a dependent, claim the
+greater of the standard deduction or your itemized deductions. See
+the instructions for “California Standard Deduction Worksheet for
+Dependents” within 540 Booklet to figure your standard deduction.
+Itemized Deductions Worksheet
+1. Amount from Schedule CA (540), Part II, line 28 . . . . . 1 _______
+2. Add the amounts on federal Schedule A (Form 1040),
+line 4, line 9, and line 15 plus any gambling losses
+included on line 16, if applicable . . . . . . . . . . . . . . . . . 2 _______
+3. Subtract line 2 from line 1 . . . . . . . . . . . . . . . . . . . . . . 3 _______
+If the result is zero, STOP. Enter the amount
+from line 1 on Schedule CA (540), Part II, line 29.
+4. Multiply line 3 by 80% (.80). . . . . . . . . . . . . . . . . . . . . 4 _______
+5. Amount from Form 540, line 13 . . . . . . . . . . . . . . . . . . 5 _______
+6. Enter the amount from line 29 instructions for your
+filing status. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6 _______
+7. Subtract line 6 from line 5 . . . . . . . . . . . . . . . . . . . . . . 7 _______
+If the result is zero or less, STOP. Enter the amount
+from line 1 on Schedule CA (540), Part II, line 29.
+8. Multiply line 7 by 6% (.06). . . . . . . . . . . . . . . . . . . . . . 8 _______
+9. Compare line 4 and line 8. Enter the smaller
+amount here . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9 _______
+10. Total itemized deductions. Subtract line 9 from line 1.
+Enter the result here and on Schedule CA (540),
+Part II, line 29. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10 _______
+Line 30 – Amount from Line 29 or Standard Deduction
+If your filing status is married/RDP filing separately and your spouse
+itemizes, enter the amount from line 29 (even if the standard deduction
+is larger).
+Franchise Tax Board Privacy Notice on Collection
+Our privacy notice can be found in annual tax booklets or online. Go
+to ftb.ca.gov/privacy to learn about our privacy policy statement, or
+go to ftb.ca.gov/forms and search for 1131 to locate FTB 1131 EN-SP,
+Franchise Tax Board Privacy Notice on Collection – Aviso de Privacidad
+del Franchise Tax Board sobre la Recaudación. To request this notice by
+mail, call 800.338.0505 and enter form code 948 when instructed.
