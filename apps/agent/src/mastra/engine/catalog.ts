@@ -86,6 +86,15 @@ export interface FieldInventory {
    * widgets (e.g. filing_status has 5 options across 3 AcroForm fields).
    */
   options?: FieldOption[];
+  /**
+   * Widget-level character cap from the PDF AcroForm. Small values (≤ 4)
+   * usually signal a structural sub-field — date components, 2-letter state,
+   * 2-digit year, credit code — where the renderer needs a digit/letter
+   * subset rather than the canonical fact value. The renderer treats this
+   * as advisory (expands when needed); test harnesses honor it strictly to
+   * generate values that won't overflow.
+   */
+  maxLength?: number;
   /** Stable ordinal among the form's fields. Drives evaluation + display order. */
   ordinal: number;
 }

@@ -106,6 +106,22 @@ function syntheticValue(field: FieldInventory): unknown {
   // coarse valueType buckets. Falls back to plain valueType for any catalog
   // missing valueTypeRich.
   const rich = field.valueTypeRich ?? field.valueType;
+
+  // Small-maxLength fields are usually structural sub-parts (date
+  // month/day/year, 2-letter state, 2-digit year suffix, credit code,
+  // single-digit count) where the canonical synthetic — "01/15/2025",
+  // "T-XXXXX", 4-digit money — overflows. The renderer's maxLength-expanding
+  // fallback then writes the longer value anyway, which masks the bug
+  // instead of failing the test. Produce a value of exactly maxLength,
+  // deterministic from the seed so values stay per-field-unique. Numeric
+  // fields get an actual number (renderer requires typeof === "number");
+  // everything else gets a digit string.
+  if (typeof field.maxLength === "number" && field.maxLength > 0 && field.maxLength <= 4) {
+    const mod = 10 ** field.maxLength;
+    if (field.valueType === "numeric") return seed % mod;
+    return String(seed % mod).padStart(field.maxLength, "0");
+  }
+
   switch (rich) {
     case "money":
     case "count":

@@ -1,0 +1,1797 @@
+{
+  "formId": "form-1040",
+  "fieldCount": 199,
+  "entries": [
+    {
+      "fieldId": "form-1040.dependents.dep1_child_tax_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_first_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_31[0]",
+          "text": "T-MRL3U"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_full_time_student",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_20[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_35[0]",
+          "text": "T-1827P"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_lived_in_us",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_13[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_lived_with_you",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_12[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_other_dependent_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_permanently_disabled",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_21[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_relationship",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_43[0]",
+          "text": "T-1JZHA"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_39[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_child_tax_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_first_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_32[0]",
+          "text": "T-1KLGP"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_full_time_student",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_22[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_36[0]",
+          "text": "T-1NOYC"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_lived_in_us",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_15[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_lived_with_you",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_14[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_other_dependent_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_permanently_disabled",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_23[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_relationship",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_44[0]",
+          "text": "T-123BT"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_40[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_child_tax_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_first_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_33[0]",
+          "text": "T-1VV1D"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_full_time_student",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_24[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_37[0]",
+          "text": "T-QJ1SP"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_lived_in_us",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_17[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_lived_with_you",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_16[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_other_dependent_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_permanently_disabled",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_25[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_relationship",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_45[0]",
+          "text": "T-6AIDE"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_41[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_child_tax_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_first_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_34[0]",
+          "text": "T-19UHL"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_full_time_student",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_26[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_38[0]",
+          "text": "T-1M6KS"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_lived_in_us",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_19[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_lived_with_you",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_18[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_other_dependent_credit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_permanently_disabled",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_27[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_relationship",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_46[0]",
+          "text": "T-DTVWM"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_42[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.dependents.more_than_four_dependents",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Dependents_ReadOrder[0].c1_11[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.apartment",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_21[0]",
+          "text": "T-11JND"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.city",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_22[0]",
+          "text": "T-1Q53Y"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.combat_zone_checkbox",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.combat_zone_text",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_04[0]",
+          "text": "T-1PCM7"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.digital_assets_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_10[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.digital_assets_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_10[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filed_pursuant_9100_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_hoh",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_8[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_mfj",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_mfs",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_qss",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_8[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_single",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.first_name_mi",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+          "text": "T-HBNCG"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.foreign_country_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_25[0]",
+          "text": "T-17W6E"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.foreign_postal_code",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_27[0]",
+          "text": "T-TL6UO"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.foreign_province_state_county",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_26[0]",
+          "text": "T-1RK14"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.hoh_qss_qualifying_child_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_29[0]",
+          "text": "T-HM2H0"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.home_address",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_20[0]",
+          "text": "T-1XS2E"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+          "text": "T-10OPY"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.lived_apart_mfs_hoh",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_32[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.main_home_us_over_half_year",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_5[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.mfs_spouse_full_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].f1_28[0]",
+          "text": "T-VQX7S"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.nonresident_alien_spouse_checkbox",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_9[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.nonresident_alien_spouse_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_30[0]",
+          "text": "T-1FNBF"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.other_additional",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+          "text": "T-GBAYD"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.other_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+          "text": "7,358"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.other_checkbox",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_4[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.other_description",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+          "text": "T-1HMQS"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.presidential_campaign_spouse",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_7[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.presidential_campaign_you",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_6[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_day",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_09[0]",
+          "text": "93"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_month",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_08[0]",
+          "text": "62"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_year",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+          "text": "0434"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_first_name_mi",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+          "text": "T-17SZ0"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_last_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+          "text": "T-196RA"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.spouse_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.state",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_23[0]",
+          "text": "T-1Y8LW"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.tax_year_beginning",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.tax_year_ending_md",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+          "text": "01/15/2025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.tax_year_ending_year",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_03[0]",
+          "text": "67"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_checkbox",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_3[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_day",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_06[0]",
+          "text": "76"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_month",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_05[0]",
+          "text": "97"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_year",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_07[0]",
+          "text": "3997"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.header.zip",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_24[0]",
+          "text": "94110"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_74[0]",
+          "text": "5,773"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.11a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_75[0]",
+          "text": "2,007"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.11b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_01[0]",
+          "text": "5,481"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12a_spouse_as_dependent",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12a_you_as_dependent",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12b_dual_status_alien",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_4[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12b_spouse_itemizes_separate",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_3[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12d_spouse_blind",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_8[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12d_spouse_born_before_jan2_1961",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_7[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12d_you_blind",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_6[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12d_you_born_before_jan2_1961",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_5[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.12e",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_02[0]",
+          "text": "4,079"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.13a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_03[0]",
+          "text": "8,613"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.13b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_04[0]",
+          "text": "5,112"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.14",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_05[0]",
+          "text": "9,891"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.15",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_06[0]",
+          "text": "8,332"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.16",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_08[0]",
+          "text": "4,732"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.16_from_form_4972",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_10[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.16_from_form_8814",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_9[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.16_from_other_form",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_11[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.16_other_form_number",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_07[0]",
+          "text": "T-1H09M"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.17",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_09[0]",
+          "text": "8,629"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.18",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_10[0]",
+          "text": "5,837"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.19",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_11[0]",
+          "text": "1,920"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_47[0]",
+          "text": "4,535"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_48[0]",
+          "text": "9,359"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1c",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_49[0]",
+          "text": "2,308"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1d",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_50[0]",
+          "text": "9,835"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1e",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_51[0]",
+          "text": "4,497"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1f",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_52[0]",
+          "text": "9,970"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1g",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_53[0]",
+          "text": "4,175"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1h_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_55[0]",
+          "text": "4,563"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1h_type",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_54[0]",
+          "text": "T-14S6F"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1i",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_56[0]",
+          "text": "5,353"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.1z",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_57[0]",
+          "text": "9,479"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.20",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_12[0]",
+          "text": "6,727"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.21",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_13[0]",
+          "text": "8,457"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.22",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_14[0]",
+          "text": "5,380"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.23",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_15[0]",
+          "text": "8,266"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.24",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_16[0]",
+          "text": "4,419"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.25a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_17[0]",
+          "text": "7,440"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.25b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_18[0]",
+          "text": "6,545"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.25c",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_19[0]",
+          "text": "1,218"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.25d",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_20[0]",
+          "text": "5,058"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.26",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_21[0]",
+          "text": "4,025"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.27a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_23[0]",
+          "text": "7,645"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.27b_clergy_schedule_se",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_12[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.27c_no_eic_claim",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_13[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.28",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_24[0]",
+          "text": "1,870"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.28_no_actc_claim",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].Line28_ReadOrder[0].c2_14[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.29",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_25[0]",
+          "text": "7,789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.2a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_58[0]",
+          "text": "1,798"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.2b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_59[0]",
+          "text": "8,499"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.30",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_26[0]",
+          "text": "7,002"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.31",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_27[0]",
+          "text": "3,606"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.32",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_28[0]",
+          "text": "5,120"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.33",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_29[0]",
+          "text": "1,196"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.34",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_30[0]",
+          "text": "9,693"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_31[0]",
+          "text": "1,087"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35a_form_8888_attached",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_15[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35b_routing_number",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].RoutingNo[0].f2_32[0]",
+          "text": "T-W4W87"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35c_checking",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_16[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35c_savings",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_16[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.35d_account_number",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].AccountNo[0].f2_33[0]",
+          "text": "T-PLC4O"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.36",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_34[0]",
+          "text": "7,931"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.37",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_35[0]",
+          "text": "4,968"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.38",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_36[0]",
+          "text": "5,745"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.3a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_60[0]",
+          "text": "5,117"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.3b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_61[0]",
+          "text": "6,209"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.3c_box1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_33[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.3c_box2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_34[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_62[0]",
+          "text": "3,704"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_63[0]",
+          "text": "1,851"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4c_box3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_37[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4c_box3_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_64[0]",
+          "text": "2,991"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4c_qcd",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_36[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.4c_rollover",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_35[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_65[0]",
+          "text": "3,548"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_66[0]",
+          "text": "1,669"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5c_box3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_40[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5c_box3_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_67[0]",
+          "text": "3,445"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5c_pso",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_39[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.5c_rollover",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_38[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.6a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_68[0]",
+          "text": "2,938"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.6b",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_69[0]",
+          "text": "2,778"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.6c_lump_sum_election",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_41[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.6d_mfs_lived_apart",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_42[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.7a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_70[0]",
+          "text": "8,997"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.7b_childs_capital_gain_amount",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_71[0]",
+          "text": "4,621"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.7b_includes_childs_capital_gain",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_44[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.7b_schedule_d_not_required",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_43[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_72[0]",
+          "text": "2,829"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.9",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_73[0]",
+          "text": "9,349"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.line.former_spouse_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].SSN_ReadOrder[0].f2_22[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.page2.designee_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_37[0]",
+          "text": "T-14MVO"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.page2.designee_phone",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_38[0]",
+          "text": "5551234567"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.page2.designee_pin",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_39[0]",
+          "text": "T-1U8JL"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.page2.third_party_designee_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_17[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.page2.third_party_designee_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_17[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_address",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_50[0]",
+          "text": "T-1EUTZ"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_ein",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_51[0]",
+          "text": "T-2S2H8"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_48[0]",
+          "text": "T-E5869"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_46[0]",
+          "text": "T-1YDB4"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_phone",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_49[0]",
+          "text": "5551234567"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_ptin",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_47[0]",
+          "text": "T-I67SX"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_self_employed",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].c2_18[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.spouse_ip_pin",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_43[0]",
+          "text": "TG4ZUE"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.spouse_occupation",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_42[0]",
+          "text": "T-5WMX4"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_email",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_45[0]",
+          "text": "t-cujhh@example.com"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_ip_pin",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_41[0]",
+          "text": "T6FUDN"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_occupation",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_40[0]",
+          "text": "T-FNN3D"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_phone",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page2[0].f2_44[0]",
+          "text": "5551234567"
+        }
+      ]
+    }
+  ]
+}
