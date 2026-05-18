@@ -8,13 +8,14 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { projectRoot } from "../src/mastra/paths.js";
 import { evaluateAllForms } from "../src/mastra/engine/engine.js";
 import {
   loadFromFixtures,
   makeCatalog,
   type Catalog,
 } from "../src/mastra/engine/catalog.js";
-import { projectRoot } from "../src/mastra/paths.js";
+import { getFormSpec } from "../src/mastra/engine/registry.js";
 import {
   makeDecisionsView,
   makeFactsView,
@@ -38,22 +39,20 @@ import type { RunResult, Scenario, ScenarioForm } from "./types.js";
 // catalog so cross-form lookups can resolve.
 const combinedCatalogCache = new Map<string, Promise<Catalog>>();
 function getCombinedCatalog(catalogPaths: string[]): Promise<Catalog> {
-  const absPaths = catalogPaths.map((p) => resolve(projectRoot, p));
-  const key = absPaths.slice().sort().join("|");
+  const key = catalogPaths.slice().sort().join("|");
   const cached = combinedCatalogCache.get(key);
   if (cached) return cached;
-  const promise = loadFromFixtures(absPaths);
+  const promise = loadFromFixtures(catalogPaths);
   combinedCatalogCache.set(key, promise);
   return promise;
 }
 
 const blankPdfCache = new Map<string, Buffer>();
 function getBlankPdf(blankPdfPath: string): Buffer {
-  const abs = resolve(projectRoot, blankPdfPath);
-  const cached = blankPdfCache.get(abs);
+  const cached = blankPdfCache.get(blankPdfPath);
   if (cached) return cached;
-  const buf = readFileSync(abs);
-  blankPdfCache.set(abs, buf);
+  const buf = readFileSync(blankPdfPath);
+  blankPdfCache.set(blankPdfPath, buf);
   return buf;
 }
 
@@ -85,20 +84,25 @@ export async function runScenario(s: Scenario): Promise<RunResult> {
     }),
   };
 
-  // Register bindings for every form once. evaluateAllForms reads bindings
-  // out of the engine registry, so all forms in the scenario need their
-  // register() call to have run.
-  for (const f of s.forms) {
-    if (!registeredForms.has(f.formId)) {
-      f.register();
-      registeredForms.add(f.formId);
+  // Look up each scenario form's static config (catalog/blank/register)
+  // from the shared registry. Scenarios just list `{ formId, expected }`;
+  // everything else comes from src/mastra/engine/registry.ts.
+  const specs = s.forms.map((sf) => ({ sf, spec: getFormSpec(sf.formId) }));
+
+  // Register bindings for every form once. evaluateAllForms reads
+  // bindings out of the engine registry, so all forms in the scenario
+  // need their register() call to have run.
+  for (const { spec } of specs) {
+    if (!registeredForms.has(spec.formId)) {
+      spec.register();
+      registeredForms.add(spec.formId);
     }
   }
 
   // Single combined catalog across every form in the scenario. Lets
   // cross-form lookups (e.g. CA 540 line 13 referencing form-1040 line 11b)
   // find their target inventory rows in one place.
-  const catalog = await getCombinedCatalog(s.forms.map((f) => f.catalogPath));
+  const catalog = await getCombinedCatalog(specs.map((s) => s.spec.catalogPath));
 
   // Fixpoint loop: evaluate every form, iterating until cross-form refs
   // converge. Returns a Map<formId, EvaluatedForm> + a passes/resolvedPerPass
@@ -110,13 +114,13 @@ export async function runScenario(s: Scenario): Promise<RunResult> {
   );
 
   // Per-form rendering + assertions.
-  for (const sf of s.forms) {
+  for (const { sf, spec } of specs) {
     const evaluated = forms.get(sf.formId);
     if (!evaluated) {
       failures.push(`[${sf.formId}] evaluateAllForms returned no result.`);
       continue;
     }
-    await assertForm(sf, evaluated, catalog, failures);
+    await assertForm(sf, spec.blankPdfPath, evaluated, catalog, failures);
   }
 
   return {
@@ -131,6 +135,7 @@ export async function runScenario(s: Scenario): Promise<RunResult> {
 
 async function assertForm(
   sf: ScenarioForm,
+  blankPdfPath: string,
   form: ReturnType<typeof evaluateAllForms>["forms"] extends Map<string, infer V> ? V : never,
   catalog: Catalog,
   failures: string[],
@@ -138,7 +143,7 @@ async function assertForm(
   // fillFromCatalog walks the catalog inventory and writes each value into
   // the corresponding PDF widget. Same function handles the 1040 and the 540.
   const { rendered, warnings } = await fillFromCatalog({
-    blankPdfBytes: getBlankPdf(sf.blankPdfPath),
+    blankPdfBytes: getBlankPdf(blankPdfPath),
     form,
     catalog,
   });

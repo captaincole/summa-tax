@@ -15,8 +15,6 @@ import { alexFacts, ALEX_TAX_YEAR, ALEX_USER_ID } from "./facts.js";
 import { alexDecisions } from "./decisions.js";
 import { alexExpected } from "./expected.js";
 import { alex540Expected } from "./expected-540.js";
-import { register as registerForm1040 } from "../../../src/mastra/engine/federal/1040/bindings.js";
-import { register as registerForm540 } from "../../../src/mastra/engine/state/ca/540/bindings.js";
 
 export const alexScenario: Scenario = {
   name: "alex",
@@ -29,18 +27,12 @@ export const alexScenario: Scenario = {
   forms: [
     {
       formId: "form-1040",
-      catalogPath: "forms/federal/1040/catalog.json",
-      blankPdfPath: "forms/federal/1040/blank.pdf",
       goldenPdfPath: "tests/scenarios/alex/docs/Alex-1040-Golden.pdf",
-      register: registerForm1040,
       expected: alexExpected,
     },
     {
       formId: "form-540",
-      catalogPath: "forms/state/ca/540/catalog.json",
-      blankPdfPath: "forms/state/ca/540/blank.pdf",
       goldenPdfPath: "tests/scenarios/alex/docs/Alex-CA540-Golden.pdf",
-      register: registerForm540,
       expected: alex540Expected,
     },
   ],

@@ -1,4 +1,3 @@
-import { resolve } from "node:path";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
@@ -13,50 +12,17 @@ import {
 import { evaluateAllForms } from "../engine/engine";
 import { resolveFilingInfo } from "../engine/filingInfo";
 import { loadFromFixtures, type Catalog } from "../engine/catalog";
-import { projectRoot } from "../paths";
-// Explicit register() calls so the bundler / dev server can't tree-shake
-// the side-effect-import idiom. Idempotent — bindings overwrite themselves
-// if called twice.
-import { register as registerForm1040 } from "../engine/federal/1040/bindings";
-import { register as registerForm540 } from "../engine/state/ca/540/bindings";
-import { register as registerScheduleCa } from "../engine/state/ca/schedule-ca/bindings";
-import { register as registerForm8949 } from "../engine/federal/8949/bindings";
-import { register as registerScheduleD } from "../engine/federal/schedule-d/bindings";
-registerForm1040();
-registerForm540();
-registerScheduleCa();
-registerForm8949();
-registerScheduleD();
+import { FORMS, registerAllForms } from "../engine/registry";
+registerAllForms();
 import { requireUserContext } from "./userContext";
 
-// Catalogs (form inventories) live in `forms/<jurisdiction>/<short>/catalog.json`.
-// One combined Catalog loads all of them so cross-form references resolve
-// during evaluateAllForms — e.g. form-540.line.13_federal_agi reads
-// form-1040.line.11b after the federal AGI is computed.
-//
-// Regeneration: `npm run forms:ingest --form-id=X` rewrites the catalog JSON
-// for X; `npm run forms:bind --form-id=X` rewrites X's bindings.
-const CATALOG_FILES = [
-  resolve(projectRoot, "forms/federal/1040/catalog.json"),
-  resolve(projectRoot, "forms/federal/8949/catalog.json"),
-  resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
-  resolve(projectRoot, "forms/state/ca/540/catalog.json"),
-  resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
-];
-// Order matters: forms are evaluated in this sequence each fixpoint pass,
-// and the engine's monotonic cache means once a field resolves it stays
-// put. Schedule CA reads from Form 1040 (federal echoes) and feeds Form
-// 540 (lines 14/16/18), so it sits between them. Listing form-540 last
-// also lets it pick up Schedule CA's values on the first pass instead of
-// caching a fallback then ignoring the canonical value later.
-// Dependency order: 8949 → Schedule D → 1040 → Schedule CA → 540.
-const SCENARIO_FORM_IDS = [
-  "form-8949",
-  "schedule-d",
-  "form-1040",
-  "schedule-ca",
-  "form-540",
-];
+// Combined catalog across every registered form so cross-form references
+// resolve during evaluateAllForms — e.g. form-540.line.13_federal_agi
+// reads form-1040.line.11b after the federal AGI is computed. FORMS is
+// already in dependency order (8949 → Schedule D → 1040 → Schedule CA →
+// 540), which is what the fixpoint evaluator wants.
+const CATALOG_FILES = FORMS.map((f) => f.catalogPath);
+const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {

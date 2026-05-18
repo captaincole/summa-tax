@@ -24,7 +24,7 @@
 // listed in its CATALOG_FORM_IDS array — one row per form in the summary.
 
 import { promises as fs } from "node:fs";
-import { resolve, join } from "node:path";
+import { join } from "node:path";
 import { createHash } from "node:crypto";
 import {
   loadFromFixture,
@@ -36,7 +36,6 @@ import type {
   AnyFormField,
   EvaluatedForm,
 } from "../src/mastra/engine/types.js";
-import { projectRoot } from "../src/mastra/paths.js";
 import type { RunResult } from "./types.js";
 
 interface Args {
@@ -59,49 +58,15 @@ function parseArgs(argv: string[]): Args {
 
 // ─── Catalog registry ───────────────────────────────────────────────────
 //
-// Explicit (formId → catalog.json path) mapping. The CLI resolves
-// --form-id against this; runAll iterates it for the catalog-fill pass.
-// One source of truth — adding a form is a single line edit here.
-// Sibling files (blank.pdf, catalog-fill-golden.json) are read from the
-// catalog's directory.
+// The set of forms with catalog-fill goldens is exactly the set of
+// forms in the shared registry — same source of truth. Re-export FORMS
+// under the CATALOGS name so runAll's iteration stays self-describing.
+import { FORMS, getFormSpec } from "../src/mastra/engine/registry.js";
 
-export interface CatalogEntry {
-  formId: string;
-  catalogPath: string;
-}
-
-export const CATALOGS: CatalogEntry[] = [
-  {
-    formId: "form-1040",
-    catalogPath: resolve(projectRoot, "forms/federal/1040/catalog.json"),
-  },
-  {
-    formId: "form-540",
-    catalogPath: resolve(projectRoot, "forms/state/ca/540/catalog.json"),
-  },
-  {
-    formId: "form-8949",
-    catalogPath: resolve(projectRoot, "forms/federal/8949/catalog.json"),
-  },
-  {
-    formId: "schedule-ca",
-    catalogPath: resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
-  },
-  {
-    formId: "schedule-d",
-    catalogPath: resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
-  },
-];
+export const CATALOGS = FORMS;
 
 function lookupCatalogPath(formId: string): string {
-  const entry = CATALOGS.find((c) => c.formId === formId);
-  if (!entry) {
-    const known = CATALOGS.map((c) => c.formId).join(", ");
-    throw new Error(
-      `Unknown formId "${formId}". Add it to CATALOGS in tests/catalogFill.ts. Known: ${known}.`,
-    );
-  }
-  return entry.catalogPath;
+  return getFormSpec(formId).catalogPath;
 }
 
 // ─── Synthetic value generation ─────────────────────────────────────────

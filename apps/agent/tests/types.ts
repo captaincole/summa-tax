@@ -12,21 +12,22 @@ import type { TaxFactRow } from "../src/mastra/db/taxFacts.js";
 import type { AIDecisionRow } from "../src/mastra/db/aiDecisions.js";
 
 export interface ScenarioForm {
+  /**
+   * Form to evaluate + assert against. The runner looks up the spec
+   * (catalog path, blank PDF, register fn) from the shared registry
+   * (`src/mastra/engine/registry.ts`) — scenarios don't repeat that
+   * config.
+   */
   formId: string;
-  /** Path to the catalog JSON relative to the agent's project root. */
-  catalogPath: string;
-  /** Path to the blank PDF used by the renderer (relative to project root). */
-  blankPdfPath: string;
   /**
    * Path to a CPA-completed "golden" PDF for this scenario+form. The runner
    * reads every filled widget out of this PDF and diffs against our render
    * — bypasses the catalog's fieldId→widget mapping, so catalog mislabels
    * surface immediately. Optional; when absent, only the fixture-based
-   * assertions run.
+   * assertions run. Scenario-specific (e.g. Alex's golden, Alejandro's
+   * golden) so it lives here, not in the registry.
    */
   goldenPdfPath?: string;
-  /** Function that registers this form's bindings into the engine registry. */
-  register: () => void;
   expected: ExpectedResults;
 }
 

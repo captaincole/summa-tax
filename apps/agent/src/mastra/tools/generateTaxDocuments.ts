@@ -1,8 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { projectRoot } from "../paths";
 import { listFacts } from "../db/taxFacts";
 import { listDecisions } from "../db/aiDecisions";
 import { createDocument } from "../db/userDocuments";
@@ -16,88 +14,13 @@ import {
 import { evaluateAllForms } from "../engine/engine";
 import { resolveFilingInfo } from "../engine/filingInfo";
 import { loadFromFixtures, type Catalog } from "../engine/catalog";
-// Explicit register() calls so the bundler / dev server can't tree-shake
-// the side-effect-import idiom. Idempotent — bindings overwrite themselves
-// if called twice.
-import { register as registerForm1040 } from "../engine/federal/1040/bindings";
-import { register as registerForm540 } from "../engine/state/ca/540/bindings";
-import { register as registerForm8949 } from "../engine/federal/8949/bindings";
-import { register as registerScheduleD } from "../engine/federal/schedule-d/bindings";
-import { register as registerScheduleCa } from "../engine/state/ca/schedule-ca/bindings";
-registerForm1040();
-registerForm540();
-registerForm8949();
-registerScheduleD();
-registerScheduleCa();
+import { FORMS, registerAllForms } from "../engine/registry";
+registerAllForms();
 import { fillFromCatalog } from "../engine/render/fillFromCatalog";
 import { requireUserContext } from "./userContext";
 
-// Forms produced by this tool, in dependency order. Each entry knows
-// (a) its blank-PDF path so the renderer can fill from it, (b) the
-// slug/filename used in the storage path + display name, and (c) the
-// metadata.formId tag stored alongside the document. Adding a new form
-// is a one-line append here plus a register() import above; no changes
-// to the render loop, schema, or sidecar are required.
-//
-// Order matters: forms are evaluated in this sequence by evaluateAllForms,
-// and the engine's monotonic cache means each one needs its upstreams
-// resolved first. 8949 → Schedule D → 1040 → Schedule CA → 540 follows
-// the natural data flow.
-interface FormSpec {
-  formId: string;
-  catalogPath: string;
-  blankPath: string;
-  storageSlug: (year: number) => string;
-  filename: (year: number) => string;
-  metadataFormId: string;
-}
-const FORMS: FormSpec[] = [
-  {
-    formId: "form-8949",
-    catalogPath: resolve(projectRoot, "forms/federal/8949/catalog.json"),
-    blankPath: resolve(projectRoot, "forms/federal/8949/blank.pdf"),
-    storageSlug: (y) => `8949-${y}`,
-    filename: (y) => `Form 8949 — ${y}`,
-    metadataFormId: "8949",
-  },
-  {
-    formId: "schedule-d",
-    catalogPath: resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
-    blankPath: resolve(projectRoot, "forms/federal/schedule-d/blank.pdf"),
-    storageSlug: (y) => `schedule-d-${y}`,
-    filename: (y) => `Schedule D — ${y}`,
-    metadataFormId: "schedule-d",
-  },
-  {
-    formId: "form-1040",
-    catalogPath: resolve(projectRoot, "forms/federal/1040/catalog.json"),
-    blankPath: resolve(projectRoot, "forms/federal/1040/blank.pdf"),
-    storageSlug: (y) => `1040-${y}`,
-    filename: (y) => `Form 1040 — ${y}`,
-    metadataFormId: "1040",
-  },
-  {
-    formId: "schedule-ca",
-    catalogPath: resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
-    blankPath: resolve(projectRoot, "forms/state/ca/schedule-ca/blank.pdf"),
-    storageSlug: (y) => `schedule-ca-${y}`,
-    filename: (y) => `Schedule CA (540) — ${y}`,
-    metadataFormId: "schedule-ca",
-  },
-  {
-    formId: "form-540",
-    catalogPath: resolve(projectRoot, "forms/state/ca/540/catalog.json"),
-    blankPath: resolve(projectRoot, "forms/state/ca/540/blank.pdf"),
-    storageSlug: (y) => `540-${y}`,
-    filename: (y) => `Form 540 — ${y}`,
-    metadataFormId: "540",
-  },
-];
-
-// Combined catalog — every form's inventory loaded into one Catalog so
-// cross-form refs (540 line 13 → 1040 line 11b, Schedule CA → 1040 lines,
-// 1040 line 7a → Schedule D line 16, Schedule D → 8949 totals) resolve
-// during the fixpoint evaluation.
+// Combined catalog across every registered form so cross-form refs
+// resolve during the fixpoint evaluation.
 const CATALOG_FILES = FORMS.map((f) => f.catalogPath);
 const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
 
@@ -283,7 +206,7 @@ export const generateTaxDocuments = createTool({
         continue;
       }
 
-      const blankBytes = readFileSync(spec.blankPath);
+      const blankBytes = readFileSync(spec.blankPdfPath);
       const { pdfBytes, rendered, warnings } = await fillFromCatalog({
         blankPdfBytes: blankBytes,
         form,
@@ -292,17 +215,17 @@ export const generateTaxDocuments = createTool({
       for (const w of warnings) {
         console.warn(`[generate-tax-documents][${spec.formId}] ${w}`);
       }
-      const filename = spec.filename(year);
+      const filename = `${spec.displayName} — ${year}`;
       const doc = await createDocument(supabase, {
         userId,
         category: "drafts",
         filename,
-        storageSlug: spec.storageSlug(year),
+        storageSlug: `${spec.shortId}-${year}`,
         extension: "pdf",
         bytes: pdfBytes,
         mimeType: "application/pdf",
         expiresInDays: 30,
-        metadata: { formId: spec.metadataFormId, taxYear: year },
+        metadata: { formId: spec.shortId, taxYear: year },
       });
       const url = `/documents/${doc.id}`;
       documents.push({ formId: spec.formId, url, filename });

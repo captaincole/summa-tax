@@ -24,11 +24,6 @@ import { alejandro540Expected } from "./expected-540.js";
 import { alejandroScheduleCaExpected } from "./expected-schedule-ca.js";
 import { alejandro8949Expected } from "./expected-8949.js";
 import { alejandroScheduleDExpected } from "./expected-schedule-d.js";
-import { register as registerForm1040 } from "../../../src/mastra/engine/federal/1040/bindings.js";
-import { register as registerForm540 } from "../../../src/mastra/engine/state/ca/540/bindings.js";
-import { register as registerScheduleCa } from "../../../src/mastra/engine/state/ca/schedule-ca/bindings.js";
-import { register as registerForm8949 } from "../../../src/mastra/engine/federal/8949/bindings.js";
-import { register as registerScheduleD } from "../../../src/mastra/engine/federal/schedule-d/bindings.js";
 
 export const alejandroScenario: Scenario = {
   name: "alejandro",
@@ -38,45 +33,14 @@ export const alejandroScenario: Scenario = {
   userId: ALEJANDRO_USER_ID,
   facts: alejandroFacts,
   decisions: alejandroDecisions,
+  // Forms in dependency order: 8949 → Schedule D → 1040 → Schedule CA →
+  // 540. The registry imposes the same order at the engine level, so
+  // this listing matches the fixpoint evaluation sequence.
   forms: [
-    // 8949 lives at the top of the dependency chain — Schedule D will
-    // read its line 2 totals, and 1040 line 7a flows from Schedule D.
-    {
-      formId: "form-8949",
-      catalogPath: "forms/federal/8949/catalog.json",
-      blankPdfPath: "forms/federal/8949/blank.pdf",
-      register: registerForm8949,
-      expected: alejandro8949Expected,
-    },
-    {
-      formId: "schedule-d",
-      catalogPath: "forms/federal/schedule-d/catalog.json",
-      blankPdfPath: "forms/federal/schedule-d/blank.pdf",
-      register: registerScheduleD,
-      expected: alejandroScheduleDExpected,
-    },
-    {
-      formId: "form-1040",
-      catalogPath: "forms/federal/1040/catalog.json",
-      blankPdfPath: "forms/federal/1040/blank.pdf",
-      register: registerForm1040,
-      expected: alejandroExpected,
-    },
-    // Order matters: Schedule CA reads from Form 1040 (federal echoes)
-    // and feeds Form 540 (lines 14/16/18), so it sits between them.
-    {
-      formId: "schedule-ca",
-      catalogPath: "forms/state/ca/schedule-ca/catalog.json",
-      blankPdfPath: "forms/state/ca/schedule-ca/blank.pdf",
-      register: registerScheduleCa,
-      expected: alejandroScheduleCaExpected,
-    },
-    {
-      formId: "form-540",
-      catalogPath: "forms/state/ca/540/catalog.json",
-      blankPdfPath: "forms/state/ca/540/blank.pdf",
-      register: registerForm540,
-      expected: alejandro540Expected,
-    },
+    { formId: "form-8949", expected: alejandro8949Expected },
+    { formId: "schedule-d", expected: alejandroScheduleDExpected },
+    { formId: "form-1040", expected: alejandroExpected },
+    { formId: "schedule-ca", expected: alejandroScheduleCaExpected },
+    { formId: "form-540", expected: alejandro540Expected },
   ],
 };
