@@ -42,19 +42,21 @@ export const alejandroScenario: Scenario = {
       register: registerForm1040,
       expected: alejandroExpected,
     },
-    {
-      formId: "form-540",
-      catalogPath: "forms/state/ca/540/catalog.json",
-      blankPdfPath: "forms/state/ca/540/blank.pdf",
-      register: registerForm540,
-      expected: alejandro540Expected,
-    },
+    // Order matters: Schedule CA reads from Form 1040 (federal echoes)
+    // and feeds Form 540 (lines 14/16/18), so it sits between them.
     {
       formId: "schedule-ca",
       catalogPath: "forms/state/ca/schedule-ca/catalog.json",
       blankPdfPath: "forms/state/ca/schedule-ca/blank.pdf",
       register: registerScheduleCa,
       expected: alejandroScheduleCaExpected,
+    },
+    {
+      formId: "form-540",
+      catalogPath: "forms/state/ca/540/catalog.json",
+      blankPdfPath: "forms/state/ca/540/blank.pdf",
+      register: registerForm540,
+      expected: alejandro540Expected,
     },
   ],
 };

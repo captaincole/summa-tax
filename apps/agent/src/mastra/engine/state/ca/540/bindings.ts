@@ -85,16 +85,19 @@ export function register(): void {
       // Rate Schedule, FTB 3800, FTB 3803). For sub-$100k income we use
       // the Tax Table; bind that source checkbox to true.
       "line.31_tax_from_tax_table": () => true,
-      // MANUAL EDIT: Schedule CA (Part I line 27 columns B and C) isn't
-      // ingested yet. For Alex-class single-W-2 taxpayers the value is
-      // always 0; stub it explicitly so downstream sums show 0 in the
-      // rendered form instead of leaving a numeric line blank.
-      "line.14_ca_adjustments_subtractions": stubZero(
-        "until Schedule CA (540) Part I line 27 column B is ingested",
-      ),
-      "line.16_ca_adjustments_additions": stubZero(
-        "until Schedule CA (540) Part I line 27 column C is ingested",
-      ),
+      // MANUAL EDIT: Read CA subtractions/additions from Schedule CA Part
+      // I line 27 (col B / col C). Cross-form ref returns undefined when
+      // Schedule CA isn't filed for this scenario (e.g. Alex declined it
+      // via the `must_file_schedule_ca: false` decision) — fall back to
+      // 0, which matches the stubZero behavior that was here previously.
+      "line.14_ca_adjustments_subtractions": (f) => {
+        const v = f["schedule-ca.3.line.c27_subtractions"];
+        return typeof v === "number" ? v : 0;
+      },
+      "line.16_ca_adjustments_additions": (f) => {
+        const v = f["schedule-ca.3.line.c27_additions"];
+        return typeof v === "number" ? v : 0;
+      },
       // Line 11 = lines 7 + 8 + 9 + 10 exemption amounts; blind/senior/dependent lines are unsupported and treated as 0.
       "line.11_total_exemption_amount": (f) => sum(f["line.7_personal_exemption_amount"], f["line.8_blind_exemption_amount"], f["line.9_senior_exemption_amount"], f["line.10_dependent_exemption_amount"]),
       // Sum of W-2 box 16 (state wages) across all employers.
@@ -105,13 +108,19 @@ export function register(): void {
       "line.15_ca_agi_before_additions": (f) => sum(f["line.13_federal_agi"], f["line.14_ca_adjustments_subtractions"] === undefined ? 0 : -f["line.14_ca_adjustments_subtractions"]),
       // California AGI = line 15 (pre-additions subtotal) + line 16 (CA additions); line 16 is unsupported and treated as 0.
       "line.17_ca_agi": (f) => sum(f["line.15_ca_agi_before_additions"], f["line.16_ca_adjustments_additions"]),
-      // MANUAL EDIT: standard deduction by filing status via the shared
-      // data/standardDeduction module. Itemized path (Schedule CA Part II
-      // line 30) not yet ingested; default to standard.
-      "line.18_deductions": (_, info) =>
-        info.filingStatus
+      // MANUAL EDIT: Read CA deduction from Schedule CA Part II line 30
+      // (the larger-of std-vs-itemized selector) when Schedule CA is
+      // filed. Falls back to the direct standard deduction lookup when
+      // it isn't (Alex-class W-2-only filer who declined Schedule CA).
+      // Both paths produce the same value for non-itemizing filers.
+      "line.18_deductions": (f, info) => {
+        const fromScheduleCA =
+          f["schedule-ca.5.page2.total_itemized_30_standard_or_itemized"];
+        if (typeof fromScheduleCA === "number") return fromScheduleCA;
+        return info.filingStatus
           ? lookupStandardDeduction("state-ca", 2025, info.filingStatus)
-          : undefined,
+          : undefined;
+      },
       // CA taxable income is CA AGI (line 17) minus deductions (line 18), floored at zero.
       "line.19_taxable_income": (f) => floor(0, sum(f["line.17_ca_agi"], f["line.18_deductions"] === undefined ? 0 : -f["line.18_deductions"])),
       // CA line 31 tax is computed from the California Tax Table using line 19 taxable income and filing status; tableId=ca-2025 to use the CA table (not the federal one).

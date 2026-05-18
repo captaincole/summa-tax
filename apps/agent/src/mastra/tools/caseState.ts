@@ -37,7 +37,13 @@ const CATALOG_FILES = [
   resolve(projectRoot, "forms/state/ca/540/catalog.json"),
   resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
 ];
-const SCENARIO_FORM_IDS = ["form-1040", "form-540", "schedule-ca"];
+// Order matters: forms are evaluated in this sequence each fixpoint pass,
+// and the engine's monotonic cache means once a field resolves it stays
+// put. Schedule CA reads from Form 1040 (federal echoes) and feeds Form
+// 540 (lines 14/16/18), so it sits between them. Listing form-540 last
+// also lets it pick up Schedule CA's values on the first pass instead of
+// caching a fallback then ignoring the canonical value later.
+const SCENARIO_FORM_IDS = ["form-1040", "schedule-ca", "form-540"];
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {
