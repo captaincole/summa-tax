@@ -2474,13 +2474,13 @@
       "options": [
         {
           "value": "no",
-          "radioOption": "0",
-          "label": "0"
+          "radioOption": "No",
+          "label": "No"
         },
         {
           "value": "yes",
-          "radioOption": "1",
-          "label": "1"
+          "radioOption": "Yes",
+          "label": "Yes"
         }
       ]
     },
@@ -2671,13 +2671,13 @@
       "options": [
         {
           "value": "no",
-          "radioOption": "0",
-          "label": "0"
+          "radioOption": "No",
+          "label": "No"
         },
         {
           "value": "yes",
-          "radioOption": "1",
-          "label": "1"
+          "radioOption": "Yes",
+          "label": "Yes"
         }
       ]
     },
