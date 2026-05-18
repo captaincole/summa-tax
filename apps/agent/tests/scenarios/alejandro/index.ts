@@ -22,9 +22,11 @@ import { alejandroDecisions } from "./decisions.js";
 import { alejandroExpected } from "./expected.js";
 import { alejandro540Expected } from "./expected-540.js";
 import { alejandroScheduleCaExpected } from "./expected-schedule-ca.js";
+import { alejandro8949Expected } from "./expected-8949.js";
 import { register as registerForm1040 } from "../../../src/mastra/engine/federal/1040/bindings.js";
 import { register as registerForm540 } from "../../../src/mastra/engine/state/ca/540/bindings.js";
 import { register as registerScheduleCa } from "../../../src/mastra/engine/state/ca/schedule-ca/bindings.js";
+import { register as registerForm8949 } from "../../../src/mastra/engine/federal/8949/bindings.js";
 
 export const alejandroScenario: Scenario = {
   name: "alejandro",
@@ -35,6 +37,15 @@ export const alejandroScenario: Scenario = {
   facts: alejandroFacts,
   decisions: alejandroDecisions,
   forms: [
+    // 8949 lives at the top of the dependency chain — Schedule D will
+    // read its line 2 totals, and 1040 line 7a flows from Schedule D.
+    {
+      formId: "form-8949",
+      catalogPath: "forms/federal/8949/catalog.json",
+      blankPdfPath: "forms/federal/8949/blank.pdf",
+      register: registerForm8949,
+      expected: alejandro8949Expected,
+    },
     {
       formId: "form-1040",
       catalogPath: "forms/federal/1040/catalog.json",

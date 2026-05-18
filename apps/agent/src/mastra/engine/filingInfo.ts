@@ -28,6 +28,14 @@ import {
 import type { Form1040FilingInfo } from "./federal/1040/filingInfo.js";
 import type { Form540FilingInfo } from "./state/ca/540/filingInfo.js";
 import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js";
+import type { Form8949FilingInfo } from "./federal/8949/filingInfo.js";
+import type { TradeFactValue } from "../facts/index.js";
+
+// Mirrors the convention spelled out in src/mastra/facts/kinds/trade.ts.
+// Inlined here because parseTradeFact() expects a full TaxFactRow, but
+// resolveFilingInfo only sees a {key, value, category} projection — the
+// thinner shape is enough to recognize and decode a trade fact.
+const TRADE_KEY_RE = /^account\.([^.]+)\.trades\.([^.]+)$/;
 
 // ─── Base (shared across every form) ─────────────────────────────────────
 
@@ -81,7 +89,8 @@ export interface BaseFilingInfo {
 export type FilingInfo = BaseFilingInfo &
   Form1040FilingInfo &
   Form540FilingInfo &
-  ScheduleCaFilingInfo;
+  ScheduleCaFilingInfo &
+  Form8949FilingInfo;
 
 // ─── Resolver (hand-coded stand-in for the AI layer) ─────────────────────
 
@@ -129,6 +138,27 @@ export function resolveFilingInfo(opts: {
     }
     return total;
   };
+
+  // Trade-fact partitioning for 8949. Walks investment_income facts and
+  // pulls out anything that parses as a trade (key shape
+  // `account.<slug>.trades.<tradeId>`), then splits by holding period:
+  // held > 1 year ⇒ long-term, else short-term. Dates are stored on the
+  // fact as "MM/DD/YY" or "MM/DD/YYYY"; we accept both.
+  const partitionTrades = (): {
+    short: TradeFactValue[];
+    long: TradeFactValue[];
+  } => {
+    const short: TradeFactValue[] = [];
+    const long: TradeFactValue[] = [];
+    for (const row of opts.facts) {
+      if (row.category !== "investment_income") continue;
+      if (!TRADE_KEY_RE.test(row.key)) continue;
+      const trade = row.value as TradeFactValue;
+      (isLongTermTrade(trade) ? long : short).push(trade);
+    }
+    return { short, long };
+  };
+  const trades = partitionTrades();
 
   // Sum a numeric field across all 1099-DIV / investment_income facts.
   // Returns 0 when no facts exist — same convention as sumW2Box, which
@@ -231,7 +261,40 @@ export function resolveFilingInfo(opts: {
     mustFileScheduleCA: decisionByKey.get(
       "decisions.scope.must_file_schedule_ca",
     ) as boolean | undefined,
+
+    // ─── Form 8949 ──────────────────────────────────────────────────
+    mustFile8949: decisionByKey.get(
+      "decisions.scope.must_file_8949",
+    ) as boolean | undefined,
+    shortTermTrades: trades.short,
+    longTermTrades: trades.long,
   };
+}
+
+// Trade-date parser. Accepts "MM/DD/YY" or "MM/DD/YYYY" as emitted by
+// brokers on 1099-B. Two-digit years are anchored to the 2000s — anyone
+// taxed before 2050 needs to bring their own century.
+function parseTradeDate(s: string): Date | null {
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/.exec(s);
+  if (!m) return null;
+  const month = parseInt(m[1], 10);
+  const day = parseInt(m[2], 10);
+  let year = parseInt(m[3], 10);
+  if (year < 100) year += 2000;
+  return new Date(year, month - 1, day);
+}
+
+// IRC §1222 short/long-term split: held more than 1 year is long-term.
+// "More than 1 year" = strictly past the anniversary date, day-precision.
+// Unparseable dates default to short-term — safer for tax purposes (more
+// conservative, higher rate) than mislabeling as long-term.
+function isLongTermTrade(t: TradeFactValue): boolean {
+  const acq = parseTradeDate(t.dateAcquired);
+  const sold = parseTradeDate(t.dateSold);
+  if (!acq || !sold) return false;
+  const anniversary = new Date(acq);
+  anniversary.setFullYear(anniversary.getFullYear() + 1);
+  return sold > anniversary;
 }
 
 function sumCaSdi(wageRows: Array<{ value: unknown }>): number {
