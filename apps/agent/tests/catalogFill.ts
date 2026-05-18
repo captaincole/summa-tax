@@ -18,9 +18,10 @@
 //
 // First run: pass --update to bootstrap the golden + a filled PDF at
 // /tmp/smoke-<formId>.pdf. Eyeball the PDF, commit the golden, then future
-// runs (without --update) act as a regression check. Future expansion:
-// runAll.ts can iterate every catalog with a sibling golden and run this
-// check across all forms in one pre-commit pass.
+// runs (without --update) act as a regression check.
+//
+// runAll.ts uses `runCatalogFillCheck` + `discoverCatalogFormIds` to iterate
+// every form's catalog as its own row in the pre-commit summary.
 
 import { promises as fs } from "node:fs";
 import { resolve, join } from "node:path";
@@ -36,6 +37,7 @@ import type {
   EvaluatedForm,
 } from "../src/mastra/engine/types.js";
 import { projectRoot } from "../src/mastra/paths.js";
+import type { RunResult } from "./types.js";
 
 interface Args {
   formId: string;
@@ -259,7 +261,112 @@ function diffGoldens(expected: Golden, actual: Golden): string[] {
   return diffs;
 }
 
-// ─── Main ────────────────────────────────────────────────────────────────
+// ─── Programmatic entry (used by runAll) ────────────────────────────────
+//
+// Returns a RunResult of the same shape `runScenario` produces so runAll.ts
+// can aggregate catalog-fill checks alongside scenario runs in one table.
+// Failures are collected as strings rather than thrown — partial info is
+// more useful than a stack trace when surfacing what changed across N
+// forms in one pre-commit pass.
+
+export async function runCatalogFillCheck(formId: string): Promise<RunResult> {
+  const t0 = Date.now();
+  const failures: string[] = [];
+  try {
+    const catalogPath = await findCatalogPath(formId);
+    const formDir = catalogPath.replace(/\/catalog\.json$/, "");
+    const blankPath = join(formDir, "blank.pdf");
+    const goldenPath = join(formDir, "catalog-fill-golden.json");
+
+    const catalog = await loadFromFixture(catalogPath);
+    const fieldCount = catalog.getFields(formId).length;
+    const blankPdfBytes = await fs.readFile(blankPath);
+    const form = buildSyntheticForm(formId, catalog);
+    const { pdfBytes, rendered, warnings } = await fillFromCatalog({
+      blankPdfBytes,
+      form,
+      catalog,
+    });
+
+    // Write the rendered PDF unconditionally — useful reference on both
+    // green and red runs (operator can open it to confirm a diff is real).
+    await fs.writeFile(`/tmp/smoke-${formId}.pdf`, pdfBytes);
+
+    // Layer 1: render warnings → catalog references a widget the PDF
+    // can't satisfy (wrong name, wrong type, overflow after fallbacks).
+    for (const w of warnings) failures.push(`render warning: ${w}`);
+
+    // Layer 2: every field should have produced ≥1 rendered widget. The
+    // renderer silently skips fields with undefined values (e.g. selects
+    // with empty options) — surface those as missing.
+    if (rendered.size !== fieldCount) {
+      const renderedIds = new Set(rendered.keys());
+      const missing = catalog
+        .getFields(formId)
+        .map((f) => f.fieldId)
+        .filter((id) => !renderedIds.has(id));
+      const head = missing.slice(0, 5).join(", ");
+      const tail = missing.length > 5 ? `…+${missing.length - 5}` : "";
+      failures.push(
+        `rendered ${rendered.size}/${fieldCount} fields; missing ${missing.length}: ${head}${tail}`,
+      );
+    }
+
+    // Layer 3: diff vs golden. Missing golden file is itself a failure —
+    // makes "operator added a form but never bootstrapped the snapshot"
+    // visible in the runAll table rather than silently green.
+    const actual = toGolden(formId, fieldCount, rendered);
+    let expectedRaw: string;
+    try {
+      expectedRaw = await fs.readFile(goldenPath, "utf8");
+    } catch {
+      failures.push(
+        `no golden at ${goldenPath} — run "npm run test:catalog-fill -- --form-id=${formId} --update"`,
+      );
+      return {
+        name: `catalog-fill:${formId}`,
+        passed: false,
+        failures,
+        durationMs: Date.now() - t0,
+      };
+    }
+    const expected = JSON.parse(expectedRaw) as Golden;
+    const diffs = diffGoldens(expected, actual);
+    for (const d of diffs.slice(0, 10)) {
+      // Only the first line of each diff entry — multi-line diff bodies
+      // make the summary table unreadable.
+      failures.push(`diff: ${d.split("\n")[0]}`);
+    }
+    if (diffs.length > 10) failures.push(`…and ${diffs.length - 10} more diffs`);
+  } catch (err) {
+    failures.push(err instanceof Error ? err.message : String(err));
+  }
+  return {
+    name: `catalog-fill:${formId}`,
+    passed: failures.length === 0,
+    failures,
+    durationMs: Date.now() - t0,
+  };
+}
+
+/**
+ * Walk `forms/` and return every formId declared by a catalog.json.
+ * Sorted alphabetically so the runAll summary order is deterministic.
+ */
+export async function discoverCatalogFormIds(): Promise<string[]> {
+  const formsRoot = resolve(projectRoot, "forms");
+  const paths = await collectCatalogJsons(formsRoot);
+  const ids: string[] = [];
+  for (const p of paths) {
+    const raw = await fs.readFile(p, "utf8");
+    const parsed = JSON.parse(raw) as { form?: { formId?: string } };
+    if (parsed.form?.formId) ids.push(parsed.form.formId);
+  }
+  ids.sort();
+  return ids;
+}
+
+// ─── CLI entry ───────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
@@ -274,51 +381,39 @@ async function main(): Promise<void> {
   console.log(`  blank:   ${blankPath}`);
   console.log(`  golden:  ${goldenPath}`);
 
-  const catalog = await loadFromFixture(catalogPath);
-  const fieldCount = catalog.getFields(args.formId).length;
-
-  const blankPdfBytes = await fs.readFile(blankPath);
-  const form = buildSyntheticForm(args.formId, catalog);
-
-  const { pdfBytes, rendered, warnings } = await fillFromCatalog({
-    blankPdfBytes,
-    form,
-    catalog,
-  });
-
-  // Layer 1: any warnings → fail. Catalog references widgets the PDF
-  // can't satisfy (wrong name, wrong type, overflowing maxLength after
-  // both fallbacks).
-  if (warnings.length > 0) {
-    console.error(`\nFAIL: ${warnings.length} render warning(s):`);
-    for (const w of warnings) console.error(`  - ${w}`);
-    process.exit(1);
-  }
-
-  // Layer 2: catalog completeness. Every field should have produced at
-  // least one rendered widget. Fields with undefined synthetic values
-  // (e.g. select with empty options) get silently skipped by the renderer
-  // — surface them as missing.
-  if (rendered.size !== fieldCount) {
-    const renderedIds = new Set(rendered.keys());
-    const missing = catalog
-      .getFields(args.formId)
-      .map((f) => f.fieldId)
-      .filter((id) => !renderedIds.has(id));
-    console.error(
-      `\nFAIL: rendered ${rendered.size}/${fieldCount} fields. ` +
-        `Missing (${missing.length}): ${missing.slice(0, 10).join(", ")}${missing.length > 10 ? "…" : ""}`,
-    );
-    process.exit(1);
-  }
-
-  const actual = toGolden(args.formId, fieldCount, rendered);
-
-  // Always write the filled PDF — handy reference even on green runs.
-  const outPdfPath = `/tmp/smoke-${args.formId}.pdf`;
-  await fs.writeFile(outPdfPath, pdfBytes);
-
+  // --update path: bootstrap (or refresh) the golden, write the PDF, exit.
+  // Bypasses the diff check entirely so the operator can re-snapshot after
+  // an intentional change without seeing a fail-then-update churn.
   if (args.update) {
+    const catalog = await loadFromFixture(catalogPath);
+    const fieldCount = catalog.getFields(args.formId).length;
+    const blankPdfBytes = await fs.readFile(blankPath);
+    const form = buildSyntheticForm(args.formId, catalog);
+    const { pdfBytes, rendered, warnings } = await fillFromCatalog({
+      blankPdfBytes,
+      form,
+      catalog,
+    });
+    const outPdfPath = `/tmp/smoke-${args.formId}.pdf`;
+    await fs.writeFile(outPdfPath, pdfBytes);
+    if (warnings.length > 0) {
+      console.error(`\nFAIL: ${warnings.length} render warning(s):`);
+      for (const w of warnings) console.error(`  - ${w}`);
+      process.exit(1);
+    }
+    if (rendered.size !== fieldCount) {
+      const renderedIds = new Set(rendered.keys());
+      const missing = catalog
+        .getFields(args.formId)
+        .map((f) => f.fieldId)
+        .filter((id) => !renderedIds.has(id));
+      console.error(
+        `\nFAIL: rendered ${rendered.size}/${fieldCount} fields. ` +
+          `Missing (${missing.length}): ${missing.slice(0, 10).join(", ")}${missing.length > 10 ? "…" : ""}`,
+      );
+      process.exit(1);
+    }
+    const actual = toGolden(args.formId, fieldCount, rendered);
     await fs.writeFile(goldenPath, JSON.stringify(actual, null, 2) + "\n");
     console.log(`\nOK: wrote golden (${actual.entries.length} fields) and PDF`);
     console.log(`  golden: ${goldenPath}`);
@@ -327,32 +422,29 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Diff path: load golden, compare.
-  let expectedRaw: string;
-  try {
-    expectedRaw = await fs.readFile(goldenPath, "utf8");
-  } catch (err) {
-    console.error(
-      `\nFAIL: no golden at ${goldenPath}. Run with --update to create one.`,
-    );
-    process.exit(1);
+  // Check path: defer entirely to runCatalogFillCheck so CLI + runAll
+  // share one implementation.
+  const result = await runCatalogFillCheck(args.formId);
+  if (result.passed) {
+    console.log(`\nOK: ${result.name} (${result.durationMs}ms)`);
+    console.log(`  pdf: /tmp/smoke-${args.formId}.pdf`);
+    return;
   }
-  const expected = JSON.parse(expectedRaw) as Golden;
-  const diffs = diffGoldens(expected, actual);
-  if (diffs.length > 0) {
-    console.error(`\nFAIL: ${diffs.length} golden diff(s):`);
-    for (const d of diffs.slice(0, 10)) console.error(`  - ${d}`);
-    if (diffs.length > 10) console.error(`  …and ${diffs.length - 10} more`);
-    console.error(
-      `\nIf the change is intentional, re-run with --update to refresh the golden.`,
-    );
-    process.exit(1);
-  }
-  console.log(`\nOK: ${actual.entries.length} fields match golden`);
-  console.log(`  pdf: ${outPdfPath}`);
+  console.error(`\nFAIL: ${result.name} (${result.failures.length} failure(s)):`);
+  for (const f of result.failures) console.error(`  - ${f}`);
+  console.error(
+    `\nIf the change is intentional, re-run with --update to refresh the golden.`,
+  );
+  process.exit(1);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Skip the CLI wrapper when imported (runAll consumes the exports above).
+// import.meta.url vs argv[1] is the canonical Node way to detect this.
+const isCli =
+  process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+if (isCli) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
