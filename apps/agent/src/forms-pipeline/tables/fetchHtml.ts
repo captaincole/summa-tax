@@ -64,7 +64,7 @@ export async function fetchHtml(opts: {
     headers: {
       // Pretend to be a real browser; irs.gov sometimes 403s default UAs.
       "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10157) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       accept: "text/html,application/xhtml+xml",
     },
   });

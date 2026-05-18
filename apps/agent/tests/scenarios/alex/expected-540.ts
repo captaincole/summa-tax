@@ -24,33 +24,33 @@ export const alex540Expected: ExpectedResults = {
     "form-540.line.11_total_exemption_amount": 153,
 
     // Taxable income block
-    "form-540.line.12_state_wages": 79_000,
-    "form-540.line.13_federal_agi": 79_000,
+    "form-540.line.12_state_wages": 79000,
+    "form-540.line.13_federal_agi": 79000,
     "form-540.line.14_ca_adjustments_subtractions": 0,
-    "form-540.line.15_ca_agi_before_additions": 79_000,
+    "form-540.line.15_ca_agi_before_additions": 79000,
     "form-540.line.16_ca_adjustments_additions": 0,
-    "form-540.line.17_ca_agi": 79_000,
-    "form-540.line.18_deductions": 5_706,
-    "form-540.line.19_taxable_income": 73_294,
+    "form-540.line.17_ca_agi": 79000,
+    "form-540.line.18_deductions": 5706,
+    "form-540.line.19_taxable_income": 73294,
 
     // Tax
-    "form-540.line.31_tax_amount": 3_256,
+    "form-540.line.31_tax_amount": 3256,
     "form-540.line.32_exemption_credits": 153,
-    "form-540.line.33_tax_after_exemption_credits": 3_103,
-    "form-540.line.35_total_tax_after_credits": 3_103,
-    "form-540.line.48_tax_after_credits": 3_103,
-    "form-540.line.64_total_tax": 3_103,
+    "form-540.line.33_tax_after_exemption_credits": 3103,
+    "form-540.line.35_total_tax_after_credits": 3103,
+    "form-540.line.48_tax_after_credits": 3103,
+    "form-540.line.64_total_tax": 3103,
 
     // Payments
-    "form-540.line.71_ca_income_tax_withheld": 3_100,
-    "form-540.line.78_total_payments": 3_100,
+    "form-540.line.71_ca_income_tax_withheld": 3100,
+    "form-540.line.78_total_payments": 3100,
 
     // Use tax
     "form-540.line.91_use_tax": 0,
 
     // Overpaid / due
-    "form-540.line.93_payments_balance": 3_100,
-    "form-540.line.95_payments_after_isr_penalty": 3_100,
+    "form-540.line.93_payments_balance": 3100,
+    "form-540.line.95_payments_after_isr_penalty": 3100,
     "form-540.line.100_tax_due": 3,
     "form-540.line.111_amount_you_owe": 3,
   },

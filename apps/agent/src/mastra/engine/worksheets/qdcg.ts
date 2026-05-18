@@ -107,7 +107,7 @@ function taxByAmount(
   taxYear: number,
 ): number {
   if (amount < 0) return 0;
-  if (amount < 100_000) {
+  if (amount < 100000) {
     const r = lookupTax(`federal-${taxYear}`, amount, filingStatus);
     if (!r.ok) {
       throw new Error(

@@ -18,10 +18,10 @@ export const alejandroScheduleCaExpected: ExpectedResults = {
   engineFields: {
     // ─── Part I, Section A — Income from federal Form 1040 ──────────
     // Col A is a pure federal echo; col B/C are zero (no CA adjustments).
-    "schedule-ca.0.line.1a_federal": 100_000, // W-2 wages
+    "schedule-ca.0.line.1a_federal": 100000, // W-2 wages
     "schedule-ca.0.line.1a_subtractions": 0,
     "schedule-ca.0.line.1a_additions": 0,
-    "schedule-ca.0.line.1z_federal": 100_000, // sum of 1a–1i
+    "schedule-ca.0.line.1z_federal": 100000, // sum of 1a–1i
     "schedule-ca.0.line.1z_subtractions": 0,
     "schedule-ca.0.line.1z_additions": 0,
     "schedule-ca.0.line.2b_federal": 0, // taxable interest (none)
@@ -31,27 +31,27 @@ export const alejandroScheduleCaExpected: ExpectedResults = {
     "schedule-ca.0.line.4b_federal": 0, // IRA distributions (none)
     "schedule-ca.0.line.5b_federal": 0, // pensions (none)
     "schedule-ca.0.line.6b_federal": 0, // social security (none)
-    "schedule-ca.0.line.7a_federal": 2_550, // capital gain (from Schedule D)
+    "schedule-ca.0.line.7a_federal": 2550, // capital gain (from Schedule D)
     "schedule-ca.0.line.7a_subtractions": 0,
     "schedule-ca.0.line.7a_additions": 0,
 
     // ─── Part I, Section A + Section B totals (line 10) ─────────────
     // Section B (Schedule 1 income) is entirely blank for Alejandro.
-    "schedule-ca.2.line.b10_federal": 102_935, // 100,000 + 385 + 2,550
+    "schedule-ca.2.line.b10_federal": 102935, // 100,000 + 385 + 2,550
     "schedule-ca.2.line.b10_subtractions": 0,
     "schedule-ca.2.line.b10_additions": 0,
 
     // ─── Part I, Section C (Schedule 1 adjustments) ─────────────────
     // Alejandro has no above-the-line adjustments. Line 27 (final Part I
     // total) flows to Form 540 line 14 (col B) and line 16 (col C).
-    "schedule-ca.3.line.c27_federal": 102_935,
+    "schedule-ca.3.line.c27_federal": 102935,
     "schedule-ca.3.line.c27_subtractions": 0,
     "schedule-ca.3.line.c27_additions": 0,
 
     // ─── Part II — Adjustments to Federal Itemized Deductions ───────
     // Alejandro takes the standard deduction, so every itemized-detail
     // line is zero and line 30 lands on the CA single std deduction.
-    "schedule-ca.5.page2.total_itemized_30_standard_or_itemized": 5_706,
+    "schedule-ca.5.page2.total_itemized_30_standard_or_itemized": 5706,
   },
 
   renderedText: {

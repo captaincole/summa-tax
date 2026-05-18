@@ -47,11 +47,11 @@ const BRACKETS_2025_FEDERAL: BracketTable = {
     page: 38,
   },
   byStatus: {
-    single: { zeroRateCeiling: 48_350, fifteenRateCeiling: 533_400 },
-    married_filing_separately: { zeroRateCeiling: 48_350, fifteenRateCeiling: 300_000 },
-    married_filing_jointly: { zeroRateCeiling: 96_700, fifteenRateCeiling: 600_050 },
-    qualifying_surviving_spouse: { zeroRateCeiling: 96_700, fifteenRateCeiling: 600_050 },
-    head_of_household: { zeroRateCeiling: 64_750, fifteenRateCeiling: 566_700 },
+    single: { zeroRateCeiling: 48350, fifteenRateCeiling: 533400 },
+    married_filing_separately: { zeroRateCeiling: 48350, fifteenRateCeiling: 300000 },
+    married_filing_jointly: { zeroRateCeiling: 96700, fifteenRateCeiling: 600050 },
+    qualifying_surviving_spouse: { zeroRateCeiling: 96700, fifteenRateCeiling: 600050 },
+    head_of_household: { zeroRateCeiling: 64750, fifteenRateCeiling: 566700 },
   },
 };
 

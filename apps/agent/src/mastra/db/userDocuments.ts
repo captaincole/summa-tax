@@ -141,7 +141,7 @@ export async function createDocument(
   }
 
   const expiresAt = input.expiresInDays
-    ? new Date(Date.now() + input.expiresInDays * 86_400_000).toISOString()
+    ? new Date(Date.now() + input.expiresInDays * 86400000).toISOString()
     : null;
 
   const { data, error } = await supabase

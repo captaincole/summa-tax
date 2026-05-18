@@ -25,33 +25,33 @@ export const alejandro540Expected: ExpectedResults = {
     "form-540.line.11_total_exemption_amount": 153,
 
     // Taxable income block
-    "form-540.line.12_state_wages": 100_000,
-    "form-540.line.13_federal_agi": 102_935,
+    "form-540.line.12_state_wages": 100000,
+    "form-540.line.13_federal_agi": 102935,
     "form-540.line.14_ca_adjustments_subtractions": 0,
-    "form-540.line.15_ca_agi_before_additions": 102_935,
+    "form-540.line.15_ca_agi_before_additions": 102935,
     "form-540.line.16_ca_adjustments_additions": 0,
-    "form-540.line.17_ca_agi": 102_935,
-    "form-540.line.18_deductions": 5_706,
-    "form-540.line.19_taxable_income": 97_229,
+    "form-540.line.17_ca_agi": 102935,
+    "form-540.line.18_deductions": 5706,
+    "form-540.line.19_taxable_income": 97229,
 
     // Tax
-    "form-540.line.31_tax_amount": 5_478,
+    "form-540.line.31_tax_amount": 5478,
     "form-540.line.32_exemption_credits": 153,
-    "form-540.line.33_tax_after_exemption_credits": 5_325,
-    "form-540.line.35_total_tax_after_credits": 5_325,
-    "form-540.line.48_tax_after_credits": 5_325,
-    "form-540.line.64_total_tax": 5_325,
+    "form-540.line.33_tax_after_exemption_credits": 5325,
+    "form-540.line.35_total_tax_after_credits": 5325,
+    "form-540.line.48_tax_after_credits": 5325,
+    "form-540.line.64_total_tax": 5325,
 
     // Payments — CA withholding from W-2 box 17.
-    "form-540.line.71_ca_income_tax_withheld": 5_500,
-    "form-540.line.78_total_payments": 5_500,
+    "form-540.line.71_ca_income_tax_withheld": 5500,
+    "form-540.line.78_total_payments": 5500,
 
     // Use tax
     "form-540.line.91_use_tax": 0,
 
     // Overpaid / refund
-    "form-540.line.93_payments_balance": 5_500,
-    "form-540.line.95_payments_after_isr_penalty": 5_500,
+    "form-540.line.93_payments_balance": 5500,
+    "form-540.line.95_payments_after_isr_penalty": 5500,
     "form-540.line.97_overpaid_tax": 175,
     "form-540.line.99_overpaid_tax_available": 175,
     "form-540.line.115_refund_or_no_amount_due": 175,

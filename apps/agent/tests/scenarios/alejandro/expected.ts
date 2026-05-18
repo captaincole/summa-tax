@@ -19,24 +19,24 @@ import type { ExpectedResults } from "../../types.js";
 
 export const alejandroExpected: ExpectedResults = {
   engineFields: {
-    "form-1040.line.1a": 100_000,    // total W-2 wages box 1
-    "form-1040.line.1z": 100_000,    // sum of 1a..1h
+    "form-1040.line.1a": 100000,    // total W-2 wages box 1
+    "form-1040.line.1z": 100000,    // sum of 1a..1h
     "form-1040.line.3a": 381,        // qualified dividends (1099-DIV box 1b)
     "form-1040.line.3b": 385,        // ordinary dividends (1099-DIV box 1a)
-    "form-1040.line.7a": 2_550,      // net capital gain (Schedule D line 16)
-    "form-1040.line.9": 102_935,     // total income
-    "form-1040.line.11a": 102_935,   // AGI (page 1 display)
-    "form-1040.line.11b": 102_935,   // AGI (page 2 display) — also flows to CA 540 line 13
-    "form-1040.line.12e": 15_750,    // 2025 single standard deduction
-    "form-1040.line.14": 15_750,
-    "form-1040.line.15": 87_185,     // taxable income
-    "form-1040.line.16": 13_916,     // tax via QDCG worksheet (NOT plain tax-table)
-    "form-1040.line.18": 13_916,
-    "form-1040.line.22": 13_916,
-    "form-1040.line.24": 13_916,     // total tax
-    "form-1040.line.25a": 14_500,    // W-2 box 2 federal withholding
-    "form-1040.line.25d": 14_500,
-    "form-1040.line.33": 14_500,     // total payments
+    "form-1040.line.7a": 2550,      // net capital gain (Schedule D line 16)
+    "form-1040.line.9": 102935,     // total income
+    "form-1040.line.11a": 102935,   // AGI (page 1 display)
+    "form-1040.line.11b": 102935,   // AGI (page 2 display) — also flows to CA 540 line 13
+    "form-1040.line.12e": 15750,    // 2025 single standard deduction
+    "form-1040.line.14": 15750,
+    "form-1040.line.15": 87185,     // taxable income
+    "form-1040.line.16": 13916,     // tax via QDCG worksheet (NOT plain tax-table)
+    "form-1040.line.18": 13916,
+    "form-1040.line.22": 13916,
+    "form-1040.line.24": 13916,     // total tax
+    "form-1040.line.25a": 14500,    // W-2 box 2 federal withholding
+    "form-1040.line.25d": 14500,
+    "form-1040.line.33": 14500,     // total payments
     "form-1040.line.34": 584,        // refund (14,500 − 13,916)
     "form-1040.line.37": 0,          // owed
   },

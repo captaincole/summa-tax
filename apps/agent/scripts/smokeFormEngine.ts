@@ -34,8 +34,8 @@ const TAXPAYER = "alejandro-phaseA";
 const w2: W2FactValue = {
   employerName: "Pacific Software, Inc.",
   employerEin: "47-8901234",
-  box1: 100_000,
-  box2: 14_500,
+  box1: 100000,
+  box2: 14500,
 };
 
 const div: DividendFactValue = {
@@ -240,29 +240,29 @@ async function main() {
   // Standard deduction value is also higher than the hand-written 15000
   // because the AI picked up the 2025 OBBBA update (15750 for single).
 
-  assertApprox("form-1040.line.1a", 100_000);
-  assertApprox("form-1040.line.1z", 100_000);
+  assertApprox("form-1040.line.1a", 100000);
+  assertApprox("form-1040.line.1z", 100000);
   assertApprox("form-1040.line.3a", 381.4);
   assertApprox("form-1040.line.3b", 385.2);
-  assertApprox("form-1040.line.9", 100_385.2);
-  assertApprox("form-1040.line.11a", 100_385.2); // AGI (page 1 display)
-  assertApprox("form-1040.line.11b", 100_385.2); // AGI (page 2 display)
-  assertApprox("form-1040.line.12e", 15_750);    // Standard deduction (2025 OBBBA)
-  assertApprox("form-1040.line.14", 15_750);
-  assertApprox("form-1040.line.15", 84_635.2);   // Taxable income
+  assertApprox("form-1040.line.9", 100385.2);
+  assertApprox("form-1040.line.11a", 100385.2); // AGI (page 1 display)
+  assertApprox("form-1040.line.11b", 100385.2); // AGI (page 2 display)
+  assertApprox("form-1040.line.12e", 15750);    // Standard deduction (2025 OBBBA)
+  assertApprox("form-1040.line.14", 15750);
+  assertApprox("form-1040.line.15", 84635.2);   // Taxable income
 
   // 2025 IRS Tax Table for income $84,635.20 single → row [84,600, 84,650)
   // → tax $13,532. The table value (NOT the raw bracket formula at the
   // exact income) is authoritative for sub-$100k incomes per the 1040 line
   // 16 instructions; each row is computed at the bracket midpoint, so raw
   // bracket math here would produce ~$13,540 (close but wrong).
-  const expectedTax = 13_532;
+  const expectedTax = 13532;
   assertApprox("form-1040.line.16", expectedTax);
   assertApprox("form-1040.line.24", expectedTax);
-  assertApprox("form-1040.line.25a", 14_500);
-  assertApprox("form-1040.line.33", 14_500);
+  assertApprox("form-1040.line.25a", 14500);
+  assertApprox("form-1040.line.33", 14500);
 
-  const expectedRefund = 14_500 - expectedTax;
+  const expectedRefund = 14500 - expectedTax;
   if (expectedRefund > 0) {
     assertApprox("form-1040.line.34", expectedRefund);
     assertApprox("form-1040.line.37", 0);

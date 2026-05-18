@@ -31,16 +31,16 @@ const w2: W2FactValue = {
     state: "CA",
     zip: "94103",
   },
-  box1: 100_000,
-  box2: 14_500,
-  box3: 100_000,
-  box4: 6_200,
-  box5: 100_000,
-  box6: 1_450,
-  box14: [{ label: "CA SDI", amount: 1_100 }],
+  box1: 100000,
+  box2: 14500,
+  box3: 100000,
+  box4: 6200,
+  box5: 100000,
+  box6: 1450,
+  box14: [{ label: "CA SDI", amount: 1100 }],
   box15: "CA",
-  box16: 100_000,
-  box17: 5_500,
+  box16: 100000,
+  box17: 5500,
 };
 
 const div: DividendFactValue = {
@@ -59,8 +59,8 @@ const nvdaTrade: TradeFactValue = {
   quantity: 10,
   dateAcquired: "02/10/25",
   dateSold: "11/20/25",
-  proceeds: 1_650,
-  costBasis: 1_350,
+  proceeds: 1650,
+  costBasis: 1350,
 };
 
 // AAPL long-term trade — Form 8949 Part II (Box D, basis reported).
@@ -72,8 +72,8 @@ const aaplTrade: TradeFactValue = {
   quantity: 50,
   dateAcquired: "06/15/23",
   dateSold: "09/15/25",
-  proceeds: 11_500,
-  costBasis: 9_250,
+  proceeds: 11500,
+  costBasis: 9250,
 };
 
 const idFact = (suffix: string, value: string) =>

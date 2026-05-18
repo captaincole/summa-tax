@@ -20,7 +20,7 @@ export const RERANK_MODEL = "rerank-2.5";
 export const EMBED_BATCH_MAX_INPUTS = 128;
 // Voyage's per-batch ceiling is 120k tokens. We hold to 70k so a noisy
 // estimator + per-block variance still leaves headroom.
-export const EMBED_BATCH_MAX_TOKENS = 70_000;
+export const EMBED_BATCH_MAX_TOKENS = 70000;
 
 // Token estimator. Empirically our contextualized blocks (Markdown-formatted
 // summaries + IRS prose) hit ~2.5–3 chars/token via Voyage's tokenizer —

@@ -26,11 +26,11 @@ const TABLES: StandardDeductionTable[] = [
     jurisdiction: "federal",
     taxYear: 2025,
     byFilingStatus: {
-      single: 15_750,
-      married_filing_separately: 15_750,
-      married_filing_jointly: 31_500,
-      qualifying_surviving_spouse: 31_500,
-      head_of_household: 23_625,
+      single: 15750,
+      married_filing_separately: 15750,
+      married_filing_jointly: 31500,
+      qualifying_surviving_spouse: 31500,
+      head_of_household: 23625,
     },
     source: {
       url: "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf",
@@ -41,11 +41,11 @@ const TABLES: StandardDeductionTable[] = [
     jurisdiction: "state-ca",
     taxYear: 2025,
     byFilingStatus: {
-      single: 5_706,
-      married_filing_separately: 5_706,
-      married_filing_jointly: 11_412,
-      qualifying_surviving_spouse: 11_412,
-      head_of_household: 11_412,
+      single: 5706,
+      married_filing_separately: 5706,
+      married_filing_jointly: 11412,
+      qualifying_surviving_spouse: 11412,
+      head_of_household: 11412,
     },
     source: {
       note: "CA FTB Form 540 2025 Instructions — standard deduction",

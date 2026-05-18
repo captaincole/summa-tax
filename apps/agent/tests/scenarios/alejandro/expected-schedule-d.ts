@@ -23,21 +23,21 @@ import type { ExpectedResults } from "../../types.js";
 export const alejandroScheduleDExpected: ExpectedResults = {
   engineFields: {
     // ─── Part I — Short-term ──────────────────────────────────────
-    "schedule-d.0.line.1b_proceeds": 1_650,
-    "schedule-d.0.line.1b_cost": 1_350,
+    "schedule-d.0.line.1b_proceeds": 1650,
+    "schedule-d.0.line.1b_cost": 1350,
     "schedule-d.0.line.1b_adjustments": 0,
     "schedule-d.0.line.1b_gain_loss": 300,
     "schedule-d.0.line.7_net_short_term_gain_loss": 300,
 
     // ─── Part II — Long-term ──────────────────────────────────────
-    "schedule-d.0.line.8b_proceeds": 11_500,
-    "schedule-d.0.line.8b_cost": 9_250,
+    "schedule-d.0.line.8b_proceeds": 11500,
+    "schedule-d.0.line.8b_cost": 9250,
     "schedule-d.0.line.8b_adjustments": 0,
-    "schedule-d.0.line.8b_gain_loss": 2_250,
-    "schedule-d.0.line.15_net_long_term_gain_loss": 2_250,
+    "schedule-d.0.line.8b_gain_loss": 2250,
+    "schedule-d.0.line.15_net_long_term_gain_loss": 2250,
 
     // ─── Part III — Summary ───────────────────────────────────────
-    "schedule-d.1.line.16_combined_gain_loss": 2_550,
+    "schedule-d.1.line.16_combined_gain_loss": 2550,
   },
 
   renderedText: {

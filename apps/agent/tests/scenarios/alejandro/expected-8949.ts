@@ -14,22 +14,22 @@ import type { ExpectedResults } from "../../types.js";
 export const alejandro8949Expected: ExpectedResults = {
   engineFields: {
     // ─── Part I (short-term, Box A — NVDA) ──────────────────────────
-    "form-8949.0.part1.row1_proceeds": 1_650,
-    "form-8949.0.part1.row1_cost_basis": 1_350,
+    "form-8949.0.part1.row1_proceeds": 1650,
+    "form-8949.0.part1.row1_cost_basis": 1350,
     "form-8949.0.part1.row1_gain_loss": 300,
-    "form-8949.0.part1.totals_proceeds": 1_650,
-    "form-8949.0.part1.totals_cost_basis": 1_350,
+    "form-8949.0.part1.totals_proceeds": 1650,
+    "form-8949.0.part1.totals_cost_basis": 1350,
     "form-8949.0.part1.totals_adjustment_amount": 0,
     "form-8949.0.part1.totals_gain_loss": 300,
 
     // ─── Part II (long-term, Box D — AAPL) ──────────────────────────
-    "form-8949.1.part2.row1_proceeds": 11_500,
-    "form-8949.1.part2.row1_cost_basis": 9_250,
-    "form-8949.1.part2.row1_gain_loss": 2_250,
-    "form-8949.1.part2.totals_proceeds": 11_500,
-    "form-8949.1.part2.totals_cost_basis": 9_250,
+    "form-8949.1.part2.row1_proceeds": 11500,
+    "form-8949.1.part2.row1_cost_basis": 9250,
+    "form-8949.1.part2.row1_gain_loss": 2250,
+    "form-8949.1.part2.totals_proceeds": 11500,
+    "form-8949.1.part2.totals_cost_basis": 9250,
     "form-8949.1.part2.totals_adjustment_amount": 0,
-    "form-8949.1.part2.totals_gain_loss": 2_250,
+    "form-8949.1.part2.totals_gain_loss": 2250,
   },
 
   renderedText: {

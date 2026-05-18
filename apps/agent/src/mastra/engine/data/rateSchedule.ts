@@ -54,39 +54,39 @@ const SCHEDULE_2025_FEDERAL: RateScheduleTable = {
   },
   byStatus: {
     single: [
-      { overMin: 100_000, overMax: 103_350, rate: 0.22, subtractAmount: 5_086.0 },
-      { overMin: 103_350, overMax: 197_300, rate: 0.24, subtractAmount: 7_153.0 },
-      { overMin: 197_300, overMax: 250_525, rate: 0.32, subtractAmount: 22_937.0 },
-      { overMin: 250_525, overMax: 626_350, rate: 0.35, subtractAmount: 30_452.75 },
-      { overMin: 626_350, overMax: Infinity, rate: 0.37, subtractAmount: 42_979.75 },
+      { overMin: 100000, overMax: 103350, rate: 0.22, subtractAmount: 5086.0 },
+      { overMin: 103350, overMax: 197300, rate: 0.24, subtractAmount: 7153.0 },
+      { overMin: 197300, overMax: 250525, rate: 0.32, subtractAmount: 22937.0 },
+      { overMin: 250525, overMax: 626350, rate: 0.35, subtractAmount: 30452.75 },
+      { overMin: 626350, overMax: Infinity, rate: 0.37, subtractAmount: 42979.75 },
     ],
     married_filing_jointly: [
-      { overMin: 100_000, overMax: 206_700, rate: 0.22, subtractAmount: 10_172.0 },
-      { overMin: 206_700, overMax: 394_600, rate: 0.24, subtractAmount: 14_306.0 },
-      { overMin: 394_600, overMax: 501_050, rate: 0.32, subtractAmount: 45_874.0 },
-      { overMin: 501_050, overMax: 751_600, rate: 0.35, subtractAmount: 60_905.5 },
-      { overMin: 751_600, overMax: Infinity, rate: 0.37, subtractAmount: 75_937.5 },
+      { overMin: 100000, overMax: 206700, rate: 0.22, subtractAmount: 10172.0 },
+      { overMin: 206700, overMax: 394600, rate: 0.24, subtractAmount: 14306.0 },
+      { overMin: 394600, overMax: 501050, rate: 0.32, subtractAmount: 45874.0 },
+      { overMin: 501050, overMax: 751600, rate: 0.35, subtractAmount: 60905.5 },
+      { overMin: 751600, overMax: Infinity, rate: 0.37, subtractAmount: 75937.5 },
     ],
     qualifying_surviving_spouse: [
-      { overMin: 100_000, overMax: 206_700, rate: 0.22, subtractAmount: 10_172.0 },
-      { overMin: 206_700, overMax: 394_600, rate: 0.24, subtractAmount: 14_306.0 },
-      { overMin: 394_600, overMax: 501_050, rate: 0.32, subtractAmount: 45_874.0 },
-      { overMin: 501_050, overMax: 751_600, rate: 0.35, subtractAmount: 60_905.5 },
-      { overMin: 751_600, overMax: Infinity, rate: 0.37, subtractAmount: 75_937.5 },
+      { overMin: 100000, overMax: 206700, rate: 0.22, subtractAmount: 10172.0 },
+      { overMin: 206700, overMax: 394600, rate: 0.24, subtractAmount: 14306.0 },
+      { overMin: 394600, overMax: 501050, rate: 0.32, subtractAmount: 45874.0 },
+      { overMin: 501050, overMax: 751600, rate: 0.35, subtractAmount: 60905.5 },
+      { overMin: 751600, overMax: Infinity, rate: 0.37, subtractAmount: 75937.5 },
     ],
     married_filing_separately: [
-      { overMin: 100_000, overMax: 103_350, rate: 0.22, subtractAmount: 5_086.0 },
-      { overMin: 103_350, overMax: 197_300, rate: 0.24, subtractAmount: 7_153.0 },
-      { overMin: 197_300, overMax: 250_525, rate: 0.32, subtractAmount: 22_937.0 },
-      { overMin: 250_525, overMax: 375_800, rate: 0.35, subtractAmount: 30_452.75 },
-      { overMin: 375_800, overMax: Infinity, rate: 0.37, subtractAmount: 37_968.75 },
+      { overMin: 100000, overMax: 103350, rate: 0.22, subtractAmount: 5086.0 },
+      { overMin: 103350, overMax: 197300, rate: 0.24, subtractAmount: 7153.0 },
+      { overMin: 197300, overMax: 250525, rate: 0.32, subtractAmount: 22937.0 },
+      { overMin: 250525, overMax: 375800, rate: 0.35, subtractAmount: 30452.75 },
+      { overMin: 375800, overMax: Infinity, rate: 0.37, subtractAmount: 37968.75 },
     ],
     head_of_household: [
-      { overMin: 100_000, overMax: 103_350, rate: 0.22, subtractAmount: 6_825.0 },
-      { overMin: 103_350, overMax: 197_300, rate: 0.24, subtractAmount: 8_892.0 },
-      { overMin: 197_300, overMax: 250_500, rate: 0.32, subtractAmount: 24_676.0 },
-      { overMin: 250_500, overMax: 626_350, rate: 0.35, subtractAmount: 32_191.0 },
-      { overMin: 626_350, overMax: Infinity, rate: 0.37, subtractAmount: 44_718.0 },
+      { overMin: 100000, overMax: 103350, rate: 0.22, subtractAmount: 6825.0 },
+      { overMin: 103350, overMax: 197300, rate: 0.24, subtractAmount: 8892.0 },
+      { overMin: 197300, overMax: 250500, rate: 0.32, subtractAmount: 24676.0 },
+      { overMin: 250500, overMax: 626350, rate: 0.35, subtractAmount: 32191.0 },
+      { overMin: 626350, overMax: Infinity, rate: 0.37, subtractAmount: 44718.0 },
     ],
   },
 };
@@ -97,7 +97,7 @@ const SCHEDULES_BY_YEAR: Record<number, RateScheduleTable> = {
 
 /**
  * Compute tax via the Tax Computation Worksheet. Caller is responsible
- * for ensuring `taxableIncome ≥ 100_000` — below that the IRS instructs
+ * for ensuring `taxableIncome ≥ 100000` — below that the IRS instructs
  * use of the Tax Table, not the rate schedule. We throw on a below-$100k
  * caller because that's a programming error.
  *
@@ -121,7 +121,7 @@ export function lookupRateSchedule(
       `Filing status "${filingStatus}" has no rate schedule in the ${taxYear} table.`,
     );
   }
-  if (taxableIncome < 100_000) {
+  if (taxableIncome < 100000) {
     throw new Error(
       `lookupRateSchedule called with taxableIncome=${taxableIncome} < $100,000. Use lookupTax (Tax Table) instead — the IRS only publishes the rate schedule for ≥ $100,000.`,
     );
