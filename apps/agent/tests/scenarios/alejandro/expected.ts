@@ -1,7 +1,7 @@
 // Alejandro Reyes — expected 1040 results.
 //
 // Every numeric expected value below is the literal number from the
-// CPA-completed `alejandro-1040.pdf` in this scenario's docs/ folder.
+// CPA-completed `docs/Alejandro-1040-Golden.pdf` in this scenario folder.
 // Any divergence is a regression in the engine, catalog, bindings,
 // FilingInfo resolver, or renderer.
 //

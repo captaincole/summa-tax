@@ -1,7 +1,7 @@
 // Alejandro Reyes — CA Form 540 expected results.
 //
 // Every numeric expected value below is the literal number from
-// `alejandro-540.pdf` in this scenario folder. Any divergence is a
+// `docs/Alejandro-CA540-Golden.pdf` in this scenario folder. Any divergence is a
 // regression in the engine, catalog, bindings, FilingInfo resolver, or
 // renderer.
 //
