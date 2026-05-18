@@ -1,42 +1,49 @@
 // Top-level test entry point — runs every registered scenario AND every
-// per-form catalog-fill check, printing one summary table. Designed for
+// listed catalog-fill check, printing one summary table. Designed for
 // pre-commit hooks: fast, deterministic, offline, exits non-zero on any
 // failure.
 //
 // Adding a new scenario: import its bundled Scenario and add to the
 // SCENARIOS array below.
 //
-// Adding a new form: drop catalog.json + blank.pdf into forms/<jur>/<short>/.
-// `npm test` auto-discovers it via discoverCatalogFormIds() and runs the
-// catalog-fill check; the first run will FAIL with "no golden — run --update"
-// so you can bootstrap the snapshot and commit it.
+// Adding a new form's catalog-fill check: add its formId to
+// CATALOG_FORM_IDS. The catalogFill harness resolves the catalog path by
+// matching formId against catalog.json files under forms/; first run will
+// fail with "no golden — run --update" so you can bootstrap the snapshot
+// and commit it.
 
 import { runScenario } from "./runScenario.js";
 import type { RunResult, Scenario } from "./types.js";
 import { alexScenario } from "./scenarios/alex/index.js";
-import {
-  discoverCatalogFormIds,
-  runCatalogFillCheck,
-} from "./catalogFill.js";
+import { runCatalogFillCheck } from "./catalogFill.js";
 
 const SCENARIOS: Scenario[] = [
   alexScenario,
   // Future: bobScenario, carolScenario, …
 ];
 
+// Forms whose catalogs we hold a fill-golden snapshot for. Explicit list
+// over directory-walk discovery: failing to add a form here is a louder,
+// more visible omission than failing to drop a file in the right place,
+// and it survives refactors of the forms/ tree layout.
+const CATALOG_FORM_IDS: string[] = [
+  "form-1040",
+  "form-540",
+  "form-8949",
+  "schedule-ca",
+  "schedule-d",
+];
+
 async function main() {
-  // Discover catalog-fill targets up front so we can size the banner and
-  // the name-column padding accurately.
-  const formIds = await discoverCatalogFormIds();
-  const totalChecks = SCENARIOS.length + formIds.length;
+  const totalChecks = SCENARIOS.length + CATALOG_FORM_IDS.length;
   const colWidth = Math.max(
     16,
     ...SCENARIOS.map((s) => s.name.length),
-    ...formIds.map((id) => `catalog-fill:${id}`.length),
+    ...CATALOG_FORM_IDS.map((id) => `catalog-fill:${id}`.length),
   );
 
   console.log(
-    `Running ${SCENARIOS.length} scenario(s) + ${formIds.length} catalog-fill check(s)\n`,
+    `Running ${SCENARIOS.length} scenario(s) + ${CATALOG_FORM_IDS.length} catalog-fill check(s)\n`,
   );
   const t0 = Date.now();
   const results: RunResult[] = [];
@@ -61,7 +68,7 @@ async function main() {
   // doesn't match the formatter-free golden. Keeping catalog-fill as a
   // pure catalog→widget check (no bindings registered) sidesteps the
   // problem and keeps the two test surfaces conceptually distinct.
-  for (const id of formIds) record(await runCatalogFillCheck(id));
+  for (const id of CATALOG_FORM_IDS) record(await runCatalogFillCheck(id));
   for (const s of SCENARIOS) record(await runScenario(s));
 
   const totalMs = Date.now() - t0;

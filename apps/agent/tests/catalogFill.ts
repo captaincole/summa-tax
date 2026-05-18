@@ -20,8 +20,8 @@
 // /tmp/smoke-<formId>.pdf. Eyeball the PDF, commit the golden, then future
 // runs (without --update) act as a regression check.
 //
-// runAll.ts uses `runCatalogFillCheck` + `discoverCatalogFormIds` to iterate
-// every form's catalog as its own row in the pre-commit summary.
+// runAll.ts imports `runCatalogFillCheck` and invokes it for each formId
+// listed in its CATALOG_FORM_IDS array — one row per form in the summary.
 
 import { promises as fs } from "node:fs";
 import { resolve, join } from "node:path";
@@ -347,23 +347,6 @@ export async function runCatalogFillCheck(formId: string): Promise<RunResult> {
     failures,
     durationMs: Date.now() - t0,
   };
-}
-
-/**
- * Walk `forms/` and return every formId declared by a catalog.json.
- * Sorted alphabetically so the runAll summary order is deterministic.
- */
-export async function discoverCatalogFormIds(): Promise<string[]> {
-  const formsRoot = resolve(projectRoot, "forms");
-  const paths = await collectCatalogJsons(formsRoot);
-  const ids: string[] = [];
-  for (const p of paths) {
-    const raw = await fs.readFile(p, "utf8");
-    const parsed = JSON.parse(raw) as { form?: { formId?: string } };
-    if (parsed.form?.formId) ids.push(parsed.form.formId);
-  }
-  ids.sort();
-  return ids;
 }
 
 // ─── CLI entry ───────────────────────────────────────────────────────────
