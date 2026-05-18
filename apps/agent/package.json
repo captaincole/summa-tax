@@ -21,7 +21,9 @@
     "smoke:review": "tsx scripts/smokeReview.ts",
     "test": "tsx tests/runAll.ts",
     "test:alex": "tsx tests/scenarios/alex/run.ts",
-    "test:catalog-fill": "tsx tests/catalogFill.ts"
+    "test:catalog-fill": "tsx tests/catalogFill.ts",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -50,6 +52,7 @@
     "cheerio": "^1.2.0",
     "pdf-lib": "^1.17.1",
     "tsx": "^4.20.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

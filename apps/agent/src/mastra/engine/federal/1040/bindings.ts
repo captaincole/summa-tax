@@ -7,6 +7,7 @@
 import { defineForm, sum, floor } from "../../engine.js";
 import { lookupTax } from "../../data/taxTable.js";
 import { lookupStandardDeduction } from "../../data/standardDeduction.js";
+import { computeQdcg } from "../../worksheets/qdcg.js";
 import type { Form1040 } from "./types.js";
 import type { Form1040FilingInfo } from "./filingInfo.js";
 
@@ -86,13 +87,63 @@ export function register(): void {
       "line.14": (f) => sum(f["line.12e"], f["line.13a"], f["line.13b"]),
       // Taxable income = line 11b minus line 14; cannot be negative.
       "line.15": (f) => floor(0, sum(f["line.11b"], f["line.14"] === undefined ? 0 : -f["line.14"])),
-      // Federal income tax from the IRS Tax Table, using taxable income (line 15) and filing status; federal-2025 table is the default.
+      // MANUAL EDIT: Line 16 routes through the Qualified Dividends and
+      // Capital Gain Tax Worksheet (worksheets/qdcg.ts) when the filer
+      // has qualified divs or net long-term capital gain. The worksheet
+      // carves preferential dollars out of the tax-table lookup and
+      // taxes them at 0/15/20% instead. When there's no preferential
+      // income, the worksheet's line 25 = line 24 = the plain tax-table
+      // value, so we get the same answer as a direct lookupTax — but we
+      // route through the worksheet uniformly to keep the code path
+      // single. Above $100k taxable income, the worksheet uses the Tax
+      // Computation Worksheet (rate schedule) instead of the Tax Table.
+      //
+      // Inputs from currently-unsupported fields default to 0 / not-
+      // filing; the worksheet stays correct as those fields land:
+      //   - line 7a is `undefined` when Schedule D isn't filed → 0
+      //   - Form 2555 (Foreign Earned Income) not modeled → false
       "line.16": (f, info) => {
         if (!info.filingStatus) return undefined;
-        const income = f["line.15"];
-        if (typeof income !== "number") return undefined;
-        const r = lookupTax("federal-2025", income, info.filingStatus);
-        return r.ok ? r.tax : undefined;
+        const taxable = f["line.15"];
+        if (typeof taxable !== "number") return undefined;
+
+        // QDCG worksheet line 3: smaller of Sched D L15 / L16, treating
+        // blank/loss as 0. When Schedule D isn't filed for this scenario,
+        // the cross-form refs return undefined → 0 → no preferential gain.
+        const schDL15 = f["schedule-d.0.line.15_net_long_term_gain_loss"];
+        const schDL16 = f["schedule-d.1.line.16_combined_gain_loss"];
+        const candL15 = typeof schDL15 === "number" ? Math.max(0, schDL15) : 0;
+        const candL16 = typeof schDL16 === "number" ? Math.max(0, schDL16) : 0;
+        // "No" branch of worksheet line 3 (no Schedule D, but capital
+        // gain distributions might appear directly on 1040 line 7a):
+        // if both Sched D fields are absent, fall back to line 7a.
+        const netLtcg =
+          schDL15 !== undefined || schDL16 !== undefined
+            ? Math.min(candL15, candL16)
+            : (() => {
+                const l7a = f["line.7a"];
+                return typeof l7a === "number" ? Math.max(0, l7a) : 0;
+              })();
+
+        try {
+          const r = computeQdcg({
+            taxableIncome: taxable,
+            qualifiedDividends: info.qualifiedDividends ?? 0,
+            netLongTermGain: netLtcg,
+            // TODO: route through Foreign Earned Income Tax Worksheet
+            // when Form 2555 ingestion lands.
+            filingForm2555: false,
+            filingStatus: info.filingStatus,
+            taxYear: 2025,
+          });
+          return r.tax;
+        } catch {
+          // Fall back to plain tax-table on unexpected error (e.g. unknown
+          // filing status, table data missing). Matches prior semantics
+          // before the worksheet wiring existed.
+          const r = lookupTax("federal-2025", taxable, info.filingStatus);
+          return r.ok ? r.tax : undefined;
+        }
       },
       // Sum of lines 16 and 17; line 17 is unsupported so engine treats it as 0, giving partial correct result.
       "line.18": (f) => sum(f["line.16"], f["line.17"]),
