@@ -187,6 +187,27 @@ TypeScript enforces both. Adding a field without declaring them is a compile err
 
 **Where this is going.** The hand-coded per-form TS files (`form1040.ts`, `form540.ts`, …) are scaffolding. The plan is to replace them with an AI ingestion pipeline that extracts field inventories from form PDFs into the DB and generates binding files from form instructions. Implementation lives under `apps/agent/src/forms-pipeline/` (ingest + bind workflows); design notes alongside if added.
 
+### Whole-dollar rounding convention — `Math.ceil`
+
+Every tax-form line that expects a whole-dollar entry rounds **UP** to the next dollar via `Math.ceil`. Not `Math.round`, not truncation — always up.
+
+Applies to:
+- Worksheet inputs that arrive with floating-point precision (e.g. summed 1099-DIV box totals like $381.40)
+- Percentage multiplications (e.g. 15% of $13,885 = $2,082.75 → $2,083)
+- Any other "fill in the dollar amount" line on a form or worksheet
+
+Why: the IRS instruction says "you may round off cents to whole dollars" without specifying direction. CPA software conventionally rounds up because that's conservative for the taxpayer (slight overpayment is fine, underpayment triggers penalties). Verified against an actual CPA-prepared 2024 return: their QDCG worksheet line 21 used `ceil(72,151 × 0.20) = 14,431` (not `round → 14,430`), and the cumulative ceiling rounding produced the exact $1 difference that confirmed the convention.
+
+Implementation pattern (used in `src/mastra/engine/worksheets/qdcg.ts`):
+```ts
+const line1 = Math.ceil(inputs.taxableIncome);   // round inputs at entry
+const line18 = Math.ceil(line17 * 0.15);          // round percentage lines
+```
+
+Tax-table lookups (`lookupTax`) already return whole dollars; rate-schedule lookups (`lookupRateSchedule`) return un-rounded values, and the caller (typically a worksheet) is responsible for ceiling at the next whole-dollar boundary.
+
+Don't reach for `Math.round` on tax-form money. Default to `Math.ceil` and document any exception inline.
+
 ## Vercel logs (production debugging)
 
 Production runtime logs for the agent come through `vercel logs`, but with gotchas:

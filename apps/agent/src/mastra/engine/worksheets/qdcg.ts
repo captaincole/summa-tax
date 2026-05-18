@@ -147,13 +147,22 @@ export function computeQdcg(inputs: QdcgInputs): QdcgResult {
   const { filingStatus, taxYear } = inputs;
   const brackets = lookupPreferentialBrackets(taxYear, filingStatus);
 
+  // Whole-dollar convention: every IRS-form line that takes a dollar
+  // entry rounds UP to the nearest dollar via Math.ceil. The IRS allows
+  // "round off cents to whole dollars" without specifying direction;
+  // CPA software conventionally rounds up because that's conservative
+  // for the taxpayer (slight overpayment is fine, underpayment isn't).
+  // We apply the convention at every "whole-dollar" line in the
+  // worksheet — at entry (L1/L2/L3), at the percentage lines (L18/L21),
+  // and implicitly via the tax-table lookups (L22/L24, which already
+  // return whole-dollar values).
   // Line 1: 1040 line 15 (taxable income).
-  const line1 = inputs.taxableIncome;
+  const line1 = Math.ceil(inputs.taxableIncome);
   // Line 2: 1040 line 3a (qualified dividends).
-  const line2 = inputs.qualifiedDividends;
+  const line2 = Math.ceil(inputs.qualifiedDividends);
   // Line 3: smaller of Schedule D line 15 / line 16, treating blank/loss
   // as 0. Caller computes this — the worksheet just uses the number.
-  const line3 = inputs.netLongTermGain;
+  const line3 = Math.ceil(inputs.netLongTermGain);
   // Line 4: add lines 2 and 3 (total preferential income).
   const line4 = line2 + line3;
   // Line 5: line 1 − line 4 (ordinary bucket; floored at 0).
@@ -178,11 +187,13 @@ export function computeQdcg(inputs: QdcgInputs): QdcgResult {
   const line16 = Math.max(0, line14 - line15);
   // Line 17 = preferential dollars at 15%.
   const line17 = Math.min(line12, line16);
-  // IRS-form convention: every "enter the result" line on the worksheet
-  // is whole dollars. Lines 18 and 21 are the only places the math
-  // produces fractional cents (percentage multiplications); round them
-  // to match the form's whole-dollar entries.
-  const line18 = Math.round(line17 * 0.15);
+  // Ceiling rounding on the percentage multiplications (lines 18 and
+  // 21). This matches the convention used by major CPA software
+  // packages (verified against Andrew Cole's 2024 return): they round
+  // each computed tax line UP to the next dollar so the result is
+  // conservative for the taxpayer. The IRS instructions don't mandate
+  // a specific direction; ceiling matches the published-form examples.
+  const line18 = Math.ceil(line17 * 0.15);
 
   // Lines 19–21 — 20% rate computation.
   const line19 = line9 + line17;
@@ -190,7 +201,7 @@ export function computeQdcg(inputs: QdcgInputs): QdcgResult {
   // − line 19 can go negative when line 19 fully absorbs the
   // preferential bucket (typical case for filers below the 20% threshold).
   const line20 = Math.max(0, line10 - line19);
-  const line21 = Math.round(line20 * 0.20);
+  const line21 = Math.ceil(line20 * 0.20);
 
   // Line 22: tax on line 5 (ordinary bucket) via tax table / rate schedule.
   const line22 = taxByAmount(line5, filingStatus, taxYear);
