@@ -21,8 +21,10 @@ import { alejandroFacts, ALEJANDRO_TAX_YEAR, ALEJANDRO_USER_ID } from "./facts.j
 import { alejandroDecisions } from "./decisions.js";
 import { alejandroExpected } from "./expected.js";
 import { alejandro540Expected } from "./expected-540.js";
+import { alejandroScheduleCaExpected } from "./expected-schedule-ca.js";
 import { register as registerForm1040 } from "../../../src/mastra/engine/federal/1040/bindings.js";
 import { register as registerForm540 } from "../../../src/mastra/engine/state/ca/540/bindings.js";
+import { register as registerScheduleCa } from "../../../src/mastra/engine/state/ca/schedule-ca/bindings.js";
 
 export const alejandroScenario: Scenario = {
   name: "alejandro",
@@ -46,6 +48,13 @@ export const alejandroScenario: Scenario = {
       blankPdfPath: "forms/state/ca/540/blank.pdf",
       register: registerForm540,
       expected: alejandro540Expected,
+    },
+    {
+      formId: "schedule-ca",
+      catalogPath: "forms/state/ca/schedule-ca/catalog.json",
+      blankPdfPath: "forms/state/ca/schedule-ca/blank.pdf",
+      register: registerScheduleCa,
+      expected: alejandroScheduleCaExpected,
     },
   ],
 };

@@ -19,8 +19,10 @@ import { projectRoot } from "../paths";
 // if called twice.
 import { register as registerForm1040 } from "../engine/federal/1040/bindings";
 import { register as registerForm540 } from "../engine/state/ca/540/bindings";
+import { register as registerScheduleCa } from "../engine/state/ca/schedule-ca/bindings";
 registerForm1040();
 registerForm540();
+registerScheduleCa();
 import { requireUserContext } from "./userContext";
 
 // Catalogs (form inventories) live in `forms/<jurisdiction>/<short>/catalog.json`.
@@ -33,8 +35,9 @@ import { requireUserContext } from "./userContext";
 const CATALOG_FILES = [
   resolve(projectRoot, "forms/federal/1040/catalog.json"),
   resolve(projectRoot, "forms/state/ca/540/catalog.json"),
+  resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
 ];
-const SCENARIO_FORM_IDS = ["form-1040", "form-540"];
+const SCENARIO_FORM_IDS = ["form-1040", "form-540", "schedule-ca"];
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {

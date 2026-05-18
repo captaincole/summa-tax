@@ -27,6 +27,7 @@ import {
 } from "./values.js";
 import type { Form1040FilingInfo } from "./federal/1040/filingInfo.js";
 import type { Form540FilingInfo } from "./state/ca/540/filingInfo.js";
+import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js";
 
 // ─── Base (shared across every form) ─────────────────────────────────────
 
@@ -77,7 +78,10 @@ export interface BaseFilingInfo {
  * DerivationContext.filingInfo. Intersection of every per-form FilingInfo,
  * so it's assignable to any narrower per-form type at the binding boundary.
  */
-export type FilingInfo = BaseFilingInfo & Form1040FilingInfo & Form540FilingInfo;
+export type FilingInfo = BaseFilingInfo &
+  Form1040FilingInfo &
+  Form540FilingInfo &
+  ScheduleCaFilingInfo;
 
 // ─── Resolver (hand-coded stand-in for the AI layer) ─────────────────────
 
@@ -221,6 +225,11 @@ export function resolveFilingInfo(opts: {
     ) as boolean | undefined,
     refundFullOverpaymentCA: decisionByKey.get(
       "decisions.refund.refund_full_overpayment_ca",
+    ) as boolean | undefined,
+
+    // ─── Schedule CA (540) ──────────────────────────────────────────
+    mustFileScheduleCA: decisionByKey.get(
+      "decisions.scope.must_file_schedule_ca",
     ) as boolean | undefined,
   };
 }
