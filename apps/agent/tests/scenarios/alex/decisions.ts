@@ -33,6 +33,27 @@ export const alexDecisions: AIDecisionRow[] = [
     false,
     "No 1099-B or other sales-related documents provided.",
   ),
+  // Form-scope decisions follow the convention
+  // `decisions.scope.must_file_<form_short_id>`. Each scenario records the
+  // gating decision for every form in the universe — true means the form
+  // is in this scenario's forms[] and asserted against; false means we
+  // declare it out-of-scope and don't list it. Keeps "why isn't Alex
+  // filing X?" answerable by grep instead of code archaeology.
+  dec(
+    "decisions.scope.must_file_schedule_ca",
+    false,
+    "Single W-2-only filer with no federal-vs-CA adjustments — no items in Schedule CA Section A col B/C, Section B/C, or Part II would be nonzero. CA conforms to federal on every line Alex touches; Schedule CA is not required.",
+  ),
+  dec(
+    "decisions.scope.must_file_schedule_d",
+    false,
+    "No capital gain or loss transactions — no 1099-B and no other reportable sales. Schedule D is not required.",
+  ),
+  dec(
+    "decisions.scope.must_file_8949",
+    false,
+    "No reportable security sales; Form 8949 only attaches when Schedule D is required. Not in scope for Alex.",
+  ),
   dec(
     "decisions.scope.must_file_ca_540",
     true,

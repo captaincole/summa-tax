@@ -35,6 +35,24 @@ export const alejandroDecisions: AIDecisionRow[] = [
     true,
     "Apex Securities 1099-B reports two covered-security sales (NVDA short-term, AAPL long-term) totaling $2,550 in realized gains — Schedule D / Form 8949 are required.",
   ),
+  // Form-scope decisions follow the convention
+  // `decisions.scope.must_file_<form_short_id>`. See alex/decisions.ts for
+  // the parallel false-cases that document why Alex doesn't file these.
+  dec(
+    "decisions.scope.must_file_schedule_ca",
+    true,
+    "Alejandro files Schedule CA (540) to document the col A federal echoes for the income lines that flow into CA AGI. Even though col B (subtractions) and col C (additions) are all zero for his scenario — CA conforms to federal on wages, dividends, and capital gains — the schedule is filed alongside the 540.",
+  ),
+  dec(
+    "decisions.scope.must_file_schedule_d",
+    true,
+    "Net capital gain of $2,550 (short-term $300 + long-term $2,250) from Apex Securities 1099-B requires Schedule D to compute and report.",
+  ),
+  dec(
+    "decisions.scope.must_file_8949",
+    true,
+    "Two covered-security sales (NVDA short-term box A, AAPL long-term box D) are itemized on Form 8949 with basis-reported boxes; totals flow to Schedule D.",
+  ),
   dec(
     "decisions.scope.must_file_ca_540",
     true,
