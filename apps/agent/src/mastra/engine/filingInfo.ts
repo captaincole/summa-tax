@@ -29,6 +29,7 @@ import type { Form1040FilingInfo } from "./federal/1040/filingInfo.js";
 import type { Form540FilingInfo } from "./state/ca/540/filingInfo.js";
 import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js";
 import type { Form8949FilingInfo } from "./federal/8949/filingInfo.js";
+import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
 import type { TradeFactValue } from "../facts/index.js";
 
 // Mirrors the convention spelled out in src/mastra/facts/kinds/trade.ts.
@@ -90,7 +91,8 @@ export type FilingInfo = BaseFilingInfo &
   Form1040FilingInfo &
   Form540FilingInfo &
   ScheduleCaFilingInfo &
-  Form8949FilingInfo;
+  Form8949FilingInfo &
+  ScheduleDFilingInfo;
 
 // ─── Resolver (hand-coded stand-in for the AI layer) ─────────────────────
 
@@ -268,6 +270,11 @@ export function resolveFilingInfo(opts: {
     ) as boolean | undefined,
     shortTermTrades: trades.short,
     longTermTrades: trades.long,
+
+    // ─── Schedule D ─────────────────────────────────────────────────
+    mustFileScheduleD: decisionByKey.get(
+      "decisions.scope.must_file_schedule_d",
+    ) as boolean | undefined,
   };
 }
 

@@ -21,10 +21,12 @@ import { register as registerForm1040 } from "../engine/federal/1040/bindings";
 import { register as registerForm540 } from "../engine/state/ca/540/bindings";
 import { register as registerScheduleCa } from "../engine/state/ca/schedule-ca/bindings";
 import { register as registerForm8949 } from "../engine/federal/8949/bindings";
+import { register as registerScheduleD } from "../engine/federal/schedule-d/bindings";
 registerForm1040();
 registerForm540();
 registerScheduleCa();
 registerForm8949();
+registerScheduleD();
 import { requireUserContext } from "./userContext";
 
 // Catalogs (form inventories) live in `forms/<jurisdiction>/<short>/catalog.json`.
@@ -37,6 +39,7 @@ import { requireUserContext } from "./userContext";
 const CATALOG_FILES = [
   resolve(projectRoot, "forms/federal/1040/catalog.json"),
   resolve(projectRoot, "forms/federal/8949/catalog.json"),
+  resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
   resolve(projectRoot, "forms/state/ca/540/catalog.json"),
   resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
 ];
@@ -46,7 +49,14 @@ const CATALOG_FILES = [
 // 540 (lines 14/16/18), so it sits between them. Listing form-540 last
 // also lets it pick up Schedule CA's values on the first pass instead of
 // caching a fallback then ignoring the canonical value later.
-const SCENARIO_FORM_IDS = ["form-8949", "form-1040", "schedule-ca", "form-540"];
+// Dependency order: 8949 → Schedule D → 1040 → Schedule CA → 540.
+const SCENARIO_FORM_IDS = [
+  "form-8949",
+  "schedule-d",
+  "form-1040",
+  "schedule-ca",
+  "form-540",
+];
 
 let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {

@@ -58,6 +58,16 @@ export function register(): void {
       "line.3a": (_, info) => info.qualifiedDividends,
       // Sum of Form 1099-DIV box 1a (ordinary dividends) across all investment accounts.
       "line.3b": (_, info) => info.ordinaryDividends,
+      // MANUAL EDIT: Schedule D bindings now exist — line 7a reads the
+      // net capital gain from Schedule D line 16. Returns undefined
+      // (blocked) when Schedule D isn't filed for this scenario (Alex
+      // declined it via `must_file_schedule_d: false`) — matches the
+      // prior `unsupported` semantics so the widget stays blank in the
+      // rendered PDF. Downstream sum() treats undefined as 0 either way.
+      "line.7a": (f) => {
+        const v = f["schedule-d.1.line.16_combined_gain_loss"];
+        return typeof v === "number" ? v : undefined;
+      },
       // IRS instructions: add lines 1z, 2b, 3b, 4b, 5b, 6b, 7a, and 8 for total income. fromFields handles unsupported terms (7a, 8) as 0.
       "line.9": (f) => sum(f["line.1z"], f["line.2b"], f["line.3b"], f["line.4b"], f["line.5b"], f["line.6b"], f["line.7a"], f["line.8"]),
       // AGI = total income (line 9) minus adjustments (line 10); fromFields treats unsupported line 10 as 0.
@@ -233,7 +243,6 @@ export function register(): void {
       "line.6b": "No SSA-1099 ingestion and no Social Security Benefits Worksheet implementation; taxable SS benefit amount cannot be computed.",
       "line.6c_lump_sum_election": "No lump-sum social security benefit scenario or decision modeled; this checkbox requires knowing whether the taxpayer received a prior-year lump-sum SS payment and elected the special treatment.",
       "line.6d_mfs_lived_apart": "No MFS-lived-apart scenario modeled; this checkbox requires both married_filing_separately status AND the taxpayer having lived apart from their spouse all year — no decision captures the lived-apart fact.",
-      "line.7a": "Capital gain/loss requires Schedule D and Form 8949 computations — no Schedule D ingestion or capital-gain calculation path exists yet. For the simple Exception 1 case (only capital gain distributions from 1099-DIV box 2a), this could be sumFacts on account.*.dividends box2a, but the general case requires Schedule D which is not yet modeled.",
       "line.7b_schedule_d_not_required": "Checking this box requires evaluating whether Exception 1 applies (no capital losses, only capital gain distributions from 1099-DIV box 2a with no amounts in boxes 2b/2c/2d). No decision or fact path models this determination yet.",
       "line.7b_includes_childs_capital_gain": "Requires Form 8814 (child's interest and dividends) scenario — no dependent income ingestion or Form 8814 computation path exists yet.",
       "line.7b_childs_capital_gain_amount": "Amount from Form 8814 line 10 — requires Form 8814 computation for child's capital gain, which depends on dependent income ingestion not yet built.",

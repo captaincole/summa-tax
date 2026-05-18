@@ -23,10 +23,12 @@ import { alejandroExpected } from "./expected.js";
 import { alejandro540Expected } from "./expected-540.js";
 import { alejandroScheduleCaExpected } from "./expected-schedule-ca.js";
 import { alejandro8949Expected } from "./expected-8949.js";
+import { alejandroScheduleDExpected } from "./expected-schedule-d.js";
 import { register as registerForm1040 } from "../../../src/mastra/engine/federal/1040/bindings.js";
 import { register as registerForm540 } from "../../../src/mastra/engine/state/ca/540/bindings.js";
 import { register as registerScheduleCa } from "../../../src/mastra/engine/state/ca/schedule-ca/bindings.js";
 import { register as registerForm8949 } from "../../../src/mastra/engine/federal/8949/bindings.js";
+import { register as registerScheduleD } from "../../../src/mastra/engine/federal/schedule-d/bindings.js";
 
 export const alejandroScenario: Scenario = {
   name: "alejandro",
@@ -45,6 +47,13 @@ export const alejandroScenario: Scenario = {
       blankPdfPath: "forms/federal/8949/blank.pdf",
       register: registerForm8949,
       expected: alejandro8949Expected,
+    },
+    {
+      formId: "schedule-d",
+      catalogPath: "forms/federal/schedule-d/catalog.json",
+      blankPdfPath: "forms/federal/schedule-d/blank.pdf",
+      register: registerScheduleD,
+      expected: alejandroScheduleDExpected,
     },
     {
       formId: "form-1040",
