@@ -57,37 +57,51 @@ function parseArgs(argv: string[]): Args {
   return { formId, update };
 }
 
-// ─── Catalog discovery ──────────────────────────────────────────────────
+// ─── Catalog registry ───────────────────────────────────────────────────
 //
-// Walk `forms/` looking for a catalog.json whose form.formId matches.
-// Small directory tree (one folder per form), cheap to scan exhaustively.
+// Explicit (formId → catalog.json path) mapping. The CLI resolves
+// --form-id against this; runAll iterates it for the catalog-fill pass.
+// One source of truth — adding a form is a single line edit here.
+// Sibling files (blank.pdf, catalog-fill-golden.json) are read from the
+// catalog's directory.
 
-async function findCatalogPath(formId: string): Promise<string> {
-  const formsRoot = resolve(projectRoot, "forms");
-  const candidates = await collectCatalogJsons(formsRoot);
-  for (const path of candidates) {
-    const raw = await fs.readFile(path, "utf8");
-    const parsed = JSON.parse(raw) as { form?: { formId?: string } };
-    if (parsed.form?.formId === formId) return path;
-  }
-  throw new Error(
-    `No catalog.json with formId="${formId}" under ${formsRoot}. ` +
-      `Did you run "npm run forms:ingest" for it?`,
-  );
+export interface CatalogEntry {
+  formId: string;
+  catalogPath: string;
 }
 
-async function collectCatalogJsons(dir: string): Promise<string[]> {
-  const out: string[] = [];
-  const entries = await fs.readdir(dir, { withFileTypes: true });
-  for (const e of entries) {
-    const full = join(dir, e.name);
-    if (e.isDirectory()) {
-      out.push(...(await collectCatalogJsons(full)));
-    } else if (e.isFile() && e.name === "catalog.json") {
-      out.push(full);
-    }
+export const CATALOGS: CatalogEntry[] = [
+  {
+    formId: "form-1040",
+    catalogPath: resolve(projectRoot, "forms/federal/1040/catalog.json"),
+  },
+  {
+    formId: "form-540",
+    catalogPath: resolve(projectRoot, "forms/state/ca/540/catalog.json"),
+  },
+  {
+    formId: "form-8949",
+    catalogPath: resolve(projectRoot, "forms/federal/8949/catalog.json"),
+  },
+  {
+    formId: "schedule-ca",
+    catalogPath: resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
+  },
+  {
+    formId: "schedule-d",
+    catalogPath: resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
+  },
+];
+
+function lookupCatalogPath(formId: string): string {
+  const entry = CATALOGS.find((c) => c.formId === formId);
+  if (!entry) {
+    const known = CATALOGS.map((c) => c.formId).join(", ");
+    throw new Error(
+      `Unknown formId "${formId}". Add it to CATALOGS in tests/catalogFill.ts. Known: ${known}.`,
+    );
   }
-  return out;
+  return entry.catalogPath;
 }
 
 // ─── Synthetic value generation ─────────────────────────────────────────
@@ -273,7 +287,7 @@ export async function runCatalogFillCheck(formId: string): Promise<RunResult> {
   const t0 = Date.now();
   const failures: string[] = [];
   try {
-    const catalogPath = await findCatalogPath(formId);
+    const catalogPath = lookupCatalogPath(formId);
     const formDir = catalogPath.replace(/\/catalog\.json$/, "");
     const blankPath = join(formDir, "blank.pdf");
     const goldenPath = join(formDir, "catalog-fill-golden.json");
@@ -354,7 +368,7 @@ export async function runCatalogFillCheck(formId: string): Promise<RunResult> {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
-  const catalogPath = await findCatalogPath(args.formId);
+  const catalogPath = lookupCatalogPath(args.formId);
   const formDir = catalogPath.replace(/\/catalog\.json$/, "");
   const blankPath = join(formDir, "blank.pdf");
   const goldenPath = join(formDir, "catalog-fill-golden.json");
