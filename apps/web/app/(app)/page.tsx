@@ -286,17 +286,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Tab" && e.shiftKey) {
-                    e.preventDefault();
-                    const el = e.currentTarget;
-                    const start = el.selectionStart ?? input.length;
-                    const end = el.selectionEnd ?? input.length;
-                    const next = input.slice(0, start) + "\n" + input.slice(end);
-                    setInput(next);
-                    requestAnimationFrame(() => {
-                      el.selectionStart = el.selectionEnd = start + 1;
-                    });
-                  } else if (e.key === "Enter" && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                   }
@@ -307,7 +297,7 @@ export default function ChatPage() {
                     ? "Thom is thinking…"
                     : attachment
                       ? "Add a note (optional)…"
-                      : "Type a message (shift+tab for newline)"
+                      : "Type a message (shift+enter for newline)"
                 }
                 disabled={streaming}
                 autoFocus

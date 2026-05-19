@@ -59,10 +59,17 @@ export const alejandro8949Expected: ExpectedResults = {
 
   renderedBlank: [
     // Sample of unused rows on both parts — only row 1 is populated.
+    // Description and gain_loss are both asserted so a regression in
+    // either the row-data binding or the gain_loss formula (e.g. the
+    // old `sum()` that emitted "0" into empty rows) surfaces here.
     "form-8949.0.part1.row2_description",
+    "form-8949.0.part1.row2_gain_loss",
     "form-8949.0.part1.row3_description",
+    "form-8949.0.part1.row3_gain_loss",
     "form-8949.1.part2.row2_description",
+    "form-8949.1.part2.row2_gain_loss",
     "form-8949.1.part2.row3_description",
+    "form-8949.1.part2.row3_gain_loss",
   ],
 
   renderedChecked: [

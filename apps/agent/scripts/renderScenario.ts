@@ -13,6 +13,7 @@ import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { evaluateAllForms } from "../src/mastra/engine/engine.js";
 import { loadFromFixtures } from "../src/mastra/engine/catalog.js";
+import { getFormSpec } from "../src/mastra/engine/registry.js";
 import { fillFromCatalog } from "../src/mastra/engine/render/fillFromCatalog.js";
 import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
 import {
@@ -71,9 +72,13 @@ async function main() {
 
   const s = await loadScenario(name);
 
+  // Look up each scenario form's static config from the shared
+  // registry (catalog/blank/register live there, not on ScenarioForm).
+  const specs = s.forms.map((sf) => getFormSpec(sf.formId));
+
   // Register every form's bindings before evaluation. Side-effecting
   // calls match what runScenario does.
-  for (const f of s.forms) f.register();
+  for (const spec of specs) spec.register();
 
   const ctx: DerivationContext = {
     taxYear: s.taxYear,
@@ -92,9 +97,7 @@ async function main() {
     }),
   };
 
-  const catalog = await loadFromFixtures(
-    s.forms.map((f) => resolve(projectRoot, f.catalogPath)),
-  );
+  const catalog = await loadFromFixtures(specs.map((spec) => spec.catalogPath));
 
   const { forms, passes } = evaluateAllForms(
     s.forms.map((f) => f.formId),
@@ -111,28 +114,28 @@ async function main() {
     `tests/scenarios/${name}/docs`,
   );
 
-  for (const sf of s.forms) {
-    const evaluated = forms.get(sf.formId);
+  for (const spec of specs) {
+    const evaluated = forms.get(spec.formId);
     if (!evaluated) {
-      console.log(`  ✗ ${sf.formId} — no evaluation result`);
+      console.log(`  ✗ ${spec.formId} — no evaluation result`);
       continue;
     }
 
-    const blankBytes = await readFile(resolve(projectRoot, sf.blankPdfPath));
+    const blankBytes = await readFile(spec.blankPdfPath);
     const { pdfBytes, warnings } = await fillFromCatalog({
       blankPdfBytes: blankBytes,
       form: evaluated,
       catalog,
     });
 
-    const outName = `${toPascal(s.name)}-${shortName(sf.formId)}-rendered.pdf`;
+    const outName = `${toPascal(s.name)}-${shortName(spec.formId)}-rendered.pdf`;
     const outPath = resolve(docsDir, outName);
     await writeFile(outPath, pdfBytes);
 
     const filled = evaluated.fields.filter((f) => f.result.ok).length;
     const total = evaluated.fields.length;
     console.log(
-      `  ✓ ${sf.formId.padEnd(14)} → ${outName}  (${filled}/${total} fields filled${warnings.length ? `, ${warnings.length} warning(s)` : ""})`,
+      `  ✓ ${spec.formId.padEnd(14)} → ${outName}  (${filled}/${total} fields filled${warnings.length ? `, ${warnings.length} warning(s)` : ""})`,
     );
   }
 }

@@ -8,6 +8,27 @@ import { defineForm, sum } from "../../engine.js";
 import type { Form8949 } from "./types.js";
 import type { Form8949FilingInfo } from "./filingInfo.js";
 
+// Per-row gain/loss = proceeds − basis + adjustment, but only when the
+// row actually has a trade. Returning undefined for empty rows keeps
+// `Math.ceil`-style 0s from rendering as "0" in unused widgets — the
+// renderer skips blocked fields entirely.
+//
+// `proceeds` is the row's anchor: if a row has no proceeds value, the
+// row is empty (no trade assigned to it), regardless of what the other
+// columns contain. Used by all 22 row gain_loss bindings below.
+function rowGainLoss(
+  proceeds: unknown,
+  costBasis: unknown,
+  adjustment: unknown,
+): number | undefined {
+  if (typeof proceeds !== "number") return undefined;
+  return (
+    proceeds -
+    (typeof costBasis === "number" ? costBasis : 0) +
+    (typeof adjustment === "number" ? adjustment : 0)
+  );
+}
+
 // Wrapping defineForm inside a register() function lets callers
 // import { register } and force the side-effectful registration once
 // at startup. Idempotent — calling twice overwrites in place.
@@ -71,38 +92,31 @@ export function register(): void {
         info.longTermTrades?.[0]?.costBasis,
       // MANUAL EDIT: AI emitted gain_loss formulas for Part II rows 2–11
       // but skipped row 1. Same `d − e + g` formula as the others.
-      "1.part2.row1_gain_loss": (f) =>
-        sum(
-          f["1.part2.row1_proceeds"],
-          f["1.part2.row1_cost_basis"] === undefined
-            ? 0
-            : -f["1.part2.row1_cost_basis"],
-          f["1.part2.row1_adjustment_amount"],
-        ),
+      "1.part2.row1_gain_loss": (f) => rowGainLoss(f["1.part2.row1_proceeds"], f["1.part2.row1_cost_basis"], f["1.part2.row1_adjustment_amount"]),
       // Direct 1-to-1 read of taxpayer SSN from identity facts.
       "0.header.ssn": (_, info) => info.taxpayerSSN,
       // Column (h) = column (d) − column (e) + column (g) per IRS instructions.
-      "0.part1.row1_gain_loss": (f) => sum(f["0.part1.row1_proceeds"], f["0.part1.row1_cost_basis"] === undefined ? 0 : -f["0.part1.row1_cost_basis"], f["0.part1.row1_adjustment_amount"]),
+      "0.part1.row1_gain_loss": (f) => rowGainLoss(f["0.part1.row1_proceeds"], f["0.part1.row1_cost_basis"], f["0.part1.row1_adjustment_amount"]),
       // Column (h) = column (d) − column (e) + column (g) per IRS Form 8949 instructions.
-      "0.part1.row2_gain_loss": (f) => sum(f["0.part1.row2_proceeds"], f["0.part1.row2_cost_basis"] === undefined ? 0 : -f["0.part1.row2_cost_basis"], f["0.part1.row2_adjustment_amount"]),
+      "0.part1.row2_gain_loss": (f) => rowGainLoss(f["0.part1.row2_proceeds"], f["0.part1.row2_cost_basis"], f["0.part1.row2_adjustment_amount"]),
       // Column (h) = column (d) − column (e) + column (g) per IRS Form 8949 instructions.
-      "0.part1.row3_gain_loss": (f) => sum(f["0.part1.row3_proceeds"], f["0.part1.row3_cost_basis"] === undefined ? 0 : -f["0.part1.row3_cost_basis"], f["0.part1.row3_adjustment_amount"]),
+      "0.part1.row3_gain_loss": (f) => rowGainLoss(f["0.part1.row3_proceeds"], f["0.part1.row3_cost_basis"], f["0.part1.row3_adjustment_amount"]),
       // Column (h) = column (d) − column (e) + column (g) per IRS Form 8949 instructions; all three source fields are in this form's inventory.
-      "0.part1.row4_gain_loss": (f) => sum(f["0.part1.row4_proceeds"], f["0.part1.row4_cost_basis"] === undefined ? 0 : -f["0.part1.row4_cost_basis"], f["0.part1.row4_adjustment_amount"]),
+      "0.part1.row4_gain_loss": (f) => rowGainLoss(f["0.part1.row4_proceeds"], f["0.part1.row4_cost_basis"], f["0.part1.row4_adjustment_amount"]),
       // Computed as proceeds minus cost basis plus any adjustment amount for short-term trade row 5.
-      "0.part1.row5_gain_loss": (f) => sum(f["0.part1.row5_proceeds"], f["0.part1.row5_cost_basis"] === undefined ? 0 : -f["0.part1.row5_cost_basis"], f["0.part1.row5_adjustment_amount"]),
+      "0.part1.row5_gain_loss": (f) => rowGainLoss(f["0.part1.row5_proceeds"], f["0.part1.row5_cost_basis"], f["0.part1.row5_adjustment_amount"]),
       // Computes row 6 gain/(loss) as proceeds minus cost basis plus any adjustment, per IRS Form 8949 column (h) formula.
-      "0.part1.row6_gain_loss": (f) => sum(f["0.part1.row6_proceeds"], f["0.part1.row6_cost_basis"] === undefined ? 0 : -f["0.part1.row6_cost_basis"], f["0.part1.row6_adjustment_amount"]),
+      "0.part1.row6_gain_loss": (f) => rowGainLoss(f["0.part1.row6_proceeds"], f["0.part1.row6_cost_basis"], f["0.part1.row6_adjustment_amount"]),
       // Column h = column d minus column e plus column g, per IRS Form 8949 instructions.
-      "0.part1.row7_gain_loss": (f) => sum(f["0.part1.row7_proceeds"], f["0.part1.row7_cost_basis"] === undefined ? 0 : -f["0.part1.row7_cost_basis"], f["0.part1.row7_adjustment_amount"]),
+      "0.part1.row7_gain_loss": (f) => rowGainLoss(f["0.part1.row7_proceeds"], f["0.part1.row7_cost_basis"], f["0.part1.row7_adjustment_amount"]),
       // Column h = column d minus column e plus column g per IRS instructions.
-      "0.part1.row8_gain_loss": (f) => sum(f["0.part1.row8_proceeds"], f["0.part1.row8_cost_basis"] === undefined ? 0 : -f["0.part1.row8_cost_basis"], f["0.part1.row8_adjustment_amount"]),
+      "0.part1.row8_gain_loss": (f) => rowGainLoss(f["0.part1.row8_proceeds"], f["0.part1.row8_cost_basis"], f["0.part1.row8_adjustment_amount"]),
       // Column h = column d minus column e plus column g per IRS instructions.
-      "0.part1.row9_gain_loss": (f) => sum(f["0.part1.row9_proceeds"], f["0.part1.row9_cost_basis"] === undefined ? 0 : -f["0.part1.row9_cost_basis"], f["0.part1.row9_adjustment_amount"]),
+      "0.part1.row9_gain_loss": (f) => rowGainLoss(f["0.part1.row9_proceeds"], f["0.part1.row9_cost_basis"], f["0.part1.row9_adjustment_amount"]),
       // Computes row 10 gain/(loss) as proceeds minus cost basis plus any adjustment amount.
-      "0.part1.row10_gain_loss": (f) => sum(f["0.part1.row10_proceeds"], f["0.part1.row10_cost_basis"] === undefined ? 0 : -f["0.part1.row10_cost_basis"], f["0.part1.row10_adjustment_amount"]),
+      "0.part1.row10_gain_loss": (f) => rowGainLoss(f["0.part1.row10_proceeds"], f["0.part1.row10_cost_basis"], f["0.part1.row10_adjustment_amount"]),
       // Column (h) = column (d) − column (e) + column (g), the standard IRS Form 8949 gain/loss formula.
-      "0.part1.row11_gain_loss": (f) => sum(f["0.part1.row11_proceeds"], f["0.part1.row11_cost_basis"] === undefined ? 0 : -f["0.part1.row11_cost_basis"], f["0.part1.row11_adjustment_amount"]),
+      "0.part1.row11_gain_loss": (f) => rowGainLoss(f["0.part1.row11_proceeds"], f["0.part1.row11_cost_basis"], f["0.part1.row11_adjustment_amount"]),
       // Sum of proceeds across all 11 Part I rows for the column (d) total.
       "0.part1.totals_proceeds": (f) => sum(f["0.part1.row1_proceeds"], f["0.part1.row2_proceeds"], f["0.part1.row3_proceeds"], f["0.part1.row4_proceeds"], f["0.part1.row5_proceeds"], f["0.part1.row6_proceeds"], f["0.part1.row7_proceeds"], f["0.part1.row8_proceeds"], f["0.part1.row9_proceeds"], f["0.part1.row10_proceeds"], f["0.part1.row11_proceeds"]),
       // Sum of cost bases across all 11 Part I rows for the column (e) total.
@@ -114,19 +128,19 @@ export function register(): void {
       // The IRS notes SSN is not required if shown on other side; binding as optional so it populates when available but doesn't block if omitted.
       "1.header.ssn": (_, info) => info.taxpayerSSN,
       // Column (h) = column (d) − column (e) + column (g) per IRS Form 8949 instructions.
-      "1.part2.row2_gain_loss": (f) => sum(f["1.part2.row2_proceeds"], f["1.part2.row2_cost_basis"] === undefined ? 0 : -f["1.part2.row2_cost_basis"], f["1.part2.row2_adjustment_amount"]),
+      "1.part2.row2_gain_loss": (f) => rowGainLoss(f["1.part2.row2_proceeds"], f["1.part2.row2_cost_basis"], f["1.part2.row2_adjustment_amount"]),
       // IRS instructions: column (h) = column (d) − column (e) + column (g).
-      "1.part2.row3_gain_loss": (f) => sum(f["1.part2.row3_proceeds"], f["1.part2.row3_cost_basis"] === undefined ? 0 : -f["1.part2.row3_cost_basis"], f["1.part2.row3_adjustment_amount"]),
+      "1.part2.row3_gain_loss": (f) => rowGainLoss(f["1.part2.row3_proceeds"], f["1.part2.row3_cost_basis"], f["1.part2.row3_adjustment_amount"]),
       // Column h = column d minus column e plus column g, per IRS Form 8949 instructions.
-      "1.part2.row7_gain_loss": (f) => sum(f["1.part2.row7_proceeds"], f["1.part2.row7_cost_basis"] === undefined ? 0 : -f["1.part2.row7_cost_basis"], f["1.part2.row7_adjustment_amount"]),
+      "1.part2.row7_gain_loss": (f) => rowGainLoss(f["1.part2.row7_proceeds"], f["1.part2.row7_cost_basis"], f["1.part2.row7_adjustment_amount"]),
       // Column (h) gain or loss for Part II row 8: proceeds minus cost basis plus any adjustment, per IRS instructions.
-      "1.part2.row8_gain_loss": (f) => sum(f["1.part2.row8_proceeds"], f["1.part2.row8_cost_basis"] === undefined ? 0 : -f["1.part2.row8_cost_basis"], f["1.part2.row8_adjustment_amount"]),
+      "1.part2.row8_gain_loss": (f) => rowGainLoss(f["1.part2.row8_proceeds"], f["1.part2.row8_cost_basis"], f["1.part2.row8_adjustment_amount"]),
       // Column (h) gain or loss for Part II row 9: proceeds minus cost basis plus any adjustment, per IRS instructions.
-      "1.part2.row9_gain_loss": (f) => sum(f["1.part2.row9_proceeds"], f["1.part2.row9_cost_basis"] === undefined ? 0 : -f["1.part2.row9_cost_basis"], f["1.part2.row9_adjustment_amount"]),
+      "1.part2.row9_gain_loss": (f) => rowGainLoss(f["1.part2.row9_proceeds"], f["1.part2.row9_cost_basis"], f["1.part2.row9_adjustment_amount"]),
       // Computes gain/(loss) for long-term Part II row 10 as proceeds minus cost basis plus any adjustment.
-      "1.part2.row10_gain_loss": (f) => sum(f["1.part2.row10_proceeds"], f["1.part2.row10_cost_basis"] === undefined ? 0 : -f["1.part2.row10_cost_basis"], f["1.part2.row10_adjustment_amount"]),
+      "1.part2.row10_gain_loss": (f) => rowGainLoss(f["1.part2.row10_proceeds"], f["1.part2.row10_cost_basis"], f["1.part2.row10_adjustment_amount"]),
       // Row 11 gain/loss computed as proceeds minus cost basis plus any adjustment, per IRS Form 8949 column (h) formula.
-      "1.part2.row11_gain_loss": (f) => sum(f["1.part2.row11_proceeds"], f["1.part2.row11_cost_basis"] === undefined ? 0 : -f["1.part2.row11_cost_basis"], f["1.part2.row11_adjustment_amount"]),
+      "1.part2.row11_gain_loss": (f) => rowGainLoss(f["1.part2.row11_proceeds"], f["1.part2.row11_cost_basis"], f["1.part2.row11_adjustment_amount"]),
       // Part II totals column (d): sum of proceeds from all 11 long-term transaction rows.
       "1.part2.totals_proceeds": (f) => sum(f["1.part2.row1_proceeds"], f["1.part2.row2_proceeds"], f["1.part2.row3_proceeds"], f["1.part2.row4_proceeds"], f["1.part2.row5_proceeds"], f["1.part2.row6_proceeds"], f["1.part2.row7_proceeds"], f["1.part2.row8_proceeds"], f["1.part2.row9_proceeds"], f["1.part2.row10_proceeds"], f["1.part2.row11_proceeds"]),
       // Part II totals column (e): sum of cost basis from all 11 long-term transaction rows.
