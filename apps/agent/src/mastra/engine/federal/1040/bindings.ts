@@ -20,6 +20,28 @@ export function register(): void {
     mustFile: (info) => info.mustFileFederal,
 
     bindings: {
+      // MANUAL EDIT: AI flagged as unsupported ("only for nonresident /
+      // dual-status scenarios"). That's not quite right — the checkbox
+      // is on every individual return and is checked whenever the
+      // taxpayer's main home was in the U.S. for more than half the
+      // year. For every scenario we currently model (US-domiciled,
+      // full-year resident), the answer is yes. Default to true when
+      // we have a US address (state code present); when ingestion for
+      // nonresident scenarios lands, route through an explicit
+      // `decisions.scope.main_home_us_over_half_year` decision.
+      "header.main_home_us_over_half_year": (_, info) =>
+        info.homeAddressState ? true : undefined,
+      // MANUAL EDIT: AI flagged both digital-assets widgets as
+      // unsupported. The IRS makes this a mandatory yes/no for every
+      // 1040 filer, so Thom needs to ask. Driven by the explicit
+      // `decisions.scope.has_digital_assets` decision (boolean). The
+      // matching checkbox renders when the decision lands on its side;
+      // when undefined neither fires so an unanswered scenario fails
+      // loudly rather than silently picking a default.
+      "header.digital_assets_yes": (_, info) =>
+        info.hasDigitalAssets === true ? true : undefined,
+      "header.digital_assets_no": (_, info) =>
+        info.hasDigitalAssets === false ? true : undefined,
       // MANUAL EDIT: AI emitted constants ("01/01", "12/31", "2025"), but
       // the IRS prints "OMB No." in those fields and only fiscal-year
       // filers fill them in. For calendar-year filers (everyone we
@@ -211,7 +233,6 @@ export function register(): void {
       "header.spouse_first_name_mi": "No MFJ scenario yet — spouse identity facts are not ingested. Will support when a married_filing_jointly scenario is built.",
       "header.spouse_last_name": "No MFJ scenario yet — spouse identity facts are not ingested. Will support when a married_filing_jointly scenario is built.",
       "header.spouse_ssn": "No MFJ scenario yet — spouse SSN is not ingested. Will support when a married_filing_jointly scenario is built.",
-      "header.main_home_us_over_half_year": "No fact or decision captures whether the taxpayer's main home was in the U.S. for more than half of 2025. Relevant only for nonresident/dual-status scenarios we haven't built ingestion for.",
       "header.foreign_country_name": "No foreign address scenario modeled yet — no fact key exists for a foreign country name. Relevant only for taxpayers with a foreign address.",
       "header.foreign_province_state_county": "No foreign address scenario or fact key exists for foreign province/state/county; we only model U.S. domestic addresses.",
       "header.foreign_postal_code": "No foreign address scenario or fact key exists for foreign postal code; we only model U.S. domestic addresses.",
@@ -221,8 +242,6 @@ export function register(): void {
       "header.hoh_qss_qualifying_child_name": "No dependent/qualifying-child ingestion scenario yet — this field is only filled when the HOH/QSS qualifying person is a child who is NOT the taxpayer's dependent, requiring dependent relationship data we haven't modeled.",
       "header.nonresident_alien_spouse_checkbox": "No nonresident/dual-status alien spouse scenario modeled yet — requires a specific MFJ+NRA-spouse fact we haven't ingested.",
       "header.nonresident_alien_spouse_name": "No nonresident/dual-status alien spouse scenario modeled yet — spouse name field only applies when the NRA-spouse checkbox is checked, which has no ingestion path.",
-      "header.digital_assets_yes": "No digital-assets decision key exists yet (e.g. decisions.scope.has_digital_assets). The IRS requires answering this question for ALL filers, but we haven't built the intake question or decision to drive it.",
-      "header.digital_assets_no": "No digital-assets decision key exists yet (e.g. decisions.scope.has_digital_assets). The IRS requires answering this question for ALL filers, but we haven't built the intake question or decision to drive it.",
       "dependents.dep1_first_name": "No dependent data ingestion scenario built yet — requires per-dependent fact records (name, SSN, relationship, etc.) that we haven't modeled.",
       "dependents.dep2_first_name": "No dependent data ingestion scenario built yet — requires per-dependent fact records (name, SSN, relationship, etc.) that we haven't modeled.",
       "dependents.dep3_first_name": "No dependent data ingestion scenario built yet — requires per-dependent fact records (name, SSN, relationship, etc.) that we haven't modeled.",

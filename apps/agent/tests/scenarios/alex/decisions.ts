@@ -33,6 +33,11 @@ export const alexDecisions: AIDecisionRow[] = [
     false,
     "No 1099-B or other sales-related documents provided.",
   ),
+  dec(
+    "decisions.scope.has_digital_assets",
+    false,
+    "Alex reported no digital asset (crypto / NFT) transactions for 2025 — 1040 page 1 digital-assets question answered No.",
+  ),
   // Form-scope decisions follow the convention
   // `decisions.scope.must_file_<form_short_id>`. Each scenario records the
   // gating decision for every form in the universe — true means the form

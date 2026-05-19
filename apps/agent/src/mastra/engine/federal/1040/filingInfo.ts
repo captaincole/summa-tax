@@ -12,6 +12,16 @@ export interface Form1040FilingInfo extends BaseFilingInfo {
   /** Federal Form 1040 must-file determination. */
   mustFileFederal?: boolean;
 
+  /**
+   * Digital-assets question (1040 page 1) — every filer must answer.
+   * True when the taxpayer received, sold, or otherwise transacted in
+   * a digital asset (crypto / NFT / etc.) during the tax year. Drives
+   * which of the two yes/no checkboxes renders. Undefined means
+   * "scenario hasn't recorded the decision yet" — neither checkbox
+   * fires, surfacing the gap loudly.
+   */
+  hasDigitalAssets?: boolean;
+
   // ─── W-2 federal aggregates ─────────────────────────────────────────
   /** Sum of W-2 Box 1 (federal taxable wages) across all employers. */
   w2WagesTotal?: Money;

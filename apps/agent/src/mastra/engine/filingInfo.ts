@@ -214,6 +214,9 @@ export function resolveFilingInfo(opts: {
     mustFileFederal: decisionByKey.get("decisions.scope.must_file_federal") as
       | boolean
       | undefined,
+    hasDigitalAssets: decisionByKey.get("decisions.scope.has_digital_assets") as
+      | boolean
+      | undefined,
     w2WagesTotal: sumW2Box("box1") as Form1040FilingInfo["w2WagesTotal"],
     w2FederalWithholding: sumW2Box("box2") as Form1040FilingInfo["w2FederalWithholding"],
     qualifiedDividends: sumInvestmentBox(

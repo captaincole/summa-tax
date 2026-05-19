@@ -35,6 +35,11 @@ export const alejandroDecisions: AIDecisionRow[] = [
     true,
     "Apex Securities 1099-B reports two covered-security sales (NVDA short-term, AAPL long-term) totaling $2,550 in realized gains — Schedule D / Form 8949 are required.",
   ),
+  dec(
+    "decisions.scope.has_digital_assets",
+    false,
+    "Alejandro reported no crypto / NFT / other digital asset activity for 2025 — 1040 page 1 digital-assets question answered No.",
+  ),
   // Form-scope decisions follow the convention
   // `decisions.scope.must_file_<form_short_id>`. See alex/decisions.ts for
   // the parallel false-cases that document why Alex doesn't file these.
