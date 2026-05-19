@@ -260,22 +260,62 @@ export function resolveFilingInfo(opts: {
     ) as boolean | undefined,
 
     // ─── Schedule CA (540) ──────────────────────────────────────────
-    mustFileScheduleCA: decisionByKey.get(
-      "decisions.scope.must_file_schedule_ca",
-    ) as boolean | undefined,
+    // Default: Schedule CA is filed whenever Form 540 is filed.
+    // Explicit `decisions.scope.must_file_schedule_ca` overrides — set
+    // false on scenarios that don't need it (e.g. Alex declines, no
+    // adjustments to report).
+    mustFileScheduleCA: resolveMustFile(decisionByKey, {
+      explicitKey: "decisions.scope.must_file_schedule_ca",
+      fallback: decisionByKey.get("decisions.scope.must_file_ca_540") === true,
+    }),
 
     // ─── Form 8949 ──────────────────────────────────────────────────
-    mustFile8949: decisionByKey.get(
-      "decisions.scope.must_file_8949",
-    ) as boolean | undefined,
+    // Default: required when there are trade facts to itemize OR when
+    // the 1099 ingest pipeline recorded `has_reportable_sales = true`.
+    // Either signal indicates capital-asset sales that need row-level
+    // reporting.
+    mustFile8949: resolveMustFile(decisionByKey, {
+      explicitKey: "decisions.scope.must_file_8949",
+      fallback:
+        trades.short.length + trades.long.length > 0 ||
+        decisionByKey.get("decisions.scope.has_reportable_sales") === true,
+    }),
     shortTermTrades: trades.short,
     longTermTrades: trades.long,
 
     // ─── Schedule D ─────────────────────────────────────────────────
-    mustFileScheduleD: decisionByKey.get(
-      "decisions.scope.must_file_schedule_d",
-    ) as boolean | undefined,
+    // Default: required whenever 8949 is required (Schedule D
+    // summarizes the per-row 8949 totals). Also fires for capital-gain
+    // distributions even without 8949 — same trade-fact / decision
+    // signal works for both cases.
+    mustFileScheduleD: resolveMustFile(decisionByKey, {
+      explicitKey: "decisions.scope.must_file_schedule_d",
+      fallback:
+        trades.short.length + trades.long.length > 0 ||
+        decisionByKey.get("decisions.scope.has_reportable_sales") === true,
+    }),
   };
+}
+
+/**
+ * Resolve a must-file flag with explicit-decision-wins semantics. The
+ * explicit decision (when present in the decision set) takes precedence
+ * — even when false — so scenarios can opt out of a form they would
+ * otherwise default into. When the decision isn't recorded at all,
+ * fall back to the data-driven default.
+ *
+ * This lets Thom (the live agent) skip recording every must_file_*
+ * decision during intake; downstream forms gate themselves on the
+ * presence of upstream data. Test scenarios that need precise control
+ * still record explicit decisions.
+ */
+function resolveMustFile(
+  decisions: Map<string, unknown>,
+  opts: { explicitKey: string; fallback: boolean },
+): boolean | undefined {
+  const explicit = decisions.get(opts.explicitKey);
+  if (typeof explicit === "boolean") return explicit;
+  return opts.fallback;
 }
 
 // Trade-date parser. Accepts "MM/DD/YY" or "MM/DD/YYYY" as emitted by

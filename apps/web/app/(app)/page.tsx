@@ -38,7 +38,7 @@ export default function ChatPage() {
   const [activityTick, setActivityTick] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const messageInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -51,8 +51,8 @@ export default function ChatPage() {
     if (!streaming) messageInputRef.current?.focus();
   }, [streaming]);
 
-  async function sendMessage(e: FormEvent) {
-    e.preventDefault();
+  async function sendMessage(e?: FormEvent) {
+    e?.preventDefault();
     const text = input.trim();
     if ((!text && !attachment) || streaming) return;
 
@@ -281,21 +281,37 @@ export default function ChatPage() {
               >
                 📎
               </button>
-              <input
+              <textarea
                 ref={messageInputRef}
-                type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Tab" && e.shiftKey) {
+                    e.preventDefault();
+                    const el = e.currentTarget;
+                    const start = el.selectionStart ?? input.length;
+                    const end = el.selectionEnd ?? input.length;
+                    const next = input.slice(0, start) + "\n" + input.slice(end);
+                    setInput(next);
+                    requestAnimationFrame(() => {
+                      el.selectionStart = el.selectionEnd = start + 1;
+                    });
+                  } else if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+                rows={1}
                 placeholder={
                   streaming
                     ? "Thom is thinking…"
                     : attachment
                       ? "Add a note (optional)…"
-                      : "Type a message"
+                      : "Type a message (shift+tab for newline)"
                 }
                 disabled={streaming}
                 autoFocus
-                className="input-base flex-1"
+                className="input-base flex-1 resize-none max-h-40 overflow-y-auto"
               />
               <button
                 type="submit"
