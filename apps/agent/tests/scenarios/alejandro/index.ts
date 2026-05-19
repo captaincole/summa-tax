@@ -36,11 +36,38 @@ export const alejandroScenario: Scenario = {
   // Forms in dependency order: 8949 → Schedule D → 1040 → Schedule CA →
   // 540. The registry imposes the same order at the engine level, so
   // this listing matches the fixpoint evaluation sequence.
+  //
+  // Each form pairs with the CPA-completed golden PDF in docs/. The
+  // runner reads every filled widget from the golden and asserts our
+  // render matches — catches anything the explicit engineFields /
+  // renderedText assertions miss (stray placeholder text, missing
+  // bindings, wrong widget mappings).
   forms: [
-    { formId: "form-8949", expected: alejandro8949Expected },
-    { formId: "schedule-d", expected: alejandroScheduleDExpected },
-    { formId: "form-1040", expected: alejandroExpected },
-    { formId: "schedule-ca", expected: alejandroScheduleCaExpected },
-    { formId: "form-540", expected: alejandro540Expected },
+    {
+      formId: "form-8949",
+      expected: alejandro8949Expected,
+      goldenPdfPath: "tests/scenarios/alejandro/docs/Alejandro-8949-Golden.pdf",
+    },
+    {
+      formId: "schedule-d",
+      expected: alejandroScheduleDExpected,
+      goldenPdfPath: "tests/scenarios/alejandro/docs/Alejandro-ScheduleD-Golden.pdf",
+    },
+    {
+      formId: "form-1040",
+      expected: alejandroExpected,
+      goldenPdfPath: "tests/scenarios/alejandro/docs/Alejandro-1040-Golden.pdf",
+    },
+    {
+      formId: "schedule-ca",
+      expected: alejandroScheduleCaExpected,
+      goldenPdfPath:
+        "tests/scenarios/alejandro/docs/Alejandro-ScheduleCA-Golden.pdf",
+    },
+    {
+      formId: "form-540",
+      expected: alejandro540Expected,
+      goldenPdfPath: "tests/scenarios/alejandro/docs/Alejandro-CA540-Golden.pdf",
+    },
   ],
 };
