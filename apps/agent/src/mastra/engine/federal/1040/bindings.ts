@@ -169,8 +169,6 @@ export function register(): void {
       },
       // Sum of lines 16 and 17; line 17 is unsupported so engine treats it as 0, giving partial correct result.
       "line.18": (f) => sum(f["line.16"], f["line.17"]),
-      // Sum of lines 19 (child tax credit / other dependents credit) and 20 (Schedule 3 line 8 credits).
-      "line.21": (f) => sum(f["line.19"], f["line.20"]),
       // Line 22 = line 18 minus line 21, floored at 0 per 'if zero or less, enter -0-' instruction.
       "line.22": (f) => floor(0, sum(f["line.18"], f["line.21"] === undefined ? 0 : -f["line.21"])),
       // Total tax = line 22 (tax after credits) plus line 23 (other taxes from Schedule 2).
@@ -178,13 +176,7 @@ export function register(): void {
       // Sum of W-2 box 2 (federal income tax withheld) across all employers.
       "line.25a": (_, info) => info.w2FederalWithholding,
       // Total federal income tax withheld = lines 25a + 25b + 25c.
-      // MANUAL EDIT: was emitted to `todos` at medium confidence. Sum of
-      // 1099 Box 4 (federal income tax withheld on 1099 forms) across
-      // accounts. For Alex (no 1099 facts) this resolves to 0.
-      "line.25b": (_, info) => info.form1099FederalWithholding,
       "line.25d": (f) => sum(f["line.25a"], f["line.25b"], f["line.25c"]),
-      // IRS instructions: line 32 = lines 27a + 28 + 29 + 30 + 31 (total other payments and refundable credits); fromFields sums the available terms, treating unsupported ones as 0.
-      "line.32": (f) => sum(f["line.27a"], f["line.28"], f["line.29"], f["line.30"], f["line.31"]),
       // Sum of total withholding (25d), estimated tax payments (26), and other refundable credits (32) per IRS instructions.
       "line.33": (f) => sum(f["line.25d"], f["line.26"], f["line.32"]),
       // Overpayment = total payments (33) minus total tax (24); zero if negative per IRS instructions.
@@ -196,8 +188,6 @@ export function register(): void {
       // CA-side analog on Form 540.
       "line.35a": (f, info) =>
         info.refundFullOverpaymentFederal ? f["line.34"] : undefined,
-      // Amount owed = total tax (24) minus total payments (33); zero if payments exceed tax per IRS instructions.
-      "line.37": (f) => floor(0, sum(f["line.24"], f["line.33"] === undefined ? 0 : -f["line.33"])),
       // Taxpayer's occupation maps directly to the identity.occupation fact collected during intake.
       "signing.taxpayer_occupation": (_, info) => info.taxpayerOccupation,
       // Taxpayer's daytime phone number collected during intake via identity.phone fact.
@@ -339,6 +329,10 @@ export function register(): void {
       "line.25c": "Federal income tax withheld from other forms (W-2G, Form 8959 Additional Medicare Tax, Schedule K-1, Form 1042-S, etc.) — no ingestion path for these source documents yet.",
       "line.26": "Estimated tax payments and prior-year overpayment applied forward have no ingestion path yet — no estimated_payments fact category exists.",
       "line.former_spouse_ssn": "Former spouse SSN for joint estimated tax split — no MFS/divorce scenario with prior joint estimated payments modeled yet; requires separate fact ingestion for former spouse identity.",
+      "line.21": "Line 21 (lines 19 + 20) — child tax credit and Schedule 3 nonrefundable credits are both unsupported; the aggregate has no value to compute yet.",
+      "line.25b": "Federal income tax withheld from 1099 forms — no 1099-withholding scenario exercised yet; render blank rather than 0 until a fixture has Box 4 facts.",
+      "line.32": "Line 32 — sum of other refundable credits / payments (27a + 28 + 29 + 30 + 31), all of which are individually unsupported.",
+      "line.37": "Line 37 (amount you owe) — owe-tax branch not yet exercised by any test scenario; current fixtures all produce refunds.",
       "line.27a": "Earned Income Credit requires an EIC eligibility worksheet computation (earned income, AGI, filing status, number of qualifying children with valid SSNs) — no EIC worksheet or qualifying-child ingestion path built yet.",
       "line.27b_clergy_schedule_se": "Clergy/minister checkbox for Schedule SE filing — no clergy occupation scenario or Schedule SE ingestion built yet.",
       "line.27c_no_eic_claim": "Opt-out checkbox for EIC claim — no EIC eligibility or opt-out decision modeled yet; requires taxpayer election fact.",

@@ -33,132 +33,22 @@ export function register(): void {
       "0.header.ssn": (_, info) => info.taxpayerSSN,
       // Cross-form reference: pull the federal Form 1040 line 1a (total W-2 box 1 wages) directly into Column A.
       "0.line.1a_federal": (f) => sum(f["form-1040.line.1a"]),
-      // Cross-form reference: pull federal Form 1040 line 1b into Column A.
-      "0.line.1b_federal": (f) => sum(f["form-1040.line.1b"]),
-      // Cross-form reference: pull federal Form 1040 line 1c into Column A.
-      "0.line.1c_federal": (f) => sum(f["form-1040.line.1c"]),
-      // Column A federal amount mirrors Form 1040 line 1d (Medicaid waiver payments not reported on W-2).
-      "0.line.1d_federal": (f) => sum(f["form-1040.line.1d"]),
-      // Column A federal amount mirrors Form 1040 line 1e (taxable dependent care benefits from Form 2441 line 26).
-      "0.line.1e_federal": (f) => sum(f["form-1040.line.1e"]),
-      // Column A federal amount mirrors Form 1040 line 1f (employer-provided adoption benefits from Form 8839 line 31).
-      "0.line.1f_federal": (f) => sum(f["form-1040.line.1f"]),
-      // Carries over the federal Form 1040 line 1g amount directly into Schedule CA Column A.
-      "0.line.1g_federal": (f) => sum(f["form-1040.line.1g"]),
       // MANUAL EDIT: AI used `sum()` on a text field. Read the federal
       // 1h type description directly as a string.
       "0.line.1h_income_type": (f) => {
         const v = f["form-1040.line.1h_type"];
         return typeof v === "string" ? v : undefined;
       },
-      // Carries over the federal Form 1040 line 1h amount directly into Schedule CA Column A.
-      "0.line.1h_federal": (f) => sum(f["form-1040.line.1h_amount"]),
       // Line 1z Column A is the sum of lines 1a–1h federal amounts per form instructions.
       "0.line.1z_federal": (f) => sum(f["0.line.1a_federal"], f["0.line.1b_federal"], f["0.line.1c_federal"], f["0.line.1d_federal"], f["0.line.1e_federal"], f["0.line.1f_federal"], f["0.line.1g_federal"], f["0.line.1h_federal"]),
-      // Line 1z Column B is the sum of lines 1a–1h subtraction amounts per form instructions.
-      "0.line.1z_subtractions": (f) => sum(f["0.line.1a_subtractions"], f["0.line.1b_subtractions"], f["0.line.1c_subtractions"], f["0.line.1d_subtractions"], f["0.line.1e_subtractions"], f["0.line.1f_subtractions"], f["0.line.1g_subtractions"], f["0.line.1h_subtractions"]),
-      // Cross-form reference to Form 1040 line 2a (tax-exempt interest) for the federal amounts column.
-      "0.line.2a_federal": (f) => sum(f["form-1040.line.2a"]),
-      // Cross-form reference to Form 1040 line 2b (taxable interest) for the federal amounts column.
-      "0.line.2b_federal": (f) => sum(f["form-1040.line.2b"]),
-      // Cross-form reference to Form 1040 line 3a (qualified dividends) for the federal amounts column.
-      "0.line.3a_federal": (f) => sum(f["form-1040.line.3a"]),
       // Cross-form reference to Form 1040 line 3b (ordinary dividends) for the federal amounts column.
       "0.line.3b_federal": (f) => sum(f["form-1040.line.3b"]),
-      // Cross-form reference to Form 1040 line 4a (IRA distributions gross amount) for the federal amounts column.
-      "0.line.4a_federal": (f) => sum(f["form-1040.line.4a"]),
-      // Column A Federal Amounts carries over the federal IRA taxable amount directly from Form 1040 line 4b.
-      "0.line.4b_federal": (f) => sum(f["form-1040.line.4b"]),
-      // Column A Federal Amounts carries over the gross pensions and annuities amount directly from Form 1040 line 5a.
-      "0.line.5a_federal": (f) => sum(f["form-1040.line.5a"]),
-      // Column A Federal Amounts carries over the taxable pensions and annuities amount directly from Form 1040 line 5b.
-      "0.line.5b_federal": (f) => sum(f["form-1040.line.5b"]),
-      // Column A Federal Amounts carries over the gross Social Security benefits amount directly from Form 1040 line 6a.
-      "0.line.6a_federal": (f) => sum(f["form-1040.line.6a"]),
-      // Column A Federal Amounts carries over the taxable Social Security benefits amount directly from Form 1040 line 6b.
-      "0.line.6b_federal": (f) => sum(f["form-1040.line.6b"]),
-      // CA law fully excludes US Social Security benefits from taxable income; the subtraction equals the federal taxable SS amount (line 6b column A).
-      "0.line.6b_subtractions": (f) => sum(f["0.line.6b_federal"]),
       // Column A Federal Amounts for capital gain/(loss) is carried directly from federal Form 1040 line 7a.
       "0.line.7a_federal": (f) => sum(f["form-1040.line.7a"]),
-      // Sum of lines 8a through 8z, Column A (federal amounts), as instructed.
-      "2.line.b9a_federal": (f) => sum(f["1.line.b8a_federal"], f["1.line.b8b_federal"], f["1.line.b8c_federal"], f["1.line.b8d_federal"], f["1.line.b8e_federal"], f["1.line.b8f_federal"], f["1.line.b8g_federal"], f["1.line.b8h_federal"], f["1.line.b8i_federal"], f["1.line.b8j_federal"], f["1.line.b8k_federal"], f["1.line.b8l_federal"], f["1.line.b8m_federal"], f["1.line.b8n_federal"], f["1.line.b8o_federal"], f["1.line.b8p_federal"], f["1.line.b8q_federal"], f["1.line.b8r_federal"], f["1.line.b8s_federal"], f["1.line.b8t_federal"], f["1.line.b8u_federal"], f["1.line.b8v_federal"], f["1.line.b8z_federal"]),
-      // Sum of all Section B line 8 subtractions (lines 8a–8z, Column B) that exist in inventory.
-      "2.line.b9a_subtractions": (f) => sum(f["1.line.b8b_subtractions"], f["1.line.b8c_subtractions"], f["1.line.b8f_subtractions"], f["1.line.b8n_subtractions"], f["1.line.b8o_subtractions"], f["1.line.b8p_subtractions"], f["1.line.b8v_subtractions"], f["1.line.b8z_subtractions"]),
-      // Sum of all Section B line 8 additions (lines 8a–8z, Column C) that exist in inventory.
-      "2.line.b9a_additions": (f) => sum(f["1.line.b8a_additions"], f["1.line.b8c_additions"], f["1.line.b8d_additions"], f["1.line.b8e_additions"], f["1.line.b8k_additions"], f["1.line.b8p_additions"], f["1.line.b8v_additions"], f["1.line.b8z_additions"]),
       // Line 10 Column A = sum of Section A (1z, 2b, 3b, 4b, 5b, 6b, 7a) + Section B (b1–b7, b9a) federal amounts.
       "2.line.b10_federal": (f) => sum(f["0.line.1z_federal"], f["0.line.2b_federal"], f["0.line.3b_federal"], f["0.line.4b_federal"], f["0.line.5b_federal"], f["0.line.6b_federal"], f["0.line.7a_federal"], f["0.line.b1_federal"], f["0.line.b2a_federal"], f["0.line.b3_federal"], f["0.line.b4_federal"], f["0.line.b5_federal"], f["0.line.b6_federal"], f["0.line.b7_federal"], f["2.line.b9a_federal"]),
-      // Line 10 Column B = sum of all Section A and Section B subtraction columns including 9a and 9b1–9b3.
-      "2.line.b10_subtractions": (f) => sum(f["0.line.1z_subtractions"], f["0.line.2b_subtractions"], f["0.line.3b_subtractions"], f["0.line.4b_subtractions"], f["0.line.5b_subtractions"], f["0.line.6b_subtractions"], f["0.line.7a_subtractions"], f["0.line.b1_subtractions"], f["0.line.b3_subtractions"], f["0.line.b4_subtractions"], f["0.line.b5_subtractions"], f["0.line.b6_subtractions"], f["0.line.b7_subtractions"], f["2.line.b9a_subtractions"], f["2.line.b9b1_subtractions"], f["2.line.b9b2_subtractions"], f["2.line.b9b3_subtractions"]),
-      // Per CA instructions, educator expenses are not deductible in CA — the col A amount is fully entered as a col B subtraction.
-      "2.line.c11_subtractions": (f) => sum(f["2.line.c11_federal"]),
-      // Per CA instructions, the HSA deduction is not allowed in CA — the entire col A amount is entered as a col B subtraction.
-      "2.line.c13_subtractions": (f) => sum(f["2.line.c13_federal"]),
-      // CA law disallows this federal deduction, so the entire column A amount is subtracted; mirrors c24i_federal.
-      "3.line.c24i_subtractions": (f) => sum(f["3.line.c24i_federal"]),
-      // CA law disallows the Form 2555 housing deduction, so the entire column A amount becomes a subtraction; mirrors c24j_federal.
-      "3.line.c24j_subtractions": (f) => sum(f["3.line.c24j_federal"]),
-      // Line 25 Column A = sum of lines 24a through 24z in Column A.
-      "3.line.c25_federal": (f) => sum(f["3.line.c24a_federal"], f["3.line.c24b_federal"], f["3.line.c24c_federal"], f["3.line.c24d_federal"], f["3.line.c24e_federal"], f["3.line.c24f_federal"], f["3.line.c24g_federal"], f["3.line.c24h_federal"], f["3.line.c24i_federal"], f["3.line.c24j_federal"], f["3.line.c24k_federal"], f["3.line.c24z_federal"]),
-      // Line 25 Column B = sum of lines 24a–24z subtraction columns.
-      "3.line.c25_subtractions": (f) => sum(f["3.line.c24b_subtractions"], f["3.line.c24c_subtractions"], f["3.line.c24d_subtractions"], f["3.line.c24f_subtractions"], f["3.line.c24g_subtractions"], f["3.line.c24i_subtractions"], f["3.line.c24j_subtractions"], f["3.line.c24z_subtractions"]),
-      // Line 25 Column C = sum of lines 24a–24z addition columns.
-      "3.line.c25_additions": (f) => sum(f["3.line.c24b_additions"], f["3.line.c24f_additions"], f["3.line.c24g_additions"], f["3.line.c24z_additions"]),
-      // Line 26 Column A = add lines 11 through 23 and line 25 (Column A).
-      "3.line.c26_federal": (f) => sum(f["2.line.c11_federal"], f["2.line.c12_federal"], f["2.line.c13_federal"], f["2.line.c14_federal"], f["2.line.c15_federal"], f["2.line.c16_federal"], f["2.line.c17_federal"], f["2.line.c18_federal"], f["2.line.c19a_federal"], f["2.line.c20_federal"], f["2.line.c21_federal"], f["2.line.c23_federal"], f["3.line.c25_federal"]),
-      // Line 26 Column B = sum of lines 11–23 and 25 subtraction columns.
-      "3.line.c26_subtractions": (f) => sum(f["2.line.c11_subtractions"], f["2.line.c12_subtractions"], f["2.line.c13_subtractions"], f["2.line.c15_subtractions"], f["2.line.c17_subtractions"], f["2.line.c20_subtractions"], f["3.line.c25_subtractions"]),
-      // Line 26 Column C = sum of lines 11–23 and 25 addition columns.
-      "3.line.c26_additions": (f) => sum(f["2.line.c12_additions"], f["2.line.c14_additions"], f["2.line.c19a_additions"], f["2.line.c20_additions"], f["2.line.c21_additions"], f["3.line.c25_additions"]),
       // Line 27 Column A = line 10 minus line 26 in Column A (yields federal AGI matching form-1040 line 11b).
       "3.line.c27_federal": (f) => sum(f["2.line.b10_federal"], f["3.line.c26_federal"] === undefined ? 0 : -f["3.line.c26_federal"]),
-      // Line 27 Column B = line 10 subtractions minus line 26 subtractions.
-      "3.line.c27_subtractions": (f) => sum(f["2.line.b10_subtractions"], f["3.line.c26_subtractions"] === undefined ? 0 : -f["3.line.c26_subtractions"]),
-      // Part I line 27 column C additions = line 10 additions minus line 26 additions, floored at 0.
-      "3.line.c27_additions": (f) => floor(0, sum(f["2.line.b10_additions"], f["3.line.c26_additions"] === undefined ? 0 : -f["3.line.c26_additions"])),
-      // This line asks for federal Form 1040 line 11b (adjusted gross income), carried over as-is from the federal return.
-      "4.page2.medical_agi_line11b": (f) => sum(f["form-1040.line.11b"]),
-      // Line 5d = 5a + 5b + 5c (state/local income tax or sales tax + real estate taxes + personal property taxes), Column A.
-      "4.page2.taxes_5d_federal": (f) => sum(f["4.page2.taxes_5a_federal"], f["4.page2.taxes_5b_federal"], f["4.page2.taxes_5c_federal"]),
-      // Instructions say enter the amount from line 5a column B in line 5e column B; direct pass-through of taxes_5a_subtractions.
-      "4.page2.taxes_5e_subtractions": (f) => sum(f["4.page2.taxes_5a_subtractions"]),
-      // Line 7 = line 5e + line 6 (total taxes paid), Column A. Both terms are intra-form references.
-      "4.page2.taxes_7_federal": (f) => sum(f["4.page2.taxes_5e_federal"], f["4.page2.taxes_6_federal"]),
-      // Sum of taxes_5e_subtractions and taxes_6_subtractions per 'Add line 5e and line 6' instruction for column B.
-      "4.page2.taxes_7_subtractions": (f) => sum(f["4.page2.taxes_5e_subtractions"], f["4.page2.taxes_6_subtractions"]),
-      // Sum of taxes_5e_additions and taxes_6_additions per 'Add line 5e and line 6' instruction for column C.
-      "4.page2.taxes_7_additions": (f) => sum(f["4.page2.taxes_5e_additions"], f["4.page2.taxes_6_additions"]),
-      // Sum of interest_8a_federal + interest_8b_federal + interest_8c_federal per 'Add line 8a through line 8c' instruction for column A.
-      "4.page2.interest_8e_federal": (f) => sum(f["4.page2.interest_8a_federal"], f["4.page2.interest_8b_federal"], f["4.page2.interest_8c_federal"]),
-      // Sum of line 8e federal and line 9 federal per form instructions ('Add line 8e and line 9').
-      "4.page2.interest_10_federal": (f) => sum(f["4.page2.interest_8e_federal"], f["4.page2.interest_9_federal"]),
-      // Sum of line 8e and line 9 subtractions per form instructions.
-      "4.page2.interest_10_subtractions": (f) => sum(f["4.page2.interest_8e_subtractions"], f["4.page2.interest_9_subtractions"]),
-      // Sum of line 8e and line 9 additions per form instructions.
-      "4.page2.interest_10_additions": (f) => sum(f["4.page2.interest_8e_additions"], f["4.page2.interest_9_additions"]),
-      // Line 14 col A = sum of lines 11+12+13 col A per form instructions.
-      "5.page2.charity_14_federal": (f) => sum(f["5.page2.charity_11_federal"], f["5.page2.charity_12_federal"], f["5.page2.charity_13_federal"]),
-      // Line 14 col B = sum of lines 11+12+13 col B per form instructions.
-      "5.page2.charity_14_subtractions": (f) => sum(f["5.page2.charity_11_subtractions"], f["5.page2.charity_12_subtractions"], f["5.page2.charity_13_subtractions"]),
-      // Line 14 col C = sum of lines 11+12+13 col C per form instructions.
-      "5.page2.charity_14_additions": (f) => sum(f["5.page2.charity_11_additions"], f["5.page2.charity_12_additions"], f["5.page2.charity_13_additions"]),
-      // Sum of lines 4, 7, 10, 14, 15, and 16 Column A per Schedule CA (540) Part 2 line 17 instructions.
-      "5.page2.total_itemized_17_federal": (f) => sum(f["4.page2.medical_line4_federal"], f["4.page2.taxes_7_federal"], f["4.page2.interest_10_federal"], f["5.page2.charity_14_federal"], f["5.page2.casualty_15_federal"], f["5.page2.other_deductions_16_federal"]),
-      // Sum of lines 4, 7, 10, 14, 15, and 16 Column C per Schedule CA (540) Part 2 line 17 instructions.
-      "5.page2.total_itemized_17_additions": (f) => sum(f["4.page2.medical_line4_additions"], f["4.page2.taxes_7_additions"], f["4.page2.interest_10_additions"], f["5.page2.charity_14_additions"], f["5.page2.casualty_15_additions"], f["5.page2.other_deductions_16_additions"]),
-      // Combines line 17: Column A − Column B + Column C per Schedule CA (540) Part 2 line 18 instructions.
-      "5.page2.total_itemized_18_combined": (f) => sum(f["5.page2.total_itemized_17_federal"], f["5.page2.total_itemized_17_subtractions"] === undefined ? 0 : -f["5.page2.total_itemized_17_subtractions"], f["5.page2.total_itemized_17_additions"]),
-      // Line 22 = line 19 + line 20 + line 21 (add lines 19 through 21).
-      "5.page2.job_expenses_22_total": (f) => sum(f["5.page2.job_expenses_19"], f["5.page2.job_expenses_20"], f["5.page2.job_expenses_21_amount"]),
-      // Instructions say 'Enter amount from federal Form 1040 or 1040-SR, line 11b' — cross-form pull of AGI.
-      "5.page2.job_expenses_23_agi": (f) => sum(f["form-1040.line.11b"]),
-      // Line 25 = line 22 − line 24, floored at 0 (if line 24 > line 22, enter 0).
-      "5.page2.job_expenses_25_net": (f) => floor(0, sum(f["5.page2.job_expenses_22_total"], f["5.page2.job_expenses_24_threshold"] === undefined ? 0 : -f["5.page2.job_expenses_24_threshold"])),
-      // Line 26 = line 18 + line 25 per Schedule CA Part 2 instructions.
-      "5.page2.total_itemized_26": (f) => sum(f["5.page2.total_itemized_18_combined"], f["5.page2.job_expenses_25_net"]),
-      // Line 28 combines line 26 and line 27 per form instructions.
-      "5.page2.total_itemized_28": (f) => sum(f["5.page2.total_itemized_26"], f["5.page2.other_adjustments_27_amount"]),
       // MANUAL EDIT: AI flagged as unsupported ("no max() rule"); but the
       // engine's `floor(min, value)` IS max-with-floor. Look up the CA
       // standard deduction for the filer's status and floor line 29
@@ -175,6 +65,61 @@ export function register(): void {
     },
 
     unsupported: {
+      "0.line.1b_federal": "Household-employee wages not reported on W-2 (federal 1040 line 1b) — no scenario modeled yet.",
+      "0.line.1c_federal": "Tip income not reported on line 1a (federal 1040 line 1c) — no scenario modeled yet.",
+      "0.line.1d_federal": "Medicaid waiver payments not reported on W-2 (federal 1040 line 1d) — no scenario modeled yet.",
+      "0.line.1e_federal": "Taxable dependent care benefits from Form 2441 (federal 1040 line 1e) — no scenario modeled yet.",
+      "0.line.1f_federal": "Employer-provided adoption benefits from Form 8839 (federal 1040 line 1f) — no scenario modeled yet.",
+      "0.line.1g_federal": "Wages from Form 8919 (federal 1040 line 1g) — no scenario modeled yet.",
+      "0.line.1h_federal": "Other earned income (federal 1040 line 1h) — no scenario modeled yet.",
+      "0.line.1z_subtractions": "Aggregate of line 1 subtractions; all upstream rows are unsupported.",
+      "0.line.2a_federal": "Tax-exempt interest (federal 1040 line 2a) — no scenario modeled yet.",
+      "0.line.2b_federal": "Taxable interest (federal 1040 line 2b) — no scenario modeled yet.",
+      "0.line.4a_federal": "IRA distributions gross (federal 1040 line 4a) — no scenario modeled yet.",
+      "0.line.4b_federal": "IRA distributions taxable amount (federal 1040 line 4b) — no scenario modeled yet.",
+      "0.line.5a_federal": "Pensions and annuities gross (federal 1040 line 5a) — no scenario modeled yet.",
+      "0.line.5b_federal": "Pensions and annuities taxable amount (federal 1040 line 5b) — no scenario modeled yet.",
+      "0.line.6a_federal": "Social Security benefits gross (federal 1040 line 6a) — no scenario modeled yet.",
+      "0.line.6b_federal": "Social Security benefits taxable amount (federal 1040 line 6b) — no scenario modeled yet.",
+      "0.line.6b_subtractions": "CA fully excludes US Social Security from taxable income; depends on 6b_federal which is unsupported.",
+      "2.line.b9a_federal": "Section B line 9a (total other income, col A) — aggregates Schedule 1-style other-income rows we don't ingest yet.",
+      "2.line.b9a_subtractions": "Section B line 9a col B — aggregates other-income subtractions we don't model yet.",
+      "2.line.b9a_additions": "Section B line 9a col C — aggregates other-income additions we don't model yet.",
+      "2.line.b10_subtractions": "Line 10 col B (total income subtractions) — aggregate over unsupported subtraction rows.",
+      "2.line.c11_subtractions": "CA disallows educator expenses; depends on line 11 col A federal echo which we don't ingest yet.",
+      "2.line.c13_subtractions": "CA disallows HSA deduction; depends on line 13 col A federal echo which we don't ingest yet.",
+      "3.line.c24i_subtractions": "Form 2555 foreign housing deduction (line 24i) col B — no scenario modeled yet.",
+      "3.line.c24j_subtractions": "Form 2555 housing deduction (line 24j) col B — no scenario modeled yet.",
+      "3.line.c25_federal": "Line 25 col A — aggregates 24a-24z col A; all upstream rows are unsupported.",
+      "3.line.c25_subtractions": "Line 25 col B — aggregates 24a-24z col B; all upstream rows are unsupported.",
+      "3.line.c25_additions": "Line 25 col C — aggregates 24a-24z col C; all upstream rows are unsupported.",
+      "3.line.c26_federal": "Line 26 col A — aggregates 11-23+25 col A; all upstream rows are unsupported.",
+      "3.line.c26_subtractions": "Line 26 col B — aggregates 11-23+25 col B; all upstream rows are unsupported.",
+      "3.line.c26_additions": "Line 26 col C — aggregates 11-23+25 col C; all upstream rows are unsupported.",
+      "3.line.c27_subtractions": "Line 27 col B (CA AGI subtractions) — aggregate over unsupported rows.",
+      "3.line.c27_additions": "Line 27 col C (CA AGI additions) — aggregate over unsupported rows.",
+      "4.page2.taxes_5d_federal": "Schedule CA Part II line 5d (taxes paid, col A) — itemized-deduction workflow not supported yet.",
+      "4.page2.taxes_5e_subtractions": "Schedule CA Part II line 5e col B — itemized-deduction workflow not supported yet.",
+      "4.page2.taxes_7_federal": "Schedule CA Part II line 7 col A — itemized-deduction workflow not supported yet.",
+      "4.page2.taxes_7_subtractions": "Schedule CA Part II line 7 col B — itemized-deduction workflow not supported yet.",
+      "4.page2.taxes_7_additions": "Schedule CA Part II line 7 col C — itemized-deduction workflow not supported yet.",
+      "4.page2.interest_8e_federal": "Schedule CA Part II line 8e col A (mortgage interest) — itemized-deduction workflow not supported yet.",
+      "4.page2.interest_10_federal": "Schedule CA Part II line 10 col A — itemized-deduction workflow not supported yet.",
+      "4.page2.interest_10_subtractions": "Schedule CA Part II line 10 col B — itemized-deduction workflow not supported yet.",
+      "4.page2.interest_10_additions": "Schedule CA Part II line 10 col C — itemized-deduction workflow not supported yet.",
+      "5.page2.charity_14_federal": "Schedule CA Part II line 14 col A (gifts to charity) — itemized-deduction workflow not supported yet.",
+      "5.page2.charity_14_subtractions": "Schedule CA Part II line 14 col B — itemized-deduction workflow not supported yet.",
+      "5.page2.charity_14_additions": "Schedule CA Part II line 14 col C — itemized-deduction workflow not supported yet.",
+      "5.page2.total_itemized_17_federal": "Schedule CA Part II line 17 col A (total itemized) — itemized-deduction workflow not supported yet.",
+      "5.page2.total_itemized_17_additions": "Schedule CA Part II line 17 col C — itemized-deduction workflow not supported yet.",
+      "5.page2.total_itemized_18_combined": "Schedule CA Part II line 18 (combined) — itemized-deduction workflow not supported yet.",
+      "5.page2.job_expenses_22_total": "Schedule CA Part II line 22 (job expenses subtotal) — itemized-deduction workflow not supported yet.",
+      "5.page2.job_expenses_25_net": "Schedule CA Part II line 25 (net job expenses) — itemized-deduction workflow not supported yet.",
+      "5.page2.total_itemized_26": "Schedule CA Part II line 26 (itemized + job expenses subtotal) — itemized-deduction workflow not supported yet.",
+      "5.page2.total_itemized_28": "Schedule CA Part II line 28 — itemized-deduction workflow not supported yet.",
+      "0.line.3a_federal": "Schedule CA Part I line 3a Column A (federal amounts) is conventionally left blank: per CA instructions, dividends generally match between federal and CA, so col A is only meaningful when there's a CA-specific adjustment in col B/C — which we don't model yet.",
+      "4.page2.medical_agi_line11b": "Schedule CA Part II medical-deduction worksheet AGI input — only relevant when itemizing medical/dental expenses. We don't support non-standard-deduction workflows yet.",
+      "5.page2.job_expenses_23_agi": "Schedule CA Part II job-expenses worksheet AGI input — only relevant when itemizing unreimbursed job expenses. We don't support non-standard-deduction workflows yet.",
       "0.line.1a_subtractions": "CA-specific subtraction adjustments to W-2 wages (e.g. active-duty military pay exclusions, combat zone exclusions) require specialized facts/scenarios not yet ingested.",
       "0.line.1a_additions": "CA-specific addition adjustments to W-2 wages (e.g. combat zone income re-inclusions) require specialized facts/scenarios not yet ingested.",
       "0.line.1b_subtractions": "CA-specific subtraction adjustments to household employee wages not on W-2; no scenario modeled yet.",

@@ -5,3 +5,9 @@
 # JSON, so reproducibility is preserved without checking in megabytes of
 # raw HTML.
 src/mastra/forms/data/*.source.html
+
+# Per-scenario rendered PDFs produced by scripts/renderScenario.ts —
+# generated artifacts for visual spot-checking, regenerable any time.
+# Goldens (the CPA-completed source-of-truth PDFs) DO get checked in
+# under the same docs/ folders with the *-Golden.pdf naming.
+tests/scenarios/*/docs/*-rendered.pdf

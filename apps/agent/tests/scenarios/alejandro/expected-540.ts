@@ -69,12 +69,6 @@ export const alejandro540Expected: ExpectedResults = {
     "form-540.header.date_of_birth": "01/02/2003",
     "form-540.signing.taxpayer_email": "alejandro@reyes.com",
     "form-540.signing.taxpayer_phone": "4156369589",
-    // Lines bound via sums that produce 0 — render as "0" because the
-    // engine produces a numeric ok result.
-    "form-540.line.96_isr_penalty_balance": "0",
-    "form-540.line.100_tax_due": "0",
-    "form-540.line.110_total_contributions": "0",
-    "form-540.line.111_amount_you_owe": "0",
   },
 
   renderedBlank: [
@@ -95,6 +89,16 @@ export const alejandro540Expected: ExpectedResults = {
     "form-540.line.72_ca_estimated_tax_payments",
     "form-540.line.73_withholding_592b_593",
     "form-540.line.98_applied_to_2026_estimated_tax",
+    // Categorically unsupported scenarios (ISR penalty / voluntary
+    // contributions) — render blank.
+    "form-540.line.96_isr_penalty_balance",
+    "form-540.line.110_total_contributions",
+    // Refund-branch scenario: lines 100/111 don't apply because Alejandro
+    // is getting a refund. Per-binding "undefined when 0" pattern keeps
+    // the line blank in the refund branch; it'd populate with a value
+    // for owe-branch scenarios like Alex.
+    "form-540.line.100_tax_due",
+    "form-540.line.111_amount_you_owe",
   ],
 
   renderedChecked: [

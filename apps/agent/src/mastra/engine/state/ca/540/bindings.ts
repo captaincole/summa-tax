@@ -137,8 +137,6 @@ export function register(): void {
       "line.33_tax_after_exemption_credits": (f) => floor(0, sum(f["line.31_tax_amount"], f["line.32_exemption_credits"] === undefined ? 0 : -f["line.32_exemption_credits"])),
       // Sum of line 33 (tax after exemption credits) and line 34 (Schedule G-1 / FTB 5870A tax); line 34 is unsupported so engine treats it as 0.
       "line.35_total_tax_after_credits": (f) => sum(f["line.33_tax_after_exemption_credits"], f["line.34_tax_amount"]),
-      // Sum of lines 40 through 46 per form instructions (lines 41 and 42 do not appear in the inventory, so treated as 0 by the engine's partial-input contract).
-      "line.47_total_credits": (f) => sum(f["line.40_child_dependent_care_credit"], f["line.43_credit_amount"], f["line.44_credit_amount"], f["line.45_schedule_p_credits"], f["line.46_renters_credit"]),
       // Line 35 minus line 47; floor of 0 per instructions ('if less than zero, enter 0').
       "line.48_tax_after_credits": (f) => floor(0, sum(f["line.35_total_tax_after_credits"], f["line.47_total_credits"] === undefined ? 0 : -f["line.47_total_credits"])),
       // Sum of lines 48, 61, 62, and 63 per form instructions; unsupported lines treated as 0 by the engine's partial-input contract.
@@ -158,24 +156,29 @@ export function register(): void {
       "line.92_full_year_health_coverage": (_, info) => info.fullYearMEC,
       // Line 93 = line 78 (total payments) minus line 91 (use tax), floored at 0 per instructions.
       "line.93_payments_balance": (f) => floor(0, sum(f["line.78_total_payments"], f["line.91_use_tax"] === undefined ? 0 : -f["line.91_use_tax"])),
-      // Use tax balance: line 91 minus line 78, floor 0 per instructions (only when line 91 > line 78).
-      "line.94_use_tax_balance": (f) => floor(0, sum(f["line.91_use_tax"], f["line.78_total_payments"] === undefined ? 0 : -f["line.78_total_payments"])),
       // Payments after ISR penalty: line 93 minus line 92, floor 0 per instructions.
       "line.95_payments_after_isr_penalty": (f) => floor(0, sum(f["line.93_payments_balance"], f["line.92_isr_penalty"] === undefined ? 0 : -f["line.92_isr_penalty"])),
-      // ISR penalty balance: line 92 minus line 93, floor 0 per instructions (only when line 92 > line 93).
-      "line.96_isr_penalty_balance": (f) => floor(0, sum(f["line.92_isr_penalty"], f["line.93_payments_balance"] === undefined ? 0 : -f["line.93_payments_balance"])),
       // Overpaid tax: line 95 minus line 64, floor 0 per instructions.
       "line.97_overpaid_tax": (f) => floor(0, sum(f["line.95_payments_after_isr_penalty"], f["line.64_total_tax"] === undefined ? 0 : -f["line.64_total_tax"])),
       // Overpaid tax available this year: line 97 minus line 98 (amount applied to 2026 estimated tax), floor 0.
       "line.99_overpaid_tax_available": (f) => floor(0, sum(f["line.97_overpaid_tax"], f["line.98_applied_to_2026_estimated_tax"] === undefined ? 0 : -f["line.98_applied_to_2026_estimated_tax"])),
-      // Tax due: line 64 minus line 95, floor 0 per instructions.
-      "line.100_tax_due": (f) => floor(0, sum(f["line.64_total_tax"], f["line.95_payments_after_isr_penalty"] === undefined ? 0 : -f["line.95_payments_after_isr_penalty"])),
-      // Line 110 = sum of all contribution lines (codes 400 through 449); all contribution terms are in the inventory so fromFields partial-sum contract applies (unsupported terms treated as 0).
-      "line.110_total_contributions": (f) => sum(f["line.contrib_400_ca_seniors_special_fund"], f["line.contrib_401_alzheimers_fund"], f["line.contrib_403_rare_endangered_species_fund"], f["line.contrib_405_breast_cancer_research_fund"], f["line.contrib_406_firefighters_memorial_fund"], f["line.contrib_407_emergency_food_for_families_fund"], f["line.contrib_408_peace_officer_memorial_fund"], f["line.contrib_413_ca_cancer_research_fund"], f["line.contrib_422_school_supplies_homeless_children_fund"], f["line.contrib_423_state_parks_protection_fund"], f["line.contrib_424_protect_our_coast_and_oceans_fund"], f["line.contrib_431_prevention_animal_homelessness_fund"], f["line.contrib_438_senior_citizen_advocacy_fund"], f["line.contrib_439_native_ca_wildlife_rehabilitation_fund"], f["line.contrib_445_mental_health_crisis_prevention_fund"], f["line.contrib_447_ca_als_research_network_fund"], f["line.contrib_448_ca_pediatric_cancer_research_fund"], f["line.contrib_449_parkinsons_disease_research_fund"]),
-      // Per instructions: if no amount on line 99, amount owed = line 94 + line 96 + line 100 + line 110.
-      "line.111_amount_you_owe": (f) => sum(f["line.94_use_tax_balance"], f["line.96_isr_penalty_balance"], f["line.100_tax_due"], f["line.110_total_contributions"]),
-      // Total amount due is line 100 (tax due) plus contributions (110), interest/penalties (112), and underpayment penalty (113).
-      "line.114_total_amount_due": (f) => floor(0, sum(f["line.100_tax_due"], f["line.110_total_contributions"], f["line.112_interest_and_late_penalties"], f["line.113_underpayment_estimated_tax"])),
+      // Tax due: line 64 minus line 95. Returns undefined when the result
+      // is 0 (refund-branch scenarios) so the line renders blank rather
+      // than "0" — only the owe-branch should populate this line.
+      "line.100_tax_due": (f) => {
+        const r = sum(f["line.64_total_tax"], f["line.95_payments_after_isr_penalty"] === undefined ? 0 : -f["line.95_payments_after_isr_penalty"]);
+        return r > 0 ? r : undefined;
+      },
+      // Per instructions: if no amount on line 99, amount owed = line 94 + line 96 + line 100 + line 110. Returns undefined when result is 0.
+      "line.111_amount_you_owe": (f) => {
+        const r = sum(f["line.94_use_tax_balance"], f["line.96_isr_penalty_balance"], f["line.100_tax_due"], f["line.110_total_contributions"]);
+        return r > 0 ? r : undefined;
+      },
+      // Total amount due. Returns undefined when result is 0 (refund-branch scenarios).
+      "line.114_total_amount_due": (f) => {
+        const r = floor(0, sum(f["line.100_tax_due"], f["line.110_total_contributions"], f["line.112_interest_and_late_penalties"], f["line.113_underpayment_estimated_tax"]));
+        return r > 0 ? r : undefined;
+      },
       // Refund or no amount due: line 99 minus contributions (110), interest/penalties (112), and underpayment penalty (113).
       "line.115_refund_or_no_amount_due": (f) => floor(0, sum(f["line.99_overpaid_tax_available"], f["line.110_total_contributions"] === undefined ? 0 : -f["line.110_total_contributions"], f["line.112_interest_and_late_penalties"] === undefined ? 0 : -f["line.112_interest_and_late_penalties"], f["line.113_underpayment_estimated_tax"] === undefined ? 0 : -f["line.113_underpayment_estimated_tax"])),
       // Taxpayer email address from identity facts; marked optional since Thom auto-populates it from Supabase auth.
@@ -195,6 +198,10 @@ export function register(): void {
     },
 
     unsupported: {
+      "line.47_total_credits": "Form 540 line 47 (total credits) — aggregates lines 40-46; no CA credit scenario (child/dependent care, renters, etc.) is exercised yet.",
+      "line.94_use_tax_balance": "Form 540 line 94 (use tax balance) — use-tax-owed branch not yet exercised; current scenarios all have $0 use tax.",
+      "line.96_isr_penalty_balance": "Form 540 line 96 (individual shared responsibility penalty balance) — ISR penalty / health-coverage-gap scenario not modeled yet.",
+      "line.110_total_contributions": "Form 540 line 110 (total voluntary contributions, codes 400-449) — no voluntary-contribution fact ingestion path built yet.",
       "header.is_amended_return": "No amended-return scenario yet — we don't model Schedule X / amended filing triggers.",
       "header.fiscal_year_end_month": "Fiscal year filers only — MVP only supports calendar-year (Jan–Dec) filers; no fiscal-year scenario ingested.",
       "header.middle_initial": "No identity.name.middle_initial fact exists; identity.name.first holds the full first name which would corrupt a single-character field.",

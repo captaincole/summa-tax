@@ -31,8 +31,6 @@ export function register(): void {
       // as todos. Adding the matching short-term refs here.
       "0.line.1b_proceeds": (f) => sum(f["form-8949.0.part1.totals_proceeds"]),
       "0.line.1b_cost": (f) => sum(f["form-8949.0.part1.totals_cost_basis"]),
-      "0.line.1b_adjustments": (f) =>
-        sum(f["form-8949.0.part1.totals_adjustment_amount"]),
       // MANUAL EDIT: Line 17 "Yes" when both line 15 and line 16 are
       // positive (gains). AI flagged as unsupported ("no conditional
       // comparison rule") — written inline.
@@ -60,20 +58,12 @@ export function register(): void {
       "0.header.ssn": (_, info) => info.taxpayerSSN,
       // Line 1b gain/loss is the arithmetic combination of its own proceeds, cost, and adjustments columns (d - e + g).
       "0.line.1b_gain_loss": (f) => sum(f["0.line.1b_proceeds"], f["0.line.1b_cost"] === undefined ? 0 : -f["0.line.1b_cost"], f["0.line.1b_adjustments"]),
-      // Line 2 gain/loss is the arithmetic combination of its own proceeds, cost, and adjustments columns (d - e + g); upstream columns are unsupported so this will compute as 0 until they are populated.
-      "0.line.2_gain_loss": (f) => sum(f["0.line.2_proceeds"], f["0.line.2_cost"] === undefined ? 0 : -f["0.line.2_cost"], f["0.line.2_adjustments"]),
-      // Line 3 gain/loss is the arithmetic combination of its own proceeds, cost, and adjustments columns (d - e + g); upstream columns are unsupported so this will compute as 0 until they are populated.
-      "0.line.3_gain_loss": (f) => sum(f["0.line.3_proceeds"], f["0.line.3_cost"] === undefined ? 0 : -f["0.line.3_cost"], f["0.line.3_adjustments"]),
       // Net short-term capital gain or (loss) = sum of all short-term gain/loss lines 1a through 6.
       "0.line.7_net_short_term_gain_loss": (f) => sum(f["0.line.1a_gain_loss"], f["0.line.1b_gain_loss"], f["0.line.2_gain_loss"], f["0.line.3_gain_loss"], f["0.line.4_short_term_gain_other_forms"], f["0.line.5_net_short_term_passthrough"], f["0.line.6_short_term_loss_carryover"]),
-      // Line 8a gain/(loss) = 8a proceeds − 8a cost; no adjustment column on the direct-report line.
-      "0.line.8a_gain_loss": (f) => sum(f["0.line.8a_proceeds"], f["0.line.8a_cost"] === undefined ? 0 : -f["0.line.8a_cost"]),
       // Carried from Form 8949 Part II totals proceeds (Box D/J — long-term basis reported).
       "0.line.8b_proceeds": (f) => sum(f["form-8949.1.part2.totals_proceeds"]),
       // Carried from Form 8949 Part II totals cost basis (Box D/J — long-term basis reported).
       "0.line.8b_cost": (f) => sum(f["form-8949.1.part2.totals_cost_basis"]),
-      // Carried from Form 8949 Part II totals adjustment amount (Box D/J — long-term basis reported).
-      "0.line.8b_adjustments": (f) => sum(f["form-8949.1.part2.totals_adjustment_amount"]),
       // Carried from Form 8949 Part II totals gain/(loss) (Box D/J — long-term basis reported).
       "0.line.8b_gain_loss": (f) => sum(f["form-8949.1.part2.totals_gain_loss"]),
       // Sum of all long-term gain/loss lines 8a through 14 per IRS Schedule D Part II instructions.
@@ -83,6 +73,11 @@ export function register(): void {
     },
 
     unsupported: {
+      "0.line.1b_adjustments": "Schedule D line 1b col (g) — depends on Form 8949 Part I adjustments, which aren't modeled yet.",
+      "0.line.2_gain_loss": "Schedule D Part I line 2 (Box B/H short-term, basis NOT reported) — engine lacks per-box-type filtered aggregation over trade facts.",
+      "0.line.3_gain_loss": "Schedule D Part I line 3 (Box C/I short-term, not on 1099-B/DA) — engine lacks per-box-type filtered aggregation over trade facts.",
+      "0.line.8a_gain_loss": "Schedule D Part II line 8a (long-term trades bypassing Form 8949) — no fact-level flag distinguishes long-term bypass from short-term bypass.",
+      "0.line.8b_adjustments": "Schedule D line 8b col (g) — depends on Form 8949 Part II adjustments, which aren't modeled yet.",
       "0.header.qof_disposal_yes": "No QOF (Qualified Opportunity Fund) disposal fact or decision has been ingested yet; no scenario modeled.",
       "0.header.qof_disposal_no": "No QOF disposal decision available; this is the complement of qof_disposal_yes and would require the same missing decision key.",
       "0.line.1a_cost": "No fact key exists for aggregated short-term cost basis on 1099-B/DA transactions where basis was reported to IRS with no adjustments (the line 1a bypass bucket). Needs new fact ingestion path.",

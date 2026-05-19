@@ -68,12 +68,12 @@ export const alex540Expected: ExpectedResults = {
     "form-540.header.date_of_birth": "01/01/2002",
     "form-540.signing.taxpayer_email": "alex@morales.com",
     "form-540.signing.taxpayer_phone": "7039530253",
-    // Lines bound via fromFields/sumFacts that produce 0 for Alex — these
-    // render as "0" because the engine produces a numeric ok result.
-    "form-540.line.96_isr_penalty_balance": "0",
+    // Lines bound via fromFields that genuinely produce 0 for Alex (the
+    // refund-branch reads them and clamps): line 97 (overpaid), 99
+    // (overpaid available), 115 (refund). Alex owes $3 so these are
+    // zero but still applicable.
     "form-540.line.97_overpaid_tax": "0",
     "form-540.line.99_overpaid_tax_available": "0",
-    "form-540.line.110_total_contributions": "0",
     "form-540.line.115_refund_or_no_amount_due": "0",
   },
 
@@ -98,6 +98,10 @@ export const alex540Expected: ExpectedResults = {
     "form-540.line.72_ca_estimated_tax_payments",
     "form-540.line.73_withholding_592b_593",
     "form-540.line.98_applied_to_2026_estimated_tax",
+    // ISR penalty / total contributions — categorically unsupported
+    // scenarios, render blank per the broader policy.
+    "form-540.line.96_isr_penalty_balance",
+    "form-540.line.110_total_contributions",
   ],
 
   renderedChecked: [
