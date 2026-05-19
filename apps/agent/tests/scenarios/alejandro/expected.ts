@@ -61,6 +61,13 @@ export const alejandroExpected: ExpectedResults = {
     "form-1040.header.tax_year_beginning_mm",
     "form-1040.header.tax_year_ending_mm",
     "form-1040.header.tax_year_ending_yy",
+    // Direct-deposit bank info: we have no banking facts ingested yet,
+    // so the routing + account-number widgets must stay blank. (The
+    // original CPA-supplied golden had "stuff" placeholder text in
+    // both; we cleaned that up and now this assertion guards the
+    // regression.)
+    "form-1040.line.35b_routing_number",
+    "form-1040.line.35d_account_number",
   ],
 
   renderedChecked: [

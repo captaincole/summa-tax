@@ -48,11 +48,14 @@ export const alexExpected: ExpectedResults = {
     "form-1040.signing.taxpayer_email": "alex@morales.com",
   },
 
-  // Header dates the binding leaves blank for calendar-year filers.
   renderedBlank: [
+    // Calendar-year filer — header date widgets stay blank.
     "form-1040.header.tax_year_beginning_mm",
     "form-1040.header.tax_year_ending_mm",
     "form-1040.header.tax_year_ending_yy",
+    // No banking-info facts ingested → routing + account widgets blank.
+    "form-1040.line.35b_routing_number",
+    "form-1040.line.35d_account_number",
   ],
 
   // Checkboxes that must end up checked. Filing status is now 5 separate
