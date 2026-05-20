@@ -22,7 +22,7 @@ interface UploadRow {
 }
 
 export default function DocumentsTab() {
-  const { activeReturn, resetTick, thomBusy } = useAppShell();
+  const { activeReturn, resetTick, thomBusy, sendChat, setMobilePane } = useAppShell();
   const [uploads, setUploads] = useState<UploadRow[]>([]);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -56,6 +56,11 @@ export default function DocumentsTab() {
     return loadUploads();
   }, [resetTick, activeReturn.realDataAvailable, loadUploads]);
 
+  // Mirrors the Requested Actions upload flow: write to user_documents
+  // first (so the doc appears in the grid + has a real ID), then hand the
+  // file off to Thom via sendChat with skipUpload=true so he reacts to it
+  // exactly like a chat-attached upload. setMobilePane("chat") so mobile
+  // users actually see Thom respond instead of staring at the same grid.
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
@@ -63,8 +68,14 @@ export default function DocumentsTab() {
     try {
       for (const file of Array.from(files)) {
         await uploadDocument(file);
+        loadUploads();
+        setMobilePane("chat");
+        await sendChat({
+          text: `Uploaded ${file.name}`,
+          file,
+          skipUpload: true,
+        });
       }
-      loadUploads();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
