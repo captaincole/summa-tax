@@ -8,6 +8,7 @@ import {
   makeFactsView,
   type BaseFormField,
   type DerivationContext,
+  type EngineDerivation,
 } from "../engine/types";
 import { evaluateAllForms } from "../engine/engine";
 import { resolveFilingInfo } from "../engine/filingInfo";
@@ -51,6 +52,10 @@ type EvaluatedFormSummary = {
   mustFile:
     | { ok: true; value: boolean; rationale: string }
     | { ok: false; reason: string; missingDecisionKey: string | null };
+  /** Engine-derivation provenance for the must-file determination. Lets the
+   *  UI / sidecar surface WHY a form is being filed even when no AI
+   *  decision was recorded (e.g. Schedule D fired off trade-fact presence). */
+  mustFileDerivation: EngineDerivation | null;
   fieldCount: number;
   blockedFieldCount: number;
   unsupportedFieldCount: number;
@@ -205,6 +210,7 @@ function summarizeForm(form: {
   mustFile:
     | { ok: true; value: boolean; rationale: string; supportingFactKeys: string[]; decisionKey?: string }
     | { ok: false; reason: string; missingDecisionKey?: string; missingFactKeys?: string[]; unsupported?: boolean };
+  mustFileDerivation?: EngineDerivation;
   fields: Array<{
     fieldId: string;
     result:
@@ -239,6 +245,7 @@ function summarizeForm(form: {
           reason: form.mustFile.reason,
           missingDecisionKey: form.mustFile.missingDecisionKey ?? null,
         },
+    mustFileDerivation: form.mustFileDerivation ?? null,
     fieldCount: form.fields.length,
     blockedFieldCount: blockers.length,
     unsupportedFieldCount,

@@ -11,6 +11,7 @@
 // that isn't reachable through the form accessor or BaseFilingInfo.
 
 import type { BaseFilingInfo } from "../../../filingInfo.js";
+import type { EngineDerivation } from "../../../types.js";
 
 export interface ScheduleCaFilingInfo extends BaseFilingInfo {
   /**
@@ -21,4 +22,6 @@ export interface ScheduleCaFilingInfo extends BaseFilingInfo {
    * when col B/C are entirely zero).
    */
   mustFileScheduleCA?: boolean;
+  /** Provenance for mustFileScheduleCA — populated by resolveFilingInfo. */
+  mustFileScheduleCADerivation?: EngineDerivation;
 }

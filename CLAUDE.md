@@ -53,8 +53,6 @@ CLAUDE.md
 
 The two apps share zero source code today. If we ever extract shared types (e.g. an API contract generated from the agent's tool schemas), it goes in a sibling `packages/` directory; we don't need it yet.
 
-The case engine (derivation graph → live case state) and MVP artifact library are next to build.
-
 ## Running it
 
 Two services. Run both — backend changes hot-reload via Mastra file-watching, frontend changes HMR via Next.js (Turbopack). All commands run from the repo root; root scripts delegate via `npm --prefix apps/<app>`.
@@ -76,22 +74,11 @@ All persistent state (user data, Mastra runtime tables, reference corpus, docume
 
 ## Supabase Postgres pooler — always use port 6543
 
-`POSTGRES_URL` should connect to the **transaction pooler (port 6543)**, not the session pooler (port 5432). Same hostname, same database — only the port changes. Use 6543 in `.env.development` and on Vercel. One config, one mode, everywhere.
+`POSTGRES_URL` must point at the **transaction pooler (6543)**, never the session pooler (5432). Same hostname, same database, only the port changes — use 6543 locally and on Vercel.
 
-**What's actually going on.** Your queries don't hit Postgres directly. They hit a Supabase service called Supavisor that sits in front of Postgres and pools connections. The port you connect to tells Supavisor which pooling rule to apply:
+**Why session mode breaks for us.** Mastra's `MastraCompositeStore.init()` parallel-inits ~17 storage domains on boot. Session mode pins one Postgres connection per client; free-tier Supabase caps at 15; `mastra dev` hot-reload leaves stale pinned connections that take minutes to reap — boot then fails with `EMAXCONNSESSION`. Serverless on Vercel hits the same wall from the other side (every cold function spins a new client).
 
-- **Port 5432 (session mode)** — Supavisor pairs your TCP connection to a real Postgres connection and pins the pairing for the whole client session.
-- **Port 6543 (transaction mode)** — Supavisor borrows a real Postgres connection per-statement, runs it, returns it to the pool. Your TCP connection isn't pinned to anything.
-
-Same Supavisor process, same database, just different juggling.
-
-**Why session mode breaks for us.** Mastra's `MastraCompositeStore.init()` parallel-inits ~17 storage domains on boot, each running a `CREATE TABLE IF NOT EXISTS` check. Free-tier Supabase only lets 15 session-mode clients exist at once. Hot-reload churn during `mastra dev` leaves stale pinned connections that Supavisor doesn't reap for a few minutes — so the next reload often fails with `EMAXCONNSESSION`.
-
-**Why transaction mode is fine for Mastra.** The "fast queries" feeling comes from keeping the TCP/TLS socket to Supavisor warm, which works in both modes. What transaction mode loses is per-session state on the *Postgres* side — `LISTEN`/`NOTIFY`, server-side named prepared statement caches, session-scoped `SET` commands, long-lived advisory locks. Mastra doesn't use any of those; it issues parameterized queries via pg-node's unnamed-prepare path, which transaction mode handles natively.
-
-**Why this also matters for Vercel.** Serverless functions can't sensibly hold session-mode connections — every cold function spins up a new client. The same `POSTGRES_URL` works locally and on Vercel without environment-specific tweaks.
-
-**For Realtime / table-watch features later.** `LISTEN/NOTIFY` is unavailable in transaction mode, but you wouldn't reach for it on Supabase anyway — Supabase Realtime watches table changes over WebSockets and works regardless of pooler mode. So we haven't painted ourselves into a corner.
+**Why transaction mode is safe.** It only sacrifices per-Postgres-session state: `LISTEN`/`NOTIFY`, server-side named prepared-statement caches, session `SET`, long-lived advisory locks. Mastra uses none of those — it goes through pg-node's unnamed-prepare path. Supabase Realtime watches table changes over WebSockets, so it's unaffected by pooler mode either way.
 
 ## Development workflow
 
@@ -117,18 +104,9 @@ Limits worth remembering:
 
 ### Resetting user data
 
-The web "Reset session" button in the side nav is the only reset path. It hits `POST /app/session/reset` (handler: `apps/agent/src/mastra/server/routes/sessionReset.ts`), which calls `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts`. Per-user, RLS-scoped, run as the signed-in Supabase user.
+The web "Reset session" button (side nav) → `POST /app/session/reset` → `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts`. Per-user, RLS-scoped. The file header documents exactly what gets wiped (domain rows, storage objects, Mastra threads) — read it there.
 
-**What gets wiped (for the signed-in user only):**
-- Domain rows in `public.tax_facts`, `public.open_questions`, `public.ai_decisions`, `public.user_documents` — RLS scopes the `delete` to `auth.uid()`.
-- Storage objects under `user-documents/{userId}/…` — `storage.objects` RLS scopes by folder name to the user. The handler captures `storage_path` from `user_documents` *before* deleting the rows so it doesn't orphan bytes.
-- The user's Mastra threads — listed via `memory.listThreads({ filter: { resourceId: userId } })` and removed via `memory.deleteThread(id)`. Cascades to messages, observational memory, and any vector embeddings Mastra owns.
-
-**What survives:** the reference corpus (`public.ref_documents`, `public.ref_pages`, `public.ref_sections`, `public.ref_blocks`) and any file under `apps/agent/forms/`. To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate.
-
-**No wholesale-truncate path.** Per-user reset is the only operator-facing reset. To nuke the database (e.g. start over from scratch), run `TRUNCATE` directly in the Supabase SQL editor against `mastra.*` + `public.{tax_facts, open_questions, ai_decisions, user_documents}`. Once we have a local Supabase instance with seed scripts, that becomes the dev-side equivalent.
-
-**Generated artifacts.** Form PDFs and sidecars now live entirely in the Supabase Storage `user-documents` bucket with metadata rows in `public.user_documents`. There's no generated-files directory on disk.
+**Reference corpus and `apps/agent/forms/` always survive.** To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate. To nuke everything for a clean slate, `TRUNCATE` directly against `mastra.*` + `public.{tax_facts, open_questions, ai_decisions, user_documents}`.
 
 ## Mastra schema migrations
 
@@ -184,8 +162,6 @@ TypeScript enforces both. Adding a field without declaring them is a compile err
 **When adding a new form** (e.g. Schedule A): define line types extending `BaseFormField`, write the evaluator, register in `caseState.ts`'s form list, add a PDF renderer. TypeScript will fail to compile until every field has its `category` and `valueType`. There's no separate registry file to keep in sync.
 
 **Header fields** (top-of-form personal info, filing-status checkboxes) are modeled as FormFields too — text/single-select kinds that derive from identity facts / scope decisions. They sit in the same `EvaluatedForm.fields` array as the numeric lines. PDF renderers continue to read raw facts directly; the header fields exist for the Filing Status panel rollup.
-
-**Where this is going.** The hand-coded per-form TS files (`form1040.ts`, `form540.ts`, …) are scaffolding. The plan is to replace them with an AI ingestion pipeline that extracts field inventories from form PDFs into the DB and generates binding files from form instructions. Implementation lives under `apps/agent/src/forms-pipeline/` (ingest + bind workflows); design notes alongside if added.
 
 ### Whole-dollar rounding convention — `Math.ceil`
 
@@ -360,12 +336,11 @@ All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from t
 | `refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
 | `ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
 | `checkCorpus.ts` | row counts + per-doc embedding coverage |
-| `verifyRefDocs.ts` | round-trip + spot-citation checks |
-| `inspectBlock.ts` | peek at one block's summary + raw text |
 | `searchRefDocs.ts` | invoke the production search tool with a query |
 | `compareRetrieval.ts` | same query through FTS / vector / hybrid+rerank |
 | `smokeReview.ts` | three end-to-end review scenarios (npm: `smoke:review`) |
-| `inspectDecisions.ts` | recent ai_decisions with verdicts + citations |
+| `inspectLastReview.ts` | dump most recent review-decision workflow run + trace |
+| `renderScenario.ts` | render every form in a scenario to PDF for spot-checking |
 
 ### Lessons from this build (read before changing the pipeline)
 
@@ -376,7 +351,7 @@ All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from t
 - **The cookbook's "send the whole document" doesn't fit big tax docs.** 1040 instructions alone are ~211k tokens — over Haiku's 200k. We use **section-scoped context** for contextual summarization: each block is summarized with its section text as the cached prefix. Same caching benefit (cache hits across blocks within a section), no doc-size ceiling.
 - **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `apps/agent/src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
 - **pgvector embedding literals serialize as strings, not arrays.** `vectorLiteral([1,2,3])` returns `"[1,2,3]"` — pass that as the column value. Passing a JS array silently fails or coerces. The `vector(1024)` column type must match the embedding model's dimensions exactly (voyage-law-2 = 1024).
-- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Use `inspectBlock.ts` to verify section attribution before tuning retrieval.
+- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Verify section attribution by querying `ref_blocks` directly before tuning retrieval.
 - **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `apps/agent/src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
 - **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
 - **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `apps/agent/src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.
@@ -415,27 +390,6 @@ Rule of thumb: grep the bundled docs first (`Grep pattern path=node_modules/@mas
 - User preferences, cross-project learnings, ongoing context → **`~/.claude/projects/.../memory/`** (local, persists across sessions).
 
 If you're a fresh Claude Code session starting in this folder: read this file, then read the BBG memory dir for broader context on how Andrew builds agents.
-
-## Future architecture (mostly built)
-
-Three deploy units with Supabase as the primary store for everything:
-
-1. **Vercel Web (`apps/web`)** — Next.js 16 App Router. Server Components + Route Handlers read Supabase directly via `@supabase/ssr` cookie auth. Cross-origin agent calls (chat streaming, `/app/state`, `/app/session/reset`) use bearer headers extracted from the cookie session.
-2. **Vercel Agent (`apps/agent`)** — Mastra runtime: `/api/agents/*`, Studio, observability, plus the still-needed custom routes (`/app/state`, `/app/session/reset`).
-3. **Supabase** — Postgres for user data + reference corpus, Storage (drafts/uploads), Auth, RLS scoping every read/write.
-
-Where each agent route landed:
-
-| Route | Status |
-|---|---|
-| `GET /app/activity` | **Done** — Next.js `lib/activity.ts` reads `tax_facts` + `ai_decisions` directly via `supabase-js`. Agent route still exists but unused; safe to delete. |
-| `GET /documents/:id` | **Done** — Next.js `app/documents/[id]/route.ts` reads cookie, mints signed URL, 302s. Agent route still exists but unused. |
-| `GET /app/state` | **Pending** — runs the case engine (derivation graph). Three options for extraction: Postgres RPC (preferred per Supabase shape), shared TS package, or a third serverless function. Decide when we actually need to retire it. |
-| `POST /app/session/reset` | **Pending** — needs admin-pool access for `Memory.deleteThread`. Folding into a `SECURITY DEFINER` Postgres function would let the frontend call via `rpc()` and remove the admin pool entirely. |
-
-**Other open follow-ups:**
-
-- **Direct-to-Supabase upload during chat.** Today the chat tool sends base64 attachments through `/api/agents/thom/stream`. Uploading to Storage browser-side and passing a signed URL into the chat message is a tool-side change, not a route change.
 
 ## Things explicitly out of scope (for now)
 

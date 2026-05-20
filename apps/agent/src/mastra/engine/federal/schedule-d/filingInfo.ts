@@ -8,6 +8,7 @@
 // form-scoping flag for now.
 
 import type { BaseFilingInfo } from "../../filingInfo.js";
+import type { EngineDerivation } from "../../types.js";
 
 export interface ScheduleDFilingInfo extends BaseFilingInfo {
   /**
@@ -18,4 +19,6 @@ export interface ScheduleDFilingInfo extends BaseFilingInfo {
    * pass-through gains, and similar.
    */
   mustFileScheduleD?: boolean;
+  /** Provenance for mustFileScheduleD — populated by resolveFilingInfo. */
+  mustFileScheduleDDerivation?: EngineDerivation;
 }

@@ -13,7 +13,7 @@
     "refdocs:ingest": "npm --prefix apps/agent run refdocs:ingest",
     "refdocs:status": "npm --prefix apps/agent run refdocs:status",
     "refdocs:sync": "npm --prefix apps/agent run refdocs:sync",
-    "refdocs:verify": "npm --prefix apps/agent run refdocs:verify",
+    "refdocs:reembed": "npm --prefix apps/agent run refdocs:reembed",
     "forms:ingest": "npm --prefix apps/agent run forms:ingest --",
     "forms:bind": "npm --prefix apps/agent run forms:bind --",
     "forms:ingest-ca-tax-table": "npm --prefix apps/agent run forms:ingest-ca-tax-table --",

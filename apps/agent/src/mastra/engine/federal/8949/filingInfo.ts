@@ -7,6 +7,7 @@
 // interface is minimal — only the form-scoping flag for now.
 
 import type { BaseFilingInfo } from "../../filingInfo.js";
+import type { EngineDerivation } from "../../types.js";
 import type { TradeFactValue } from "../../../facts/index.js";
 
 export interface Form8949FilingInfo extends BaseFilingInfo {
@@ -17,6 +18,8 @@ export interface Form8949FilingInfo extends BaseFilingInfo {
    * and at least one transaction needs row-level reporting).
    */
   mustFile8949?: boolean;
+  /** Provenance for mustFile8949 — populated by resolveFilingInfo. */
+  mustFile8949Derivation?: EngineDerivation;
 
   /**
    * Trade facts partitioned by holding period for 8949 row assignment.

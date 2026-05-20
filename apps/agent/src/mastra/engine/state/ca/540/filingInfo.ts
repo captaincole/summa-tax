@@ -7,10 +7,13 @@
 
 import type { Money } from "../../../values.js";
 import type { BaseFilingInfo } from "../../../filingInfo.js";
+import type { EngineDerivation } from "../../../types.js";
 
 export interface Form540FilingInfo extends BaseFilingInfo {
   /** California Form 540 must-file determination. */
   mustFileCA540?: boolean;
+  /** Provenance for mustFileCA540 — populated by resolveFilingInfo. */
+  mustFileCA540Derivation?: EngineDerivation;
 
   /** "full_year" | "part_year" | "non_resident". */
   caResidencyStatus?: string;

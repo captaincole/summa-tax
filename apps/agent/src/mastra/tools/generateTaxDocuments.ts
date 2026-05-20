@@ -47,6 +47,9 @@ function serializeForm<F extends AnyFormField>(
   jurisdiction: string;
   title: string;
   mustFile: EvaluatedForm<F>["mustFile"];
+  /** Audit trail for the must-file determination — present whenever the
+   *  resolver populated it for this form. See EngineDerivation. */
+  mustFileDerivation: EvaluatedForm<F>["mustFileDerivation"];
   fields: Array<{
     fieldId: string;
     label: string;
@@ -60,6 +63,7 @@ function serializeForm<F extends AnyFormField>(
     jurisdiction: form.jurisdiction,
     title: form.title,
     mustFile: form.mustFile,
+    mustFileDerivation: form.mustFileDerivation,
     fields: form.fields.map((f) => ({
       fieldId: f.fieldId,
       label: f.label,

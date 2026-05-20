@@ -13,6 +13,32 @@ import type { TaxFactRow } from "../db/taxFacts.js";
 import type { AIDecisionRow } from "../db/aiDecisions.js";
 import type { FilingInfo } from "./filingInfo.js";
 
+// ─── Engine-derived decisions (audit trail for code-driven scope calls) ─
+
+/**
+ * Provenance record for an engine-derived scope call (e.g. "Schedule D must
+ * be filed because two trade facts exist"). Carried on EvaluatedForm next to
+ * the mustFile boolean so a CPA reviewing the doc-gen sidecar can see WHY a
+ * form was generated even when no AI decision was recorded.
+ *
+ * Distinct from AIDecisionRow on purpose: engine derivations are pure
+ * functions of state, don't need Nynaeve grounding, and update implicitly
+ * when facts change. We expose them in case-state / sidecar output but
+ * don't persist them as event rows. See conversation 2026-05-20 for the
+ * design rationale (separate from ai_decisions; future-extends `decidedBy`).
+ */
+export interface EngineDerivation {
+  /** Who/what produced this derivation. Today always "engine"; reserved
+   *  for future "ai" | "cpa" | "user" without changing consumers. */
+  decidedBy: "engine";
+  /** Plain-English rule that fired. CPA-readable. */
+  rule: string;
+  /** Fact keys the rule consumed. Empty when the rule only reads decisions. */
+  triggeredByFactKeys: readonly string[];
+  /** Decision keys the rule consumed. Empty when the rule only reads facts. */
+  triggeredByDecisionKeys: readonly string[];
+}
+
 // ─── Result of evaluating a single derivation ────────────────────────────
 
 export type DerivationResult<T> =
@@ -178,6 +204,12 @@ export interface EvaluatedForm<F extends BaseFormField = AnyFormField> {
   title: string;
   taxYear: number;
   mustFile: DerivationResult<boolean>;
+  /**
+   * Audit trail for the must-file determination. Present whenever the
+   * resolver populated it for this form (the five scope flags today;
+   * undefined for forms that don't go through resolveMustFile yet).
+   */
+  mustFileDerivation?: EngineDerivation;
   fields: F[];
 }
 

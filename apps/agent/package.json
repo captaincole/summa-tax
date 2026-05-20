@@ -11,7 +11,7 @@
     "refdocs:ingest": "tsx scripts/ingestRefDoc.ts",
     "refdocs:status": "tsx scripts/refdocsStatus.ts",
     "refdocs:sync": "tsx scripts/refdocsSync.ts",
-    "refdocs:verify": "tsx scripts/verifyRefDocs.ts",
+    "refdocs:reembed": "tsx scripts/refdocsReembed.ts",
     "forms:ingest": "tsx --env-file=.env.development scripts/ingestForm.ts",
     "forms:bind": "tsx --env-file=.env.development scripts/generateBindings.ts",
     "forms:emit-types": "tsx scripts/emitFormTypes.ts",

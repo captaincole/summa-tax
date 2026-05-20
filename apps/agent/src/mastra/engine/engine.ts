@@ -185,6 +185,11 @@ export function evaluateForm(
     formMustFiles.set(formId, mustFile);
   }
 
+  // Look up the engine-derivation provenance written by resolveFilingInfo
+  // (parallel slot to the boolean must-file flag). Undefined for forms not
+  // yet wired through resolveMustFile — that's fine, the field is optional.
+  const mustFileDerivation = lookupMustFileDerivation(formId, ctx.filingInfo);
+
   const fields: AnyFormField[] = [];
 
   // If must-file is blocked or false, return immediately with no fields.
@@ -197,6 +202,7 @@ export function evaluateForm(
       title: def.title,
       taxYear: ctx.taxYear,
       mustFile,
+      mustFileDerivation,
       fields,
     };
   }
@@ -248,8 +254,33 @@ export function evaluateForm(
     title: def.title,
     taxYear: ctx.taxYear,
     mustFile,
+    mustFileDerivation,
     fields,
   };
+}
+
+// Map from formId to the FilingInfo slot that carries the engine
+// derivation for that form's must-file determination. Kept here (not on
+// the form spec) because the slot names live in the per-form FilingInfo
+// types — this is the bridge between the engine's formId namespace and
+// the resolver's slot namespace.
+const MUST_FILE_DERIVATION_SLOTS: Record<string, string> = {
+  "form-1040": "mustFileFederalDerivation",
+  "form-540": "mustFileCA540Derivation",
+  "schedule-ca": "mustFileScheduleCADerivation",
+  "form-8949": "mustFile8949Derivation",
+  "schedule-d": "mustFileScheduleDDerivation",
+};
+
+function lookupMustFileDerivation(
+  formId: string,
+  filingInfo: DerivationContext["filingInfo"],
+): EvaluatedForm["mustFileDerivation"] {
+  if (!filingInfo) return undefined;
+  const slot = MUST_FILE_DERIVATION_SLOTS[formId];
+  if (!slot) return undefined;
+  return (filingInfo as Record<string, unknown>)[slot] as
+    | EvaluatedForm["mustFileDerivation"];
 }
 
 // ─── Multi-form orchestration via fixpoint iteration ─────────────────────

@@ -30,6 +30,7 @@ import type { Form540FilingInfo } from "./state/ca/540/filingInfo.js";
 import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js";
 import type { Form8949FilingInfo } from "./federal/8949/filingInfo.js";
 import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
+import type { EngineDerivation } from "./types.js";
 import type { TradeFactValue } from "../facts/index.js";
 
 // Mirrors the convention spelled out in src/mastra/facts/kinds/trade.ts.
@@ -145,20 +146,24 @@ export function resolveFilingInfo(opts: {
   // pulls out anything that parses as a trade (key shape
   // `account.<slug>.trades.<tradeId>`), then splits by holding period:
   // held > 1 year ⇒ long-term, else short-term. Dates are stored on the
-  // fact as "MM/DD/YY" or "MM/DD/YYYY"; we accept both.
+  // fact as "MM/DD/YY" or "MM/DD/YYYY"; we accept both. The fact-key list
+  // feeds the engine-derivation audit trail (triggeredByFactKeys).
   const partitionTrades = (): {
     short: TradeFactValue[];
     long: TradeFactValue[];
+    factKeys: string[];
   } => {
     const short: TradeFactValue[] = [];
     const long: TradeFactValue[] = [];
+    const factKeys: string[] = [];
     for (const row of opts.facts) {
       if (row.category !== "investment_income") continue;
       if (!TRADE_KEY_RE.test(row.key)) continue;
       const trade = row.value as TradeFactValue;
       (isLongTermTrade(trade) ? long : short).push(trade);
+      factKeys.push(row.key);
     }
-    return { short, long };
+    return { short, long, factKeys };
   };
   const trades = partitionTrades();
 
@@ -211,9 +216,15 @@ export function resolveFilingInfo(opts: {
     homeAddressCounty: text("identity.address.county"),
 
     // ─── Form 1040 ──────────────────────────────────────────────────
-    mustFileFederal: decisionByKey.get("decisions.scope.must_file_federal") as
-      | boolean
-      | undefined,
+    ...(() => {
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_federal",
+      });
+      return {
+        mustFileFederal: r.value as Form1040FilingInfo["mustFileFederal"],
+        mustFileFederalDerivation: r.derivation,
+      };
+    })(),
     hasDigitalAssets: decisionByKey.get("decisions.scope.has_digital_assets") as
       | boolean
       | undefined,
@@ -234,9 +245,15 @@ export function resolveFilingInfo(opts: {
     fullYearMEC: factByKey.get("health_coverage.full_year_mec") as boolean | undefined,
 
     // ─── Form 540 (CA) ──────────────────────────────────────────────
-    mustFileCA540: decisionByKey.get("decisions.scope.must_file_ca_540") as
-      | boolean
-      | undefined,
+    ...(() => {
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_ca_540",
+      });
+      return {
+        mustFileCA540: r.value as Form540FilingInfo["mustFileCA540"],
+        mustFileCA540Derivation: r.derivation,
+      };
+    })(),
     caResidencyStatus: decisionByKey.get("decisions.scope.ca_residency") as
       | string
       | undefined,
@@ -267,22 +284,53 @@ export function resolveFilingInfo(opts: {
     // Explicit `decisions.scope.must_file_schedule_ca` overrides — set
     // false on scenarios that don't need it (e.g. Alex declines, no
     // adjustments to report).
-    mustFileScheduleCA: resolveMustFile(decisionByKey, {
-      explicitKey: "decisions.scope.must_file_schedule_ca",
-      fallback: decisionByKey.get("decisions.scope.must_file_ca_540") === true,
-    }),
+    ...(() => {
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_schedule_ca",
+        fallbacks: [
+          {
+            rule: "fallback: must_file_ca_540 = true",
+            value:
+              decisionByKey.get("decisions.scope.must_file_ca_540") === true,
+            triggeredByDecisionKeys: ["decisions.scope.must_file_ca_540"],
+          },
+        ],
+      });
+      return {
+        mustFileScheduleCA: r.value as ScheduleCaFilingInfo["mustFileScheduleCA"],
+        mustFileScheduleCADerivation: r.derivation,
+      };
+    })(),
 
     // ─── Form 8949 ──────────────────────────────────────────────────
     // Default: required when there are trade facts to itemize OR when
     // the 1099 ingest pipeline recorded `has_reportable_sales = true`.
     // Either signal indicates capital-asset sales that need row-level
-    // reporting.
-    mustFile8949: resolveMustFile(decisionByKey, {
-      explicitKey: "decisions.scope.must_file_8949",
-      fallback:
-        trades.short.length + trades.long.length > 0 ||
-        decisionByKey.get("decisions.scope.has_reportable_sales") === true,
-    }),
+    // reporting. Fallbacks are ordered: trade-facts win when present
+    // (more specific signal); has_reportable_sales is the safety net.
+    ...(() => {
+      const tradeCount = trades.short.length + trades.long.length;
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_8949",
+        fallbacks: [
+          {
+            rule: `fallback: ${tradeCount} trade fact(s) present`,
+            value: tradeCount > 0,
+            triggeredByFactKeys: trades.factKeys,
+          },
+          {
+            rule: "fallback: decisions.scope.has_reportable_sales = true",
+            value:
+              decisionByKey.get("decisions.scope.has_reportable_sales") === true,
+            triggeredByDecisionKeys: ["decisions.scope.has_reportable_sales"],
+          },
+        ],
+      });
+      return {
+        mustFile8949: r.value as Form8949FilingInfo["mustFile8949"],
+        mustFile8949Derivation: r.derivation,
+      };
+    })(),
     shortTermTrades: trades.short,
     longTermTrades: trades.long,
 
@@ -291,34 +339,103 @@ export function resolveFilingInfo(opts: {
     // summarizes the per-row 8949 totals). Also fires for capital-gain
     // distributions even without 8949 — same trade-fact / decision
     // signal works for both cases.
-    mustFileScheduleD: resolveMustFile(decisionByKey, {
-      explicitKey: "decisions.scope.must_file_schedule_d",
-      fallback:
-        trades.short.length + trades.long.length > 0 ||
-        decisionByKey.get("decisions.scope.has_reportable_sales") === true,
-    }),
+    ...(() => {
+      const tradeCount = trades.short.length + trades.long.length;
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_schedule_d",
+        fallbacks: [
+          {
+            rule: `fallback: ${tradeCount} trade fact(s) present`,
+            value: tradeCount > 0,
+            triggeredByFactKeys: trades.factKeys,
+          },
+          {
+            rule: "fallback: decisions.scope.has_reportable_sales = true",
+            value:
+              decisionByKey.get("decisions.scope.has_reportable_sales") === true,
+            triggeredByDecisionKeys: ["decisions.scope.has_reportable_sales"],
+          },
+        ],
+      });
+      return {
+        mustFileScheduleD: r.value as ScheduleDFilingInfo["mustFileScheduleD"],
+        mustFileScheduleDDerivation: r.derivation,
+      };
+    })(),
   };
 }
 
 /**
- * Resolve a must-file flag with explicit-decision-wins semantics. The
- * explicit decision (when present in the decision set) takes precedence
- * — even when false — so scenarios can opt out of a form they would
- * otherwise default into. When the decision isn't recorded at all,
- * fall back to the data-driven default.
+ * Resolve a must-file flag with explicit-decision-wins semantics, and
+ * capture an audit trail (EngineDerivation) for which path fired.
  *
- * This lets Thom (the live agent) skip recording every must_file_*
- * decision during intake; downstream forms gate themselves on the
- * presence of upstream data. Test scenarios that need precise control
- * still record explicit decisions.
+ * Semantics:
+ *  - Explicit decision present (boolean) → that wins, even when false.
+ *    Lets scenarios opt out of a form they'd otherwise default into.
+ *  - Otherwise, walk `fallbacks` in order and return the first whose
+ *    `value` is true. Source-order is the priority.
+ *  - All fallbacks false → return false with a "no signal" derivation.
+ *  - No fallbacks AND no explicit → value is undefined (caller decides),
+ *    derivation is undefined.
+ *
+ * Why we record provenance even though the must_file_* keys aren't in
+ * ai_decisions: a CPA reviewing the doc-gen sidecar should see WHY
+ * Schedule D was generated. The engine is the decision-maker for these
+ * scope calls today; the EngineDerivation captures that honestly.
  */
+interface MustFileFallback {
+  /** Plain-English description of the rule. CPA-readable. */
+  rule: string;
+  /** Whether this fallback signal currently fires. */
+  value: boolean;
+  /** Fact keys this rule consumed. */
+  triggeredByFactKeys?: readonly string[];
+  /** Decision keys this rule consumed. */
+  triggeredByDecisionKeys?: readonly string[];
+}
+
 function resolveMustFile(
   decisions: Map<string, unknown>,
-  opts: { explicitKey: string; fallback: boolean },
-): boolean | undefined {
+  opts: { explicitKey: string; fallbacks?: MustFileFallback[] },
+): { value: boolean | undefined; derivation: EngineDerivation | undefined } {
   const explicit = decisions.get(opts.explicitKey);
-  if (typeof explicit === "boolean") return explicit;
-  return opts.fallback;
+  if (typeof explicit === "boolean") {
+    return {
+      value: explicit,
+      derivation: {
+        decidedBy: "engine",
+        rule: `explicit decision: ${opts.explicitKey} = ${explicit}`,
+        triggeredByFactKeys: [],
+        triggeredByDecisionKeys: [opts.explicitKey],
+      },
+    };
+  }
+  const fallbacks = opts.fallbacks ?? [];
+  for (const fb of fallbacks) {
+    if (fb.value === true) {
+      return {
+        value: true,
+        derivation: {
+          decidedBy: "engine",
+          rule: fb.rule,
+          triggeredByFactKeys: fb.triggeredByFactKeys ?? [],
+          triggeredByDecisionKeys: fb.triggeredByDecisionKeys ?? [],
+        },
+      };
+    }
+  }
+  if (fallbacks.length > 0) {
+    return {
+      value: false,
+      derivation: {
+        decidedBy: "engine",
+        rule: "no triggering signal (no explicit decision; all fallback signals absent)",
+        triggeredByFactKeys: [],
+        triggeredByDecisionKeys: [],
+      },
+    };
+  }
+  return { value: undefined, derivation: undefined };
 }
 
 // Trade-date parser. Accepts "MM/DD/YY" or "MM/DD/YYYY" as emitted by
