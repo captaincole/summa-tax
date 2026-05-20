@@ -6,9 +6,14 @@
   --color-bg-panel: #16161a;
   --color-bg-elevated: #1c1c22;
 
-  --color-border: #2e2e38;
-  --color-border-subtle: #26262e;
-  --color-border-strong: #3a3a44;
+  /* Borders bumped up the value scale to read clearly against the dark
+     bg-base / bg-subtle layers. The previous subtle border (#26262e) was
+     only ~28 units brighter than bg-subtle/40, which made the chat input
+     box and PlanRail edge nearly invisible. Subtle now sits ~50 units
+     brighter; regular and strong scale with it. */
+  --color-border: #3f3f4a;
+  --color-border-subtle: #353540;
+  --color-border-strong: #54545f;
 
   --color-ink-primary: #f5f5f7;
   --color-ink-secondary: #a1a1aa;

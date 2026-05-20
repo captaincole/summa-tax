@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 // Public routes that don't require auth. Everything else gets redirected
 // to /login when the session is missing.
-const PUBLIC_PATHS = ["/login", "/auth/callback"];
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/preview"];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

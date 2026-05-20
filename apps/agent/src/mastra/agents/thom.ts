@@ -12,6 +12,8 @@ import { ingestW2 } from "../tools/ingestW2";
 import { ingest1099Consolidated } from "../tools/ingest1099Consolidated";
 import { recordAIDecision, listAIDecisions } from "../tools/aiDecisions";
 import { generateTaxDocuments } from "../tools/generateTaxDocuments";
+import { requestDocumentUpload } from "../tools/requestDocument";
+import { dismissRequestedAction } from "../tools/dismissRequestedAction";
 import { thomInstructions } from "./thom.instructions";
 import { thomWorkingMemorySchema } from "./thom.workingMemory";
 
@@ -33,6 +35,10 @@ export const thom = new Agent({
     ingest1099Consolidated,
     recordTaxFact,
     recordAIDecision,
+    // Surface specific document requests to the dashboard as action cards.
+    requestDocumentUpload,
+    // Close a card after successful ingest of the uploaded document.
+    dismissRequestedAction,
     // End-of-session artifact generation
     generateTaxDocuments,
     // Secondary — listOpenQuestions/resolveOpenQuestion remain so Thom can

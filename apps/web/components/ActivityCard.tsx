@@ -146,8 +146,16 @@ export function ActivityCard({ refreshKey }: ActivityCardProps) {
       });
     }
 
+    // Channel name MUST be unique per mount. supabase-js memoizes channels by
+    // name — a second call with the same name returns the existing channel,
+    // and calling `.on()` on a channel that already had `.subscribe()` throws.
+    // Route navigation in the new shell mounts/unmounts ActivityCard, and
+    // React Strict Mode double-mounts in dev, both of which collide on a
+    // stable name. Random suffix sidesteps the issue without leaning on
+    // removeChannel timing.
+    const channelName = `activity-${userId}-${Math.random().toString(36).slice(2, 10)}`;
     const channel = supabase
-      .channel(`activity-${userId}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {

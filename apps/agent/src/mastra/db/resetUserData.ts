@@ -43,13 +43,14 @@ export async function resetCurrentUserData(
   // PostgREST's "delete all matching rows" idiom — DELETE without any
   // filter is rejected at the API layer.
   const SENTINEL = "1970-01-01";
-  const [facts, questions, decisions, documents] = await Promise.all([
+  const [facts, questions, decisions, documents, actions] = await Promise.all([
     supabase.from("tax_facts").delete().gte("created_at", SENTINEL),
     supabase.from("open_questions").delete().gte("created_at", SENTINEL),
     supabase.from("ai_decisions").delete().gte("created_at", SENTINEL),
     supabase.from("user_documents").delete().gte("created_at", SENTINEL),
+    supabase.from("requested_actions").delete().gte("created_at", SENTINEL),
   ]);
-  for (const r of [facts, questions, decisions, documents]) {
+  for (const r of [facts, questions, decisions, documents, actions]) {
     if (r.error) throw new Error(`reset delete failed: ${r.error.message}`);
   }
 
@@ -87,7 +88,10 @@ export async function resetCurrentUserData(
 
   return {
     domainRowsDeleted:
-      (facts.count ?? 0) + (questions.count ?? 0) + (decisions.count ?? 0),
+      (facts.count ?? 0) +
+      (questions.count ?? 0) +
+      (decisions.count ?? 0) +
+      (actions.count ?? 0),
     mastraThreadsDeleted,
     documentsDeleted: documents.count ?? 0,
   };
