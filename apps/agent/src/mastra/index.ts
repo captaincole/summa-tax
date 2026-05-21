@@ -23,11 +23,17 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
 
 const storage = await createStorage();
 
+// Hoisted so the error-catching middleware below can route uncaught throws
+// through the same logger as the rest of the app — Mastra's Hono integration
+// doesn't `logger.error()` unhandled handler exceptions before returning 500,
+// which would otherwise hide the failure in prod.
+const logger = new ConsoleLogger({ name: "wheel-of-time", level: "info" });
+
 export const mastra = new Mastra({
   agents: { thom, queryFormulator, assessRiskAgent, ruleAgent },
   workflows: { reviewDecision: reviewDecisionWorkflow },
   storage,
-  logger: new ConsoleLogger({ name: "wheel-of-time", level: "info" }),
+  logger,
   observability: createObservability(),
   // `mastra build` emits .vercel/output/ for deployment.
   // studio: false → deployer emits a catch-all route ({src: "/(.*)", dest: "/"})
@@ -62,6 +68,24 @@ export const mastra = new Mastra({
       protected: ["/api/*", "/app/*"],
     }),
     middleware: [
+      // Catch uncaught handler throws and route them through the configured
+      // logger before re-raising. Mastra's Hono integration converts uncaught
+      // errors to a 500 response but doesn't log them via the framework
+      // logger — without this shim, production errors are invisible (the
+      // failure mode that originally hid the 8949 catalog ENOENT). Re-throw
+      // so Hono's default error handling still produces the 500 response.
+      async (c, next) => {
+        try {
+          await next();
+        } catch (err) {
+          logger.error("unhandled handler error", {
+            method: c.req.method,
+            path: c.req.path,
+            err,
+          });
+          throw err;
+        }
+      },
       // CORS so cross-origin preflights short-circuit before everything else.
       // Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
