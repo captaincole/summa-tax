@@ -8,10 +8,15 @@ import {
   thomWorkingMemorySchema,
   type PlanItem,
 } from "../../agents/thom.workingMemory";
-import { DEMO_TAX_YEAR, DEMO_THREAD_ID } from "../demoSession";
+import { DEMO_TAX_YEAR } from "../demoSession";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
-async function readThomPlan(): Promise<PlanItem[]> {
+// Must match apps/web/lib/returns.ts:threadIdFor — no shared package yet.
+function threadIdFor(userId: string, returnId: string | number): string {
+  return `${userId}::${returnId}`;
+}
+
+async function readThomPlan(threadId: string): Promise<PlanItem[]> {
   // Read working memory off Thom's thread-scoped Memory. Returns [] when:
   //   - the thread has never had a turn (no working memory row yet)
   //   - the JSON parse fails (shouldn't happen since Mastra writes via the
@@ -21,7 +26,7 @@ async function readThomPlan(): Promise<PlanItem[]> {
   try {
     const memory = await thom.getMemory();
     if (!memory) return [];
-    const raw = await memory.getWorkingMemory({ threadId: DEMO_THREAD_ID });
+    const raw = await memory.getWorkingMemory({ threadId });
     if (!raw) return [];
     const parsed = thomWorkingMemorySchema.safeParse(JSON.parse(raw));
     if (!parsed.success) return [];
@@ -51,7 +56,7 @@ export const appStateRoute = registerApiRoute("/app/state", {
 
     const [caseState, plan, drafts] = await Promise.all([
       buildCaseState(supabase, DEMO_TAX_YEAR),
-      readThomPlan(),
+      readThomPlan(threadIdFor(userId, DEMO_TAX_YEAR)),
       listDocuments(supabase, { category: "drafts", taxYear: DEMO_TAX_YEAR }),
     ]);
 

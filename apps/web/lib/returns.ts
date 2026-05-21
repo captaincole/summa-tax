@@ -8,8 +8,6 @@
 // render empty placeholder states — no fake data structs flowing through
 // real components.
 
-import { DEMO_THREAD_ID } from "@/lib/chatSession";
-
 export type ReturnState = "active" | "empty" | "filed";
 
 export interface TaxReturn {
@@ -74,11 +72,9 @@ export function getDefaultReturn(): TaxReturn {
   return real;
 }
 
-// Namespacing scheme: the existing single-thread demo (DEMO_THREAD_ID)
-// stays attached to the 2025 return so prior chat history doesn't vanish.
-// Future returns get a deterministic per-user thread ID. When we move to
-// real multi-return, the same shape works for any number of returns.
+// Deterministic per-user + per-return thread ID. Must match the format used
+// by /app/state in apps/agent (no shared package yet — keep these in sync).
+// When we move to per-filing scoping, extend this with a filing identifier.
 export function threadIdFor(userId: string, returnId: string): string {
-  if (returnId === DEFAULT_RETURN_ID) return DEMO_THREAD_ID;
   return `${userId}::${returnId}`;
 }
