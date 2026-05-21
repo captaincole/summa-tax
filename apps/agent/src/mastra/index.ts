@@ -67,25 +67,20 @@ export const mastra = new Mastra({
       authorizeUser: () => true,
       protected: ["/api/*", "/app/*"],
     }),
+    // Mastra wraps every route handler in its own try/catch before any
+    // server.middleware runs, so an uncaught throw never reaches middleware
+    // — it's funneled through this hook instead. Without onError, Mastra
+    // returns a generic 500 with zero logging, which is the failure mode
+    // that originally hid the 8949 catalog ENOENT in prod.
+    onError: (err, c) => {
+      logger.error("unhandled handler error", {
+        method: c.req.method,
+        path: c.req.path,
+        err,
+      });
+      return c.json({ error: "internal server error" }, 500);
+    },
     middleware: [
-      // Catch uncaught handler throws and route them through the configured
-      // logger before re-raising. Mastra's Hono integration converts uncaught
-      // errors to a 500 response but doesn't log them via the framework
-      // logger — without this shim, production errors are invisible (the
-      // failure mode that originally hid the 8949 catalog ENOENT). Re-throw
-      // so Hono's default error handling still produces the 500 response.
-      async (c, next) => {
-        try {
-          await next();
-        } catch (err) {
-          logger.error("unhandled handler error", {
-            method: c.req.method,
-            path: c.req.path,
-            err,
-          });
-          throw err;
-        }
-      },
       // CORS so cross-origin preflights short-circuit before everything else.
       // Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
