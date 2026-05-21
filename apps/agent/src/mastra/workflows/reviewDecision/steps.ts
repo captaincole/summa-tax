@@ -51,7 +51,7 @@ export const initStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase, userId } = requireUserContext({ requestContext });
+    const { supabase, userId, filingId } = await requireUserContext({ requestContext });
 
     const decision = await getDecisionById(supabase, inputData.decisionId);
     if (!decision) {
@@ -65,6 +65,7 @@ export const initStep = createStep({
       id: reviewRunId,
       decisionId: decision.id,
       userId,
+      filingId,
     });
     await setDecisionLatestRunId(supabase, decision.id, reviewRunId);
 
@@ -72,6 +73,7 @@ export const initStep = createStep({
       decisionId: decision.id,
       reviewRunId,
       userId,
+      filingId,
       taxYear: decision.taxYear,
       decisionKey: decision.decisionKey,
       decisionValue: decision.decision,
@@ -88,6 +90,7 @@ export const initStep = createStep({
       id: crypto.randomUUID(),
       runId: reviewRunId,
       userId,
+      filingId,
       iteration: 0, // init runs before the first iteration
       stepKind: KIND.init,
       input: inputData,
@@ -111,7 +114,7 @@ export const gatherStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = requireUserContext({ requestContext });
+    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
 
     // Iteration 1 → derive queries from the decision via the formulator.
@@ -174,6 +177,7 @@ export const gatherStep = createStep({
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
+      filingId: carrier.filingId,
       iteration: carrier.iteration,
       stepKind: KIND.gather,
       input: { carrier: stripHeavyFields(carrier) },
@@ -195,7 +199,7 @@ export const assessRiskStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = requireUserContext({ requestContext });
+    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
     if (!carrier.evidence) {
       throw new Error("assess: evidence missing — gather did not run");
@@ -223,6 +227,7 @@ export const assessRiskStep = createStep({
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
+      filingId: carrier.filingId,
       iteration: carrier.iteration,
       stepKind: KIND.assess,
       input: { decision: decisionSummary(carrier), evidence: carrier.evidence },
@@ -245,7 +250,7 @@ export const ruleStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = requireUserContext({ requestContext });
+    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
     if (!carrier.evidence || !carrier.riskAssessment) {
       throw new Error("rule: missing evidence or riskAssessment");
@@ -293,6 +298,7 @@ export const ruleStep = createStep({
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
+      filingId: carrier.filingId,
       iteration: carrier.iteration,
       stepKind: KIND.rule,
       input: {
@@ -321,7 +327,7 @@ export const finalizeStep = createStep({
   outputSchema: reviewDecisionOutputSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = requireUserContext({ requestContext });
+    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
     if (!carrier.ruleOutput) {
       throw new Error("finalize: ruleOutput missing — loop did not run");
@@ -369,6 +375,7 @@ export const finalizeStep = createStep({
       await noteQuestion(supabase, {
         id: openQuestionId,
         userId: carrier.userId,
+        filingId: carrier.filingId,
         question: `Confirm the basis for decision \`${carrier.decisionKey}\` — review couldn't ground it.`,
         context: whatsMissing,
         decisionId: carrier.decisionId,
@@ -404,6 +411,7 @@ export const finalizeStep = createStep({
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
+      filingId: carrier.filingId,
       iteration: iterationCount,
       stepKind: KIND.finalize,
       input: { carrier: stripHeavyFields(carrier) },
@@ -456,7 +464,10 @@ async function formulateQueries(c: LoopCarrier): Promise<string[]> {
 
   const result = await queryFormulator.generate(prompt, {
     structuredOutput: {
-      schema: z.object({ queries: z.array(z.string()).min(1).max(2) }),
+      // Anthropic's native structured-output endpoint rejects `maxItems` on
+      // array properties, so the 1–2 cap lives in the prompt + the slice
+      // below rather than in the schema.
+      schema: z.object({ queries: z.array(z.string()).min(1) }),
       model: "anthropic/claude-haiku-4-5",
       errorStrategy: "strict",
     },
@@ -467,7 +478,7 @@ async function formulateQueries(c: LoopCarrier): Promise<string[]> {
     // throwing — the workflow stays alive and we log the empty-queries case.
     return [c.decisionKey.replace(/^decisions\./, "").replace(/_/g, " ")];
   }
-  return obj.queries;
+  return obj.queries.slice(0, 2);
 }
 
 function renderAssessPrompt(c: LoopCarrier): string {

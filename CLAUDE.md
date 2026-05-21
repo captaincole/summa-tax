@@ -59,8 +59,8 @@ Two services. Run both — backend changes hot-reload via Mastra file-watching, 
 
 ```bash
 npm run install:all                         # installs root + apps/agent + apps/web
-cp apps/agent/.env.example apps/agent/.env.development
-# edit apps/agent/.env.development with ANTHROPIC_API_KEY + DEMO_PASSCODE
+npm run db:start                            # boots local Supabase (see next section)
+npm run db:reset                            # migrations + mastra schema + seed test users
 npm run dev:all                             # mastra (:4111) + next (:3000)
 
 # or run them separately:
@@ -71,6 +71,59 @@ npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 ```
 
 All persistent state (user data, Mastra runtime tables, reference corpus, document blobs) lives in Supabase — `POSTGRES_URL` for the database, the service-role key for Storage. There is no local DB file. The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that still go through the agent (chat streaming, `/app/state`, `/app/session/reset`). Most data — drafts, uploads, activity feed, document downloads — is read directly from Supabase by Server Components / Route Handlers. Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls.
+
+## Running local Supabase
+
+Local dev runs against a Dockerized Supabase stack (Postgres, GoTrue, PostgREST, Storage, Realtime, Studio). Prod still lives at the hosted project; we just don't point at it during day-to-day development.
+
+**Prereqs**: Docker Desktop running, Supabase CLI ≥ 2.95 (`brew install supabase/tap/supabase`).
+
+**First-boot sequence** (one-time):
+
+```bash
+npm run db:start                # docker pulls images, boots containers (~30s after first pull)
+npm run db:status               # prints API URL, anon key, service-role key, etc.
+
+# Copy keys into .env.development from the templates:
+cp apps/agent/.env.local.example apps/agent/.env.development
+cp apps/web/.env.local.example apps/web/.env.development
+# …then paste SUPABASE_PUBLISHABLE_KEY + SUPABASE_SECRET_KEY from `db:status`.
+
+npm run db:reset                # applies migrations + mastra schema + seeds users
+npm run dev:all                 # ready
+```
+
+**Routine flow**:
+
+```bash
+npm run db:start                # if not already running
+npm run dev:all
+# …work…
+npm run db:reset                # wipe data + reseed (whenever you want a clean slate)
+npm run db:stop                 # shut docker down at end of day (optional)
+```
+
+**Seeded test users** (from `apps/agent/scripts/seedLocal.ts`):
+
+| email | password |
+| --- | --- |
+| `rand@localhost` | `testpass123!` |
+| `cpa-reviewer@localhost` | `testpass123!` |
+
+Each has one owner-role membership on a 2025 filing (see "Filings ownership model" / CPA section once that lands).
+
+**URLs to remember**:
+
+- API gateway: http://127.0.0.1:54321
+- Postgres: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+- Studio (Supabase UI): http://127.0.0.1:54323 — table browser, SQL editor, auth user list
+- Inbucket (email preview): http://127.0.0.1:54324 — any emails GoTrue would have sent show up here
+
+**Hitting prod from your laptop** (rare — debugging a prod-only issue): keep a separate `.env.development.prod` and pass it via `tsx --env-file=...` when running one-off scripts. Don't swap `.env.development` itself — too easy to forget which environment is loaded.
+
+**Why local seeding is a TypeScript script, not seed.sql.** `auth.users` rows have to exist before filings can reference them, but `supabase db reset` runs `seed.sql` after migrations and before anything else. We need the user IDs to seed memberships, so the GoTrue admin API is called from `apps/agent/scripts/seedLocal.ts` after reset finishes. `db.seed.sql_paths = []` in config.toml.
+
+**Local Postgres uses direct connection (port 54322), not a pooler.** The pooler-6543 guidance in the next section is prod-specific.
 
 ## Supabase Postgres pooler — always use port 6543
 
@@ -190,7 +243,7 @@ Production runtime logs for the agent come through `vercel logs`, but with gotch
 
 - **Run from `apps/agent/`** — the linked project's directory. From the repo root, the CLI uses the wheel-of-finances project context and returns nothing for the agent. `apps/agent/.vercel/project.json` (gitignored) is what scopes the call.
 - **`/health` bypasses user middleware.** Mastra special-cases its framework routes; a `/health` hit doesn't fire `server.middleware`, so it won't show your `console.log` lines. Test logging via `/api/*` or `/app/*` instead.
-- **Mastra's `PinoLogger` is silent on Vercel.** Pino's async/buffered writes get truncated when the function exits before the buffer flushes. Use plain `console.log` for production-visible output until/unless we switch Pino to sync mode.
+- **We don't use Mastra's `PinoLogger`** — its default destination is async-buffered and gets truncated on Vercel function exit, swallowing every log line on requests that error. We ship `ConsoleLogger` (`apps/agent/src/mastra/server/consoleLogger.ts`) instead — a ~70-line `MastraLogger` subclass that writes single-line JSON via `console.{log,warn,error}`. `vercel logs --json` parses each line into its structured fields. Use `mastra.getLogger()` (or `logger.error("msg", { err })`) anywhere new error paths land; no need for ad-hoc `console.log`.
 - **Useful flags:** `--since 30m --limit 30 --expand` (historical), `--follow` (live tail), `--json` (richer per-request record incl. `responseStatusCode`, `cache`, structured `logs` array). No duration field — log timings yourself in middleware if needed.
 - **Build logs (separate from runtime):** `vercel inspect <deployment-url> --logs`.
 

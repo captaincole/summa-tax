@@ -2,7 +2,7 @@ import "dotenv/config";
 import { Mastra } from "@mastra/core";
 import { StudioSupabaseAuth } from "./server/studioAuth";
 import { VercelDeployer } from "@mastra/deployer-vercel";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "./server/consoleLogger";
 import { thom } from "./agents/thom";
 import { queryFormulator } from "./agents/nynaeve/queryFormulator";
 import { assessRiskAgent } from "./agents/nynaeve/assessRiskAgent";
@@ -27,7 +27,7 @@ export const mastra = new Mastra({
   agents: { thom, queryFormulator, assessRiskAgent, ruleAgent },
   workflows: { reviewDecision: reviewDecisionWorkflow },
   storage,
-  logger: new PinoLogger({ name: "wheel-of-time", level: "info" }),
+  logger: new ConsoleLogger({ name: "wheel-of-time", level: "info" }),
   observability: createObservability(),
   // `mastra build` emits .vercel/output/ for deployment.
   // studio: false → deployer emits a catch-all route ({src: "/(.*)", dest: "/"})
@@ -62,19 +62,6 @@ export const mastra = new Mastra({
       protected: ["/api/*", "/app/*"],
     }),
     middleware: [
-      // Debug shim: per-request timing log. PinoLogger writes are async-
-      // buffered and get truncated on serverless function exit; plain
-      // console.log reaches Vercel reliably. Logs at start (so a hung
-      // request still leaves a breadcrumb) and again on completion with
-      // total duration + status. Remove once logging is sorted.
-      async (c: any, next: () => Promise<void>) => {
-        const start = Date.now();
-        console.log(`[req] ${c.req.method} ${c.req.path} START`);
-        await next();
-        console.log(
-          `[req] ${c.req.method} ${c.req.path} ${c.res.status} in ${Date.now() - start}ms`,
-        );
-      },
       // CORS so cross-origin preflights short-circuit before everything else.
       // Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
