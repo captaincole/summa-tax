@@ -12,25 +12,21 @@ import {
 } from "../engine/types";
 import { evaluateAllForms } from "../engine/engine";
 import { resolveFilingInfo } from "../engine/filingInfo";
-import { loadFromFixtures, type Catalog } from "../engine/catalog";
-import { FORMS, registerAllForms } from "../engine/registry";
+import type { Catalog } from "../engine/catalog";
+import { FORMS, catalog, registerAllForms } from "../engine/registry";
 registerAllForms();
 import { requireUserContext } from "./userContext";
 
-// Combined catalog across every registered form so cross-form references
-// resolve during evaluateAllForms — e.g. form-540.line.13_federal_agi
-// reads form-1040.line.11b after the federal AGI is computed. FORMS is
+// `catalog` is the merged, in-memory inventory across every registered
+// form (built once in registry.ts from the static JSON imports). FORMS is
 // already in dependency order (8949 → Schedule D → 1040 → Schedule CA →
-// 540), which is what the fixpoint evaluator wants.
-const CATALOG_FILES = FORMS.map((f) => f.catalogPath);
+// 540), which is what the fixpoint evaluator inside evaluateAllForms
+// wants. The catalog spans all forms so cross-form references resolve —
+// e.g. form-540.line.13_federal_agi reads form-1040.line.11b after the
+// federal AGI is computed.
 const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
-
-let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {
-  if (!catalogPromise) {
-    catalogPromise = loadFromFixtures(CATALOG_FILES);
-  }
-  return catalogPromise;
+  return Promise.resolve(catalog);
 }
 
 // Live case state for Thom. Runs the four-form engine against the current
@@ -308,7 +304,7 @@ export const getCaseState = createTool({
     ),
   }),
   execute: async (input, context) => {
-    const { supabase } = requireUserContext(context);
+    const { supabase } = await requireUserContext(context);
     const {
       summaries,
       pendingDecisions,

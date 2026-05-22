@@ -13,21 +13,19 @@ import {
 } from "../engine/types";
 import { evaluateAllForms } from "../engine/engine";
 import { resolveFilingInfo } from "../engine/filingInfo";
-import { loadFromFixtures, type Catalog } from "../engine/catalog";
-import { FORMS, registerAllForms } from "../engine/registry";
+import type { Catalog } from "../engine/catalog";
+import { FORMS, catalog, registerAllForms } from "../engine/registry";
 registerAllForms();
 import { fillFromCatalog } from "../engine/render/fillFromCatalog";
 import { requireUserContext } from "./userContext";
 
-// Combined catalog across every registered form so cross-form refs
-// resolve during the fixpoint evaluation.
-const CATALOG_FILES = FORMS.map((f) => f.catalogPath);
+// `catalog` (from registry.ts) is the merged inventory across every
+// registered form — built once at module load from the static JSON
+// imports there, so cross-form refs resolve during fixpoint evaluation
+// with no runtime I/O.
 const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
-
-let catalogPromise: Promise<Catalog> | null = null;
 function getCatalog(): Promise<Catalog> {
-  if (!catalogPromise) catalogPromise = loadFromFixtures(CATALOG_FILES);
-  return catalogPromise;
+  return Promise.resolve(catalog);
 }
 
 function lineValue(
@@ -141,7 +139,7 @@ export const generateTaxDocuments = createTool({
     }),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId, filingId } = await requireUserContext(context);
     const { year } = input;
 
     // ─── Read state from DB ───
@@ -222,6 +220,7 @@ export const generateTaxDocuments = createTool({
       const filename = `${spec.displayName} — ${year}`;
       const doc = await createDocument(supabase, {
         userId,
+        filingId,
         category: "drafts",
         filename,
         storageSlug: `${spec.shortId}-${year}`,
@@ -253,6 +252,7 @@ export const generateTaxDocuments = createTool({
     const sidecarBytes = Buffer.from(JSON.stringify(sidecar, null, 2), "utf-8");
     const sidecarDoc = await createDocument(supabase, {
       userId,
+      filingId,
       category: "drafts",
       filename: `Forms sidecar — ${year}`,
       storageSlug: `forms-${year}`,
