@@ -58,9 +58,12 @@ schema_paths = []
 [db.seed]
 # If enabled, seeds the database after migrations during a db reset.
 enabled = true
-# Specifies an ordered list of seed files to load during db reset.
-# Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+# No SQL seed files: local seeding happens in apps/agent/scripts/seedLocal.ts
+# (invoked by `npm run db:seed` after `supabase db reset`). The TS script
+# creates auth.users via the GoTrue admin API first, then inserts filings +
+# memberships keyed off the freshly-created user IDs — neither step is
+# clean to express in pure SQL.
+sql_paths = []
 
 [db.network_restrictions]
 # Enable management of network restrictions.
