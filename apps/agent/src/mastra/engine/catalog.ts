@@ -17,6 +17,7 @@
 // (AI-generated vs hand-written) compares the contents of the two stores.
 
 import { promises as fs } from "node:fs";
+import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Category, FieldValueType } from "./types.js";
 
@@ -148,6 +149,80 @@ export interface FixtureFile {
   fields: Array<Omit<FieldInventory, "formId" | "ordinal">>;
 }
 
+// ─── Zod schema for catalog.json validation ──────────────────────────────
+//
+// Mirrors the TypeScript types above so that static JSON imports in
+// registry.ts can be validated at module load. Without this, TS widens
+// JSON string-valued fields (e.g. `category: "personal_info"`) to plain
+// `string`, which won't satisfy our `Category` / `FieldValueType` unions
+// — and `import x from ".../catalog.json"` followed by passing `x` to
+// FixtureFile-typed code errors with an unfixable structural mismatch.
+// fixtureFileSchema.parse(x) narrows correctly and fails loud on drift
+// (renamed category, typo'd valueType, ingestion-pipeline schema change).
+//
+// Unknown keys (`labelSource`, `multiline`, top-level `_meta`) are
+// emitted by the ingestion pipeline but unused by the engine — Zod
+// strips them by default.
+
+const categoryEnum = z.enum([
+  "personal_info",
+  "filing_scope",
+  "income",
+  "deductions_credits",
+  "other",
+]);
+
+const fieldValueTypeEnum = z.enum([
+  "numeric",
+  "single_select",
+  "multi_select",
+  "text",
+  "boolean",
+  "date",
+]);
+
+const pdfFieldKindEnum = z.enum([
+  "text",
+  "checkbox",
+  "radio",
+  "signature",
+  "other",
+]);
+
+const fieldOptionSchema = z.object({
+  value: z.string(),
+  pdfWidgetName: z.string().optional(),
+  radioOption: z.string().optional(),
+  label: z.string().optional(),
+});
+
+const fieldInventoryInputSchema = z.object({
+  fieldId: z.string(),
+  label: z.string(),
+  category: categoryEnum,
+  valueType: fieldValueTypeEnum,
+  valueTypeRich: z.string().optional(),
+  pdfFieldKind: pdfFieldKindEnum.optional(),
+  pdfWidgetName: z.string().optional(),
+  position: z
+    .object({ page: z.number(), x: z.number(), y: z.number() })
+    .optional(),
+  options: z.array(fieldOptionSchema).optional(),
+  maxLength: z.number().optional(),
+});
+
+const formDefinitionSchema = z.object({
+  formId: z.string(),
+  taxYear: z.number(),
+  jurisdiction: z.string(),
+  title: z.string(),
+});
+
+export const fixtureFileSchema = z.object({
+  form: formDefinitionSchema,
+  fields: z.array(fieldInventoryInputSchema),
+}) satisfies z.ZodType<FixtureFile>;
+
 /**
  * Load a Catalog from a single fixture file. The file holds one form's
  * inventory; multi-form catalogs are composed by `loadFromFixtures([…])`.
@@ -157,16 +232,30 @@ export async function loadFromFixture(filePath: string): Promise<Catalog> {
 }
 
 export async function loadFromFixtures(filePaths: string[]): Promise<Catalog> {
-  const forms: FormDefinition[] = [];
-  const fields: FieldInventory[] = [];
+  const fixtures: FixtureFile[] = [];
   for (const path of filePaths) {
     const raw = await fs.readFile(path, "utf8");
-    const parsed = JSON.parse(raw) as FixtureFile;
-    forms.push(parsed.form);
-    parsed.fields.forEach((f, i) => {
+    fixtures.push(JSON.parse(raw) as FixtureFile);
+  }
+  return buildCatalogFromFixtures(fixtures);
+}
+
+/**
+ * Build a Catalog from FixtureFile objects already in memory — used by the
+ * prod hot path, which imports catalog.json files statically (so Rollup
+ * bundles them and the function doesn't depend on filesystem layout under
+ * /var/task on Vercel). The fs-based loaders above stay for tests/scripts
+ * that load arbitrary catalog paths at runtime.
+ */
+export function buildCatalogFromFixtures(fixtures: FixtureFile[]): Catalog {
+  const forms: FormDefinition[] = [];
+  const fields: FieldInventory[] = [];
+  for (const fx of fixtures) {
+    forms.push(fx.form);
+    fx.fields.forEach((f, i) => {
       fields.push({
         ...f,
-        formId: parsed.form.formId,
+        formId: fx.form.formId,
         ordinal: i,
       });
     });

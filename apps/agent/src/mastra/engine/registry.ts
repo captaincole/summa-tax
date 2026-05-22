@@ -7,19 +7,44 @@
 //   1. Drop a catalog.json + blank.pdf into apps/agent/forms/<jurisdiction>/<short>/
 //   2. Write bindings.ts under apps/agent/src/mastra/engine/<jurisdiction>/<short>/
 //   3. Add one entry to FORMS below
+//   4. Add the catalog.json to the static-import block + the `catalog`
+//      construction array below
 //
-// That's it. No other file should know about a per-form catalog path or
-// register fn. If you find yourself touching multiple files when adding
-// a form, this registry isn't doing its job — surface the missing
-// abstraction instead of papering over it.
+// If you find yourself touching more than these files when adding a form,
+// this registry isn't doing its job — surface the missing abstraction
+// instead of papering over it.
 
 import { resolve } from "node:path";
 import { projectRoot } from "../paths.js";
+import {
+  buildCatalogFromFixtures,
+  fixtureFileSchema,
+  type Catalog,
+} from "./catalog.js";
 import { register as registerForm1040 } from "./federal/1040/bindings.js";
 import { register as registerForm8949 } from "./federal/8949/bindings.js";
 import { register as registerScheduleD } from "./federal/schedule-d/bindings.js";
 import { register as registerForm540 } from "./state/ca/540/bindings.js";
 import { register as registerScheduleCa } from "./state/ca/schedule-ca/bindings.js";
+
+// Static JSON imports. Rollup traces these and bundles the catalog
+// contents into mastra.mjs, so the prod hot path (case-state build on
+// every /app/state hit) doesn't depend on apps/agent/forms/** being
+// physically present at any particular path under /var/task on Vercel.
+// fixtureFileSchema.parse() narrows TypeScript's widened JSON types
+// (e.g. `category: string` → `category: Category`) and fails loud at
+// boot if any catalog drifts from FixtureFile.
+import form8949CatalogJson from "../../../forms/federal/8949/catalog.json";
+import scheduleDCatalogJson from "../../../forms/federal/schedule-d/catalog.json";
+import form1040CatalogJson from "../../../forms/federal/1040/catalog.json";
+import scheduleCaCatalogJson from "../../../forms/state/ca/schedule-ca/catalog.json";
+import form540CatalogJson from "../../../forms/state/ca/540/catalog.json";
+
+const form8949Catalog = fixtureFileSchema.parse(form8949CatalogJson);
+const scheduleDCatalog = fixtureFileSchema.parse(scheduleDCatalogJson);
+const form1040Catalog = fixtureFileSchema.parse(form1040CatalogJson);
+const scheduleCaCatalog = fixtureFileSchema.parse(scheduleCaCatalogJson);
+const form540Catalog = fixtureFileSchema.parse(form540CatalogJson);
 
 export interface FormSpec {
   /** Long-form id used by the engine + bindings (e.g. "form-1040", "schedule-d"). */
@@ -32,7 +57,12 @@ export interface FormSpec {
   shortId: string;
   /** Human-readable name used in filenames + UI ("Form 1040", "Schedule CA (540)"). */
   displayName: string;
-  /** Absolute path to the form's catalog.json (loaded by the engine). */
+  /**
+   * Absolute path to the form's catalog.json. Used by tests and one-off
+   * scripts that load arbitrary catalog files from disk via
+   * `loadFromFixtures([...])`. Production code paths use the bundled
+   * `catalog` export below instead.
+   */
   catalogPath: string;
   /** Absolute path to the blank fillable PDF (rendered by fillFromCatalog). */
   blankPdfPath: string;
@@ -116,3 +146,18 @@ export function getFormSpec(formId: string): FormSpec {
 export function registerAllForms(): void {
   for (const spec of FORMS) spec.register();
 }
+
+/**
+ * Merged, in-memory catalog spanning every form. Built once at module
+ * load from the static JSON imports above — no I/O, no filesystem
+ * dependency. Consumers in the prod hot path (`buildCaseState`,
+ * `generateTaxDocuments`) import this directly instead of loading
+ * catalogs from disk.
+ */
+export const catalog: Catalog = buildCatalogFromFixtures([
+  form8949Catalog,
+  scheduleDCatalog,
+  form1040Catalog,
+  scheduleCaCatalog,
+  form540Catalog,
+]);
