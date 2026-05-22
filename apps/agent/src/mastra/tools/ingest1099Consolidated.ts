@@ -154,7 +154,7 @@ export const ingest1099Consolidated = createTool({
     tradeIds: z.array(z.string()),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId, filingId } = await requireUserContext(context);
     const { year, sourceNote } = input;
     const slug =
       input.accountSlug ||
@@ -175,6 +175,7 @@ export const ingest1099Consolidated = createTool({
       await recordFact(supabase, {
         id: crypto.randomUUID(),
         userId,
+        filingId,
         taxYear: year,
         category: "investment_income",
         key: makeDividendFactKey(slug),
@@ -206,6 +207,7 @@ export const ingest1099Consolidated = createTool({
         await recordFact(supabase, {
           id: crypto.randomUUID(),
           userId,
+          filingId,
           taxYear: year,
           category: "investment_income",
           key: makeTradeFactKey(slug, tradeId),
@@ -221,6 +223,7 @@ export const ingest1099Consolidated = createTool({
         await recordDecision(supabase, {
           id: crypto.randomUUID(),
           userId,
+          filingId,
           taxYear: year,
           decisionKey: `decisions.trade.${tradeId}.form_8949_box`,
           decision: box,
@@ -238,6 +241,7 @@ export const ingest1099Consolidated = createTool({
       await recordDecision(supabase, {
         id: crypto.randomUUID(),
         userId,
+        filingId,
         taxYear: year,
         decisionKey: "decisions.scope.has_reportable_sales",
         decision: true,

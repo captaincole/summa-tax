@@ -1,14 +1,17 @@
 import { createClient } from "@/lib/supabase/client";
 import { getUserId } from "@/lib/auth";
+import { getOwnerFilingForYear } from "@/lib/filings";
 
 // Persists a user-attached file to the `user-documents` Storage bucket
 // (`uploads` category) and inserts a metadata row in `user_documents`. RLS
-// scopes both operations to the authenticated user — the same JWT that
-// drives the rest of the supabase-js client.
+// scopes both operations to the caller's filing membership — storage paths
+// live under `{filingId}/...` and the metadata row carries `filing_id`.
 //
 // This runs in parallel with the chat stream: bytes go browser → Supabase
 // directly (no agent in the path) while the same bytes also flow through
 // the chat message as base64 for the agent's vision-based extraction.
+
+const DEMO_TAX_YEAR = 2025;
 
 const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
@@ -58,9 +61,13 @@ export async function uploadDocument(file: File): Promise<UploadResult> {
   if (!userId) throw new Error("Not signed in — cannot upload");
 
   const supabase = createClient();
+  const filing = await getOwnerFilingForYear(supabase, DEMO_TAX_YEAR);
+
   const slug = slugify(file.name);
   const ext = extensionOf(file.name, file.type);
-  const storagePath = `${userId}/uploads/${slug}-${ulid()}.${ext}`;
+  // Path prefix is the filing id — the storage.objects RLS policy reads
+  // the first folder segment and checks filing_members membership.
+  const storagePath = `${filing.id}/uploads/${slug}-${ulid()}.${ext}`;
 
   const upload = await supabase.storage
     .from("user-documents")
@@ -76,6 +83,7 @@ export async function uploadDocument(file: File): Promise<UploadResult> {
     .from("user_documents")
     .insert({
       user_id: userId,
+      filing_id: filing.id,
       category: "uploads",
       filename: file.name,
       storage_path: storagePath,

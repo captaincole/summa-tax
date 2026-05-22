@@ -6,6 +6,12 @@ import { thom } from "../agents/thom";
 // hits POST /app/session/reset, which calls resetCurrentUserData below. There
 // is no wholesale-truncate path; for that, run TRUNCATE in the Supabase SQL
 // editor (or against a local Supabase instance once we have one).
+//
+// Filings + filing_members are deliberately NOT wiped. Resetting the filing
+// to a known-empty state (zero facts, decisions, questions, documents,
+// requests) shouldn't terminate any CPA shares or force the owner to
+// re-create the filing. The row + memberships persist; everything inside
+// the filing gets cleared.
 
 export interface PerUserResetResult {
   domainRowsDeleted: number;

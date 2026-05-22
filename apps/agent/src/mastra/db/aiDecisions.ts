@@ -33,6 +33,7 @@ export interface AuthorityCitation {
 export interface AIDecision {
   id: string;
   userId: string;
+  filingId: string;
   taxYear: number;
   decisionKey: string;
   decision: unknown;
@@ -109,6 +110,7 @@ export async function recordDecision(
   const { error } = await supabase.from("ai_decisions").insert({
     id: d.id,
     user_id: d.userId,
+    filing_id: d.filingId,
     tax_year: d.taxYear,
     decision_key: d.decisionKey,
     decision: d.decision,

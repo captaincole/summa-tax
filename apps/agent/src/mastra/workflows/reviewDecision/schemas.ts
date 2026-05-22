@@ -109,6 +109,7 @@ export const loopCarrierSchema = z.object({
   decisionId: z.string(),
   reviewRunId: z.string(),
   userId: z.string(),
+  filingId: z.string(),
   taxYear: z.number().int(),
   decisionKey: z.string(),
   decisionValue: z.unknown(),
@@ -118,7 +119,10 @@ export const loopCarrierSchema = z.object({
   supportingFactKeys: z.array(z.string()),
 
   // Iteration state — bumped by rule when emitting need_more_evidence.
-  iteration: z.number().int().min(1).max(3),
+  // Max 4 because ruleStep can bump from 3 → 4 on the final iteration if
+  // it still wants more evidence; the loop then exits on iterationCount >= 3
+  // and finalize clamps the reported value back to 3 via Math.min.
+  iteration: z.number().int().min(1).max(4),
   queries: z.array(z.string()),
 
   // Reasons accumulated across iterations when rule kicks back to gather.

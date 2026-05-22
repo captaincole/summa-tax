@@ -27,7 +27,7 @@ export const dismissRequestedAction = createTool({
     actionId: z.string().nullable(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId } = await requireUserContext(context);
 
     const { data, error } = await supabase
       .from("requested_actions")

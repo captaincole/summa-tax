@@ -38,7 +38,7 @@ export const requestDocumentUpload = createTool({
     requested: z.boolean(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId, filingId } = await requireUserContext(context);
 
     // Dedup: one open|processing card per documentType. If Thom calls
     // this tool twice for "W-2" in the same turn (or across turns
@@ -65,6 +65,7 @@ export const requestDocumentUpload = createTool({
     const { error } = await supabase.from("requested_actions").insert({
       id,
       user_id: userId,
+      filing_id: filingId,
       tax_year: input.year,
       kind: "upload",
       title: input.title,
