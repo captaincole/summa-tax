@@ -10,7 +10,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // must be user-scoped (built per-request from the user's JWT). Service-role
 // callers bypass RLS — only use them for admin operations like reset.
 //
-// Storage paths are `{userId}/{category}/{slug}-{ulid}.{ext}`. The ULID
+// Storage paths are `{filingId}/{category}/{slug}-{ulid}.{ext}`. Filing-id
+// prefix lets the storage.objects RLS policy gate access via filing_members
+// membership (parallel to the row-level policy on user_documents). The ULID
 // suffix avoids collisions when generate-tax-documents runs multiple times
 // (each run creates new rows + new files; old chat-message links keep
 // resolving to the version they were generated against).
@@ -83,17 +85,18 @@ function ulid(): string {
 }
 
 function buildStoragePath(
-  userId: string,
+  filingId: string,
   category: Category,
   baseSlug: string,
   extension: string,
 ): string {
   const safeExt = extension.startsWith(".") ? extension.slice(1) : extension;
-  return `${userId}/${category}/${baseSlug}-${ulid()}.${safeExt}`;
+  return `${filingId}/${category}/${baseSlug}-${ulid()}.${safeExt}`;
 }
 
 export interface CreateDocumentInput {
   userId: string;
+  filingId: string;
   category: Category;
   scenario?: string | null;
   /** Display name shown in the UI / chat link (e.g., "Form 1040 — 2025"). */
@@ -124,7 +127,7 @@ export async function createDocument(
   input: CreateDocumentInput,
 ): Promise<CreateDocumentResult> {
   const storagePath = buildStoragePath(
-    input.userId,
+    input.filingId,
     input.category,
     input.storageSlug,
     input.extension,
@@ -148,6 +151,7 @@ export async function createDocument(
     .from("user_documents")
     .insert({
       user_id: input.userId,
+      filing_id: input.filingId,
       category: input.category,
       scenario: input.scenario ?? null,
       filename: input.filename,

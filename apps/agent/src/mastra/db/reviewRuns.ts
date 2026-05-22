@@ -18,6 +18,7 @@ export interface InsertReviewRunArgs {
   id: string;
   decisionId: string;
   userId: string;
+  filingId: string;
 }
 
 export async function insertReviewRun(
@@ -28,6 +29,7 @@ export async function insertReviewRun(
     id: args.id,
     decision_id: args.decisionId,
     user_id: args.userId,
+    filing_id: args.filingId,
     status: "running",
   });
   if (error) throw new Error(`insertReviewRun failed: ${error.message}`);
@@ -64,6 +66,7 @@ export interface RecordStepArgs {
   id: string;
   runId: string;
   userId: string;
+  filingId: string;
   iteration: number;
   stepKind: ReviewStepKind;
   input: unknown;
@@ -79,6 +82,7 @@ export async function recordReviewStep(
     id: args.id,
     run_id: args.runId,
     user_id: args.userId,
+    filing_id: args.filingId,
     iteration: args.iteration,
     step_kind: args.stepKind,
     input_json: args.input,

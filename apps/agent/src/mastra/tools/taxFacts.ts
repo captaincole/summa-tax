@@ -51,11 +51,12 @@ export const recordTaxFact = createTool({
     recorded: z.boolean(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId, filingId } = await requireUserContext(context);
     const id = crypto.randomUUID();
     await recordFact(supabase, {
       id,
       userId,
+      filingId,
       taxYear: input.year,
       category: input.category,
       key: input.key,
@@ -90,7 +91,7 @@ export const listTaxFacts = createTool({
     ),
   }),
   execute: async (input, context) => {
-    const { supabase } = requireUserContext(context);
+    const { supabase } = await requireUserContext(context);
     const facts = await listFacts(supabase, {
       taxYear: input.year,
       category: input.category,
@@ -121,7 +122,7 @@ export const listOpenQuestionsTool = createTool({
     ),
   }),
   execute: async (input, ctx) => {
-    const { supabase } = requireUserContext(ctx);
+    const { supabase } = await requireUserContext(ctx);
     const questions = await listOpenQuestions(supabase, input.status ?? "open");
     return { questions };
   },
@@ -137,7 +138,7 @@ export const resolveOpenQuestion = createTool({
     resolved: z.boolean(),
   }),
   execute: async (input, ctx) => {
-    const { supabase } = requireUserContext(ctx);
+    const { supabase } = await requireUserContext(ctx);
     await resolveQuestion(supabase, input.id);
     return { resolved: true };
   },

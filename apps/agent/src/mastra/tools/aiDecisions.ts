@@ -55,11 +55,12 @@ export const recordAIDecision = createTool({
     verdictReason: z.string(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = requireUserContext(context);
+    const { supabase, userId, filingId } = await requireUserContext(context);
     const id = crypto.randomUUID();
     await recordDecision(supabase, {
       id,
       userId,
+      filingId,
       taxYear: input.year,
       decisionKey: input.decisionKey,
       decision: input.decision,
@@ -135,7 +136,7 @@ export const listAIDecisions = createTool({
     ),
   }),
   execute: async (input, context) => {
-    const { supabase } = requireUserContext(context);
+    const { supabase } = await requireUserContext(context);
     const decisions = await listDecisions(supabase, {
       taxYear: input.year,
       decisionKey: input.decisionKey,

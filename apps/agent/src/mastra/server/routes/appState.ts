@@ -10,6 +10,7 @@ import {
 } from "../../agents/thom.workingMemory";
 import { DEMO_TAX_YEAR } from "../demoSession";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
+import { resolveOwnerFilingForYear } from "../../db/filings";
 
 // Must match apps/web/lib/returns.ts:threadIdFor — no shared package yet.
 function threadIdFor(userId: string, returnId: string | number): string {
