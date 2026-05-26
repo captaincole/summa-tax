@@ -11,10 +11,18 @@ export interface FilingRow {
   status: string;
 }
 
+export interface ReviewableFilingRow extends FilingRow {
+  createdAt: string;
+}
+
 interface FilingDbRow {
   id: string;
   tax_year: number;
   status: string;
+}
+
+interface ReviewableFilingDbRow extends FilingDbRow {
+  created_at: string;
 }
 
 export async function getOwnerFilingForYear(
@@ -43,4 +51,37 @@ export async function getOwnerFilingForYear(
   }
   const r = rows[0];
   return { id: r.id, taxYear: r.tax_year, status: r.status };
+}
+
+// List every filing the caller has a non-revoked cpa_reviewer membership
+// on. Empty array (not throw) when the caller reviews nothing — the CPA
+// landing page wants to render an empty state, not an error.
+//
+// Sorted newest-first by created_at so the most recent invitation lands
+// at the top. Taxpayer identity is intentionally NOT joined here; the
+// list-page UI fetches identity facts per-filing in a follow-up query
+// (RLS lets the reviewer read tax_facts via member-read).
+export async function listReviewableFilings(
+  supabase: SupabaseClient,
+): Promise<ReviewableFilingRow[]> {
+  const { data, error } = await supabase
+    .from("filings")
+    .select(
+      "id, tax_year, status, created_at, filing_members!inner(role, revoked_at)",
+    )
+    .eq("filing_members.role", "cpa_reviewer")
+    .is("filing_members.revoked_at", null)
+    .order("created_at", { ascending: false });
+  if (error) {
+    throw new Error(`listReviewableFilings failed: ${error.message}`);
+  }
+  const rows = (data ?? []) as Array<
+    ReviewableFilingDbRow & { filing_members: unknown }
+  >;
+  return rows.map((r) => ({
+    id: r.id,
+    taxYear: r.tax_year,
+    status: r.status,
+    createdAt: r.created_at,
+  }));
 }

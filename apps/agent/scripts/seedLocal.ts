@@ -3,15 +3,21 @@
 //
 // Runs AFTER `supabase db reset` (which has already applied migrations) and
 // creates:
-//   1. Two auth users via the GoTrue admin API. We use the admin API rather
-//      than raw INSERT INTO auth.users because GoTrue handles bcrypt hashing,
-//      auth.identities row creation, and any future auth-schema additions
-//      Supabase ships. Resilient to upgrades.
-//   2. One 2025 owner filing per user, with an `owner` filing_members row.
+//   1. Three auth users via the GoTrue admin API (two taxpayer owners + one
+//      CPA reviewer). We use the admin API rather than raw INSERT INTO
+//      auth.users because GoTrue handles bcrypt hashing, auth.identities
+//      row creation, and any future auth-schema additions Supabase ships.
+//      Resilient to upgrades.
+//   2. One 2025 owner filing per taxpayer, with an `owner` filing_members
+//      row.
+//   3. A cpa_profiles row for the CPA user, plus cpa_reviewer filing_members
+//      rows linking the CPA to every owner's filing. Lets us exercise the
+//      CPA list page in local dev without writing raw SQL each time.
 //
 // Idempotent — re-running this script after auth users / filings already
 // exist is a no-op (admin.createUser → "User already registered" is caught
-// and treated as success; filing seed has a NOT EXISTS guard).
+// and treated as success; filing/profile/membership seeds all check
+// existence first).
 //
 // Env vars (load from apps/agent/.env.development via tsx --env-file):
 //   SUPABASE_URL          local API gateway, e.g. http://127.0.0.1:54321
@@ -21,10 +27,20 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-const TEST_USERS = [
+const TEST_OWNERS = [
   { email: "rand@localhost", password: "testpass123!" },
   { email: "cpa-reviewer@localhost", password: "testpass123!" },
 ];
+
+const TEST_CPA = {
+  email: "cpa@localhost",
+  password: "testpass123!",
+  profile: {
+    displayName: "Jane Doe, CPA",
+    firm: "Acme CPA Group",
+    licenseNumber: "CA-123456",
+  },
+};
 
 const TAX_YEAR = 2025;
 
@@ -134,13 +150,88 @@ async function ensureOwnerFiling(
   return filingId;
 }
 
+async function ensureCpaProfile(
+  userId: string,
+  email: string,
+  profile: { displayName: string; firm: string; licenseNumber: string },
+): Promise<void> {
+  const { data: existing, error: lookupError } = await admin
+    .from("cpa_profiles")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (lookupError) {
+    throw new Error(`cpa_profiles lookup for ${email} failed: ${lookupError.message}`);
+  }
+  if (existing) {
+    console.log(`  cpa_profile for ${email} already exists`);
+    return;
+  }
+  const { error } = await admin.from("cpa_profiles").insert({
+    user_id: userId,
+    display_name: profile.displayName,
+    firm: profile.firm,
+    license_number: profile.licenseNumber,
+  });
+  if (error) {
+    throw new Error(`insert cpa_profile for ${email} failed: ${error.message}`);
+  }
+  console.log(`  created cpa_profile for ${email}`);
+}
+
+async function ensureCpaMembership(
+  filingId: string,
+  cpaUserId: string,
+  ownerEmail: string,
+): Promise<void> {
+  // filing_members primary key is (filing_id, user_id) — duplicate-insert
+  // is a hard error from the server, so we existence-check first.
+  const { data: existing, error: lookupError } = await admin
+    .from("filing_members")
+    .select("filing_id")
+    .eq("filing_id", filingId)
+    .eq("user_id", cpaUserId)
+    .maybeSingle();
+  if (lookupError) {
+    throw new Error(
+      `cpa_reviewer membership lookup on ${ownerEmail}'s filing failed: ${lookupError.message}`,
+    );
+  }
+  if (existing) {
+    console.log(`  cpa_reviewer membership on ${ownerEmail}'s filing already exists`);
+    return;
+  }
+  const { error } = await admin.from("filing_members").insert({
+    filing_id: filingId,
+    user_id: cpaUserId,
+    role: "cpa_reviewer",
+  });
+  if (error) {
+    throw new Error(
+      `insert cpa_reviewer membership on ${ownerEmail}'s filing failed: ${error.message}`,
+    );
+  }
+  console.log(`  granted cpa_reviewer on ${ownerEmail}'s filing`);
+}
+
 async function main() {
   console.log(`Seeding local Supabase at ${SUPABASE_URL}`);
-  for (const { email, password } of TEST_USERS) {
+
+  const ownerFilings: Array<{ email: string; filingId: string }> = [];
+  for (const { email, password } of TEST_OWNERS) {
     console.log(`\n${email}:`);
     const userId = await ensureAuthUser(email, password);
-    await ensureOwnerFiling(userId, email, TAX_YEAR);
+    const filingId = await ensureOwnerFiling(userId, email, TAX_YEAR);
+    ownerFilings.push({ email, filingId });
   }
+
+  console.log(`\n${TEST_CPA.email}:`);
+  const cpaUserId = await ensureAuthUser(TEST_CPA.email, TEST_CPA.password);
+  await ensureCpaProfile(cpaUserId, TEST_CPA.email, TEST_CPA.profile);
+  for (const f of ownerFilings) {
+    await ensureCpaMembership(f.filingId, cpaUserId, f.email);
+  }
+
   console.log("\nDone. Test users sign in with password: testpass123!");
 }
 

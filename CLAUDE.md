@@ -105,12 +105,13 @@ npm run db:stop                 # shut docker down at end of day (optional)
 
 **Seeded test users** (from `apps/agent/scripts/seedLocal.ts`):
 
-| email | password |
-| --- | --- |
-| `rand@localhost` | `testpass123!` |
-| `cpa-reviewer@localhost` | `testpass123!` |
+| email | role | password |
+| --- | --- | --- |
+| `rand@localhost` | taxpayer (owner) | `testpass123!` |
+| `cpa-reviewer@localhost` | taxpayer (owner) | `testpass123!` |
+| `cpa@localhost` | CPA reviewer | `testpass123!` |
 
-Each has one owner-role membership on a 2025 filing (see "Filings ownership model" / CPA section once that lands).
+Each taxpayer has one owner-role membership on a 2025 filing. The CPA user has a `cpa_profiles` row plus a `cpa_reviewer` `filing_members` row on *both* taxpayers' filings — sign in as the CPA to exercise the multi-filing list page.
 
 **URLs to remember**:
 
