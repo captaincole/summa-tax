@@ -11,9 +11,9 @@
 // hit this page (e.g. archived 2023), bail with a placeholder.
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getOwnerFilingForYear } from "@/lib/filings";
-import { getReturnById } from "@/lib/returns";
 import { listCpaDirectory, listFilingInvites } from "@/lib/cpa";
 import { ShareForm } from "./ShareForm";
 
@@ -23,23 +23,14 @@ export default async function SharePage({
   params: Promise<{ returnId: string }>;
 }) {
   const { returnId } = await params;
-  const activeReturn = getReturnById(returnId);
-
-  if (!activeReturn || !activeReturn.realDataAvailable) {
-    return (
-      <div className="px-6 lg:px-10 py-16 max-w-2xl mx-auto text-center">
-        <h1 className="font-serif text-2xl text-ink-primary">
-          Sharing isn't available for this return
-        </h1>
-        <p className="text-ink-secondary text-sm mt-3">
-          Switch to your active 2025 return to invite a reviewer.
-        </p>
-      </div>
-    );
-  }
+  const year = Number.parseInt(returnId, 10);
+  // Layout above already redirected if the caller isn't an owner of this
+  // year, so reaching here means the filing exists — but parse defensively
+  // in case someone hits the route with a non-numeric slug.
+  if (!Number.isInteger(year)) redirect("/");
 
   const supabase = await createClient();
-  const filing = await getOwnerFilingForYear(supabase, activeReturn.year);
+  const filing = await getOwnerFilingForYear(supabase, year);
   const [directory, invites] = await Promise.all([
     listCpaDirectory(supabase),
     listFilingInvites(supabase, filing.id),
@@ -68,7 +59,7 @@ export default async function SharePage({
       <div className="mt-8 text-[12px] text-ink-faint leading-relaxed">
         <p>
           <Link
-            href={`/r/${activeReturn.id}`}
+            href={`/r/${year}`}
             className="text-ink-secondary hover:text-ink-primary transition-colors"
           >
             ← Back to your return

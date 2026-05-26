@@ -333,18 +333,15 @@ function IconButton({
 }
 
 function placeholderMessageFor(ret: TaxReturn): ChatMessage {
+  // Unreachable today — the return-layout redirects to '/' when the caller
+  // doesn't own a filing for the requested year, so every TaxReturn that
+  // reaches ChatPane is realDataAvailable=true. Kept as a defense-in-depth
+  // fallback (drift between RLS and the layout would otherwise crash here).
   if (ret.state === "filed") {
     return {
       id: "placeholder",
       role: "assistant",
-      content: `This is your filed ${ret.year} return — read-only for now. ${ret.outcome ? `Final outcome: ${ret.outcome}.` : ""}`,
-    };
-  }
-  if (ret.state === "empty") {
-    return {
-      id: "placeholder",
-      role: "assistant",
-      content: `Placeholder for your ${ret.label.toLowerCase()}. Real work happens on your 2025 Return for now — switch back via the picker above.`,
+      content: `This is your filed ${ret.year} return — read-only for now.`,
     };
   }
   return {

@@ -1,80 +1,92 @@
-// Returns helper. For Phase 1 the list is hardcoded — one real return
-// (2025) with full data wiring, plus placeholders so the multi-return UX
-// reads as real. When we add a `returns` Supabase table, swap this for a
-// query and keep the same exported shape.
-//
-// `realDataAvailable` is the switch every consumer reads. For non-real
-// returns we skip the /app/state fetch, skip the activity query, and
-// render empty placeholder states — no fake data structs flowing through
-// real components.
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type ReturnState = "active" | "empty" | "filed";
+// Returns helper. The list comes from the filings + filing_members tables —
+// every owner filing the caller has is a TaxReturn. The URL slug stays the
+// year string (e.g. "2025") because each user has at most one filing per
+// tax_year today; the agent's appState route also keys threads + draft
+// lookups by year. Filing UUID is carried in the TaxReturn for callers
+// that need it (e.g. resolving the share page).
+//
+// `realDataAvailable` is kept on the type because a handful of /r/* pages
+// still branch on it. With the query-based world every TaxReturn is real,
+// so the field is always `true`. The dead-code branches are intentional
+// short-term — they will get pruned in a follow-up sweep alongside the
+// rest of the per-page placeholder handling.
+
+export type ReturnState = "active" | "filed";
 
 export interface TaxReturn {
   id: string;
   year: number;
+  filingId: string;
   label: string;
   state: ReturnState;
-  // True only for returns wired to real Supabase / Mastra data.
   realDataAvailable: boolean;
-  // Optional read-only metadata for filed returns.
-  filedOn?: string;
-  outcome?: string;
-  outcomePositive?: boolean;
+  status: string;
 }
 
-export const RETURNS: TaxReturn[] = [
-  {
-    id: "2025",
-    year: 2025,
-    label: "2025 Return",
-    state: "active",
+interface FilingRow {
+  id: string;
+  tax_year: number;
+  status: string;
+}
+
+function rowToReturn(r: FilingRow): TaxReturn {
+  const state: ReturnState = r.status === "filed" ? "filed" : "active";
+  return {
+    id: String(r.tax_year),
+    year: r.tax_year,
+    filingId: r.id,
+    label: `${r.tax_year} Return`,
+    state,
     realDataAvailable: true,
-  },
-  {
-    id: "2024-amend",
-    year: 2024,
-    label: "2024 Amend",
-    state: "empty",
-    realDataAvailable: false,
-  },
-  {
-    id: "2023",
-    year: 2023,
-    label: "2023 Return",
-    state: "filed",
-    realDataAvailable: false,
-    filedOn: "Mar 12, 2024",
-    outcome: "Refund $4,210",
-    outcomePositive: true,
-  },
-  {
-    id: "2022",
-    year: 2022,
-    label: "2022 Return",
-    state: "filed",
-    realDataAvailable: false,
-    filedOn: "Mar 28, 2023",
-    outcome: "Owed $1,400",
-    outcomePositive: false,
-  },
-];
-
-export const DEFAULT_RETURN_ID = "2025";
-
-export function getReturnById(id: string): TaxReturn | undefined {
-  return RETURNS.find((r) => r.id === id);
+    status: r.status,
+  };
 }
 
-export function getDefaultReturn(): TaxReturn {
-  const real = getReturnById(DEFAULT_RETURN_ID);
-  if (!real) throw new Error("Default return missing from RETURNS list");
-  return real;
+// Every owner filing the caller has, newest year first. Empty array (not
+// throw) when the caller owns no filings — home-home renders the empty-state
+// CTA in that case.
+export async function listOwnerReturns(
+  supabase: SupabaseClient,
+): Promise<TaxReturn[]> {
+  const { data, error } = await supabase
+    .from("filings")
+    .select("id, tax_year, status, filing_members!inner(role, revoked_at)")
+    .eq("filing_members.role", "owner")
+    .is("filing_members.revoked_at", null)
+    .order("tax_year", { ascending: false });
+  if (error) {
+    throw new Error(`listOwnerReturns failed: ${error.message}`);
+  }
+  const rows = (data ?? []) as Array<FilingRow & { filing_members: unknown }>;
+  return rows.map(rowToReturn);
+}
+
+// Resolve a single owner return by year. Returns null when the caller has
+// no owner filing for that year (route layout redirects to / in that case).
+export async function getOwnerReturnByYear(
+  supabase: SupabaseClient,
+  taxYear: number,
+): Promise<TaxReturn | null> {
+  const { data, error } = await supabase
+    .from("filings")
+    .select("id, tax_year, status, filing_members!inner(role, revoked_at)")
+    .eq("tax_year", taxYear)
+    .eq("filing_members.role", "owner")
+    .is("filing_members.revoked_at", null)
+    .maybeSingle();
+  if (error) {
+    throw new Error(`getOwnerReturnByYear failed: ${error.message}`);
+  }
+  if (!data) return null;
+  return rowToReturn(data as FilingRow & { filing_members: unknown });
 }
 
 // Deterministic per-user + per-return thread ID. Must match the format used
 // by /app/state in apps/agent (no shared package yet — keep these in sync).
-// When we move to per-filing scoping, extend this with a filing identifier.
+// We key by year (not filing UUID) so a reset that wipes-and-recreates the
+// filing keeps a stable conversational thread for the user.
 export function threadIdFor(userId: string, returnId: string): string {
   return `${userId}::${returnId}`;
 }
