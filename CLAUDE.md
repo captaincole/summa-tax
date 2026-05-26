@@ -108,10 +108,9 @@ npm run db:stop                 # shut docker down at end of day (optional)
 | email | role | password |
 | --- | --- | --- |
 | `rand@localhost` | taxpayer (owner) | `testpass123!` |
-| `eawhite04@localhost` | taxpayer (owner) | `testpass123!` |
-| `cpa@localhost` | CPA reviewer | `testpass123!` |
+| `edwhite@localhost` | CPA (no memberships yet) | `testpass123!` |
 
-Each taxpayer has one owner-role membership on a 2025 filing. The CPA user has a `cpa_profiles` row plus a `cpa_reviewer` `filing_members` row on *both* taxpayers' filings — sign in as the CPA to exercise the multi-filing list page.
+Rand has one owner-role membership on a 2025 filing. Ed has a `cpa_profiles` row but is intentionally NOT attached to any filing — exercise the share flow (`/r/<filingId>/share`) by signing in as Rand, inviting `edwhite@localhost`, then signing out and back in as Ed to see the filing at `/cpa`.
 
 **URLs to remember**:
 
