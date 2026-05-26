@@ -11,6 +11,8 @@ import { reviewDecisionWorkflow } from "./workflows/reviewDecision";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appStateRoute } from "./server/routes/appState";
+import { cpaFilingStateRoute } from "./server/routes/cpaFilingState";
+import { inviteCpaRoute } from "./server/routes/inviteCpa";
 import { sessionResetRoute } from "./server/routes/sessionReset";
 import { createStorage } from "./server/storage";
 import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
@@ -89,7 +91,12 @@ export const mastra = new Mastra({
       // pull it via tools/userContext.ts and HONO_CONTEXT_KEYS respectively.
       userSupabaseMiddleware,
     ],
-    apiRoutes: [appStateRoute, sessionResetRoute],
+    apiRoutes: [
+      appStateRoute,
+      cpaFilingStateRoute,
+      inviteCpaRoute,
+      sessionResetRoute,
+    ],
   },
 });
 

@@ -14,7 +14,9 @@
 // user_id; the chart components stay the same.
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { listReviewableFilings } from "@/lib/filings";
 import { RETURNS } from "@/lib/returns";
 import { cn } from "@/lib/cn";
 
@@ -61,6 +63,22 @@ export default async function HomeHome() {
     data: { user },
   } = await supabase.auth.getUser();
   const initials = (user?.email?.slice(0, 2) ?? "AC").toUpperCase();
+
+  // CPA-only users (no owner filings but at least one cpa_reviewer
+  // membership) get bounced to the CPA landing page so they don't land on
+  // a taxpayer home rendered from mock data. Mixed-role users — someone
+  // who's both a taxpayer AND a CPA for someone else — stay here and can
+  // navigate to /cpa via a future header link.
+  const reviewable = await listReviewableFilings(supabase);
+  if (reviewable.length > 0) {
+    const { count: ownerCount } = await supabase
+      .from("filing_members")
+      .select("filing_id", { count: "exact", head: true })
+      .eq("user_id", user?.id ?? "")
+      .eq("role", "owner")
+      .is("revoked_at", null);
+    if ((ownerCount ?? 0) === 0) redirect("/cpa");
+  }
 
   return (
     <div className="min-h-screen w-full bg-bg-base text-ink-primary flex flex-col">

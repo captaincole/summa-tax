@@ -58,6 +58,20 @@ export async function buildCaseState(
   return buildCaseStateForScenario(await evaluateScenario(supabase, filing));
 }
 
+// Variant that takes a filing identity directly — used by the CPA review
+// route, where the caller is NOT the owner and the owner resolver would
+// throw. Caller is responsible for verifying the user is allowed to read
+// this filing (e.g. via filing_members membership) BEFORE invoking; this
+// function trusts the inputs.
+export async function buildCaseStateForFiling(
+  supabase: SupabaseClient,
+  filingId: string,
+  taxYear: number,
+) {
+  const filing: EngineFiling = { id: filingId, taxYear };
+  return buildCaseStateForScenario(await evaluateScenario(supabase, filing));
+}
+
 export function buildCaseStateForScenario(scenario: EvaluatedScenario) {
   const { forms, facts, decisions, filingInfo, authEmail } = scenario;
   const form1040 = forms.get("form-1040")!;

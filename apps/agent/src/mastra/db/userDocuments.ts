@@ -177,6 +177,10 @@ export interface ListDocumentsOpts {
   formId?: string;
   /** Filter by metadata.taxYear. */
   taxYear?: number;
+  /** Filter by filing_id. Required when a caller has membership on more than
+   *  one filing (e.g. a CPA reviewing multiple taxpayers) — without it
+   *  drafts from sibling filings co-mingle in the result. */
+  filingId?: string;
   limit?: number;
 }
 
@@ -198,6 +202,7 @@ export async function listDocuments(
   if (opts.taxYear !== undefined) {
     q = q.eq("metadata->>taxYear", String(opts.taxYear));
   }
+  if (opts.filingId) q = q.eq("filing_id", opts.filingId);
   const { data, error } = await q;
   if (error) throw new Error(`listDocuments failed: ${error.message}`);
   return ((data ?? []) as UserDocumentDbRow[]).map(rowToDocument);

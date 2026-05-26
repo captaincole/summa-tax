@@ -26,6 +26,7 @@ const TABS = [
   { id: "home", label: "Home", path: "" },
   { id: "forms", label: "Forms", path: "/forms" },
   { id: "documents", label: "Documents", path: "/documents" },
+  { id: "share", label: "Share", path: "/share" },
 ] as const;
 
 export function TopBar({ activeReturn }: TopBarProps) {
