@@ -1,0 +1,1104 @@
+{
+  "form": {
+    "formId": "schedule-b",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Schedule B (Form 1040) — Interest and Ordinary Dividends"
+  },
+  "fields": [
+    {
+      "fieldId": "schedule-b.0.header.taxpayer_name",
+      "label": "Name(s) shown on return",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+      "position": {
+        "page": 0,
+        "x": 468,
+        "y": 684
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_1",
+      "label": "Line 1 — List name of payer (row 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Line1_ReadOrder[0].f1_03[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 636.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_1",
+      "label": "Line 1 — Amount (row 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_04[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 636.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_2",
+      "label": "Line 1 — List name of payer (row 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_05[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 624.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_2",
+      "label": "Line 1 — Amount (row 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_06[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 624.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_3",
+      "label": "Line 1 — List name of payer (row 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_07[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_3",
+      "label": "Line 1 — Amount (row 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_08[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_4",
+      "label": "Line 1 — List name of payer (row 4)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_09[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 600.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_4",
+      "label": "Line 1 — Amount (row 4)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 600.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_5",
+      "label": "Line 1 — List name of payer (row 5)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 588.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_5",
+      "label": "Line 1 — Amount (row 5)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 588.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_6",
+      "label": "Line 1 — List name of payer (row 6)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 576
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_6",
+      "label": "Line 1 — Amount (row 6)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 576
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_7",
+      "label": "Line 1 — List name of payer (row 7)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 564.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_7",
+      "label": "Line 1 — Amount (row 7)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 564.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_8",
+      "label": "Line 1 — List name of payer (row 8)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 552.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_8",
+      "label": "Line 1 — Amount (row 8)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 552.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_9",
+      "label": "Line 1 — List name of payer (row 9)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 540
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_9",
+      "label": "Line 1 — Amount (row 9)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 540
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_10",
+      "label": "Line 1 — List name of payer (row 10)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 528.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_10",
+      "label": "Line 1 — Amount (row 10)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 528.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_11",
+      "label": "Line 1 — List name of payer (row 11)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 516.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_11",
+      "label": "Line 1 — Amount (row 11)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 516.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_12",
+      "label": "Line 1 — List name of payer (row 12)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_12",
+      "label": "Line 1 — Amount (row 12)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_13",
+      "label": "Line 1 — List name of payer (row 13)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 492.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_13",
+      "label": "Line 1 — Amount (row 13)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 492.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_14",
+      "label": "Line 1 — List name of payer (row 14)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 480.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_14",
+      "label": "Line 1 — Amount (row 14)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 480.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.2_total_interest",
+      "label": "Line 2 — Add the amounts on line 1",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_31[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 468
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.3_excludable_savings_bond_interest",
+      "label": "Line 3 — Excludable interest on series EE and I U.S. savings bonds issued after 1989. Attach Form 8815",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_32[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 444.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.4_taxable_interest",
+      "label": "Line 4 — Subtract line 3 from line 2. Enter the result here and on Form 1040 or 1040-SR, line 2b",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_33[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 432
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_1",
+      "label": "Line 5 — List name of payer (row 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].ReadOrderControl[0].f1_34[0]",
+      "position": {
+        "page": 0,
+        "x": 201.6,
+        "y": 408.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_1",
+      "label": "Line 5 — Amount (row 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_35[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 408.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_2",
+      "label": "Line 5 — List name of payer (row 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_36[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 396
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_2",
+      "label": "Line 5 — Amount (row 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_37[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 396
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_3",
+      "label": "Line 5 — List name of payer (row 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_38[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 384.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_3",
+      "label": "Line 5 — Amount (row 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_39[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 384.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_4",
+      "label": "Line 5 — List name of payer (row 4)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_40[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 372.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_4",
+      "label": "Line 5 — Amount (row 4)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_41[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 372.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_5",
+      "label": "Line 5 — List name of payer (row 5)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_42[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 360
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_5",
+      "label": "Line 5 — Amount (row 5)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_43[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 360
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_6",
+      "label": "Line 5 — List name of payer (row 6)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_44[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 348.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_6",
+      "label": "Line 5 — Amount (row 6)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_45[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 348.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_7",
+      "label": "Line 5 — List name of payer (row 7)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_46[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 336.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_7",
+      "label": "Line 5 — Amount (row 7)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_47[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 336.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_8",
+      "label": "Line 5 — List name of payer (row 8)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_48[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 324
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_8",
+      "label": "Line 5 — Amount (row 8)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_49[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 324
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_9",
+      "label": "Line 5 — List name of payer (row 9)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_50[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 312.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_9",
+      "label": "Line 5 — Amount (row 9)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_51[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 312.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_10",
+      "label": "Line 5 — List name of payer (row 10)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_52[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 300.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_10",
+      "label": "Line 5 — Amount (row 10)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_53[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 300.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_11",
+      "label": "Line 5 — List name of payer (row 11)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_54[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 288
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_11",
+      "label": "Line 5 — Amount (row 11)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_55[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 288
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_12",
+      "label": "Line 5 — List name of payer (row 12)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_56[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 276.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_12",
+      "label": "Line 5 — Amount (row 12)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_57[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 276.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_13",
+      "label": "Line 5 — List name of payer (row 13)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_58[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 264.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_13",
+      "label": "Line 5 — Amount (row 13)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_59[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 264.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_14",
+      "label": "Line 5 — List name of payer (row 14)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_60[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 252
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_14",
+      "label": "Line 5 — Amount (row 14)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_61[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 252
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_15",
+      "label": "Line 5 — List name of payer (row 15)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_62[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 240.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_15",
+      "label": "Line 5 — Amount (row 15)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_63[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 240.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.6_total_ordinary_dividends",
+      "label": "Line 6 — Add the amounts on line 5. Enter the total here and on Form 1040 or 1040-SR, line 3b",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_64[0]",
+      "position": {
+        "page": 0,
+        "x": 489.6,
+        "y": 228.002
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_foreign_account_yes",
+      "label": "Line 7a — At any time during 2025, did you have a financial interest in or signature authority over a financial account located in a foreign country? Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].TagcorrectingSubform[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 539.4,
+        "y": 133.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_foreign_account_no",
+      "label": "Line 7a — At any time during 2025, did you have a financial interest in or signature authority over a financial account located in a foreign country? No",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].TagcorrectingSubform[0].c1_1[1]",
+      "position": {
+        "page": 0,
+        "x": 561,
+        "y": 133.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_fincen_114_required_yes",
+      "label": "Line 7a — Are you required to file FinCEN Form 114 to report that financial interest or signature authority? Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 539.4,
+        "y": 97.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_fincen_114_required_no",
+      "label": "Line 7a — Are you required to file FinCEN Form 114 to report that financial interest or signature authority? No",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_2[1]",
+      "position": {
+        "page": 0,
+        "x": 561,
+        "y": 97.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7b_foreign_country_1",
+      "label": "Line 7b — If you are required to file FinCEN Form 114, list the name(s) of the foreign country(-ies) where the financial account(s) is (are) located (row 1)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_65[0]",
+      "position": {
+        "page": 0,
+        "x": 273.6,
+        "y": 72
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.7b_foreign_country_2",
+      "label": "Line 7b — If you are required to file FinCEN Form 114, list the name(s) of the foreign country(-ies) where the financial account(s) is (are) located (row 2)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_66[0]",
+      "position": {
+        "page": 0,
+        "x": 129.6,
+        "y": 60.001
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.8_foreign_trust_yes",
+      "label": "Line 8 — During 2025, did you receive a distribution from, or were you the grantor of, or transferor to, a foreign trust? Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 539.4,
+        "y": 37
+      }
+    },
+    {
+      "fieldId": "schedule-b.0.line.8_foreign_trust_no",
+      "label": "Line 8 — During 2025, did you receive a distribution from, or were you the grantor of, or transferor to, a foreign trust? No",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_3[1]",
+      "position": {
+        "page": 0,
+        "x": 561,
+        "y": 37
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/schedule-b/blank.pdf",
+    "ingestedAt": "2026-05-26T21:11:59.595Z",
+    "totalFields": 72,
+    "enriched": 72,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 72,
+    "tokensIn": 11542,
+    "tokensOut": 5688,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

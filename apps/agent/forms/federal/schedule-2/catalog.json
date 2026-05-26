@@ -1,0 +1,955 @@
+{
+  "form": {
+    "formId": "schedule-2",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Schedule 2 (Form 1040) — Additional Taxes"
+  },
+  "fields": [
+    {
+      "fieldId": "schedule-2.0.header.taxpayer_name",
+      "label": "Name(s) shown on Form 1040, 1040-SR, or 1040-NR",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_01[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_02[0]",
+      "position": {
+        "page": 0,
+        "x": 447.4,
+        "y": 684
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-2.0.line.1a_excess_aptc_repayment",
+      "label": "Line 1a — Excess advance premium tax credit repayment. Attach Form 8962",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].Line1a_ReadOrder[0].f1_03[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 636.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1b_new_clean_vehicle_credit_repayment",
+      "label": "Line 1b — Repayment of new clean vehicle credit(s) transferred to a registered dealer from Schedule A (Form 8936), Part II. Attach Form 8936 and Schedule A (Form 8936)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_04[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 594
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1c_previously_owned_clean_vehicle_credit_repayment",
+      "label": "Line 1c — Repayment of previously owned clean vehicle credit(s) transferred to a registered dealer from Schedule A (Form 8936), Part IV. Attach Form 8936 and Schedule A (Form 8936)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_05[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 552.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1d_recapture_net_epe_form4255",
+      "label": "Line 1d — Recapture of net EPE from Form 4255, line 2a, column (l)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_06[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 534.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1a",
+      "label": "Line 1e — Excessive payments (EPs) on gross EPE from Form 4255, check box (i) Line 1a",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 86.4,
+        "y": 494.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1c",
+      "label": "Line 1e — Excessive payments (EPs) on gross EPE from Form 4255, check box (ii) Line 1c",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[1]",
+      "position": {
+        "page": 0,
+        "x": 201.6,
+        "y": 494.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1d",
+      "label": "Line 1e — Excessive payments (EPs) on gross EPE from Form 4255, check box (iii) Line 1d",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[2]",
+      "position": {
+        "page": 0,
+        "x": 86.4,
+        "y": 482.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line2a",
+      "label": "Line 1e — Excessive payments (EPs) on gross EPE from Form 4255, check box (iv) Line 2a",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[3]",
+      "position": {
+        "page": 0,
+        "x": 201.6,
+        "y": 482.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_excessive_payments_epe_amount",
+      "label": "Line 1e — Excessive payments (EPs) on gross EPE from Form 4255, amount",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_07[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 480.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1a",
+      "label": "Line 1f — 20% EP from Form 4255, check box (i) Line 1a",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 86.4,
+        "y": 440.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1c",
+      "label": "Line 1f — 20% EP from Form 4255, check box (ii) Line 1c",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[1]",
+      "position": {
+        "page": 0,
+        "x": 201.6,
+        "y": 440.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1d",
+      "label": "Line 1f — 20% EP from Form 4255, check box (iii) Line 1d",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[2]",
+      "position": {
+        "page": 0,
+        "x": 86.4,
+        "y": 428.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line2a",
+      "label": "Line 1f — 20% EP from Form 4255, check box (iv) Line 2a",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[3]",
+      "position": {
+        "page": 0,
+        "x": 201.6,
+        "y": 428.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_amount",
+      "label": "Line 1f — 20% EP from Form 4255, amount",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_08[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 426.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1y_other_additions_description",
+      "label": "Line 1y — Other additions to tax (see instructions), description",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_09[0]",
+      "position": {
+        "page": 0,
+        "x": 230.4,
+        "y": 407.999
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1y_other_additions_amount",
+      "label": "Line 1y — Other additions to tax (see instructions), amount",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 408.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.1z_total_lines_1a_through_1y",
+      "label": "Line 1z — Add lines 1a through 1y",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 390.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.2_alternative_minimum_tax",
+      "label": "Line 2 — Alternative minimum tax. Attach Form 6251",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 372.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.3_total_lines_1z_and_2",
+      "label": "Line 3 — Add lines 1z and 2. Enter here and on Form 1040, 1040-SR, or 1040-NR, line 17",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 354.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_4361",
+      "label": "Line 4 — Self-employment tax exemption check box 1 (4361)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 79.2,
+        "y": 314.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_4029",
+      "label": "Line 4 — Self-employment tax exemption check box 2 (4029)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_4[0]",
+      "position": {
+        "page": 0,
+        "x": 158.4,
+        "y": 314.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_other",
+      "label": "Line 4 — Self-employment tax exemption check box 3",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_5[0]",
+      "position": {
+        "page": 0,
+        "x": 237.6,
+        "y": 314.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_other_form_number",
+      "label": "Line 4 — Self-employment tax exemption check box 3, form number",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].Line4_ReadOrder[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 312.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_self_employment_tax",
+      "label": "Line 4 — Self-employment tax. Attach Schedule SE",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 312.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.5_ss_medicare_tax_unreported_tips",
+      "label": "Line 5 — Social security and Medicare tax on unreported tip income. Attach Form 4137",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 294.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.6_uncollected_ss_medicare_tax_wages",
+      "label": "Line 6 — Uncollected social security and Medicare tax on wages. Attach Form 8919",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 276.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.7_total_additional_ss_medicare_tax",
+      "label": "Line 7 — Total additional social security and Medicare tax. Add lines 5 and 6",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 258.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.8_ira_tax_favored_accounts_not_required",
+      "label": "Line 8 — Additional tax on IRAs or other tax-favored accounts. If not required, check here",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line8_ReadOrder[0].c1_6[0]",
+      "position": {
+        "page": 0,
+        "x": 466.8,
+        "y": 230.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.8_additional_tax_iras_tax_favored_accounts",
+      "label": "Line 8 — Additional tax on IRAs or other tax-favored accounts. Attach Form 5329 if required",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 228.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.9_household_employment_taxes",
+      "label": "Line 9 — Household employment taxes. Attach Schedule H",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 210.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.11_additional_medicare_tax",
+      "label": "Line 11 — Additional Medicare Tax. Attach Form 8959",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 174.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.12_net_investment_income_tax",
+      "label": "Line 12 — Net investment income tax. Attach Form 8960",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 156.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.13_uncollected_ss_medicare_rrta_tax_w2",
+      "label": "Line 13 — Uncollected social security and Medicare or RRTA tax on tips or group-term life insurance from Form W-2, box 12",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 126.003
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.14_interest_tax_installment_residential_lots",
+      "label": "Line 14 — Interest on tax due on installment income from the sale of certain residential lots and timeshares",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 108.003
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.15_interest_deferred_tax_installment_sales",
+      "label": "Line 15 — Interest on the deferred tax on gain from certain installment sales with a sales price over $150,000",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 90.003
+      }
+    },
+    {
+      "fieldId": "schedule-2.0.line.16_recapture_low_income_housing_credit",
+      "label": "Line 16 — Recapture of low-income housing credit. Attach Form 8611",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 72.003
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17a_recapture_other_credits_description",
+      "label": "Line 17a — Recapture of other credits. List type, form number, and amount (description)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]",
+      "position": {
+        "page": 1,
+        "x": 64.8,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17a_recapture_other_credits_amount",
+      "label": "Line 17a — Recapture of other credits amount",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17b_recapture_federal_mortgage_subsidy",
+      "label": "Line 17b — Recapture of federal mortgage subsidy",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_03[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 666
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17c_additional_tax_hsa_distributions",
+      "label": "Line 17c — Additional tax on HSA distributions. Attach Form 8889",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_04[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 648
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17d_additional_tax_hsa_ineligible_individual",
+      "label": "Line 17d — Additional tax on an HSA because you didn't remain an eligible individual. Attach Form 8889",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_05[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 618.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17e_additional_tax_archer_msa_distributions",
+      "label": "Line 17e — Additional tax on Archer MSA distributions. Attach Form 8853",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_06[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 600.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17f_additional_tax_medicare_advantage_msa_distributions",
+      "label": "Line 17f — Additional tax on Medicare Advantage MSA distributions. Attach Form 8853",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_07[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 582.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17g_recapture_charitable_contribution_fractional_interest",
+      "label": "Line 17g — Recapture of a charitable contribution deduction related to a fractional interest in tangible personal property",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_08[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 552.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17h_income_nonqualified_deferred_compensation_409a",
+      "label": "Line 17h — Income you received from a nonqualified deferred compensation plan that fails to meet the requirements of section 409A",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_09[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 522
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17i_compensation_nonqualified_deferred_compensation_457a",
+      "label": "Line 17i — Compensation you received from a nonqualified deferred compensation plan described in section 457A",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_10[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 492.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17j_section_72m5_excess_benefits_tax",
+      "label": "Line 17j — Section 72(m)(5) excess benefits tax",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_11[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 474.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17k_golden_parachute_payments",
+      "label": "Line 17k — Golden parachute payments",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_12[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 456.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17l_tax_accumulation_distribution_trusts",
+      "label": "Line 17l — Tax on accumulation distribution of trusts",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_13[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 438.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17m_excise_tax_insider_stock_compensation_expatriated_corp",
+      "label": "Line 17m — Excise tax on insider stock compensation from an expatriated corporation",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_14[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 420.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17n_lookback_interest_section_167g_460b",
+      "label": "Line 17n — Look-back interest under section 167(g) or 460(b) from Form 8697 or 8866",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_15[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 402.001
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17o_tax_non_effectively_connected_income_nonresident_alien",
+      "label": "Line 17o — Tax on non-effectively connected income for any part of the year you were a nonresident alien from Form 1040-NR",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_16[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 372.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17p_interest_form8621_line16f_section_1291_fund",
+      "label": "Line 17p — Any interest from Form 8621, line 16f, relating to distributions from, and dispositions of, stock of a section 1291 fund",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_17[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 342
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17q_interest_form8621_line24",
+      "label": "Line 17q — Any interest from Form 8621, line 24",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_18[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 324
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.17z_other_taxes_description",
+      "label": "Line 17z — Any other taxes. List type and amount (description)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].Line17z_ReadOrder[0].f2_19[0]",
+      "position": {
+        "page": 1,
+        "x": 64.8,
+        "y": 281.999
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "schedule-2.1.line.17z_other_taxes_amount",
+      "label": "Line 17z — Any other taxes amount",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_20[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 282.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.18_total_additional_taxes",
+      "label": "Line 18 — Total additional taxes. Add lines 17a through 17z",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_21[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 264.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.19_recapture_net_epe_form4255_line1d",
+      "label": "Line 19 — Recapture of net EPE from Form 4255, line 1d, column (l)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_22[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 246.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.20_section_965_net_tax_liability_installment",
+      "label": "Line 20 — Section 965 net tax liability installment from Form 965-A",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_23[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 228.002
+      }
+    },
+    {
+      "fieldId": "schedule-2.1.line.21_total_other_taxes",
+      "label": "Line 21 — Add lines 4, 7 through 16, 18, and 19. Total other taxes. Enter here and on Form 1040 or 1040-SR, line 23; or Form 1040-NR, line 23b",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page2[0].f2_24[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 198
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/schedule-2/blank.pdf",
+    "ingestedAt": "2026-05-26T21:20:59.547Z",
+    "totalFields": 62,
+    "enriched": 62,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 62,
+    "tokensIn": 11726,
+    "tokensOut": 5176,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

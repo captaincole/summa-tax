@@ -1,0 +1,240 @@
+{
+  "formId": "form-8959",
+  "fieldCount": 26,
+  "entries": [
+    {
+      "fieldId": "form-8959.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_2[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_1[0]",
+          "text": "T-1TB61"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.1_medicare_wages_tips",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_3[0]",
+          "text": "4,677"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.10_medicare_wages_from_line4",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+          "text": "8,987"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.11_threshold_reduced_by_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+          "text": "5,987"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.12_excess_se_income",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+          "text": "7,501"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.13_additional_medicare_tax_se",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+          "text": "9,749"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.14_rrta_compensation_tips",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+          "text": "1,068"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.15_filing_status_threshold_rrta",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+          "text": "9,577"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.16_excess_rrta_compensation",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+          "text": "7,142"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.17_additional_medicare_tax_rrta",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+          "text": "6,989"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.18_total_additional_medicare_tax",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+          "text": "7,450"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.19_medicare_tax_withheld",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+          "text": "4,703"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.2_unreported_tips",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_4[0]",
+          "text": "2,006"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.20_medicare_wages_from_line1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+          "text": "2,513"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.21_regular_medicare_tax_on_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_23[0]",
+          "text": "5,583"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.22_additional_medicare_tax_withholding_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_24[0]",
+          "text": "1,398"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.23_additional_medicare_tax_withholding_rrta",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_25[0]",
+          "text": "6,983"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.24_total_additional_medicare_tax_withholding",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_26[0]",
+          "text": "8,519"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.3_wages_form_8919",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_5[0]",
+          "text": "7,665"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.4_total_medicare_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_6[0]",
+          "text": "8,750"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.5_filing_status_threshold_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_7[0]",
+          "text": "4,337"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.6_excess_medicare_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_8[0]",
+          "text": "2,491"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.7_additional_medicare_tax_wages",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_9[0]",
+          "text": "6,518"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.8_self_employment_income",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+          "text": "6,364"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8959.0.line.9_filing_status_threshold_se",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+          "text": "4,245"
+        }
+      ]
+    }
+  ]
+}

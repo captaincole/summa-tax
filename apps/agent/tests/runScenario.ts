@@ -94,7 +94,7 @@ export async function runScenario(s: Scenario): Promise<RunResult> {
   // need their register() call to have run.
   for (const { spec } of specs) {
     if (!registeredForms.has(spec.formId)) {
-      spec.register();
+      spec.register?.();
       registeredForms.add(spec.formId);
     }
   }
