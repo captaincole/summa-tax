@@ -1,0 +1,294 @@
+{
+  "formId": "schedule-a",
+  "fieldCount": 32,
+  "entries": [
+    {
+      "fieldId": "schedule-a.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_2[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_1[0]",
+          "text": "T-YDXPO"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.1_medical_dental_expenses",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_3[0]",
+          "text": "8,326"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.10_total_interest",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_22[0]",
+          "text": "3,936"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.11_gifts_cash_check",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_23[0]",
+          "text": "6,284"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.12_gifts_other_than_cash",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_24[0]",
+          "text": "4,605"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.13_gifts_carryover",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_25[0]",
+          "text": "2,364"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.14_total_gifts",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_26[0]",
+          "text": "1,006"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.15_casualty_theft_loss",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_27[0]",
+          "text": "9,992"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.16_other_itemized_deductions_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_29[0]",
+          "text": "4,589"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.16_other_itemized_deductions_description",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_28[0]",
+          "text": "T-17MVJ"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.17_total_itemized_deductions",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_30[0]",
+          "text": "3,326"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.18_elect_itemize_below_standard",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line18_ReadOrder[0].c1_3[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.2_agi_from_1040",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line2_ReadOrder[0].f1_4[0]",
+          "text": "2,094"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.3_agi_multiplied",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_5[0]",
+          "text": "1,703"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.4_net_medical_dental",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_6[0]",
+          "text": "5,552"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5a_general_sales_tax_election",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5a_state_local_income_or_sales_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_7[0]",
+          "text": "7,785"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5b_real_estate_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_8[0]",
+          "text": "9,571"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5c_personal_property_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_9[0]",
+          "text": "8,597"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5d_total_state_local_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_10[0]",
+          "text": "3,519"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.5e_salt_cap",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_11[0]",
+          "text": "8,297"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.6_other_taxes_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_13[0]",
+          "text": "3,630"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.6_other_taxes_description",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_12[0]",
+          "text": "T-Z1P5Z"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.7_total_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_14[0]",
+          "text": "5,873"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8_home_mortgage_partial_use_checkbox",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line8_ReadOrder[0].c1_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8a_mortgage_interest_form1098",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_15[0]",
+          "text": "8,631"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8b_mortgage_interest_not_form1098",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_17[0]",
+          "text": "1,690"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8b_seller_name_address",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line8b_ReadOrder[0].f1_16[0]",
+          "text": "T-114OD"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8c_points_not_form1098",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_18[0]",
+          "text": "5,421"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.8e_total_mortgage_interest_points",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_20[0]",
+          "text": "9,578"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-a.0.line.9_investment_interest",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_21[0]",
+          "text": "6,873"
+        }
+      ]
+    }
+  ]
+}

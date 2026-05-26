@@ -1,0 +1,564 @@
+{
+  "formId": "schedule-2",
+  "fieldCount": 62,
+  "entries": [
+    {
+      "fieldId": "schedule-2.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_02[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_01[0]",
+          "text": "T-9RXUU"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.11_additional_medicare_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_22[0]",
+          "text": "2,654"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.12_net_investment_income_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_23[0]",
+          "text": "3,864"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.13_uncollected_ss_medicare_rrta_tax_w2",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_24[0]",
+          "text": "6,015"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.14_interest_tax_installment_residential_lots",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_25[0]",
+          "text": "4,058"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.15_interest_deferred_tax_installment_sales",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_26[0]",
+          "text": "3,877"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.16_recapture_low_income_housing_credit",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_27[0]",
+          "text": "3,813"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1a_excess_aptc_repayment",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1a_ReadOrder[0].f1_03[0]",
+          "text": "9,311"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1b_new_clean_vehicle_credit_repayment",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_04[0]",
+          "text": "3,598"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1c_previously_owned_clean_vehicle_credit_repayment",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_05[0]",
+          "text": "9,467"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1d_recapture_net_epe_form4255",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_06[0]",
+          "text": "2,581"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1c",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line1d",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[2]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_ep_checkbox_line2a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1e_ReadOrder[0].c1_1[3]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1e_excessive_payments_epe_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_07[0]",
+          "text": "9,228"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_08[0]",
+          "text": "4,755"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1c",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line1d",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[2]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1f_20pct_ep_checkbox_line2a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line1f_ReadOrder[0].c1_2[3]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1y_other_additions_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_10[0]",
+          "text": "7,187"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1y_other_additions_description",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_09[0]",
+          "text": "T-1E1CY"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.1z_total_lines_1a_through_1y",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_11[0]",
+          "text": "3,622"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.2_alternative_minimum_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_12[0]",
+          "text": "2,542"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.3_total_lines_1z_and_2",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_13[0]",
+          "text": "8,835"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_4029",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_4[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_4361",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_3[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_other",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line4_ReadOrder[0].c1_5[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_se_tax_exemption_other_form_number",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line4_ReadOrder[0].f1_14[0]",
+          "text": "T-12OYQ"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.4_self_employment_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_15[0]",
+          "text": "1,158"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.5_ss_medicare_tax_unreported_tips",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_16[0]",
+          "text": "7,704"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.6_uncollected_ss_medicare_tax_wages",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_17[0]",
+          "text": "9,297"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.7_total_additional_ss_medicare_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_18[0]",
+          "text": "7,994"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.8_additional_tax_iras_tax_favored_accounts",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_19[0]",
+          "text": "6,740"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.8_ira_tax_favored_accounts_not_required",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].Line8_ReadOrder[0].c1_6[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.0.line.9_household_employment_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page1[0].f1_20[0]",
+          "text": "6,398"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17a_recapture_other_credits_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].Line17a_ReadOrder[0].f2_02[0]",
+          "text": "6,123"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17a_recapture_other_credits_description",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].Line17a_ReadOrder[0].Line17_ReadOrder[0].f2_01[0]",
+          "text": "T-11FUD"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17b_recapture_federal_mortgage_subsidy",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_03[0]",
+          "text": "7,819"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17c_additional_tax_hsa_distributions",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_04[0]",
+          "text": "4,013"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17d_additional_tax_hsa_ineligible_individual",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_05[0]",
+          "text": "3,257"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17e_additional_tax_archer_msa_distributions",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_06[0]",
+          "text": "9,124"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17f_additional_tax_medicare_advantage_msa_distributions",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_07[0]",
+          "text": "4,072"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17g_recapture_charitable_contribution_fractional_interest",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_08[0]",
+          "text": "9,118"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17h_income_nonqualified_deferred_compensation_409a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_09[0]",
+          "text": "1,768"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17i_compensation_nonqualified_deferred_compensation_457a",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_10[0]",
+          "text": "9,635"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17j_section_72m5_excess_benefits_tax",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_11[0]",
+          "text": "4,803"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17k_golden_parachute_payments",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_12[0]",
+          "text": "8,324"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17l_tax_accumulation_distribution_trusts",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_13[0]",
+          "text": "9,161"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17m_excise_tax_insider_stock_compensation_expatriated_corp",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_14[0]",
+          "text": "3,546"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17n_lookback_interest_section_167g_460b",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_15[0]",
+          "text": "8,202"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17o_tax_non_effectively_connected_income_nonresident_alien",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_16[0]",
+          "text": "2,728"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17p_interest_form8621_line16f_section_1291_fund",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_17[0]",
+          "text": "8,275"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17q_interest_form8621_line24",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_18[0]",
+          "text": "3,452"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17z_other_taxes_amount",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_20[0]",
+          "text": "4,319"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.17z_other_taxes_description",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].Line17z_ReadOrder[0].f2_19[0]",
+          "text": "T-15K3I"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.18_total_additional_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_21[0]",
+          "text": "3,736"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.19_recapture_net_epe_form4255_line1d",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_22[0]",
+          "text": "9,234"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.20_section_965_net_tax_liability_installment",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_23[0]",
+          "text": "5,123"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-2.1.line.21_total_other_taxes",
+      "widgets": [
+        {
+          "widgetName": "form1[0].Page2[0].f2_24[0]",
+          "text": "1,466"
+        }
+      ]
+    }
+  ]
+}

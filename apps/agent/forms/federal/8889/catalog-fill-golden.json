@@ -1,0 +1,249 @@
+{
+  "formId": "form-8889",
+  "fieldCount": 27,
+  "entries": [
+    {
+      "fieldId": "form-8889.0.header.hsa_beneficiary_ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_2[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_1[0]",
+          "text": "T-1WDD6"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.1_family_coverage",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.1_self_only_coverage",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.10_qualified_hsa_funding_distributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+          "text": "2,396"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.11_add_lines_9_and_10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+          "text": "8,828"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.12_subtract_line11_from_line8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+          "text": "4,862"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.13_hsa_deduction",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+          "text": "2,278"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.14a_total_distributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+          "text": "5,484"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.14b_distributions_rolled_over",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+          "text": "9,862"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.14c_subtract_14b_from_14a",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+          "text": "7,405"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.15_qualified_medical_expenses",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+          "text": "6,049"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.16_taxable_hsa_distributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+          "text": "6,753"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.17a_exception_to_additional_tax",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.17b_additional_20pct_tax",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+          "text": "5,527"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.18_last_month_rule",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+          "text": "3,682"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.19_qualified_hsa_funding_distribution",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+          "text": "6,018"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.2_hsa_contributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_3[0]",
+          "text": "9,199"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.20_total_income",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_23[0]",
+          "text": "7,569"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.21_additional_tax_10pct",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_24[0]",
+          "text": "4,084"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.3_annual_hsa_contribution_limit",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_4[0]",
+          "text": "2,302"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.4_archer_msa_contributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_5[0]",
+          "text": "9,074"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.5_subtract_line4_from_line3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_6[0]",
+          "text": "2,440"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.6_adjusted_limit_separate_hsa",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_7[0]",
+          "text": "3,367"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.7_additional_contribution_age_55",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_8[0]",
+          "text": "6,446"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.8_add_lines_6_and_7",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_9[0]",
+          "text": "2,954"
+        }
+      ]
+    },
+    {
+      "fieldId": "form-8889.0.line.9_employer_contributions",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+          "text": "9,625"
+        }
+      ]
+    }
+  ]
+}

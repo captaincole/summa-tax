@@ -1,0 +1,507 @@
+{
+  "form": {
+    "formId": "schedule-a",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Schedule A (Form 1040) — Itemized Deductions"
+  },
+  "fields": [
+    {
+      "fieldId": "schedule-a.0.header.taxpayer_name",
+      "label": "Name(s) shown on Form 1040 or 1040-SR",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 475.2,
+        "y": 684
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-a.0.line.1_medical_dental_expenses",
+      "label": "Line 1 — Medical and dental expenses (see instructions)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 660.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.2_agi_from_1040",
+      "label": "Line 2 — Enter amount from Form 1040 or 1040-SR, line 11b",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].Line2_ReadOrder[0].f1_4[0]",
+      "position": {
+        "page": 0,
+        "x": 316.8,
+        "y": 636.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.3_agi_multiplied",
+      "label": "Line 3 — Multiply line 2 by 7.5% (0.075)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_5[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 624.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.4_net_medical_dental",
+      "label": "Line 4 — Subtract line 3 from line 1. If line 3 is more than line 1, enter -0-",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_6[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5a_general_sales_tax_election",
+      "label": "Line 5a — If you elect to include general sales taxes instead of income taxes, check this box",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 373.6,
+        "y": 560
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5a_state_local_income_or_sales_tax",
+      "label": "Line 5a — State and local income taxes or general sales taxes",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_7[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 558
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5b_real_estate_taxes",
+      "label": "Line 5b — State and local real estate taxes (see instructions)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_8[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 546.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5c_personal_property_taxes",
+      "label": "Line 5c — State and local personal property taxes",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_9[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 534.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5d_total_state_local_taxes",
+      "label": "Line 5d — Add lines 5a through 5c",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 522
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.5e_salt_cap",
+      "label": "Line 5e — Enter the smaller of line 5d or $40,000 ($20,000 if married filing separately)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 474.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.6_other_taxes_description",
+      "label": "Line 6 — Other taxes. List type and amount (description field)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 122.4,
+        "y": 437.998
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "schedule-a.0.line.6_other_taxes_amount",
+      "label": "Line 6 — Other taxes. List type and amount (amount field)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 438.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.7_total_taxes",
+      "label": "Line 7 — Add lines 5e and 6",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 426.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.8_home_mortgage_partial_use_checkbox",
+      "label": "Line 8 — Home mortgage interest and points. If you didn't use all of your home mortgage loan(s) to buy, build, or improve your home, see instructions and check this box",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line8_ReadOrder[0].c1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 373.6,
+        "y": 392.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.8a_mortgage_interest_form1098",
+      "label": "Line 8a — Home mortgage interest and points reported to you on Form 1098",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 366.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.8b_mortgage_interest_not_form1098",
+      "label": "Line 8b — Home mortgage interest not reported to you on Form 1098",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 324
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.8b_seller_name_address",
+      "label": "Line 8b — Name, identifying no., and address of person from whom you bought the home",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].Line8b_ReadOrder[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 122.4,
+        "y": 299.999
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "schedule-a.0.line.8c_points_not_form1098",
+      "label": "Line 8c — Points not reported to you on Form 1098",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 276.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.8e_total_mortgage_interest_points",
+      "label": "Line 8e — Add lines 8a through 8c",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 252
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.9_investment_interest",
+      "label": "Line 9 — Investment interest. Attach Form 4952 if required.",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 240.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.10_total_interest",
+      "label": "Line 10 — Add lines 8e and 9",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 228.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.11_gifts_cash_check",
+      "label": "Line 11 — Gifts by cash or check",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 204.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.12_gifts_other_than_cash",
+      "label": "Line 12 — Other than by cash or check",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 180
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.13_gifts_carryover",
+      "label": "Line 13 — Carryover from prior year",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 168.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.14_total_gifts",
+      "label": "Line 14 — Add lines 11 through 13",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 156.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.15_casualty_theft_loss",
+      "label": "Line 15 — Casualty and theft loss(es) from a federally declared disaster. Attach Form 4684.",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 120.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.16_other_itemized_deductions_description",
+      "label": "Line 16 — Other itemized deductions. List type and amount (description field)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 122.4,
+        "y": 83.999
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "schedule-a.0.line.16_other_itemized_deductions_amount",
+      "label": "Line 16 — Other itemized deductions. List type and amount (amount field)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 84.002
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.17_total_itemized_deductions",
+      "label": "Line 17 — Total Itemized Deductions. Add the amounts in the far right column for lines 4 through 16.",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "form1[0].Page1[0].f1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 60.001
+      }
+    },
+    {
+      "fieldId": "schedule-a.0.line.18_elect_itemize_below_standard",
+      "label": "Line 18 — If you elect to itemize deductions even though they are less than your standard deduction, check this box",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "form1[0].Page1[0].Line18_ReadOrder[0].c1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 467.2,
+        "y": 38.25
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/schedule-a/blank.pdf",
+    "ingestedAt": "2026-05-26T21:00:22.552Z",
+    "totalFields": 32,
+    "enriched": 32,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 32,
+    "tokensIn": 4864,
+    "tokensOut": 2584,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

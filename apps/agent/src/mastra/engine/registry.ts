@@ -89,8 +89,13 @@ export interface FormSpec {
    * engine's registry. Idempotent — calling twice overwrites in place.
    * Bundlers can't tree-shake the side-effect-import idiom; we rely on
    * the explicit function call to keep bindings reachable.
+   *
+   * Optional: a form may be registered for catalog-fill regression
+   * coverage before bindings exist. With no register fn, the form's
+   * FormFields evaluate to undefined and the renderer produces a blank
+   * PDF — harmless as long as no scenario asks the form to be filed.
    */
-  register: () => void;
+  register?: () => void;
 }
 
 /**
@@ -109,7 +114,7 @@ function makeFormSpec(args: {
   shortId: string;
   displayName: string;
   relativeDir: string;
-  register: () => void;
+  register?: () => void;
 }): FormSpec {
   return {
     ...args,
@@ -154,6 +159,48 @@ export const FORMS: FormSpec[] = [
     relativeDir: "state/ca/540",
     register: registerForm540,
   }),
+  // Catalog-only entries (no bindings yet — deferred). These exist so the
+  // catalog-fill regression test in runAll.ts checks them against their
+  // blank PDFs. Bindings + downstream wiring land in a follow-up PR.
+  makeFormSpec({
+    formId: "schedule-a",
+    shortId: "schedule-a",
+    displayName: "Schedule A",
+    relativeDir: "federal/schedule-a",
+  }),
+  makeFormSpec({
+    formId: "schedule-b",
+    shortId: "schedule-b",
+    displayName: "Schedule B",
+    relativeDir: "federal/schedule-b",
+  }),
+  // No instructions.pdf in schedule-2/ by design — IRS publishes Schedule 2
+  // instructions only as part of the 1040 instructions booklet (already in
+  // the corpus as irs-1040-inst-2025), so the cross-reference is implicit.
+  makeFormSpec({
+    formId: "schedule-2",
+    shortId: "schedule-2",
+    displayName: "Schedule 2",
+    relativeDir: "federal/schedule-2",
+  }),
+  makeFormSpec({
+    formId: "form-8889",
+    shortId: "8889",
+    displayName: "Form 8889",
+    relativeDir: "federal/8889",
+  }),
+  makeFormSpec({
+    formId: "form-8959",
+    shortId: "8959",
+    displayName: "Form 8959",
+    relativeDir: "federal/8959",
+  }),
+  makeFormSpec({
+    formId: "form-8960",
+    shortId: "8960",
+    displayName: "Form 8960",
+    relativeDir: "federal/8960",
+  }),
 ];
 
 /** Look up a single FormSpec. Throws (with a useful list) on miss. */
@@ -171,7 +218,7 @@ export function getFormSpec(formId: string): FormSpec {
 
 /** Invoke every form's register() once. Idempotent. Call at module load. */
 export function registerAllForms(): void {
-  for (const spec of FORMS) spec.register();
+  for (const spec of FORMS) spec.register?.();
 }
 
 /**

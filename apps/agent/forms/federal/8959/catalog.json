@@ -1,0 +1,414 @@
+{
+  "form": {
+    "formId": "form-8959",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "Form 8959 — Additional Medicare Tax"
+  },
+  "fields": [
+    {
+      "fieldId": "form-8959.0.header.taxpayer_name",
+      "label": "Name(s) shown on return",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 683.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 446.4,
+        "y": 683.968
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-8959.0.line.1_medicare_wages_tips",
+      "label": "Line 1 — Medicare wages and tips from Form W-2, box 5",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 647.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.2_unreported_tips",
+      "label": "Line 2 — Unreported tips from Form 4137, line 6",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_4[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 635.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.3_wages_form_8919",
+      "label": "Line 3 — Wages from Form 8919, line 6",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_5[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 623.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.4_total_medicare_wages",
+      "label": "Line 4 — Add lines 1 through 3",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_6[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 611.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.5_filing_status_threshold_wages",
+      "label": "Line 5 — Enter the following amount for your filing status",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_7[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 563.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.6_excess_medicare_wages",
+      "label": "Line 6 — Subtract line 5 from line 4. If zero or less, enter -0-",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_8[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 551.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.7_additional_medicare_tax_wages",
+      "label": "Line 7 — Additional Medicare Tax on Medicare wages. Multiply line 6 by 0.9% (0.009)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_9[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 527.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.8_self_employment_income",
+      "label": "Line 8 — Self-employment income from Schedule SE (Form 1040), Part I, line 6",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 491.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.9_filing_status_threshold_se",
+      "label": "Line 9 — Enter the following amount for your filing status",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 443.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.10_medicare_wages_from_line4",
+      "label": "Line 10 — Enter the amount from line 4",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 431.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.11_threshold_reduced_by_wages",
+      "label": "Line 11 — Subtract line 10 from line 9. If zero or less, enter -0-",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 419.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.12_excess_se_income",
+      "label": "Line 12 — Subtract line 11 from line 8. If zero or less, enter -0-",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 407.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.13_additional_medicare_tax_se",
+      "label": "Line 13 — Additional Medicare Tax on self-employment income. Multiply line 12 by 0.9% (0.009)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 383.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.14_rrta_compensation_tips",
+      "label": "Line 14 — Railroad retirement (RRTA) compensation and tips from Form(s) W-2, box 14",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 347.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.15_filing_status_threshold_rrta",
+      "label": "Line 15 — Enter the following amount for your filing status",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 299.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.16_excess_rrta_compensation",
+      "label": "Line 16 — Subtract line 15 from line 14. If zero or less, enter -0-",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 287.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.17_additional_medicare_tax_rrta",
+      "label": "Line 17 — Additional Medicare Tax on railroad retirement (RRTA) compensation. Multiply line 16 by 0.9% (0.009)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 263.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.18_total_additional_medicare_tax",
+      "label": "Line 18 — Total Additional Medicare Tax. Add lines 7, 13, and 17",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 227.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.19_medicare_tax_withheld",
+      "label": "Line 19 — Medicare tax withheld from Form W-2, box 6",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 191.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.20_medicare_wages_from_line1",
+      "label": "Line 20 — Enter the amount from line 1",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 179.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.21_regular_medicare_tax_on_wages",
+      "label": "Line 21 — Multiply line 20 by 1.45% (0.0145). Regular Medicare tax withholding on Medicare wages",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 155.97
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.22_additional_medicare_tax_withholding_wages",
+      "label": "Line 22 — Subtract line 21 from line 19. If zero or less, enter -0-. Additional Medicare Tax withholding on Medicare wages",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 131.969
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.23_additional_medicare_tax_withholding_rrta",
+      "label": "Line 23 — Additional Medicare Tax withholding on railroad retirement (RRTA) compensation from Form W-2, box 14",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 107.968
+      }
+    },
+    {
+      "fieldId": "form-8959.0.line.24_total_additional_medicare_tax_withholding",
+      "label": "Line 24 — Total Additional Medicare Tax withholding. Add lines 22 and 23",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 71.968
+      }
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/federal/8959/blank.pdf",
+    "ingestedAt": "2026-05-26T21:29:43.530Z",
+    "totalFields": 26,
+    "enriched": 26,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 26,
+    "tokensIn": 4435,
+    "tokensOut": 2165,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

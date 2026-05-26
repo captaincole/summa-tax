@@ -78,7 +78,7 @@ async function main() {
 
   // Register every form's bindings before evaluation. Side-effecting
   // calls match what runScenario does.
-  for (const spec of specs) spec.register();
+  for (const spec of specs) spec.register?.();
 
   const ctx: DerivationContext = {
     taxYear: s.taxYear,

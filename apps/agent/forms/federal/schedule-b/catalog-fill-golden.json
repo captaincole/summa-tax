@@ -1,0 +1,654 @@
+{
+  "formId": "schedule-b",
+  "fieldCount": 72,
+  "entries": [
+    {
+      "fieldId": "schedule-b.0.header.ssn",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+          "text": "123456789"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.header.taxpayer_name",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+          "text": "T-1VJLK"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_04[0]",
+          "text": "3,902"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_22[0]",
+          "text": "1,358"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_11",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_24[0]",
+          "text": "8,686"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_12",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_26[0]",
+          "text": "7,618"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_13",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_28[0]",
+          "text": "4,340"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_14",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_30[0]",
+          "text": "7,680"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_06[0]",
+          "text": "1,263"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_08[0]",
+          "text": "4,137"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_4",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+          "text": "1,975"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_5",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+          "text": "1,699"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_6",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+          "text": "2,145"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_7",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+          "text": "3,945"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+          "text": "2,916"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_amount_9",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_20[0]",
+          "text": "5,039"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].Line1_ReadOrder[0].f1_03[0]",
+          "text": "T-1EX3L"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_21[0]",
+          "text": "T-1JA91"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_11",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_23[0]",
+          "text": "T-1G74I"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_12",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_25[0]",
+          "text": "T-1NIBN"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_13",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_27[0]",
+          "text": "T-1CVB8"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_14",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_29[0]",
+          "text": "T-GSN1O"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_05[0]",
+          "text": "T-193EP"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_07[0]",
+          "text": "T-1P71P"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_4",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_09[0]",
+          "text": "T-APE49"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_5",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+          "text": "T-1C2R1"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_6",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+          "text": "T-1MNMS"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_7",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+          "text": "T-1B555"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+          "text": "T-1VZ3X"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.1_payer_name_9",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+          "text": "T-ZMX17"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.2_total_interest",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_31[0]",
+          "text": "5,134"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.3_excludable_savings_bond_interest",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_32[0]",
+          "text": "8,406"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.4_taxable_interest",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_33[0]",
+          "text": "7,032"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_35[0]",
+          "text": "7,277"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_53[0]",
+          "text": "8,081"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_11",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_55[0]",
+          "text": "7,640"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_12",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_57[0]",
+          "text": "7,341"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_13",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_59[0]",
+          "text": "6,431"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_14",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_61[0]",
+          "text": "8,969"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_15",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_63[0]",
+          "text": "6,186"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_37[0]",
+          "text": "3,705"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_39[0]",
+          "text": "1,873"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_4",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_41[0]",
+          "text": "2,057"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_5",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_43[0]",
+          "text": "5,627"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_6",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_45[0]",
+          "text": "8,319"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_7",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_47[0]",
+          "text": "4,092"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_49[0]",
+          "text": "6,565"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_amount_9",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_51[0]",
+          "text": "8,135"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].ReadOrderControl[0].f1_34[0]",
+          "text": "T-9NTKM"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_10",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_52[0]",
+          "text": "T-WL0ZL"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_11",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_54[0]",
+          "text": "T-HO1OE"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_12",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_56[0]",
+          "text": "T-1HGCT"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_13",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_58[0]",
+          "text": "T-FJ8ET"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_14",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_60[0]",
+          "text": "T-13T9F"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_15",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_62[0]",
+          "text": "T-Q0A5N"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_36[0]",
+          "text": "T-3FXZS"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_3",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_38[0]",
+          "text": "T-1O6H8"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_4",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_40[0]",
+          "text": "T-8TEBP"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_5",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_42[0]",
+          "text": "T-1FS5T"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_6",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_44[0]",
+          "text": "T-1PIVN"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_7",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_46[0]",
+          "text": "T-4LYXK"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_8",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_48[0]",
+          "text": "T-1WBAL"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.5_payer_name_9",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_50[0]",
+          "text": "T-XN74O"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.6_total_ordinary_dividends",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_64[0]",
+          "text": "3,683"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_fincen_114_required_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_2[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_fincen_114_required_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_2[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_foreign_account_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].TagcorrectingSubform[0].c1_1[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7a_foreign_account_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].TagcorrectingSubform[0].c1_1[0]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7b_foreign_country_1",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_65[0]",
+          "text": "T-BAR57"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.7b_foreign_country_2",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].f1_66[0]",
+          "text": "T-TPAUT"
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.8_foreign_trust_no",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_3[1]",
+          "checked": true
+        }
+      ]
+    },
+    {
+      "fieldId": "schedule-b.0.line.8_foreign_trust_yes",
+      "widgets": [
+        {
+          "widgetName": "topmostSubform[0].Page1[0].c1_3[0]",
+          "checked": true
+        }
+      ]
+    }
+  ]
+}
