@@ -1,33 +1,14 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { listFacts, type TaxFactRow } from "../db/taxFacts";
-import { listDecisions, type AIDecisionRow } from "../db/aiDecisions";
 import {
-  makeDecisionsView,
-  makeFactsView,
-  type BaseFormField,
-  type DerivationContext,
-  type EngineDerivation,
-} from "../engine/types";
-import { evaluateAllForms } from "../engine/engine";
-import { resolveFilingInfo } from "../engine/filingInfo";
-import type { Catalog } from "../engine/catalog";
-import { FORMS, catalog, registerAllForms } from "../engine/registry";
-registerAllForms();
+  evaluateScenario,
+  type EngineFiling,
+  type EvaluatedScenario,
+} from "../engine";
+import type { BaseFormField, EngineDerivation } from "../engine/types";
+import { resolveOwnerFilingForYear } from "../db/filings";
 import { requireUserContext } from "./userContext";
-
-// `catalog` is the merged, in-memory inventory across every registered
-// form (built once in registry.ts from the static JSON imports). FORMS is
-// already in dependency order (8949 → Schedule D → 1040 → Schedule CA →
-// 540), which is what the fixpoint evaluator inside evaluateAllForms
-// wants. The catalog spans all forms so cross-form references resolve —
-// e.g. form-540.line.13_federal_agi reads form-1040.line.11b after the
-// federal AGI is computed.
-const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
-function getCatalog(): Promise<Catalog> {
-  return Promise.resolve(catalog);
-}
 
 // Live case state for Thom. Runs the four-form engine against the current
 // fact + decision state and returns:
@@ -64,61 +45,21 @@ type EvaluatedFormSummary = {
 };
 
 // Exported so server routes (appState.ts) can run the same computation
-// outside the Mastra tool surface, with the same supabase client.
+// outside the Mastra tool surface, with the same supabase client. Thin
+// wrapper over the engine's evaluateScenario — adds the case-state-
+// specific summary/money/pendingFacts derivations on top of the raw
+// engine output.
 export async function buildCaseState(
   supabase: SupabaseClient,
   year: number,
 ) {
-  const [factRows, decisionRows, authUserRes] = await Promise.all([
-    listFacts(supabase, { taxYear: year, limit: 500 }),
-    listDecisions(supabase, { taxYear: year, limit: 500 }),
-    // We pull the auth user once per case-state build so Thom can see the
-    // signed-in email. He acknowledges it back to the user at doc-gen time
-    // and records it as identity.email before rendering the 1040. We don't
-    // throw if this fails — it's enriching info, not load-bearing for the
-    // engine.
-    supabase.auth.getUser().catch(() => null),
-  ]);
-  const authEmail = authUserRes?.data?.user?.email ?? null;
+  const filingRow = await resolveOwnerFilingForYear(supabase, year);
+  const filing: EngineFiling = { id: filingRow.id, taxYear: filingRow.taxYear };
+  return buildCaseStateForScenario(await evaluateScenario(supabase, filing));
+}
 
-  // Supersede on conflict: most recent first per listFacts/listDecisions.
-  const seenFactKeys = new Set<string>();
-  const facts: TaxFactRow[] = [];
-  for (const row of factRows) {
-    if (!seenFactKeys.has(row.key)) {
-      seenFactKeys.add(row.key);
-      facts.push(row);
-    }
-  }
-  const seenDecisionKeys = new Set<string>();
-  const decisions: AIDecisionRow[] = [];
-  for (const row of decisionRows) {
-    if (!seenDecisionKeys.has(row.decisionKey)) {
-      seenDecisionKeys.add(row.decisionKey);
-      decisions.push(row);
-    }
-  }
-
-  const filingInfo = resolveFilingInfo({
-    facts: facts.map((f) => ({ key: f.key, value: f.value, category: f.category })),
-    decisions: decisions.map((d) => ({ decisionKey: d.decisionKey, decision: d.decision })),
-  });
-  const ctx: DerivationContext = {
-    taxYear: year,
-    facts: makeFactsView(facts),
-    decisions: makeDecisionsView(decisions),
-    // The typed-binding engine reads every input through ctx.filingInfo —
-    // the resolver projects raw facts/decisions into a Form*FilingInfo
-    // shape. Without this, every binding short-circuits to a "filingInfo
-    // missing" block and forms render empty.
-    filingInfo,
-  };
-
-  // Fixpoint evaluation across every form in the catalog. Cross-form
-  // refs (540 line 13 → 1040 line 11b) resolve automatically — the
-  // orchestrator iterates until results stop changing.
-  const catalog = await getCatalog();
-  const { forms } = evaluateAllForms(SCENARIO_FORM_IDS, ctx, catalog);
+export function buildCaseStateForScenario(scenario: EvaluatedScenario) {
+  const { forms, facts, decisions, filingInfo, authEmail } = scenario;
   const form1040 = forms.get("form-1040")!;
   const form540 = forms.get("form-540")!;
 
@@ -187,7 +128,7 @@ export async function buildCaseState(
     pendingFacts: Array.from(pendingFacts).sort(),
     money,
     factCount: facts.length,
-    decisionRows,
+    decisionRows: decisions,
     authEmail,
     // The resolved filing info — handy for surfacing identity bits to the
     // web app (e.g. taxpayer first name for the header greeting) without
@@ -303,8 +244,11 @@ export const getCaseState = createTool({
       }),
     ),
   }),
-  execute: async (input, context) => {
-    const { supabase } = await requireUserContext(context);
+  execute: async (_input, context) => {
+    const { supabase, filingId, taxYear } = await requireUserContext(context);
+    // requireUserContext already resolved the active filing — skip the extra
+    // resolveOwnerFilingForYear that buildCaseState would do.
+    const scenario = await evaluateScenario(supabase, { id: filingId, taxYear });
     const {
       summaries,
       pendingDecisions,
@@ -313,7 +257,7 @@ export const getCaseState = createTool({
       factCount,
       decisionRows,
       authEmail,
-    } = await buildCaseState(supabase, input.year);
+    } = buildCaseStateForScenario(scenario);
 
     return {
       forms: summaries,

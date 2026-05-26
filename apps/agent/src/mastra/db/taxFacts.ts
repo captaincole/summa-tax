@@ -70,6 +70,7 @@ export async function recordFact(
 }
 
 export interface ListFactsOpts {
+  filingId?: string;
   taxYear?: number;
   category?: string;
   limit?: number;
@@ -84,6 +85,7 @@ export async function listFacts(
     .select("*")
     .order("created_at", { ascending: false })
     .limit(Math.min(opts.limit ?? 100, 500));
+  if (opts.filingId) q = q.eq("filing_id", opts.filingId);
   if (opts.taxYear !== undefined) q = q.eq("tax_year", opts.taxYear);
   if (opts.category) q = q.eq("category", opts.category);
   const { data, error } = await q;

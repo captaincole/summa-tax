@@ -27,18 +27,23 @@ import { register as registerScheduleD } from "./federal/schedule-d/bindings.js"
 import { register as registerForm540 } from "./state/ca/540/bindings.js";
 import { register as registerScheduleCa } from "./state/ca/schedule-ca/bindings.js";
 
-// Static JSON imports. Rollup traces these and bundles the catalog
-// contents into mastra.mjs, so the prod hot path (case-state build on
-// every /app/state hit) doesn't depend on apps/agent/forms/** being
-// physically present at any particular path under /var/task on Vercel.
+// Static JSON imports — sourced from the PROMOTED runtime copies under
+// src/mastra/public/forms/, not the offline source-of-truth at
+// apps/agent/forms/. This gives us a promotion gate: ingesting a new
+// catalog updates apps/agent/forms/ (tests run against it), and only
+// after a `forms:promote` cp does the runtime pick up the change.
+// Rollup inlines these JSON contents at build time, and Mastra's
+// copyPublic step ships the same files into /var/task/forms/... on
+// Vercel — but nothing reads them from disk; the bundled values are
+// the source of truth for the running process.
 // fixtureFileSchema.parse() narrows TypeScript's widened JSON types
 // (e.g. `category: string` → `category: Category`) and fails loud at
 // boot if any catalog drifts from FixtureFile.
-import form8949CatalogJson from "../../../forms/federal/8949/catalog.json";
-import scheduleDCatalogJson from "../../../forms/federal/schedule-d/catalog.json";
-import form1040CatalogJson from "../../../forms/federal/1040/catalog.json";
-import scheduleCaCatalogJson from "../../../forms/state/ca/schedule-ca/catalog.json";
-import form540CatalogJson from "../../../forms/state/ca/540/catalog.json";
+import form8949CatalogJson from "../public/forms/federal/8949/catalog.json";
+import scheduleDCatalogJson from "../public/forms/federal/schedule-d/catalog.json";
+import form1040CatalogJson from "../public/forms/federal/1040/catalog.json";
+import scheduleCaCatalogJson from "../public/forms/state/ca/schedule-ca/catalog.json";
+import form540CatalogJson from "../public/forms/state/ca/540/catalog.json";
 
 const form8949Catalog = fixtureFileSchema.parse(form8949CatalogJson);
 const scheduleDCatalog = fixtureFileSchema.parse(scheduleDCatalogJson);
@@ -58,13 +63,26 @@ export interface FormSpec {
   /** Human-readable name used in filenames + UI ("Form 1040", "Schedule CA (540)"). */
   displayName: string;
   /**
-   * Absolute path to the form's catalog.json. Used by tests and one-off
-   * scripts that load arbitrary catalog files from disk via
-   * `loadFromFixtures([...])`. Production code paths use the bundled
-   * `catalog` export below instead.
+   * Per-form subpath under both `forms/` (offline) and `src/mastra/public/forms/`
+   * (runtime). E.g. "federal/1040", "state/ca/schedule-ca". Used by the engine
+   * renderer to construct cwd-relative paths to blank.pdf — works in dev
+   * (cwd = src/mastra/public/), prod (cwd = /var/task, Mastra's copyPublic
+   * step puts the same forms/ tree there), and tests/scripts (cwd = apps/agent/,
+   * offline source-of-truth at forms/).
+   */
+  relativeDir: string;
+  /**
+   * Absolute path to the OFFLINE catalog.json under apps/agent/forms/. Used by
+   * tests and one-off scripts that load arbitrary catalog files from disk via
+   * `loadFromFixtures([...])`. Production code paths use the bundled `catalog`
+   * export below (sourced from the promoted copy in public/forms/) instead.
    */
   catalogPath: string;
-  /** Absolute path to the blank fillable PDF (rendered by fillFromCatalog). */
+  /**
+   * Absolute path to the OFFLINE blank.pdf under apps/agent/forms/. Used by
+   * tests and one-off scripts. Production rendering reads from
+   * `forms/<relativeDir>/blank.pdf` relative to cwd — see engine/renderer.ts.
+   */
   blankPdfPath: string;
   /**
    * Side-effecting registration of this form's typed bindings into the
@@ -86,47 +104,56 @@ export interface FormSpec {
  * 1b/8b, which feed 1040 line 7a (net capital gain), which feeds 1040
  * line 11b (AGI), which the CA forms read cross-form for line 13.
  */
+function makeFormSpec(args: {
+  formId: string;
+  shortId: string;
+  displayName: string;
+  relativeDir: string;
+  register: () => void;
+}): FormSpec {
+  return {
+    ...args,
+    catalogPath: resolve(projectRoot, "forms", args.relativeDir, "catalog.json"),
+    blankPdfPath: resolve(projectRoot, "forms", args.relativeDir, "blank.pdf"),
+  };
+}
+
 export const FORMS: FormSpec[] = [
-  {
+  makeFormSpec({
     formId: "form-8949",
     shortId: "8949",
     displayName: "Form 8949",
-    catalogPath: resolve(projectRoot, "forms/federal/8949/catalog.json"),
-    blankPdfPath: resolve(projectRoot, "forms/federal/8949/blank.pdf"),
+    relativeDir: "federal/8949",
     register: registerForm8949,
-  },
-  {
+  }),
+  makeFormSpec({
     formId: "schedule-d",
     shortId: "schedule-d",
     displayName: "Schedule D",
-    catalogPath: resolve(projectRoot, "forms/federal/schedule-d/catalog.json"),
-    blankPdfPath: resolve(projectRoot, "forms/federal/schedule-d/blank.pdf"),
+    relativeDir: "federal/schedule-d",
     register: registerScheduleD,
-  },
-  {
+  }),
+  makeFormSpec({
     formId: "form-1040",
     shortId: "1040",
     displayName: "Form 1040",
-    catalogPath: resolve(projectRoot, "forms/federal/1040/catalog.json"),
-    blankPdfPath: resolve(projectRoot, "forms/federal/1040/blank.pdf"),
+    relativeDir: "federal/1040",
     register: registerForm1040,
-  },
-  {
+  }),
+  makeFormSpec({
     formId: "schedule-ca",
     shortId: "schedule-ca",
     displayName: "Schedule CA (540)",
-    catalogPath: resolve(projectRoot, "forms/state/ca/schedule-ca/catalog.json"),
-    blankPdfPath: resolve(projectRoot, "forms/state/ca/schedule-ca/blank.pdf"),
+    relativeDir: "state/ca/schedule-ca",
     register: registerScheduleCa,
-  },
-  {
+  }),
+  makeFormSpec({
     formId: "form-540",
     shortId: "540",
     displayName: "Form 540",
-    catalogPath: resolve(projectRoot, "forms/state/ca/540/catalog.json"),
-    blankPdfPath: resolve(projectRoot, "forms/state/ca/540/blank.pdf"),
+    relativeDir: "state/ca/540",
     register: registerForm540,
-  },
+  }),
 ];
 
 /** Look up a single FormSpec. Throws (with a useful list) on miss. */

@@ -125,6 +125,7 @@ export async function recordDecision(
 }
 
 export interface ListDecisionsOpts {
+  filingId?: string;
   taxYear?: number;
   decisionKey?: string;
   limit?: number;
@@ -139,6 +140,7 @@ export async function listDecisions(
     .select("*")
     .order("created_at", { ascending: false })
     .limit(Math.min(opts.limit ?? 100, 500));
+  if (opts.filingId) q = q.eq("filing_id", opts.filingId);
   if (opts.taxYear !== undefined) q = q.eq("tax_year", opts.taxYear);
   if (opts.decisionKey) q = q.eq("decision_key", opts.decisionKey);
   const { data, error } = await q;
