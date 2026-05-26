@@ -1,0 +1,3030 @@
+{
+  "form": {
+    "formId": "form-1040",
+    "taxYear": 2025,
+    "jurisdiction": "federal",
+    "title": "U.S. Individual Income Tax Return"
+  },
+  "fields": [
+    {
+      "fieldId": "form-1040.header.tax_year_beginning",
+      "label": "Tax year beginning (month/day)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_01[0]",
+      "position": {
+        "page": 0,
+        "x": 228.8,
+        "y": 732.502
+      }
+    },
+    {
+      "fieldId": "form-1040.header.tax_year_ending_md",
+      "label": "Tax year ending (month/day)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_02[0]",
+      "position": {
+        "page": 0,
+        "x": 365.6,
+        "y": 732.502
+      }
+    },
+    {
+      "fieldId": "form-1040.header.tax_year_ending_year",
+      "label": "Tax year ending (year)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_03[0]",
+      "position": {
+        "page": 0,
+        "x": 468.6,
+        "y": 732.502
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-1040.header.filed_pursuant_9100_2",
+      "label": "Filed pursuant to section 301.9100-2",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_1[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 722
+      }
+    },
+    {
+      "fieldId": "form-1040.header.combat_zone_checkbox",
+      "label": "Combat zone",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_2[0]",
+      "position": {
+        "page": 0,
+        "x": 155.2,
+        "y": 722
+      }
+    },
+    {
+      "fieldId": "form-1040.header.combat_zone_text",
+      "label": "Combat zone (text)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_04[0]",
+      "position": {
+        "page": 0,
+        "x": 209.8,
+        "y": 720.5
+      }
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_checkbox",
+      "label": "Deceased",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_3[0]",
+      "position": {
+        "page": 0,
+        "x": 374.8,
+        "y": 722
+      }
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_month",
+      "label": "Deceased month",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_05[0]",
+      "position": {
+        "page": 0,
+        "x": 417.6,
+        "y": 720.5
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_day",
+      "label": "Deceased day",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_06[0]",
+      "position": {
+        "page": 0,
+        "x": 439.2,
+        "y": 720.5
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-1040.header.taxpayer_deceased_year",
+      "label": "Deceased year",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_07[0]",
+      "position": {
+        "page": 0,
+        "x": 460.8,
+        "y": 720.5
+      },
+      "maxLength": 4
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_month",
+      "label": "Spouse month",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_08[0]",
+      "position": {
+        "page": 0,
+        "x": 511.2,
+        "y": 720.5
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_day",
+      "label": "Spouse day",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_09[0]",
+      "position": {
+        "page": 0,
+        "x": 532.8,
+        "y": 720.5
+      },
+      "maxLength": 2
+    },
+    {
+      "fieldId": "form-1040.header.spouse_deceased_year",
+      "label": "Spouse year",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 554.4,
+        "y": 720.5
+      },
+      "maxLength": 4
+    },
+    {
+      "fieldId": "form-1040.header.other_checkbox",
+      "label": "Other",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_4[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 710.001
+      }
+    },
+    {
+      "fieldId": "form-1040.header.other_description",
+      "label": "Other (description)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 68.4,
+        "y": 708.501
+      }
+    },
+    {
+      "fieldId": "form-1040.header.other_amount",
+      "label": "Other (amount)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 238.6,
+        "y": 708.501
+      }
+    },
+    {
+      "fieldId": "form-1040.header.other_additional",
+      "label": "Other (additional field)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 411.4,
+        "y": 708.501
+      }
+    },
+    {
+      "fieldId": "form-1040.header.first_name_mi",
+      "label": "Your first name and middle initial",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "form-1040.header.last_name",
+      "label": "Last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "form-1040.header.ssn",
+      "label": "Your social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 684
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.header.spouse_first_name_mi",
+      "label": "If joint return, spouse's first name and middle initial",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 659.999
+      }
+    },
+    {
+      "fieldId": "form-1040.header.spouse_last_name",
+      "label": "Spouse's last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 659.999
+      }
+    },
+    {
+      "fieldId": "form-1040.header.spouse_ssn",
+      "label": "Spouse's social security number",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 659.999
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.header.home_address",
+      "label": "Home address (number and street). If you have a P.O. box, see instructions.",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 635.998
+      }
+    },
+    {
+      "fieldId": "form-1040.header.apartment",
+      "label": "Apt. no.",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 418.6,
+        "y": 635.998
+      }
+    },
+    {
+      "fieldId": "form-1040.header.main_home_us_over_half_year",
+      "label": "Check here if your main home, and your spouse's if filing a joint return, was in the U.S. for more than half of 2025",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_5[0]",
+      "position": {
+        "page": 0,
+        "x": 568,
+        "y": 637.251
+      }
+    },
+    {
+      "fieldId": "form-1040.header.city",
+      "label": "City, town, or post office",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "form-1040.header.state",
+      "label": "State",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 332.2,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "form-1040.header.zip",
+      "label": "ZIP code",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "zip",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 397,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "form-1040.header.foreign_country_name",
+      "label": "Foreign country name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 36,
+        "y": 587.999
+      }
+    },
+    {
+      "fieldId": "form-1040.header.foreign_province_state_county",
+      "label": "Foreign province/state/county",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 224.2,
+        "y": 587.999
+      }
+    },
+    {
+      "fieldId": "form-1040.header.foreign_postal_code",
+      "label": "Foreign postal code",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Address_ReadOrder[0].f1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 397,
+        "y": 587.999
+      }
+    },
+    {
+      "fieldId": "form-1040.header.presidential_campaign_you",
+      "label": "Presidential Election Campaign — You",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_6[0]",
+      "position": {
+        "page": 0,
+        "x": 482.4,
+        "y": 589.502
+      }
+    },
+    {
+      "fieldId": "form-1040.header.presidential_campaign_spouse",
+      "label": "Presidential Election Campaign — Spouse",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_7[0]",
+      "position": {
+        "page": 0,
+        "x": 525.6,
+        "y": 589.502
+      }
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_single",
+      "label": "Single",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[0]",
+      "position": {
+        "page": 0,
+        "x": 97.599,
+        "y": 578
+      }
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_hoh",
+      "label": "Head of household (HOH)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_8[0]",
+      "position": {
+        "page": 0,
+        "x": 349.599,
+        "y": 578
+      }
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_mfj",
+      "label": "Married filing jointly (even if only one had income)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[1]",
+      "position": {
+        "page": 0,
+        "x": 97.599,
+        "y": 566.001
+      }
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_qss",
+      "label": "Qualifying surviving spouse (QSS)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_8[1]",
+      "position": {
+        "page": 0,
+        "x": 349.599,
+        "y": 566.001
+      }
+    },
+    {
+      "fieldId": "form-1040.header.filing_status_mfs",
+      "label": "Married filing separately (MFS). Enter spouse's SSN above and full name here:",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].c1_8[2]",
+      "position": {
+        "page": 0,
+        "x": 97.599,
+        "y": 554.002
+      }
+    },
+    {
+      "fieldId": "form-1040.header.mfs_spouse_full_name",
+      "label": "Spouse's full name (if MFS)",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Checkbox_ReadOrder[0].f1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 180,
+        "y": 540
+      }
+    },
+    {
+      "fieldId": "form-1040.header.hoh_qss_qualifying_child_name",
+      "label": "If you checked the HOH or QSS box, enter the child's name if the qualifying person is a child but not your dependent",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 362,
+        "y": 534.002
+      }
+    },
+    {
+      "fieldId": "form-1040.header.nonresident_alien_spouse_checkbox",
+      "label": "If treating a nonresident alien or dual-status alien spouse as a U.S. resident for the entire tax year, check the box and enter their name",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_9[0]",
+      "position": {
+        "page": 0,
+        "x": 97.599,
+        "y": 525.875
+      }
+    },
+    {
+      "fieldId": "form-1040.header.nonresident_alien_spouse_name",
+      "label": "Nonresident alien or dual-status alien spouse name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 313.2,
+        "y": 513.5
+      }
+    },
+    {
+      "fieldId": "form-1040.header.digital_assets_yes",
+      "label": "Digital Assets — Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[0]",
+      "position": {
+        "page": 0,
+        "x": 518.4,
+        "y": 497
+      }
+    },
+    {
+      "fieldId": "form-1040.header.digital_assets_no",
+      "label": "Digital Assets — No",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_10[1]",
+      "position": {
+        "page": 0,
+        "x": 554.4,
+        "y": 497
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_first_name",
+      "label": "Dependent 1 — First name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_31[0]",
+      "position": {
+        "page": 0,
+        "x": 145,
+        "y": 471.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_first_name",
+      "label": "Dependent 2 — First name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_32[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 471.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_first_name",
+      "label": "Dependent 3 — First name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_33[0]",
+      "position": {
+        "page": 0,
+        "x": 361,
+        "y": 471.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_first_name",
+      "label": "Dependent 4 — First name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row1[0].f1_34[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 471.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_last_name",
+      "label": "Dependent 1 — Last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_35[0]",
+      "position": {
+        "page": 0,
+        "x": 145,
+        "y": 459.003
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_last_name",
+      "label": "Dependent 2 — Last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_36[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 459.003
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_last_name",
+      "label": "Dependent 3 — Last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_37[0]",
+      "position": {
+        "page": 0,
+        "x": 361,
+        "y": 459.003
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_last_name",
+      "label": "Dependent 4 — Last name",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row2[0].f1_38[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 459.003
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_ssn",
+      "label": "Dependent 1 — SSN",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_39[0]",
+      "position": {
+        "page": 0,
+        "x": 145,
+        "y": 447.004
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_ssn",
+      "label": "Dependent 2 — SSN",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_40[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 447.004
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_ssn",
+      "label": "Dependent 3 — SSN",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_41[0]",
+      "position": {
+        "page": 0,
+        "x": 361,
+        "y": 447.004
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_ssn",
+      "label": "Dependent 4 — SSN",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row3[0].f1_42[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 447.004
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_relationship",
+      "label": "Dependent 1 — Relationship",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_43[0]",
+      "position": {
+        "page": 0,
+        "x": 145,
+        "y": 435.005
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_relationship",
+      "label": "Dependent 2 — Relationship",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_44[0]",
+      "position": {
+        "page": 0,
+        "x": 253,
+        "y": 435.005
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_relationship",
+      "label": "Dependent 3 — Relationship",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_45[0]",
+      "position": {
+        "page": 0,
+        "x": 361,
+        "y": 435.005
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_relationship",
+      "label": "Dependent 4 — Relationship",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row4[0].f1_46[0]",
+      "position": {
+        "page": 0,
+        "x": 469,
+        "y": 435.005
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_lived_with_you",
+      "label": "Dependent 1 — (5) Check if lived with you more than half of 2025 (a) Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_12[0]",
+      "position": {
+        "page": 0,
+        "x": 169.6,
+        "y": 424.999
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_lived_with_you",
+      "label": "Dependent 2 — (5) Check if lived with you more than half of 2025 (a) Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_14[0]",
+      "position": {
+        "page": 0,
+        "x": 277.6,
+        "y": 424.999
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_lived_with_you",
+      "label": "Dependent 3 — (5) Check if lived with you more than half of 2025 (a) Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_16[0]",
+      "position": {
+        "page": 0,
+        "x": 385.6,
+        "y": 424.999
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_lived_with_you",
+      "label": "Dependent 4 — (5) Check if lived with you more than half of 2025 (a) Yes",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_18[0]",
+      "position": {
+        "page": 0,
+        "x": 493.6,
+        "y": 424.999
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.more_than_four_dependents",
+      "label": "Check if more than four dependents",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Dependents_ReadOrder[0].c1_11[0]",
+      "position": {
+        "page": 0,
+        "x": 79.699,
+        "y": 415.5
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_lived_in_us",
+      "label": "Dependent 1 — (5)(b) And in the U.S.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent1[0].c1_13[0]",
+      "position": {
+        "page": 0,
+        "x": 169.6,
+        "y": 413
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_lived_in_us",
+      "label": "Dependent 2 — (5)(b) And in the U.S.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent2[0].c1_15[0]",
+      "position": {
+        "page": 0,
+        "x": 277.6,
+        "y": 413
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_lived_in_us",
+      "label": "Dependent 3 — (5)(b) And in the U.S.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent3[0].c1_17[0]",
+      "position": {
+        "page": 0,
+        "x": 385.6,
+        "y": 413
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_lived_in_us",
+      "label": "Dependent 4 — (5)(b) And in the U.S.",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row5[0].Dependent4[0].c1_19[0]",
+      "position": {
+        "page": 0,
+        "x": 493.6,
+        "y": 413
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_full_time_student",
+      "label": "Dependent 1 — (6) Check if Full-time student",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_20[0]",
+      "position": {
+        "page": 0,
+        "x": 148,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_permanently_disabled",
+      "label": "Dependent 1 — (6) Check if Permanently and totally disabled",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent1[0].c1_21[0]",
+      "position": {
+        "page": 0,
+        "x": 198.4,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_full_time_student",
+      "label": "Dependent 2 — (6) Check if Full-time student",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_22[0]",
+      "position": {
+        "page": 0,
+        "x": 256,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_permanently_disabled",
+      "label": "Dependent 2 — (6) Check if Permanently and totally disabled",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent2[0].c1_23[0]",
+      "position": {
+        "page": 0,
+        "x": 306.4,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_full_time_student",
+      "label": "Dependent 3 — (6) Check if Full-time student",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_24[0]",
+      "position": {
+        "page": 0,
+        "x": 364,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_permanently_disabled",
+      "label": "Dependent 3 — (6) Check if Permanently and totally disabled",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent3[0].c1_25[0]",
+      "position": {
+        "page": 0,
+        "x": 414.4,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_full_time_student",
+      "label": "Dependent 4 — (6) Check if Full-time student",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_26[0]",
+      "position": {
+        "page": 0,
+        "x": 472,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_permanently_disabled",
+      "label": "Dependent 4 — (6) Check if Permanently and totally disabled",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row6[0].Dependent4[0].c1_27[0]",
+      "position": {
+        "page": 0,
+        "x": 522.4,
+        "y": 401.001
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_child_tax_credit",
+      "label": "Dependent 1 — (7) Credits: Child tax credit",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[0]",
+      "position": {
+        "page": 0,
+        "x": 148,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep1_other_dependent_credit",
+      "label": "Dependent 1 — (7) Credits: Credit for other dependents",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent1[0].c1_28[1]",
+      "position": {
+        "page": 0,
+        "x": 198.4,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_child_tax_credit",
+      "label": "Dependent 2 — (7) Credits: Child tax credit",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[0]",
+      "position": {
+        "page": 0,
+        "x": 256,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep2_other_dependent_credit",
+      "label": "Dependent 2 — (7) Credits: Credit for other dependents",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent2[0].c1_29[1]",
+      "position": {
+        "page": 0,
+        "x": 306.4,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_child_tax_credit",
+      "label": "Dependent 3 — (7) Credits: Child tax credit",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[0]",
+      "position": {
+        "page": 0,
+        "x": 364,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep3_other_dependent_credit",
+      "label": "Dependent 3 — (7) Credits: Credit for other dependents",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent3[0].c1_30[1]",
+      "position": {
+        "page": 0,
+        "x": 414.4,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_child_tax_credit",
+      "label": "Dependent 4 — (7) Credits: Child tax credit",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[0]",
+      "position": {
+        "page": 0,
+        "x": 472,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.dependents.dep4_other_dependent_credit",
+      "label": "Dependent 4 — (7) Credits: Credit for other dependents",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].Table_Dependents[0].Row7[0].Dependent4[0].c1_31[1]",
+      "position": {
+        "page": 0,
+        "x": 522.4,
+        "y": 380.002
+      }
+    },
+    {
+      "fieldId": "form-1040.header.lived_apart_mfs_hoh",
+      "label": "Check if your filing status is MFS or HOH and you lived apart from your spouse for the last 6 months of 2025",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_32[0]",
+      "position": {
+        "page": 0,
+        "x": 95.599,
+        "y": 359.501
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1a",
+      "label": "Line 1a — Total amount from Form(s) W-2, box 1",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_47[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 330.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1b",
+      "label": "Line 1b — Household employee wages not reported on Form(s) W-2",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_48[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 318.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1c",
+      "label": "Line 1c — Tip income not reported on line 1a",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_49[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 306
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1d",
+      "label": "Line 1d — Medicaid waiver payments not reported on Form(s) W-2",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_50[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 294.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1e",
+      "label": "Line 1e — Taxable dependent care benefits from Form 2441, line 26",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_51[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 282.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1f",
+      "label": "Line 1f — Employer-provided adoption benefits from Form 8839, line 31",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_52[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 270
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1g",
+      "label": "Line 1g — Wages from Form 8919, line 6",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_53[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 258.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1h_type",
+      "label": "Line 1h — Other earned income type",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_54[0]",
+      "position": {
+        "page": 0,
+        "x": 344.2,
+        "y": 247.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1h_amount",
+      "label": "Line 1h — Other earned income amount",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_55[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 246.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1i",
+      "label": "Line 1i — Nontaxable combat pay election",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_56[0]",
+      "position": {
+        "page": 0,
+        "x": 410.4,
+        "y": 234
+      }
+    },
+    {
+      "fieldId": "form-1040.line.1z",
+      "label": "Line 1z — Add lines 1a through 1h",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_57[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 222.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.2a",
+      "label": "Line 2a — Tax-exempt interest",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_58[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 210.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.2b",
+      "label": "Line 2b — Taxable interest",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_59[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 210.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.3a",
+      "label": "Line 3a — Qualified dividends",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_60[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 198
+      }
+    },
+    {
+      "fieldId": "form-1040.line.3b",
+      "label": "Line 3b — Ordinary dividends",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_61[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 198
+      }
+    },
+    {
+      "fieldId": "form-1040.line.3c_box1",
+      "label": "Line 3c — Check if your child's dividends are included in Line 3a (box 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_33[0]",
+      "position": {
+        "page": 0,
+        "x": 283.8,
+        "y": 187.501
+      }
+    },
+    {
+      "fieldId": "form-1040.line.3c_box2",
+      "label": "Line 3c — Check if your child's dividends are included in Line 3b (box 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_34[0]",
+      "position": {
+        "page": 0,
+        "x": 363,
+        "y": 187.501
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4a",
+      "label": "Line 4a — IRA distributions",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_62[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 174.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4b",
+      "label": "Line 4b — Taxable amount",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_63[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 174.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4c_rollover",
+      "label": "Line 4c — Check if (see instructions): Rollover (box 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_35[0]",
+      "position": {
+        "page": 0,
+        "x": 283.8,
+        "y": 163.5
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4c_qcd",
+      "label": "Line 4c — Check if QCD (box 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_36[0]",
+      "position": {
+        "page": 0,
+        "x": 363,
+        "y": 163.5
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4c_box3",
+      "label": "Line 4c — Check if (box 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_37[0]",
+      "position": {
+        "page": 0,
+        "x": 427.799,
+        "y": 163.5
+      }
+    },
+    {
+      "fieldId": "form-1040.line.4c_box3_amount",
+      "label": "Line 4c — Amount (box 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_64[0]",
+      "position": {
+        "page": 0,
+        "x": 439.2,
+        "y": 162
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5a",
+      "label": "Line 5a — Pensions and annuities",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_65[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 150.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5b",
+      "label": "Line 5b — Taxable amount",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_66[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 150.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5c_rollover",
+      "label": "Line 5c — Check if (see instructions): Rollover (box 1)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_38[0]",
+      "position": {
+        "page": 0,
+        "x": 283.8,
+        "y": 139.502
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5c_pso",
+      "label": "Line 5c — Check if PSO (box 2)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_39[0]",
+      "position": {
+        "page": 0,
+        "x": 363,
+        "y": 139.502
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5c_box3",
+      "label": "Line 5c — Check if (box 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_40[0]",
+      "position": {
+        "page": 0,
+        "x": 427.799,
+        "y": 139.502
+      }
+    },
+    {
+      "fieldId": "form-1040.line.5c_box3_amount",
+      "label": "Line 5c — Amount (box 3)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_67[0]",
+      "position": {
+        "page": 0,
+        "x": 439.2,
+        "y": 138.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.6a",
+      "label": "Line 6a — Social security benefits",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_68[0]",
+      "position": {
+        "page": 0,
+        "x": 252,
+        "y": 126
+      }
+    },
+    {
+      "fieldId": "form-1040.line.6b",
+      "label": "Line 6b — Taxable amount",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_69[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 126
+      }
+    },
+    {
+      "fieldId": "form-1040.line.6c_lump_sum_election",
+      "label": "Line 6c — Check if you elect to use the lump-sum election method",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_41[0]",
+      "position": {
+        "page": 0,
+        "x": 467.2,
+        "y": 116.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.6d_mfs_lived_apart",
+      "label": "Line 6d — Check if you are married filing separately and lived apart from your spouse the entire year",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_42[0]",
+      "position": {
+        "page": 0,
+        "x": 467.2,
+        "y": 104.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.7a",
+      "label": "Line 7a — Capital gain or (loss). Attach Schedule D if required",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_70[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 90
+      }
+    },
+    {
+      "fieldId": "form-1040.line.7b_schedule_d_not_required",
+      "label": "Line 7b — Check if: Schedule D not required",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_43[0]",
+      "position": {
+        "page": 0,
+        "x": 153.2,
+        "y": 79.501
+      }
+    },
+    {
+      "fieldId": "form-1040.line.7b_includes_childs_capital_gain",
+      "label": "Line 7b — Check if: Includes child's capital gain or (loss)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].c1_44[0]",
+      "position": {
+        "page": 0,
+        "x": 261.2,
+        "y": 79.501
+      }
+    },
+    {
+      "fieldId": "form-1040.line.7b_childs_capital_gain_amount",
+      "label": "Line 7b — Includes child's capital gain or (loss) amount",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_71[0]",
+      "position": {
+        "page": 0,
+        "x": 403.2,
+        "y": 78.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.8",
+      "label": "Line 8 — Additional income from Schedule 1, line 10",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_72[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 66.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.9",
+      "label": "Line 9 — Add lines 1z, 2b, 3b, 4b, 5b, 6b, 7a, and 8. This is your total income",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_73[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 54
+      }
+    },
+    {
+      "fieldId": "form-1040.line.10",
+      "label": "Line 10 — Adjustments to income from Schedule 1, line 26",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_74[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 42.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.11a",
+      "label": "Line 11a — Subtract line 10 from line 9. This is your adjusted gross income",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page1[0].f1_75[0]",
+      "position": {
+        "page": 0,
+        "x": 504,
+        "y": 30.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.11b",
+      "label": "Line 11b — Amount from line 11a (adjusted gross income)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_01[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 744.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12a_you_as_dependent",
+      "label": "Line 12a — You as a dependent (Someone can claim)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_1[0]",
+      "position": {
+        "page": 1,
+        "x": 203.6,
+        "y": 734.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12a_spouse_as_dependent",
+      "label": "Line 12a — Your spouse as a dependent (Someone can claim)",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_2[0]",
+      "position": {
+        "page": 1,
+        "x": 304.4,
+        "y": 734.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12b_spouse_itemizes_separate",
+      "label": "Line 12b — Spouse itemizes on a separate return",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_3[0]",
+      "position": {
+        "page": 1,
+        "x": 115.2,
+        "y": 722
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12b_dual_status_alien",
+      "label": "Line 12b — You were a dual-status alien",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_4[0]",
+      "position": {
+        "page": 1,
+        "x": 304.4,
+        "y": 722
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12d_you_born_before_jan2_1961",
+      "label": "Line 12d — You: Were born before January 2, 1961",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_5[0]",
+      "position": {
+        "page": 1,
+        "x": 153.2,
+        "y": 710.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12d_you_blind",
+      "label": "Line 12d — You: Are blind",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_6[0]",
+      "position": {
+        "page": 1,
+        "x": 311.6,
+        "y": 710.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12d_spouse_born_before_jan2_1961",
+      "label": "Line 12d — Spouse: Was born before January 2, 1961",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_7[0]",
+      "position": {
+        "page": 1,
+        "x": 153.2,
+        "y": 698.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12d_spouse_blind",
+      "label": "Line 12d — Spouse: Is blind",
+      "labelSource": "vision",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_8[0]",
+      "position": {
+        "page": 1,
+        "x": 311.6,
+        "y": 698.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.12e",
+      "label": "Line 12e — Standard deduction or itemized deductions (from Schedule A)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_02[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 684
+      }
+    },
+    {
+      "fieldId": "form-1040.line.13a",
+      "label": "Line 13a — Qualified business income deduction from Form 8995 or Form 8995-A",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_03[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 672.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.13b",
+      "label": "Line 13b — Additional deductions from Schedule 1-A, line 38",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_04[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 660.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.14",
+      "label": "Line 14 — Add lines 12e, 13a, and 13b",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_05[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 648
+      }
+    },
+    {
+      "fieldId": "form-1040.line.15",
+      "label": "Line 15 — Subtract line 14 from line 11b. Taxable income",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_06[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 636.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.16_from_form_8814",
+      "label": "Line 16 — Tax: Check if from Form(s) 8814",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_9[0]",
+      "position": {
+        "page": 1,
+        "x": 312.6,
+        "y": 626.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.16_from_form_4972",
+      "label": "Line 16 — Tax: Check if from Form 4972",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_10[0]",
+      "position": {
+        "page": 1,
+        "x": 370.2,
+        "y": 626.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.16_from_other_form",
+      "label": "Line 16 — Tax: Check if from other form (3rd checkbox)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_11[0]",
+      "position": {
+        "page": 1,
+        "x": 427.799,
+        "y": 626.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.16_other_form_number",
+      "label": "Line 16 — Tax (third form number, if any)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_07[0]",
+      "position": {
+        "page": 1,
+        "x": 439.2,
+        "y": 624.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.16",
+      "label": "Line 16 — Tax (see instructions)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_08[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 624.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.17",
+      "label": "Line 17 — Amount from Schedule 2, line 3",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_09[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 612
+      }
+    },
+    {
+      "fieldId": "form-1040.line.18",
+      "label": "Line 18 — Add lines 16 and 17",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_10[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 600.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.19",
+      "label": "Line 19 — Child tax credit or credit for other dependents from Schedule 8812",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_11[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 588.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.20",
+      "label": "Line 20 — Amount from Schedule 3, line 8",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_12[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 576
+      }
+    },
+    {
+      "fieldId": "form-1040.line.21",
+      "label": "Line 21 — Add lines 19 and 20",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_13[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 564.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.22",
+      "label": "Line 22 — Subtract line 21 from line 18. If zero or less, enter -0-",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_14[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 552.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.23",
+      "label": "Line 23 — Other taxes, including self-employment tax, from Schedule 2, line 21",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_15[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 540
+      }
+    },
+    {
+      "fieldId": "form-1040.line.24",
+      "label": "Line 24 — Add lines 22 and 23. Total tax",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_16[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 528.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.25a",
+      "label": "Line 25a — Federal income tax withheld from Form(s) W-2",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_17[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 504
+      }
+    },
+    {
+      "fieldId": "form-1040.line.25b",
+      "label": "Line 25b — Federal income tax withheld from Form(s) 1099",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_18[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 492.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.25c",
+      "label": "Line 25c — Federal income tax withheld from other forms (see instructions)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_19[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 480.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.25d",
+      "label": "Line 25d — Add lines 25a through 25c",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_20[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 468
+      }
+    },
+    {
+      "fieldId": "form-1040.line.26",
+      "label": "Line 26 — 2025 estimated tax payments and amount applied from 2024 return",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_21[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 456.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.former_spouse_ssn",
+      "label": "Former spouse's SSN (if you made estimated tax payments with your former spouse in 2025)",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].SSN_ReadOrder[0].f2_22[0]",
+      "position": {
+        "page": 1,
+        "x": 237.6,
+        "y": 432
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.line.27a",
+      "label": "Line 27a — Earned income credit (EIC)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_23[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 420.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.27b_clergy_schedule_se",
+      "label": "Line 27b — Clergy filing Schedule SE (see instructions)",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_12[0]",
+      "position": {
+        "page": 1,
+        "x": 467.2,
+        "y": 410.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.27c_no_eic_claim",
+      "label": "Line 27c — If you do not want to claim the EIC, check here",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_13[0]",
+      "position": {
+        "page": 1,
+        "x": 467.2,
+        "y": 398
+      }
+    },
+    {
+      "fieldId": "form-1040.line.28_no_actc_claim",
+      "label": "Line 28 — Additional child tax credit (ACTC): If you do not want to claim the ACTC, check here",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].Line28_ReadOrder[0].c2_14[0]",
+      "position": {
+        "page": 1,
+        "x": 373.6,
+        "y": 374.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.28",
+      "label": "Line 28 — Additional child tax credit (ACTC) from Schedule 8812",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_24[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 372.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.29",
+      "label": "Line 29 — American opportunity credit from Form 8863, line 8",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_25[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 360
+      }
+    },
+    {
+      "fieldId": "form-1040.line.30",
+      "label": "Line 30 — Refundable adoption credit from Form 8839, line 13",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_26[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 348.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.31",
+      "label": "Line 31 — Amount from Schedule 3, line 15",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_27[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 336.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.32",
+      "label": "Line 32 — Add lines 27a, 28, 29, 30, and 31. Total other payments and refundable credits",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_28[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 324
+      }
+    },
+    {
+      "fieldId": "form-1040.line.33",
+      "label": "Line 33 — Add lines 25d, 26, and 32. Total payments",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_29[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 312.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.34",
+      "label": "Line 34 — If line 33 is more than line 24, the amount you overpaid",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_30[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 300.002
+      }
+    },
+    {
+      "fieldId": "form-1040.line.35a_form_8888_attached",
+      "label": "Line 35a — If Form 8888 is attached, check here",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_15[0]",
+      "position": {
+        "page": 1,
+        "x": 467.2,
+        "y": 290
+      }
+    },
+    {
+      "fieldId": "form-1040.line.35a",
+      "label": "Line 35a — Amount of line 34 you want refunded to you",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_31[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 288
+      }
+    },
+    {
+      "fieldId": "form-1040.line.35b_routing_number",
+      "label": "Line 35b — Routing number",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].RoutingNo[0].f2_32[0]",
+      "position": {
+        "page": 1,
+        "x": 180,
+        "y": 276.999
+      },
+      "maxLength": 9
+    },
+    {
+      "fieldId": "form-1040.line.35c_checking",
+      "label": "Line 35c — Type: Checking",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[0]",
+      "position": {
+        "page": 1,
+        "x": 377.4,
+        "y": 278.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.35c_savings",
+      "label": "Line 35c — Type: Savings",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_16[1]",
+      "position": {
+        "page": 1,
+        "x": 435,
+        "y": 278.001
+      }
+    },
+    {
+      "fieldId": "form-1040.line.35d_account_number",
+      "label": "Line 35d — Account number",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].AccountNo[0].f2_33[0]",
+      "position": {
+        "page": 1,
+        "x": 180,
+        "y": 265
+      },
+      "maxLength": 17
+    },
+    {
+      "fieldId": "form-1040.line.36",
+      "label": "Line 36 — Amount of line 34 you want applied to your 2026 estimated tax",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_34[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 252
+      }
+    },
+    {
+      "fieldId": "form-1040.line.37",
+      "label": "Line 37 — Amount you owe",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_35[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 227.999
+      }
+    },
+    {
+      "fieldId": "form-1040.line.38",
+      "label": "Line 38 — Estimated tax penalty (see instructions)",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_36[0]",
+      "position": {
+        "page": 1,
+        "x": 410.4,
+        "y": 216
+      }
+    },
+    {
+      "fieldId": "form-1040.page2.third_party_designee_yes",
+      "label": "Third Party Designee — Yes. Complete below.",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_17[0]",
+      "position": {
+        "page": 1,
+        "x": 432,
+        "y": 206.251
+      }
+    },
+    {
+      "fieldId": "form-1040.page2.third_party_designee_no",
+      "label": "Third Party Designee — No",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_17[1]",
+      "position": {
+        "page": 1,
+        "x": 540,
+        "y": 206.251
+      }
+    },
+    {
+      "fieldId": "form-1040.page2.designee_name",
+      "label": "Designee's name",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_37[0]",
+      "position": {
+        "page": 1,
+        "x": 129.6,
+        "y": 180
+      },
+      "multiline": true
+    },
+    {
+      "fieldId": "form-1040.page2.designee_phone",
+      "label": "Phone no.",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_38[0]",
+      "position": {
+        "page": 1,
+        "x": 324,
+        "y": 180
+      }
+    },
+    {
+      "fieldId": "form-1040.page2.designee_pin",
+      "label": "Personal identification number (PIN)",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_39[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 180.5
+      },
+      "maxLength": 5
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_occupation",
+      "label": "Your occupation",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_40[0]",
+      "position": {
+        "page": 1,
+        "x": 325,
+        "y": 126
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_ip_pin",
+      "label": "If the IRS sent you an Identity Protection PIN, enter it here (see inst.)",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_41[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 126
+      },
+      "maxLength": 6
+    },
+    {
+      "fieldId": "form-1040.signing.spouse_occupation",
+      "label": "Spouse's occupation",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_42[0]",
+      "position": {
+        "page": 1,
+        "x": 325,
+        "y": 96.001
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.spouse_ip_pin",
+      "label": "If the IRS sent your spouse an Identity Protection PIN, enter it here (see inst.)",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_43[0]",
+      "position": {
+        "page": 1,
+        "x": 504,
+        "y": 96.001
+      },
+      "maxLength": 6
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_phone",
+      "label": "Phone no.",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_44[0]",
+      "position": {
+        "page": 1,
+        "x": 127.599,
+        "y": 84.002
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.taxpayer_email",
+      "label": "Email address",
+      "labelSource": "vision",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "email",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_45[0]",
+      "position": {
+        "page": 1,
+        "x": 324,
+        "y": 84.002
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_self_employed",
+      "label": "Check if: Self-employed",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].c2_18[0]",
+      "position": {
+        "page": 1,
+        "x": 518.4,
+        "y": 63.501
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_name",
+      "label": "Paid Preparer — Preparer's name",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_46[0]",
+      "position": {
+        "page": 1,
+        "x": 91.599,
+        "y": 59.998
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_ptin",
+      "label": "Paid Preparer — PTIN",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_47[0]",
+      "position": {
+        "page": 1,
+        "x": 454.6,
+        "y": 59.998
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_name",
+      "label": "Firm's name",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_48[0]",
+      "position": {
+        "page": 1,
+        "x": 134.599,
+        "y": 48.002
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_phone",
+      "label": "Phone no.",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "phone",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_49[0]",
+      "position": {
+        "page": 1,
+        "x": 494.6,
+        "y": 48.002
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_address",
+      "label": "Firm's address",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_50[0]",
+      "position": {
+        "page": 1,
+        "x": 142.599,
+        "y": 36
+      }
+    },
+    {
+      "fieldId": "form-1040.signing.preparer_firm_ein",
+      "label": "Firm's EIN",
+      "labelSource": "vision",
+      "category": "other",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "topmostSubform[0].Page2[0].f2_51[0]",
+      "position": {
+        "page": 1,
+        "x": 494.6,
+        "y": 36
+      },
+      "maxLength": 10
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/ref/forms/f1040-2025.pdf",
+    "ingestedAt": "2026-05-14T16:44:18.437Z",
+    "totalFields": 199,
+    "enriched": 199,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 199,
+    "tokensIn": 39117,
+    "tokensOut": 16482,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

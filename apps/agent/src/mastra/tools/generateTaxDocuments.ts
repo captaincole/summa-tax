@@ -1,32 +1,13 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { readFileSync } from "node:fs";
-import { listFacts } from "../db/taxFacts";
-import { listDecisions } from "../db/aiDecisions";
 import { createDocument } from "../db/userDocuments";
 import {
-  makeDecisionsView,
-  makeFactsView,
   type AnyFormField,
-  type DerivationContext,
   type EvaluatedForm,
 } from "../engine/types";
-import { evaluateAllForms } from "../engine/engine";
-import { resolveFilingInfo } from "../engine/filingInfo";
-import type { Catalog } from "../engine/catalog";
-import { FORMS, catalog, registerAllForms } from "../engine/registry";
-registerAllForms();
-import { fillFromCatalog } from "../engine/render/fillFromCatalog";
+import { evaluateScenario, renderForm } from "../engine";
+import { FORMS } from "../engine/registry";
 import { requireUserContext } from "./userContext";
-
-// `catalog` (from registry.ts) is the merged inventory across every
-// registered form — built once at module load from the static JSON
-// imports there, so cross-form refs resolve during fixpoint evaluation
-// with no runtime I/O.
-const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
-function getCatalog(): Promise<Catalog> {
-  return Promise.resolve(catalog);
-}
 
 function lineValue(
   form: EvaluatedForm<AnyFormField>,
@@ -139,49 +120,11 @@ export const generateTaxDocuments = createTool({
     }),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId } = await requireUserContext(context);
+    const { supabase, userId, filingId, taxYear } = await requireUserContext(context);
     const { year } = input;
 
-    // ─── Read state from DB ───
-    const [factRowsRaw, decisionRowsRaw] = await Promise.all([
-      listFacts(supabase, { taxYear: year, limit: 500 }),
-      listDecisions(supabase, { taxYear: year, limit: 500 }),
-    ]);
-
-    // Supersede on conflict: listFacts/listDecisions return newest-first,
-    // so first-seen-wins keeps the most recent value per key. Matches the
-    // pattern in caseState.ts — without dedupe, re-ingests double up (e.g.
-    // two W-2 rows with the same employerSlug both sum into w2WagesTotal).
-    const factRows = [];
-    const seenFactKeys = new Set<string>();
-    for (const row of factRowsRaw) {
-      if (seenFactKeys.has(row.key)) continue;
-      seenFactKeys.add(row.key);
-      factRows.push(row);
-    }
-    const decisionRows = [];
-    const seenDecisionKeys = new Set<string>();
-    for (const row of decisionRowsRaw) {
-      if (seenDecisionKeys.has(row.decisionKey)) continue;
-      seenDecisionKeys.add(row.decisionKey);
-      decisionRows.push(row);
-    }
-
-    // ─── Run the multi-form engine (fixpoint) ───
-    const ctx: DerivationContext = {
-      taxYear: year,
-      facts: makeFactsView(factRows),
-      decisions: makeDecisionsView(decisionRows),
-      // Bindings read every input through ctx.filingInfo (resolver-projected
-      // view of facts+decisions). Skipping this leaves every field blocked
-      // with a "filingInfo missing" reason — silent blank PDFs.
-      filingInfo: resolveFilingInfo({
-        facts: factRows.map((f) => ({ key: f.key, value: f.value, category: f.category })),
-        decisions: decisionRows.map((d) => ({ decisionKey: d.decisionKey, decision: d.decision })),
-      }),
-    };
-    const catalog = await getCatalog();
-    const { forms } = evaluateAllForms(SCENARIO_FORM_IDS, ctx, catalog);
+    const scenario = await evaluateScenario(supabase, { id: filingId, taxYear });
+    const { forms } = scenario;
 
     // ─── Render every form whose mustFile predicate evaluates true ───
     // 1040 is filed unconditionally for every scenario we model (its
@@ -208,12 +151,7 @@ export const generateTaxDocuments = createTool({
         continue;
       }
 
-      const blankBytes = readFileSync(spec.blankPdfPath);
-      const { pdfBytes, rendered, warnings } = await fillFromCatalog({
-        blankPdfBytes: blankBytes,
-        form,
-        catalog,
-      });
+      const { pdfBytes, rendered, warnings } = await renderForm(scenario, spec.formId);
       for (const w of warnings) {
         console.warn(`[generate-tax-documents][${spec.formId}] ${w}`);
       }

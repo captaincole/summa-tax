@@ -1,0 +1,4062 @@
+{
+  "form": {
+    "formId": "schedule-ca",
+    "taxYear": 2025,
+    "jurisdiction": "state-ca",
+    "title": "California Adjustments — Residents"
+  },
+  "fields": [
+    {
+      "fieldId": "schedule-ca.0.header.name",
+      "label": "Name or names as shown on tax return.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1000",
+      "position": {
+        "page": 0,
+        "x": 37.2,
+        "y": 681.5
+      }
+    },
+    {
+      "fieldId": "schedule-ca.0.header.ssn",
+      "label": "Social Security Number or Individual Taxpayer Identification Number.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1001",
+      "position": {
+        "page": 0,
+        "x": 465.6,
+        "y": 681.5
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1a_federal",
+      "label": "Part One. Income Adjustment Schedule. Section A. Income from federal Form 1040 or 1040-SR. Line 1a. Total amount from federal Form or Forms W-2, box 1. See instructions. Column A. Federal Amounts. (taxable amounts from your federal tax return).",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1002",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 632.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1a_subtractions",
+      "label": "Line 1a. Column B. Subtractions.\r See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1003",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 632.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1a_additions",
+      "label": "Line 1a. Column C. Additions. See instructions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1004",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 632.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1b_federal",
+      "label": "Line 1b. Household employee wages not reported on federal Form or Forms W-2. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1005",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 609
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1b_subtractions",
+      "label": "Line 1b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1006",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 609
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1b_additions",
+      "label": "Line 1b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1007",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 609
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1c_federal",
+      "label": "Line 1c. Tip income not reported on line 1a. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1008",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 585.12
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1c_subtractions",
+      "label": "Line 1c. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1009",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 585.12
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1c_additions",
+      "label": "Line 1c. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1010",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 585.12
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1d_federal",
+      "label": "Line 1d. Medicaid waiver payments not reported on federal Form or Forms W-2. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1011",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 561.24
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1d_subtractions",
+      "label": "Line 1d. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1012",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 561.24
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1d_additions",
+      "label": "Line 1d. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1013",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 561.24
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1e_federal",
+      "label": "Line 1e. Taxable dependent care benefits from federal Form 2441, line 26. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1014",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 536.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1e_subtractions",
+      "label": "Line 1e. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1015",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 536.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1e_additions",
+      "label": "Line 1e. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1016",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 536.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1f_federal",
+      "label": "Line 1f. Employer-provided adoption benefits from federal Form 8839, line 31 . Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1017",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 512.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1f_subtractions",
+      "label": "Line 1f. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1018",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 512.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1f_additions",
+      "label": "Line 1f. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1019",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 512.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1g_federal",
+      "label": "Line 1 g. Wages from federal Form 8919, line 6 . Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1020",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 488.84
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1g_subtractions",
+      "label": "Line 1 g. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1021",
+      "position": {
+        "page": 0,
+        "x": 363.85,
+        "y": 489.14
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1g_additions",
+      "label": "Line 1 g. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1022",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 489.14
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1h_income_type",
+      "label": "Line 1 h. Other earned income. See instructions. Enter type of income.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1023",
+      "position": {
+        "page": 0,
+        "x": 58.8,
+        "y": 464.5
+      }
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1h_federal",
+      "label": "Line 1 h. Other earned income. Enter amount. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1023b",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 464.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1h_subtractions",
+      "label": "Line 1 h. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1024",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 464.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1h_additions",
+      "label": "Line 1 h. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1025",
+      "position": {
+        "page": 0,
+        "x": 479.74,
+        "y": 464.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1i_additions",
+      "label": "Line 1i. Nontaxable combat pay election. See instructions. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1026",
+      "position": {
+        "page": 0,
+        "x": 480.264,
+        "y": 440.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1z_federal",
+      "label": "Line 1z. Add line 1a through line 1i. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1027",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 416.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1z_subtractions",
+      "label": "Line 1z. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1028",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 416.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.1z_additions",
+      "label": "Line 1z. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1029",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 416.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.2a_federal",
+      "label": "Line 2. Taxable interest. Line 2 a.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1030",
+      "position": {
+        "page": 0,
+        "x": 131.56,
+        "y": 392.5
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.2b_federal",
+      "label": "Line 2. Taxable interest. Line 2b. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1031",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 393.065
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.2b_subtractions",
+      "label": "Line 2b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1032",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 393.065
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.2b_additions",
+      "label": "Line 2b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1033",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 393.065
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.3a_federal",
+      "label": "Line 3. Ordinary dividends. See instructions. Line 3 a.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1034",
+      "position": {
+        "page": 0,
+        "x": 131.56,
+        "y": 368.82
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.3b_federal",
+      "label": "Line 3. Ordinary dividends. Line 3b. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1035",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 368.973
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.3b_subtractions",
+      "label": "Line 3b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1036",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 368.973
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.3b_additions",
+      "label": "Line 3b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1037",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 368.973
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.4a_federal",
+      "label": "Line 4. I R A distributions. See instructions. Line 4 a.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1038",
+      "position": {
+        "page": 0,
+        "x": 131.56,
+        "y": 344.94
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.4b_federal",
+      "label": "Line 4. I R A distributions. Line 4b. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1039",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 344.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.4b_subtractions",
+      "label": "Line 4b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1040",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 344.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.4b_additions",
+      "label": "Line 4b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1041",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 344.88
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.5a_federal",
+      "label": "Line 5. Pensions and annuities. See instructions. Line 5 a.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1042",
+      "position": {
+        "page": 0,
+        "x": 131.56,
+        "y": 309.06
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.5b_federal",
+      "label": "Line 5. Pensions and annuities. Line 5b. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1043",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 309.06
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.5b_subtractions",
+      "label": "Line 5b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1044",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 309.06
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.5b_additions",
+      "label": "Line 5b. Column C. Additions.",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1045",
+      "position": {
+        "page": 0,
+        "x": 480.34,
+        "y": 309.06
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.6a_federal",
+      "label": "Line 6. Social security benefits. Line 6 a.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1046",
+      "position": {
+        "page": 0,
+        "x": 131.56,
+        "y": 284.83
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.6b_federal",
+      "label": "Line 6. Social security benefits. Line 6b. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1047",
+      "position": {
+        "page": 0,
+        "x": 249.276,
+        "y": 284.83
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.6b_subtractions",
+      "label": "Line 6b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1048",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 284.83
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.7a_federal",
+      "label": "Line 7a. Capital gain or (loss). See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1049",
+      "position": {
+        "page": 0,
+        "x": 249.87,
+        "y": 261
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.7a_subtractions",
+      "label": "Line 7a. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1050",
+      "position": {
+        "page": 0,
+        "x": 364.7,
+        "y": 261
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.7a_additions",
+      "label": "Line 7a. Column C. Additions.",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1051",
+      "position": {
+        "page": 0,
+        "x": 480.59,
+        "y": 261
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b1_federal",
+      "label": "Section B – Additional Income from federal Schedule 1 (Form 1040). Line 1. Taxable refunds, credits, or offsets of state and local income taxes. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1052",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 225
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b1_subtractions",
+      "label": "Line 1. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1053",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 225
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b2b_divorce_date",
+      "label": "Line 2 b. Date of original divorce or separation agreement. See instructions. Enter date as 2 digit month and 4 digit year.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1055B",
+      "position": {
+        "page": 0,
+        "x": 132,
+        "y": 187.2
+      },
+      "maxLength": 7
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b2a_federal",
+      "label": "Line 2a. Alimony received. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1054",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 189.3
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b2a_additions",
+      "label": "Line 2a. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1055",
+      "position": {
+        "page": 0,
+        "x": 479.65,
+        "y": 189.25
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b3_federal",
+      "label": "Line 3 . Business income or (loss). See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1056",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 165.35
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b3_subtractions",
+      "label": "Line 3 . Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1057",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 165.05
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b3_additions",
+      "label": "Line 3 . Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1058",
+      "position": {
+        "page": 0,
+        "x": 479.65,
+        "y": 165.05
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b4_federal",
+      "label": "Line 4. Other gains or (losses). Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1059",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 141.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b4_subtractions",
+      "label": "Line 4. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1060",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 141.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b4_additions",
+      "label": "Line 4. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1061",
+      "position": {
+        "page": 0,
+        "x": 479.65,
+        "y": 141.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b5_federal",
+      "label": "Line 5. Rental real estate, royalties, partnerships, S corporations, trusts, etcetera. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1062",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 117.25
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b5_subtractions",
+      "label": "Line 5. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1063",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 117.3
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b5_additions",
+      "label": "Line 5. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1064",
+      "position": {
+        "page": 0,
+        "x": 479.65,
+        "y": 117.3
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b6_federal",
+      "label": "Line 6. Farm income or (loss). Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1065",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 93.29
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b6_subtractions",
+      "label": "Line 6. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1066",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 93.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b6_additions",
+      "label": "Line 6. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1067",
+      "position": {
+        "page": 0,
+        "x": 479.65,
+        "y": 93.9
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b7_federal",
+      "label": "Line 7. Unemployment compensation. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1068",
+      "position": {
+        "page": 0,
+        "x": 250.1,
+        "y": 69.4
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.0.line.b7_subtractions",
+      "label": "Line 7. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 1069",
+      "position": {
+        "page": 0,
+        "x": 364.45,
+        "y": 69.3
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8a_federal",
+      "label": "Line 8. Other income.  Line 8a. Federal net operating loss. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2001",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 669.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8a_additions",
+      "label": "Line 8a. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2002",
+      "position": {
+        "page": 1,
+        "x": 479.29,
+        "y": 669.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8b_federal",
+      "label": "Line 8b. Gambling. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2003",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 645.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8b_subtractions",
+      "label": "Line 8b. Gambling. Column B. Subtractions.",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2004",
+      "position": {
+        "page": 1,
+        "x": 364.2,
+        "y": 645.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8c_federal",
+      "label": "Line 8c. Cancellation of debt. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2005",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 620.956
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8c_subtractions",
+      "label": "Line 8c. Cancellation of debt. Column B. Subtractions.",
+      "labelSource": "vision",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2006",
+      "position": {
+        "page": 1,
+        "x": 365.2,
+        "y": 620.956
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8c_additions",
+      "label": "Line 8c. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2007",
+      "position": {
+        "page": 1,
+        "x": 478.8,
+        "y": 620.956
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8d_federal",
+      "label": "Line 8d. Foreign earned income exclusion from federal Form 2555. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2008",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 596.956
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8d_additions",
+      "label": "Line 8d. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2009",
+      "position": {
+        "page": 1,
+        "x": 479.4,
+        "y": 596.956
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8e_federal",
+      "label": "Line 8e. Income from federal Form 8853. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2010",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 573.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8e_additions",
+      "label": "Line 8e. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2011",
+      "position": {
+        "page": 1,
+        "x": 479.4,
+        "y": 573.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8f_federal",
+      "label": "Line 8f. Income from federal Form 8889. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2012",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 549.26
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8f_subtractions",
+      "label": "Line 8f. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2013",
+      "position": {
+        "page": 1,
+        "x": 364.2,
+        "y": 549.26
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8g_federal",
+      "label": "Line 8 g. Alaska Permanent Fund dividends. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2014",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 525.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8h_federal",
+      "label": "Line 8h. Jury duty pay. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2015",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 501.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8i_federal",
+      "label": "Line 8i. Prizes and awards. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2016",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 477.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8j_federal",
+      "label": "Line 8j. Activity not engaged in for profit income. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2017",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 453.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8k_federal",
+      "label": "Line 8k. Stock options. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2018",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 429.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8k_additions",
+      "label": "Line 8k. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2019",
+      "position": {
+        "page": 1,
+        "x": 480,
+        "y": 429.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8l_federal",
+      "label": "Line 8 l. Income from the rental of personal property if you engaged in the rental for profit but were not in the business of renting such property. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2020",
+      "position": {
+        "page": 1,
+        "x": 248.475,
+        "y": 393.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8m_federal",
+      "label": "Line 8m. Olympic and Paralympic medals and USOC prize money. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2021",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 369.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8n_federal",
+      "label": "Line 8n. IRC Section 951(a) inclusion. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2022",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 345.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8n_subtractions",
+      "label": "Line 8n. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2023",
+      "position": {
+        "page": 1,
+        "x": 364,
+        "y": 345.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8o_federal",
+      "label": "Line 8o. IRC Section 951A(a) inclusion. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2024",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 321.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8o_subtractions",
+      "label": "Line 8o. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2025",
+      "position": {
+        "page": 1,
+        "x": 364,
+        "y": 321.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8p_federal",
+      "label": "Line 8p. IRC Section 461( l ) excess business loss adjustment. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2026",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 297.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8p_subtractions",
+      "label": "Line 8p. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2027",
+      "position": {
+        "page": 1,
+        "x": 364.2,
+        "y": 297.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8p_additions",
+      "label": "Line 8p. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2028",
+      "position": {
+        "page": 1,
+        "x": 479.4,
+        "y": 297.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8q_federal",
+      "label": "Line 8 q. Taxable distributions from an ABLE account. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2029",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 273.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8r_federal",
+      "label": "Line 8r. Scholarship and fellowship grants not reported on federal Form or Forms W-2. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2030",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 248.5
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8s_federal",
+      "label": "Line 8s. Nontaxable amount of Medicaid waiver payments included on federal Form 1040, line 1a or line 1d. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2031",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 225.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8t_federal",
+      "label": "Line 8 t. Pension or annuity from a nonqualified deferred compensation plan or a nongovernmental IRC Section 457 plan. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2032",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 189.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8u_federal",
+      "label": "Line 8u. Wages earned while incarcerated. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2033",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 165.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8v_federal",
+      "label": "Line 8v. Digital assets received as ordinary income not reported elsewhere. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2034",
+      "position": {
+        "page": 1,
+        "x": 249.13,
+        "y": 141.436
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8v_subtractions",
+      "label": "Line 8v. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2035",
+      "position": {
+        "page": 1,
+        "x": 363.83,
+        "y": 141.436
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8v_additions",
+      "label": "Line 8v. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2036",
+      "position": {
+        "page": 1,
+        "x": 479.28,
+        "y": 141.436
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8z_income_type",
+      "label": "Line 8 z. Other income. Enter type of income.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2037",
+      "position": {
+        "page": 1,
+        "x": 61.8,
+        "y": 105.196
+      }
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8z_federal",
+      "label": "Line 8 z. Other income. Enter amount. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2038",
+      "position": {
+        "page": 1,
+        "x": 249.36,
+        "y": 104.922
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8z_subtractions",
+      "label": "Line 8z. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2039",
+      "position": {
+        "page": 1,
+        "x": 363.83,
+        "y": 104.922
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.1.line.b8z_additions",
+      "label": "Line 8z. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 2040",
+      "position": {
+        "page": 1,
+        "x": 479.28,
+        "y": 104.922
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9a_federal",
+      "label": "Line 9 a. Total other income. Add line 8a through line 8z. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3001",
+      "position": {
+        "page": 2,
+        "x": 250.24,
+        "y": 668.796
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9a_subtractions",
+      "label": "Line 9 a. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3002",
+      "position": {
+        "page": 2,
+        "x": 365.28,
+        "y": 668.896
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9a_additions",
+      "label": "Line 9 a. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3003",
+      "position": {
+        "page": 2,
+        "x": 481.904,
+        "y": 669.096
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9b1_subtractions",
+      "label": "Line 9 b1. Disaster loss deduction from form FTB 3805V. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3004B",
+      "position": {
+        "page": 2,
+        "x": 365.24,
+        "y": 645.016
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9b2_subtractions",
+      "label": "Line 9 b2. Net operating loss deduction from form FTB 3805V. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3005B",
+      "position": {
+        "page": 2,
+        "x": 365.59,
+        "y": 620.95
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b9b3_subtractions",
+      "label": "Line 9 b3. Net operating loss deduction from form FTB 3805Z, 3807, or 3809. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3006B",
+      "position": {
+        "page": 2,
+        "x": 364.09,
+        "y": 597.2
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b10_federal",
+      "label": "Line 10. Total. Add Section A, line 1z through line 7a, and Section B, line 1 through line 7, and line 9a in column A and column C. Add Section A, line 1z through line 7a, and Section B, line 1 through line 7, line 9a, and line 9b1 through line 9b3 in column B (as applicable). See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3007",
+      "position": {
+        "page": 2,
+        "x": 249.74,
+        "y": 537.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b10_subtractions",
+      "label": "Line 10. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3008",
+      "position": {
+        "page": 2,
+        "x": 364.09,
+        "y": 536.796
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.b10_additions",
+      "label": "Line 10. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3009",
+      "position": {
+        "page": 2,
+        "x": 480.404,
+        "y": 536.596
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c11_federal",
+      "label": "Section C . Adjustments to Income from federal Schedule 1 (Form 1040).  Line 11. Educator expenses. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3010",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 476.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c11_subtractions",
+      "label": "Line 11. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3011",
+      "position": {
+        "page": 2,
+        "x": 363.65,
+        "y": 476.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c12_federal",
+      "label": "Line 12. Certain business expenses of reservists, performing artists, and fee-basis government officials. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3012",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 452.947
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c12_subtractions",
+      "label": "Line 12. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3013",
+      "position": {
+        "page": 2,
+        "x": 363.65,
+        "y": 452.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c12_additions",
+      "label": "Line 12. Column C. Additions.",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3014",
+      "position": {
+        "page": 2,
+        "x": 480.964,
+        "y": 452.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c13_federal",
+      "label": "Line 13. Health savings account deduction. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3015",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 428.949
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c13_subtractions",
+      "label": "Line 13. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3016",
+      "position": {
+        "page": 2,
+        "x": 363.65,
+        "y": 428.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c14_federal",
+      "label": "Line 14. Moving expenses. Attach form FTB 3913. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3017",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 404.95
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c14_additions",
+      "label": "Line 14. Moving expenses. Attach form FTB 3913. See instructions. Column C. Additions.",
+      "labelSource": "vision",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3018",
+      "position": {
+        "page": 2,
+        "x": 480.964,
+        "y": 404.946
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c15_federal",
+      "label": "Line 15. Deductible part of self-employment tax. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3019",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 380.951
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c15_subtractions",
+      "label": "Line 15. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3020",
+      "position": {
+        "page": 2,
+        "x": 364.36,
+        "y": 381.176
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c16_federal",
+      "label": "Line 16. Self-employed SEP, SIMPLE, and qualified plans. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3021",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 356.953
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c17_federal",
+      "label": "Line 17. Self-employed health insurance deduction. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3022",
+      "position": {
+        "page": 2,
+        "x": 249.3,
+        "y": 332.954
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c17_subtractions",
+      "label": "Line 17. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3023",
+      "position": {
+        "page": 2,
+        "x": 363.9,
+        "y": 333.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c18_federal",
+      "label": "Line 18. Penalty on early withdrawal of savings. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3024",
+      "position": {
+        "page": 2,
+        "x": 250.34,
+        "y": 310.434
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c19a_federal",
+      "label": "Line 19a. Alimony paid. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3025",
+      "position": {
+        "page": 2,
+        "x": 250.34,
+        "y": 285.554
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c19a_additions",
+      "label": "Line 19a. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3026",
+      "position": {
+        "page": 2,
+        "x": 479.65,
+        "y": 285.554
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c19b_recipient_ssn",
+      "label": "Line 19 b. Recipient’s Social Security Number.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "ssn",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3027",
+      "position": {
+        "page": 2,
+        "x": 133.93,
+        "y": 261.734
+      },
+      "maxLength": 11
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c19b_recipient_last_name",
+      "label": "Line 19 b. Recipient’s last name.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3028",
+      "position": {
+        "page": 2,
+        "x": 112.33,
+        "y": 236.957
+      }
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c19c_divorce_date",
+      "label": "Line 19 c. Date of original divorce or separation agreement. See instruction. Enter date as 2 digit month and 4 digit year.",
+      "labelSource": "tu",
+      "category": "personal_info",
+      "valueType": "date",
+      "valueTypeRich": "date",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3028A",
+      "position": {
+        "page": 2,
+        "x": 111.6,
+        "y": 201.596
+      },
+      "maxLength": 7
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c20_federal",
+      "label": "Line 20. IRA deduction. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3029",
+      "position": {
+        "page": 2,
+        "x": 250.34,
+        "y": 177.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c20_subtractions",
+      "label": "Line 20. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3030",
+      "position": {
+        "page": 2,
+        "x": 363.6,
+        "y": 177.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c20_additions",
+      "label": "Line 20. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3031",
+      "position": {
+        "page": 2,
+        "x": 479.65,
+        "y": 177.196
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c21_federal",
+      "label": "Line 21. Student loan interest deduction. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3032",
+      "position": {
+        "page": 2,
+        "x": 250.34,
+        "y": 153.132
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c21_additions",
+      "label": "Line 21. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3033",
+      "position": {
+        "page": 2,
+        "x": 479.65,
+        "y": 153.132
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.2.line.c23_federal",
+      "label": "Line 23. Archer MSA deduction. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 3034",
+      "position": {
+        "page": 2,
+        "x": 250.34,
+        "y": 105.93
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24a_federal",
+      "label": "Line 24. Other adjustments. Line 24a. Jury duty pay. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4001",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 669.436
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24b_federal",
+      "label": "Line 24b. Deductible expenses related to income reported on line 8 l from the rental of personal property engaged in for profit. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4002",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 633.076
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24b_subtractions",
+      "label": "Line 24b. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4003",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 633.076
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24b_additions",
+      "label": "Line 24b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4004",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 633.076
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24c_federal",
+      "label": "Line 24c. Nontaxable amount of the value of Olympic and  Paralympic medals and USOC prize money reported on line 8 m. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4005",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 597.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24c_subtractions",
+      "label": "Line 24c. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4006",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 597.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24d_federal",
+      "label": "Line 24d. Reforestation amortization and expenses. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4007",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 573.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24d_subtractions",
+      "label": "Line 24d. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4008",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 573.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24e_federal",
+      "label": "Line 24e. Repayment of supplemental unemployment benefits under the federal Trade Act of 1974. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4009",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 549.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24f_federal",
+      "label": "Line 24f. Contributions to IRC Section 501(c)(18)(D) pension plans. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4010",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 525.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24f_subtractions",
+      "label": "Line 24f. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4011",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 525.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24f_additions",
+      "label": "Line 24f. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4012",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 525.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24g_federal",
+      "label": "Line 24 g. Contributions by certain chaplains to IRC Section 403(b) plans. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4013",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 501.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24g_subtractions",
+      "label": "Line 24 g. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4014",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 501.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24g_additions",
+      "label": "Line 24 g. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4015",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 501.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24h_federal",
+      "label": "Line 24h. Attorney fees and court costs for actions involving certain unlawful discrimination claims. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4016",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 477.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24i_federal",
+      "label": "Line 24i. Attorney fees and court costs you paid in connection with an award from the IRS for information you provided that helped the IRS detect tax law violations. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4017",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 441.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24i_subtractions",
+      "label": "Line 24i. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4018",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 441.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24j_federal",
+      "label": "Line 24j. Housing deduction from federal Form 2555 . Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4019",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 417.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24j_subtractions",
+      "label": "Line 24j. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4020",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 417.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24k_federal",
+      "label": "Line 24k. Excess deductions of IRC Section 67(e) expenses from federal Schedule K-1 (Form 1041). Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4021",
+      "position": {
+        "page": 3,
+        "x": 265.88,
+        "y": 393.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24z_income_type",
+      "label": "Line 24z. Other adjustments. Enter type of income.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4022",
+      "position": {
+        "page": 3,
+        "x": 63.4,
+        "y": 356.98
+      }
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24z_federal",
+      "label": "Line 24z. Other adjustments. Enter amount. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4023",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 357.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24z_subtractions",
+      "label": "Line 24z. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4024",
+      "position": {
+        "page": 3,
+        "x": 373.54,
+        "y": 357.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c24z_additions",
+      "label": "Line 24z. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4025",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 357.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c25_federal",
+      "label": "Line 25. Total other adjustments. Add line 24a through line 24z. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4026",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 334
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c25_subtractions",
+      "label": "Line 25. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4027",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 334
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c25_additions",
+      "label": "Line 25. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4028",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 334
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c26_federal",
+      "label": "Line 26. Add line 11 through line 23 and line 25 in columns A, B, and C. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4029",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 309.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c26_subtractions",
+      "label": "Line 26. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4030",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 309.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c26_additions",
+      "label": "Line 26. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4031",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 309.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c27_federal",
+      "label": "Line 27. Total. Subtract line 26 from line 10 in columns A, B, and C. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4032",
+      "position": {
+        "page": 3,
+        "x": 263.88,
+        "y": 285.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c27_subtractions",
+      "label": "Line 27. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4033",
+      "position": {
+        "page": 3,
+        "x": 371.4,
+        "y": 285.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.3.line.c27_additions",
+      "label": "Line 27. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "income",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 4034",
+      "position": {
+        "page": 3,
+        "x": 480,
+        "y": 285.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.itemize_ca_not_federal",
+      "label": "Part Two. Adjustments to Federal Itemized Deductions. Check the box if you did NOT itemize for federal but will itemize for California.",
+      "labelSource": "tu",
+      "category": "filing_scope",
+      "valueType": "boolean",
+      "valueTypeRich": "boolean",
+      "pdfFieldKind": "checkbox",
+      "pdfWidgetName": "540ca_form - 5000 CB",
+      "position": {
+        "page": 4,
+        "x": 362.08,
+        "y": 681.276
+      }
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.medical_dental_expenses",
+      "label": "Medical and Dental Expenses. Line 1. Medical and dental expenses",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5001",
+      "position": {
+        "page": 4,
+        "x": 141.37,
+        "y": 608.913
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.medical_agi_line11b",
+      "label": "Line 2. Enter amount from federal Form 1040 or 1040-SR, line 11b.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5002",
+      "position": {
+        "page": 4,
+        "x": 141.37,
+        "y": 572.753
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.medical_agi_threshold",
+      "label": "Line 3. Multiply line 2 by 7.5% (0.075).",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5003",
+      "position": {
+        "page": 4,
+        "x": 141.37,
+        "y": 548.867
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.medical_line4_federal",
+      "label": "Line 4. Subtract line 3 from line 1. If line 3 is more than line 1, enter 0. Column A. Federal Amounts .",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5004",
+      "position": {
+        "page": 4,
+        "x": 263.65,
+        "y": 524.987
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.medical_line4_additions",
+      "label": "Line 4. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5005",
+      "position": {
+        "page": 4,
+        "x": 479.65,
+        "y": 525.95
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5a_federal",
+      "label": "Taxes You Paid. Line 5a. State and local income tax or general sales taxes. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5006",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 501.08
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5a_subtractions",
+      "label": "Line 5a. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5007",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 501.08
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5b_federal",
+      "label": "Line 5b. State and local real estate taxes. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5008",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 477.555
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5c_federal",
+      "label": "Line 5c.  State and local personal property taxes. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5009",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 453.03
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5d_federal",
+      "label": "Line 5d. Add line 5a through line 5c. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5010",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 428.505
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5e_federal",
+      "label": "Line 5e. Enter the smaller of line 5d or $40,000 ($20,000 if married filing separately) in column A. Enter the amount from line 5 a, column B in line 5e, column B. Enter the difference from line 5d and line 5e, column A in line 5e, column C. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5011",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 356.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5e_subtractions",
+      "label": "Line 5e. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5012",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 356.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_5e_additions",
+      "label": "Line 5e. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5013",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 356.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_6_type",
+      "label": "Line 6. Other taxes. List type.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5014",
+      "position": {
+        "page": 4,
+        "x": 140.77,
+        "y": 333.664
+      }
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_6_federal",
+      "label": "Line 6. Other taxes. Enter amount. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5015",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 332.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_6_subtractions",
+      "label": "Line 6. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5016",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 332.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_6_additions",
+      "label": "Line 6. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5017",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 332.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_7_federal",
+      "label": "Line 7. Add line 5e and line 6. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5018",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 308.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_7_subtractions",
+      "label": "Line 7. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5019",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 308.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.taxes_7_additions",
+      "label": "Line 7. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5020",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 308.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8a_federal",
+      "label": "Interest You Paid. Line 8a. Home mortgage interest and points reported to you on federal Form 1098. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5021",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 272.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8a_additions",
+      "label": "Line 8a. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5022",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 272.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8b_federal",
+      "label": "Line 8b. Home mortgage interest not reported to you on federal Form 1098. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5023",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 248.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8b_additions",
+      "label": "Line 8b. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5024",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 248.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8c_federal",
+      "label": "Line 8c. Points not reported to you on federal Form 1098. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5025",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 224.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8c_additions",
+      "label": "Line 8c. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5026",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 224.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8e_federal",
+      "label": "Line 8e. Add line 8a through line 8c. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5027",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 176.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8e_subtractions",
+      "label": "Line 8e. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5028",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 176.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_8e_additions",
+      "label": "Line 8e. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5029",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 176.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_9_federal",
+      "label": "Line 9. Investment interest. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5030",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 152.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_9_subtractions",
+      "label": "Line 9. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5031",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 152.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_9_additions",
+      "label": "Line 9. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5032",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 152.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_10_federal",
+      "label": "Line 10. Add line 8 e and line 9. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5033",
+      "position": {
+        "page": 4,
+        "x": 263.57,
+        "y": 128.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_10_subtractions",
+      "label": "Line 10. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5034",
+      "position": {
+        "page": 4,
+        "x": 371.33,
+        "y": 128.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.4.page2.interest_10_additions",
+      "label": "Line 10. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 5035",
+      "position": {
+        "page": 4,
+        "x": 479.57,
+        "y": 128.664
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_11_federal",
+      "label": "Gifts to Charity. Line 11. Gifts by cash or check. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6001",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 669.436
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_11_subtractions",
+      "label": "Line 11. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6002",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 668.98
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_11_additions",
+      "label": "Line 11. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6003",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 668.98
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_12_federal",
+      "label": "Line 12. Other than by cash or check. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6004",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 645.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_12_subtractions",
+      "label": "Line 12. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6005",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 645.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_12_additions",
+      "label": "Line 12. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6006",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 645.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_13_federal",
+      "label": "Line 13. Carryover from prior year. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6007",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 621.456
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_13_subtractions",
+      "label": "Line 13. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6008",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 621
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_13_additions",
+      "label": "Line 13. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6009",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 621
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_14_federal",
+      "label": "Line 14. Add line 11 through line 13. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6010",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 597.456
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_14_subtractions",
+      "label": "Line 14. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6011",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 597
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.charity_14_additions",
+      "label": "Line 14. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6012",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 597
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.casualty_15_federal",
+      "label": "Casualty and Theft Losses. Line 15. Casualty or theft loss or losses (other than net qualified disaster losses). Attach federal Form 4684. See instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6013",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 561.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.casualty_15_subtractions",
+      "label": "Line 15. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6014",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 561.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.casualty_15_additions",
+      "label": "Line 15. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6015",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 561.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.other_deductions_16_federal",
+      "label": "Other Itemized Deductions. Line 16. Other—from list in federal instructions. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6016",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 525.98
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.other_deductions_16_subtractions",
+      "label": "Line 16. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6017",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 525.524
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.other_deductions_16_additions",
+      "label": "Line 16. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6018",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 525.524
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_17_federal",
+      "label": "Line 17. Add lines 4, 7, 10, 14, 15, and 16 in columns A, B, and C. Column A. Federal Amounts.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6019",
+      "position": {
+        "page": 5,
+        "x": 263.88,
+        "y": 501.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_17_subtractions",
+      "label": "Line 17. Column B. Subtractions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6020",
+      "position": {
+        "page": 5,
+        "x": 372,
+        "y": 501.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_17_additions",
+      "label": "Line 17. Column C. Additions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6021",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 501.22
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_18_combined",
+      "label": "Line 18. Total. Combine line 17 column A less column B plus column C.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6022",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 477.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_19",
+      "label": "Job Expenses and Certain Miscellaneous Deductions. Line 19. Unreimbursed employee expenses: job travel, union dues, job education, etcetera. Attach federal Form 2106 if required. See instructions.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6023",
+      "position": {
+        "page": 5,
+        "x": 372.6,
+        "y": 429.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_20",
+      "label": "Line 20. Tax preparation fees.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6024",
+      "position": {
+        "page": 5,
+        "x": 372.6,
+        "y": 405.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_21_type",
+      "label": "Line 21. Other expenses: investment, safe deposit box, etcetera. List type.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6025",
+      "position": {
+        "page": 5,
+        "x": 228,
+        "y": 381.676
+      }
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_21_amount",
+      "label": "Line 21. Other expenses: investment, safe deposit box, etcetera. Enter amount.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6026",
+      "position": {
+        "page": 5,
+        "x": 372.6,
+        "y": 381.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_22_total",
+      "label": "Line 22. Add line 19 through line 21.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6027",
+      "position": {
+        "page": 5,
+        "x": 372.6,
+        "y": 357
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_23_agi",
+      "label": "Line 23. Enter amount from federal Form 1040 or 1040-SR, line 11b .",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6028",
+      "position": {
+        "page": 5,
+        "x": 228,
+        "y": 333
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_24_threshold",
+      "label": "Line 24. Multiply line 23 by 2% (0.02). If less than zero, enter 0.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6029",
+      "position": {
+        "page": 5,
+        "x": 372.6,
+        "y": 309.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.job_expenses_25_net",
+      "label": "Line 25. Subtract line 24 from line 22. If line 24 is more than line 22, enter 0.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6030",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 285.076
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_26",
+      "label": "Line 26. Total Itemized Deductions. Add line 18 and line 25.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6031",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 261.98
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.other_adjustments_27_type",
+      "label": "Line 27. Other adjustments. See instructions. Specify.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "text",
+      "valueTypeRich": "text",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6032",
+      "position": {
+        "page": 5,
+        "x": 227.031,
+        "y": 237.98
+      }
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.other_adjustments_27_amount",
+      "label": "Line 27. Other adjustments. See instructions. Enter amount.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6033",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 237.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_28",
+      "label": "Line 28. Combine line 26 and line 27.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6034",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 213.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_29",
+      "label": "Line 29. Is your federal adjusted gross income (Form 540, line 13) more than the amount shown below for your filing status? Single, married, or registered domestic partner filing separately: $252,203 . Head of household: $378,310 . Married or registered domestic partner filing jointly or qualifying surviving spouse or registered domestic partner: $504,411 . No. Transfer the amount on line 28 to line 29. Yes. Complete the Itemized Deductions Worksheet in the instructions for Schedule CA (540), line 29.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6035",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 129.676
+      },
+      "maxLength": 12
+    },
+    {
+      "fieldId": "schedule-ca.5.page2.total_itemized_30_standard_or_itemized",
+      "label": "Line 30. Enter the larger of the amount on line 29 or your standard deduction shown below: Single, married or registered domestic partner filing separately. See instructions: $5,706 . Married or registered domestic partner filing jointly, head of household, or qualifying surviving spouse or registered domestic partner: $11,412 . Transfer the amount on line 30 to Form 540, line 18.",
+      "labelSource": "tu",
+      "category": "deductions_credits",
+      "valueType": "numeric",
+      "valueTypeRich": "money",
+      "pdfFieldKind": "text",
+      "pdfWidgetName": "540ca_form - 6036",
+      "position": {
+        "page": 5,
+        "x": 480.6,
+        "y": 69
+      },
+      "maxLength": 12
+    }
+  ],
+  "_meta": {
+    "sourcePdf": "/Users/andrewcole/attain-finance/project-merrilin/apps/agent/forms/state/ca/schedule-ca/blank.pdf",
+    "ingestedAt": "2026-05-15T22:27:54.133Z",
+    "totalFields": 253,
+    "enriched": 253,
+    "unenriched": 0,
+    "skipped": 0,
+    "catalogEntries": 253,
+    "tokensIn": 64538,
+    "tokensOut": 16918,
+    "cacheRead": 0,
+    "cacheCreate": 0
+  }
+}

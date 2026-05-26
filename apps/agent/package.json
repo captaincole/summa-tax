@@ -5,7 +5,7 @@
   "description": "Mastra-based AI CPA backend. Conversational agent (Thom Merrilin) orchestrates fact-gathering and form generation; Nynaeve reviews every AI decision against the IRS reference corpus.",
   "scripts": {
     "dev": "mastra dev --env .env.development",
-    "build": "mastra build --studio && tsx scripts/copyFormPdfs.ts && tsx scripts/migrateMastra.ts",
+    "build": "mastra build --studio && tsx scripts/migrateMastra.ts",
     "start": "cd .mastra/output && node index.mjs",
     "migrate:mastra": "tsx --env-file=.env.development scripts/migrateMastra.ts",
     "db:seed:local": "tsx --env-file=.env.development scripts/seedLocal.ts",
@@ -14,6 +14,7 @@
     "refdocs:sync": "tsx scripts/refdocsSync.ts",
     "refdocs:reembed": "tsx scripts/refdocsReembed.ts",
     "forms:ingest": "tsx --env-file=.env.development scripts/ingestForm.ts",
+    "forms:promote": "tsx scripts/promoteForm.ts",
     "forms:bind": "tsx --env-file=.env.development scripts/generateBindings.ts",
     "forms:emit-types": "tsx scripts/emitFormTypes.ts",
     "forms:ingest-tax-table": "tsx scripts/ingestTaxTable.ts",
