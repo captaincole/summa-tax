@@ -29,7 +29,6 @@ import { TopBar } from "@/components/TopBar";
 import { ChatPane } from "@/components/ChatPane";
 import {
   fetchState,
-  resetSession,
   UnauthorizedError,
   type CaseState,
 } from "@/lib/api";
@@ -39,6 +38,7 @@ import { THOM_AGENT_ID } from "@/lib/chatSession";
 import { threadIdFor, type TaxReturn } from "@/lib/returns";
 import { getUserId } from "@/lib/auth";
 import { uploadDocument } from "@/lib/uploads";
+import { type UserProfile } from "@/lib/profile";
 import { cn } from "@/lib/cn";
 
 export interface ChatMessage {
@@ -61,6 +61,8 @@ export interface SendChatOpts {
 interface AppShellContextValue {
   userId: string;
   activeReturn: TaxReturn;
+  returns: TaxReturn[];
+  profile: UserProfile;
   state: CaseState | null;
   refreshState: () => Promise<void>;
   resetTick: number;
@@ -74,8 +76,6 @@ interface AppShellContextValue {
   // input on submit, and by the Requested Actions card after an upload.
   // Resolves once the stream finishes. No-op when busy or placeholder.
   sendChat: (opts: SendChatOpts) => Promise<void>;
-  onReset: () => Promise<void>;
-  resetting: boolean;
   onSignOut: () => Promise<void>;
 }
 
@@ -108,15 +108,18 @@ export function AppShell({
   children,
   userId,
   activeReturn,
+  returns,
+  profile,
 }: {
   children: React.ReactNode;
   userId: string;
   activeReturn: TaxReturn;
+  returns: TaxReturn[];
+  profile: UserProfile;
 }) {
   const router = useRouter();
   const [state, setState] = useState<CaseState | null>(null);
-  const [resetting, setResetting] = useState(false);
-  const [resetTick, setResetTick] = useState(0);
+  const [resetTick] = useState(0);
   const [turnTick, setTurnTick] = useState(0);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [thomBusy, setThomBusy] = useState(false);
@@ -186,25 +189,6 @@ export function AppShell({
     loadChatHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeReturn.id]);
-
-  async function onReset() {
-    if (!confirm("Wipe everything and start over?")) return;
-    setResetting(true);
-    try {
-      await resetSession();
-      await refreshState();
-      setMessages([]);
-      setResetTick((t) => t + 1);
-    } catch (err) {
-      if (err instanceof UnauthorizedError) {
-        await createClient().auth.signOut();
-        router.refresh();
-        router.push("/login");
-      }
-    } finally {
-      setResetting(false);
-    }
-  }
 
   async function onSignOut() {
     await createClient().auth.signOut();
@@ -334,6 +318,8 @@ export function AppShell({
   const ctx: AppShellContextValue = {
     userId,
     activeReturn,
+    returns,
+    profile,
     state,
     refreshState,
     resetTick,
@@ -344,15 +330,13 @@ export function AppShell({
     thomBusy,
     setMobilePane,
     sendChat,
-    onReset,
-    resetting,
     onSignOut,
   };
 
   return (
     <AppShellContext.Provider value={ctx}>
       <div className="h-screen w-screen bg-bg-base text-ink-primary flex flex-col overflow-hidden">
-        <TopBar activeReturn={activeReturn} />
+        <TopBar activeReturn={activeReturn} returns={returns} />
 
         <main className="flex-1 min-h-0 flex">
           <aside className="hidden lg:flex shrink-0 w-[40%] max-w-[640px] min-w-[400px] flex-col border-r border-border-subtle bg-bg-subtle/40">

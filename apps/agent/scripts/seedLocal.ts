@@ -25,9 +25,14 @@
 // Test user credentials are hardcoded — this script is a local-dev-only tool.
 
 import { createClient } from "@supabase/supabase-js";
+import { Client as PgClient } from "pg";
 
 const TEST_OWNERS = [
-  { email: "rand@localhost", password: "testpass123!" },
+  {
+    email: "rand@localhost",
+    password: "testpass123!",
+    displayName: "Rand al'Thor",
+  },
 ];
 
 const TEST_CPA = {
@@ -44,10 +49,11 @@ const TAX_YEAR = 2025;
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
+const POSTGRES_URL = process.env.POSTGRES_URL;
 
-if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SECRET_KEY || !POSTGRES_URL) {
   console.error(
-    "SUPABASE_URL and SUPABASE_SECRET_KEY must be set. For local dev, copy them from `supabase status` into apps/agent/.env.development.",
+    "SUPABASE_URL, SUPABASE_SECRET_KEY, and POSTGRES_URL must be set. For local dev, copy them from `supabase status` into apps/agent/.env.development.",
   );
   process.exit(1);
 }
@@ -73,6 +79,7 @@ const admin = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, {
 async function ensureAuthUser(
   email: string,
   password: string,
+  displayName?: string,
 ): Promise<string> {
   // listUsers paginates; for two test users we look on page 1 only.
   const { data: list, error: listError } = await admin.auth.admin.listUsers({
@@ -85,6 +92,22 @@ async function ensureAuthUser(
   const existing = list.users.find((u) => u.email === email);
   if (existing) {
     console.log(`  auth user ${email} already exists (${existing.id})`);
+    if (displayName) {
+      const current = (existing.user_metadata as { display_name?: string } | null)
+        ?.display_name;
+      if (current !== displayName) {
+        const { error: updateErr } = await admin.auth.admin.updateUserById(
+          existing.id,
+          { user_metadata: { ...existing.user_metadata, display_name: displayName } },
+        );
+        if (updateErr) {
+          throw new Error(
+            `updateUserById(${email}) failed: ${updateErr.message}`,
+          );
+        }
+        console.log(`  updated display_name for ${email} → ${displayName}`);
+      }
+    }
     return existing.id;
   }
 
@@ -92,6 +115,7 @@ async function ensureAuthUser(
     email,
     password,
     email_confirm: true, // skip the confirmation email; sign-in-ready
+    user_metadata: displayName ? { display_name: displayName } : undefined,
   });
   if (error || !data.user) {
     throw new Error(
@@ -100,6 +124,27 @@ async function ensureAuthUser(
   }
   console.log(`  created auth user ${email} (${data.user.id})`);
   return data.user.id;
+}
+
+// Insert a mastra_threads row for the (userId, taxYear) pair if one doesn't
+// already exist, so the web app's chat-history fetch on first page load
+// hits an empty thread instead of Mastra's "Thread not found" 500. Thread
+// id matches what apps/web/lib/returns.ts:threadIdFor produces.
+async function ensureMastraThread(
+  pg: PgClient,
+  userId: string,
+  taxYear: number,
+): Promise<void> {
+  const threadId = `${userId}::${taxYear}`;
+  // createdAt/updatedAt are `timestamp without time zone`; the *Z variants
+  // are `timestamp with time zone`. Let Postgres compute both via now()
+  // rather than coercing JS Date objects to the right shape per column.
+  await pg.query(
+    `insert into mastra.mastra_threads (id, "resourceId", title, metadata, "createdAt", "updatedAt", "createdAtZ", "updatedAtZ")
+     values ($1, $2, $3, null, (now() at time zone 'utc'), (now() at time zone 'utc'), now(), now())
+     on conflict (id) do nothing`,
+    [threadId, userId, `${taxYear} return`],
+  );
 }
 
 async function ensureOwnerFiling(
@@ -180,15 +225,28 @@ async function ensureCpaProfile(
 async function main() {
   console.log(`Seeding local Supabase at ${SUPABASE_URL}`);
 
-  for (const { email, password } of TEST_OWNERS) {
-    console.log(`\n${email}:`);
-    const userId = await ensureAuthUser(email, password);
-    await ensureOwnerFiling(userId, email, TAX_YEAR);
-  }
+  const pg = new PgClient({ connectionString: POSTGRES_URL });
+  await pg.connect();
 
-  console.log(`\n${TEST_CPA.email}:`);
-  const cpaUserId = await ensureAuthUser(TEST_CPA.email, TEST_CPA.password);
-  await ensureCpaProfile(cpaUserId, TEST_CPA.email, TEST_CPA.profile);
+  try {
+    for (const { email, password, displayName } of TEST_OWNERS) {
+      console.log(`\n${email}:`);
+      const userId = await ensureAuthUser(email, password, displayName);
+      await ensureOwnerFiling(userId, email, TAX_YEAR);
+      await ensureMastraThread(pg, userId, TAX_YEAR);
+      console.log(`  ensured mastra thread for ${email} (${TAX_YEAR})`);
+    }
+
+    console.log(`\n${TEST_CPA.email}:`);
+    const cpaUserId = await ensureAuthUser(
+      TEST_CPA.email,
+      TEST_CPA.password,
+      TEST_CPA.profile.displayName,
+    );
+    await ensureCpaProfile(cpaUserId, TEST_CPA.email, TEST_CPA.profile);
+  } finally {
+    await pg.end();
+  }
 
   console.log(
     `\nDone. Test users sign in with password: testpass123!\n` +

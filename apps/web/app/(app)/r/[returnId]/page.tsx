@@ -222,6 +222,9 @@ export default function HomeTab() {
 }
 
 function PlaceholderHome() {
+  // Unreachable today — see ChatPane.placeholderMessageFor for the same
+  // story. Layout-level redirect prevents non-owners from reaching /r/*,
+  // so realDataAvailable is always true on the active return.
   const { activeReturn } = useAppShell();
   return (
     <div className="px-6 lg:px-10 py-16 max-w-2xl mx-auto text-center">
@@ -233,8 +236,8 @@ function PlaceholderHome() {
       </h1>
       <p className="text-ink-secondary text-[15px] mt-3 max-w-md mx-auto leading-relaxed">
         {activeReturn.state === "filed"
-          ? `This return is in the archive. ${activeReturn.outcome ? `Final outcome: ${activeReturn.outcome}.` : ""}`
-          : "Real work happens on your 2025 Return for now. Switch back via the picker above to keep going."}
+          ? "This return is in the archive."
+          : "Real work happens on your active return."}
       </p>
     </div>
   );

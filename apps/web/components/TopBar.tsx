@@ -15,11 +15,14 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAppShell } from "@/components/AppShell";
-import { RETURNS, type TaxReturn } from "@/lib/returns";
+import { type TaxReturn } from "@/lib/returns";
+import { deleteFiling, UnauthorizedError } from "@/lib/api";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 
 interface TopBarProps {
   activeReturn: TaxReturn;
+  returns: TaxReturn[];
 }
 
 const TABS = [
@@ -29,12 +32,39 @@ const TABS = [
   { id: "share", label: "Share", path: "/share" },
 ] as const;
 
-export function TopBar({ activeReturn }: TopBarProps) {
+export function TopBar({ activeReturn, returns }: TopBarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { state, thomBusy, onReset, resetting, onSignOut } = useAppShell();
+  const { state, profile, thomBusy, onSignOut } = useAppShell();
   const [returnMenuOpen, setReturnMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (deleting) return;
+    if (
+      !confirm(
+        `Delete your ${activeReturn.year} filing? This wipes all facts, decisions, and uploaded documents. You can start a new ${activeReturn.year} filing from the home page afterwards.`,
+      )
+    ) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await deleteFiling(activeReturn.filingId);
+      setAccountMenuOpen(false);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        await createClient().auth.signOut();
+        router.push("/login");
+        return;
+      }
+      alert(err instanceof Error ? err.message : String(err));
+      setDeleting(false);
+    }
+  }
 
   const basePath = `/r/${activeReturn.id}`;
   // TODO: replace with a real overall-progress signal once the agent
@@ -90,9 +120,9 @@ export function TopBar({ activeReturn }: TopBarProps) {
                 <span className="text-ink-muted">←</span>
                 All returns
               </Link>
-              {RETURNS.map((r) => (
+              {returns.map((r) => (
                 <button
-                  key={r.id}
+                  key={r.filingId}
                   onClick={() => pickReturn(r)}
                   className={cn(
                     "w-full flex items-center justify-between gap-3 px-4 py-3 text-left",
@@ -103,9 +133,7 @@ export function TopBar({ activeReturn }: TopBarProps) {
                   <div>
                     <div className="text-sm text-ink-primary">{r.label}</div>
                     <div className="text-[11px] text-ink-muted mt-0.5">
-                      {r.state === "active" && "In progress"}
-                      {r.state === "empty" && `Not started · ${r.year}`}
-                      {r.state === "filed" && `${r.outcome} · ${r.filedOn}`}
+                      {r.state === "active" ? "In progress" : "Filed"}
                     </div>
                   </div>
                   {r.id === activeReturn.id && (
@@ -165,27 +193,24 @@ export function TopBar({ activeReturn }: TopBarProps) {
             className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-xs font-medium text-accent hover:bg-accent/30 transition-colors"
             title="Account"
           >
-            {(state?.taxpayerFirstName ?? "AC").slice(0, 2).toUpperCase()}
+            {profile.initials}
           </button>
           {accountMenuOpen && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setAccountMenuOpen(false)} />
               <div className="absolute top-full right-0 mt-2 w-56 bg-bg-elevated border border-border-subtle rounded-xl shadow-2xl shadow-black/40 overflow-hidden z-40">
-                {state?.authEmail && (
+                {profile.email && (
                   <div className="px-4 py-3 border-b border-border-subtle">
                     <div className="text-[11px] uppercase tracking-wider text-ink-muted">Signed in as</div>
-                    <div className="text-sm text-ink-primary truncate mt-0.5">{state.authEmail}</div>
+                    <div className="text-sm text-ink-primary truncate mt-0.5">{profile.email}</div>
                   </div>
                 )}
                 <button
-                  onClick={() => {
-                    setAccountMenuOpen(false);
-                    onReset();
-                  }}
-                  disabled={resetting}
-                  className="w-full text-left px-4 py-2.5 text-sm text-ink-secondary hover:text-ink-primary hover:bg-bg-panel transition-colors disabled:opacity-50"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="w-full text-left px-4 py-2.5 text-sm text-red-300 hover:text-red-200 hover:bg-bg-panel transition-colors disabled:opacity-50"
                 >
-                  {resetting ? "Resetting…" : "Reset session"}
+                  {deleting ? "Deleting…" : `Delete this filing`}
                 </button>
                 <button
                   onClick={() => {

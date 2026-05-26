@@ -5,28 +5,30 @@
 // (app)/layout.tsx.
 //
 // Sections:
-//   1. Your returns           — cards from lib/returns.ts (1 real, 3 stubs)
-//   2. Continue with          — workflow entry points (stubs for v1)
-//   3. Your tax picture       — lifetime SVG charts (faked data)
+//   1. Your returns      — real filings queried from listOwnerReturns; empty
+//                          state shows a single big "Start your 2025 filing" CTA.
+//   2. Continue with     — "Start a new filing" (action) + "Tax planning
+//                          session" (locked placeholder).
+//   3. Your tax picture  — four chart cards visually present but overlay-
+//                          locked until the user has a filed return.
 //
-// Charts are faked because we don't capture historical year-over-year
-// data yet. When we do, swap the consts for a Supabase query keyed by
-// user_id; the chart components stay the same.
+// Charts read mock data underneath the overlay because we don't capture
+// year-over-year history yet. When we do, swap the consts for a Supabase
+// query and drop the overlay.
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { RETURNS } from "@/lib/returns";
+import { listOwnerReturns, type TaxReturn } from "@/lib/returns";
+import { deriveProfile, type UserProfile } from "@/lib/profile";
 import { cn } from "@/lib/cn";
+import { HomeTopBar } from "./HomeTopBar";
+import { StartFilingButton } from "./StartFilingButton";
 
-const WORKFLOWS = [
-  { id: "new-2026", title: "Start 2026 return", desc: "Begin a new tax year. Thom will guide intake from scratch.", icon: "+" },
-  { id: "amend", title: "Amend a prior year", desc: "Open a previously filed return to correct or update.", icon: "↻" },
-  { id: "planning", title: "Tax planning session", desc: "Look ahead — reduce next year's liability before December.", icon: "○" },
-];
+const CURRENT_TAX_YEAR = 2025;
 
 // Mock historical data. Replace with a Supabase query when we capture
-// year-over-year aggregates server-side.
+// year-over-year aggregates server-side. Rendered beneath a "locked"
+// overlay so the user sees what's coming without us pretending it's real.
 const INCOME = [
   { year: 2021, value: 145000 },
   { year: 2022, value: 162000 },
@@ -61,15 +63,14 @@ export default async function HomeHome() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const initials = (user?.email?.slice(0, 2) ?? "AC").toUpperCase();
+  const profile = deriveProfile(user);
 
   // Registered CPAs (anyone with a cpa_profiles row) who don't ALSO own a
-  // filing get bounced to /cpa so they don't land on the mock 'Hi, Alex'
-  // taxpayer home. cpa_profile existence is the right signal here, not
-  // membership count — a CPA without invites yet still belongs on the
-  // CPA surface (which renders an empty 'Nothing to review' state). Mixed-
-  // role users (CPA who also owns their own return) stay on the taxpayer
-  // home and can reach /cpa via a future header link.
+  // filing get bounced to /cpa so they don't land on the taxpayer home.
+  // cpa_profile existence is the right signal here, not membership count —
+  // a CPA without invites yet still belongs on the CPA surface (which
+  // renders an empty 'Nothing to review' state). Mixed-role users (CPA who
+  // also owns their own return) stay on the taxpayer home.
   if (user?.id) {
     const { count: cpaProfileCount } = await supabase
       .from("cpa_profiles")
@@ -86,97 +87,156 @@ export default async function HomeHome() {
     }
   }
 
+  const returns = await listOwnerReturns(supabase);
+  const hasCurrentYear = returns.some((r) => r.year === CURRENT_TAX_YEAR);
+  const hasAnyFiledReturn = returns.some((r) => r.state === "filed");
+
   return (
     <div className="min-h-screen w-full bg-bg-base text-ink-primary flex flex-col">
-      <HomeTopBar initials={initials} />
+      <HomeTopBar initials={profile.initials} />
       <main className="flex-1 px-6 lg:px-10 py-10 lg:py-14">
         <div className="max-w-6xl mx-auto space-y-14">
-          <header>
-            <h1 className="font-serif text-4xl text-ink-primary">Hi, Alex.</h1>
-            <p className="text-ink-secondary text-[15px] mt-2.5">
-              Your tax life, in one place.
-            </p>
-          </header>
+          <Greeting profile={profile} />
 
-          <Section
-            title="Your returns"
-            right={<button className="text-sm text-ink-secondary hover:text-ink-primary">View archive →</button>}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {RETURNS.map((r) => (
-                <ReturnCard key={r.id} ret={r} />
-              ))}
-              <NewReturnCard />
-            </div>
-          </Section>
+          <ReturnsSection
+            returns={returns}
+            hasCurrentYear={hasCurrentYear}
+          />
 
-          <Section title="Continue with">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {WORKFLOWS.map((w) => (
-                <WorkflowCard key={w.id} workflow={w} />
-              ))}
-            </div>
-          </Section>
+          <ContinueWithSection
+            hasCurrentYear={hasCurrentYear}
+            hasAnyFiledReturn={hasAnyFiledReturn}
+          />
 
-          <Section title="Your tax picture">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <ChartCard
-                title="Income"
-                subtitle="Wages + investment income, last 5 years"
-                value={fmtCurrencyFull(INCOME[INCOME.length - 1].value)}
-                valueLabel="2025 (in progress)"
-              >
-                <BarChart data={INCOME} colorClass="fill-accent" valueFormatter={fmtCurrencyShort} />
-              </ChartCard>
-              <ChartCard
-                title="Effective tax rate"
-                subtitle="Federal, after deductions"
-                value={`${EFFECTIVE_RATE[EFFECTIVE_RATE.length - 1].value.toFixed(1)}%`}
-                valueLabel="2025 (estimated)"
-              >
-                <LineChart data={EFFECTIVE_RATE} valueFormatter={(v) => `${v.toFixed(1)}%`} domain={[20, 26]} />
-              </ChartCard>
-              <ChartCard
-                title="Federal refund / owed"
-                subtitle="What came back or went out"
-                value="Pending"
-                valueLabel="2025 (calculating)"
-              >
-                <DivergentBarChart data={REFUND} valueFormatter={fmtSigned} />
-              </ChartCard>
-              <ChartCard
-                title="Charitable giving"
-                subtitle="Cash + non-cash donations"
-                value={fmtCurrencyFull(CHARITABLE[CHARITABLE.length - 1].value)}
-                valueLabel="2025 year-to-date"
-              >
-                <BarChart data={CHARITABLE} colorClass="fill-emerald-400" valueFormatter={fmtCurrencyShort} />
-              </ChartCard>
-            </div>
-          </Section>
+          <TaxPictureSection locked={!hasAnyFiledReturn} />
         </div>
       </main>
     </div>
   );
 }
 
-function HomeTopBar({ initials }: { initials: string }) {
+function Greeting({ profile }: { profile: UserProfile }) {
   return (
-    <header className="shrink-0 h-14 border-b border-border-subtle bg-bg-base/95 backdrop-blur-sm flex items-center px-4 lg:px-6 gap-3">
-      <Link
-        href="/"
-        title="Home"
-        className="shrink-0 w-8 h-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center hover:bg-accent/25 transition-colors"
-      >
-        <span className="font-serif text-accent text-sm leading-none">W</span>
-      </Link>
-      <div className="h-6 w-px bg-border-subtle shrink-0" />
-      <span className="text-[15px] font-semibold tracking-tight text-ink-primary">Home</span>
-      <div className="flex-1" />
-      <div className="w-8 h-8 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-xs font-medium text-accent">
-        {initials}
-      </div>
+    <header>
+      <h1 className="font-serif text-4xl text-ink-primary">
+        Hi, {profile.firstName}.
+      </h1>
+      <p className="text-ink-secondary text-[15px] mt-2.5">
+        Your tax life, in one place.
+      </p>
     </header>
+  );
+}
+
+function ReturnsSection({
+  returns,
+  hasCurrentYear,
+}: {
+  returns: TaxReturn[];
+  hasCurrentYear: boolean;
+}) {
+  if (returns.length === 0) {
+    return (
+      <Section title="Your returns">
+        <EmptyReturnsCta />
+      </Section>
+    );
+  }
+  return (
+    <Section
+      title="Your returns"
+      right={
+        returns.some((r) => r.state === "filed") ? (
+          <button className="text-sm text-ink-secondary hover:text-ink-primary">
+            View archive →
+          </button>
+        ) : null
+      }
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {returns.map((r) => (
+          <ReturnCard key={r.filingId} ret={r} />
+        ))}
+        {!hasCurrentYear && <NewReturnTile />}
+      </div>
+    </Section>
+  );
+}
+
+function ContinueWithSection({
+  hasCurrentYear,
+  hasAnyFiledReturn,
+}: {
+  hasCurrentYear: boolean;
+  hasAnyFiledReturn: boolean;
+}) {
+  return (
+    <Section title="Continue with">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {hasCurrentYear ? (
+          <DisabledWorkflowCard
+            title={`Start ${CURRENT_TAX_YEAR} filing`}
+            desc={`You already have a ${CURRENT_TAX_YEAR} return in progress. Open it from above.`}
+            icon="+"
+            note="Already in progress"
+          />
+        ) : (
+          <StartFilingCard taxYear={CURRENT_TAX_YEAR} />
+        )}
+        <LockedWorkflowCard
+          title="Tax planning session"
+          desc="Look ahead — reduce next year's liability before December."
+          icon="○"
+          unlockText={
+            hasAnyFiledReturn
+              ? "Coming soon"
+              : "Unlocked after your first filed return"
+          }
+        />
+      </div>
+    </Section>
+  );
+}
+
+function TaxPictureSection({ locked }: { locked: boolean }) {
+  return (
+    <Section title="Your tax picture">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 relative">
+        <ChartCard
+          title="Income"
+          subtitle="Wages + investment income, last 5 years"
+          value={fmtCurrencyFull(INCOME[INCOME.length - 1].value)}
+          valueLabel="2025 (in progress)"
+        >
+          <BarChart data={INCOME} colorClass="fill-accent" valueFormatter={fmtCurrencyShort} />
+        </ChartCard>
+        <ChartCard
+          title="Effective tax rate"
+          subtitle="Federal, after deductions"
+          value={`${EFFECTIVE_RATE[EFFECTIVE_RATE.length - 1].value.toFixed(1)}%`}
+          valueLabel="2025 (estimated)"
+        >
+          <LineChart data={EFFECTIVE_RATE} valueFormatter={(v) => `${v.toFixed(1)}%`} domain={[20, 26]} />
+        </ChartCard>
+        <ChartCard
+          title="Federal refund / owed"
+          subtitle="What came back or went out"
+          value="Pending"
+          valueLabel="2025 (calculating)"
+        >
+          <DivergentBarChart data={REFUND} valueFormatter={fmtSigned} />
+        </ChartCard>
+        <ChartCard
+          title="Charitable giving"
+          subtitle="Cash + non-cash donations"
+          value={fmtCurrencyFull(CHARITABLE[CHARITABLE.length - 1].value)}
+          valueLabel="2025 year-to-date"
+        >
+          <BarChart data={CHARITABLE} colorClass="fill-emerald-400" valueFormatter={fmtCurrencyShort} />
+        </ChartCard>
+        {locked && <LockOverlay text="Unlocked after your first filed return" />}
+      </div>
+    </Section>
   );
 }
 
@@ -200,13 +260,11 @@ function Section({
   );
 }
 
-function ReturnCard({ ret }: { ret: (typeof RETURNS)[number] }) {
+function ReturnCard({ ret }: { ret: TaxReturn }) {
   const isActive = ret.state === "active";
   const isFiled = ret.state === "filed";
-  const isEmpty = ret.state === "empty";
-
   return (
-    <Link
+    <a
       href={`/r/${ret.id}`}
       className={cn(
         "card p-5 transition-all flex flex-col gap-4 min-h-[160px]",
@@ -233,53 +291,158 @@ function ReturnCard({ ret }: { ret: (typeof RETURNS)[number] }) {
       </div>
 
       <div className="mt-auto">
-        {isActive && (
-          <>
-            <div className="h-1.5 rounded-full bg-bg-elevated overflow-hidden">
-              <div className="h-full bg-accent" style={{ width: "60%" }} />
-            </div>
-            <div className="flex items-baseline justify-between mt-2 text-[11px]">
-              <span className="tabular-nums text-ink-muted">In progress</span>
-              <span className="text-ink-secondary">Open →</span>
-            </div>
-          </>
-        )}
-        {isFiled && (
-          <div className="text-[12px] leading-relaxed">
-            <div className={cn("font-semibold tabular-nums", ret.outcomePositive ? "text-emerald-400" : "text-red-400")}>
-              {ret.outcome}
-            </div>
-            <div className="text-ink-muted mt-0.5">Filed {ret.filedOn}</div>
+        {isActive ? (
+          <div className="flex items-baseline justify-between text-[11px]">
+            <span className="text-ink-muted">In progress</span>
+            <span className="text-ink-secondary">Open →</span>
           </div>
-        )}
-        {isEmpty && (
-          <div className="text-[12px] text-ink-muted">Not started — open to begin.</div>
+        ) : (
+          <div className="text-[12px] text-ink-muted">Filed</div>
         )}
       </div>
-    </Link>
+    </a>
   );
 }
 
-function NewReturnCard() {
+// Big inline empty-state CTA when the user has no filings yet. Replaces the
+// returns grid entirely — the page is supposed to look "empty until you
+// start something" rather than dressing-up the void with placeholders.
+function EmptyReturnsCta() {
   return (
-    <button className="border border-dashed border-border-subtle hover:border-accent/50 rounded-2xl p-5 transition-colors flex flex-col items-center justify-center text-center gap-2 min-h-[160px] text-ink-muted hover:text-ink-primary group">
-      <span className="text-2xl group-hover:text-accent transition-colors">+</span>
-      <span className="text-sm">Start a new return</span>
-    </button>
+    <div className="card p-8 sm:p-10 flex flex-col items-start gap-5">
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.18em] text-ink-muted">
+          Tax Year {CURRENT_TAX_YEAR}
+        </div>
+        <h3 className="font-serif text-2xl text-ink-primary mt-1.5">
+          Start your {CURRENT_TAX_YEAR} filing
+        </h3>
+        <p className="text-ink-secondary text-[14px] mt-2 max-w-xl leading-relaxed">
+          Thom will walk you through everything — wages, investments, deductions —
+          and keep a citation for every fact. You can pause and pick up where
+          you left off anytime.
+        </p>
+      </div>
+      <StartFilingButton
+        taxYear={CURRENT_TAX_YEAR}
+        className="px-5 py-2.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-sm font-medium transition-colors"
+      >
+        Start filing →
+      </StartFilingButton>
+    </div>
   );
 }
 
-function WorkflowCard({ workflow }: { workflow: (typeof WORKFLOWS)[number] }) {
+function NewReturnTile() {
   return (
-    <button className="card p-5 hover:border-border-strong transition-colors text-left flex flex-col gap-3 group">
-      <div className="w-9 h-9 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent text-base group-hover:bg-accent/25 transition-colors">
-        {workflow.icon}
+    <div className="border border-dashed border-border-subtle rounded-2xl p-5 flex flex-col items-center justify-center text-center gap-2 min-h-[160px] text-ink-muted">
+      <span className="text-2xl opacity-40">+</span>
+      <span className="text-sm">New returns open in {CURRENT_TAX_YEAR + 1}</span>
+    </div>
+  );
+}
+
+function StartFilingCard({ taxYear }: { taxYear: number }) {
+  return (
+    <div className="card p-5 flex flex-col gap-3">
+      <div className="w-9 h-9 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent text-base">
+        +
       </div>
       <div>
-        <div className="text-[15px] font-medium text-ink-primary">{workflow.title}</div>
-        <div className="text-[13px] text-ink-secondary leading-relaxed mt-1">{workflow.desc}</div>
+        <div className="text-[15px] font-medium text-ink-primary">Start a new filing</div>
+        <div className="text-[13px] text-ink-secondary leading-relaxed mt-1">
+          Begin your {taxYear} return. Thom will guide intake from scratch.
+        </div>
       </div>
-    </button>
+      <StartFilingButton
+        taxYear={taxYear}
+        className="self-start mt-1 text-[12px] text-accent hover:text-accent-hover transition-colors"
+      >
+        Start {taxYear} filing →
+      </StartFilingButton>
+    </div>
+  );
+}
+
+function DisabledWorkflowCard({
+  title,
+  desc,
+  icon,
+  note,
+}: {
+  title: string;
+  desc: string;
+  icon: string;
+  note: string;
+}) {
+  return (
+    <div className="card p-5 flex flex-col gap-3 opacity-60 cursor-not-allowed">
+      <div className="w-9 h-9 rounded-lg bg-bg-elevated border border-border-subtle flex items-center justify-center text-ink-muted text-base">
+        {icon}
+      </div>
+      <div>
+        <div className="text-[15px] font-medium text-ink-primary">{title}</div>
+        <div className="text-[13px] text-ink-secondary leading-relaxed mt-1">{desc}</div>
+      </div>
+      <div className="text-[11px] uppercase tracking-wider text-ink-muted">{note}</div>
+    </div>
+  );
+}
+
+function LockedWorkflowCard({
+  title,
+  desc,
+  icon,
+  unlockText,
+}: {
+  title: string;
+  desc: string;
+  icon: string;
+  unlockText: string;
+}) {
+  return (
+    <div className="card p-5 flex flex-col gap-3 relative overflow-hidden">
+      <div className="w-9 h-9 rounded-lg bg-bg-elevated border border-border-subtle flex items-center justify-center text-ink-muted text-base">
+        {icon}
+      </div>
+      <div>
+        <div className="text-[15px] font-medium text-ink-primary">{title}</div>
+        <div className="text-[13px] text-ink-secondary leading-relaxed mt-1">{desc}</div>
+      </div>
+      <div className="flex items-center gap-1.5 text-[11px] text-ink-muted">
+        <LockIcon className="w-3 h-3" />
+        <span>{unlockText}</span>
+      </div>
+    </div>
+  );
+}
+
+function LockOverlay({ text }: { text: string }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[2px] bg-bg-base/40 rounded-2xl">
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-bg-elevated/90 border border-border-subtle text-ink-secondary text-[12px]">
+        <LockIcon className="w-3.5 h-3.5" />
+        <span>{text}</span>
+      </div>
+    </div>
+  );
+}
+
+function LockIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   );
 }
 

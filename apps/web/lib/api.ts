@@ -106,3 +106,35 @@ export async function resetSession(): Promise<void> {
   if (res.status === 401) throw new UnauthorizedError();
   if (!res.ok) throw new Error(`Reset failed: ${res.status}`);
 }
+
+export interface CreatedFiling {
+  filing: { id: string; taxYear: number; status: string };
+  created: boolean;
+}
+
+export async function createFiling(taxYear: number): Promise<CreatedFiling> {
+  const headers = await authHeaders();
+  const res = await fetch(agentUrl("/app/filings"), {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify({ taxYear }),
+  });
+  if (res.status === 401) throw new UnauthorizedError();
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Create filing failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function deleteFiling(filingId: string): Promise<void> {
+  const res = await fetch(agentUrl(`/app/filings/${filingId}`), {
+    method: "DELETE",
+    headers: await authHeaders(),
+  });
+  if (res.status === 401) throw new UnauthorizedError();
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Delete filing failed (${res.status}): ${text}`);
+  }
+}
