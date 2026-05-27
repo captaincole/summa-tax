@@ -97,14 +97,20 @@ export function register(): void {
       "line.11a": (f) => sum(f["line.9"], f["line.10"] === undefined ? 0 : -f["line.10"]),
       // Line 11b copies line 11a (AGI) per IRS instructions — same value reused on page 2.
       "line.11b": (f) => sum(f["line.11a"]),
-      // MANUAL EDIT: standard deduction by filing status via the shared
-      // data/standardDeduction module. Itemized path (Schedule A) and
-      // the dependent/senior/blind worksheet are unsupported; this
-      // binding assumes the basic standard deduction applies.
-      "line.12e": (_, info) =>
-        info.filingStatus
+      // MANUAL EDIT: line 12e is either the standard deduction (filing-
+      // status lookup) OR Schedule A line 17 (itemized total), gated by
+      // decisions.itemize_vs_standard via info.useItemizedDeductions.
+      // The dependent/senior/blind worksheet adjustment to the standard
+      // deduction is still unsupported.
+      "line.12e": (f, info) => {
+        if (info.useItemizedDeductions === true) {
+          const itemized = f["schedule-a.0.line.17_total_itemized_deductions"];
+          return typeof itemized === "number" ? itemized : undefined;
+        }
+        return info.filingStatus
           ? lookupStandardDeduction("federal", 2025, info.filingStatus)
-          : undefined,
+          : undefined;
+      },
       // Sum of lines 12e, 13a, and 13b per form instructions.
       "line.14": (f) => sum(f["line.12e"], f["line.13a"], f["line.13b"]),
       // Taxable income = line 11b minus line 14; cannot be negative.
