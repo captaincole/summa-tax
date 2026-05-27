@@ -25,6 +25,7 @@ import { register as registerForm1040 } from "./federal/1040/bindings.js";
 import { register as registerForm8949 } from "./federal/8949/bindings.js";
 import { register as registerScheduleD } from "./federal/schedule-d/bindings.js";
 import { register as registerScheduleA } from "./federal/schedule-a/bindings.js";
+import { register as registerForm8959 } from "./federal/8959/bindings.js";
 import { register as registerForm540 } from "./state/ca/540/bindings.js";
 import { register as registerScheduleCa } from "./state/ca/schedule-ca/bindings.js";
 
@@ -43,6 +44,7 @@ import { register as registerScheduleCa } from "./state/ca/schedule-ca/bindings.
 import form8949CatalogJson from "../public/forms/federal/8949/catalog.json";
 import scheduleDCatalogJson from "../public/forms/federal/schedule-d/catalog.json";
 import scheduleACatalogJson from "../public/forms/federal/schedule-a/catalog.json";
+import form8959CatalogJson from "../public/forms/federal/8959/catalog.json";
 import form1040CatalogJson from "../public/forms/federal/1040/catalog.json";
 import scheduleCaCatalogJson from "../public/forms/state/ca/schedule-ca/catalog.json";
 import form540CatalogJson from "../public/forms/state/ca/540/catalog.json";
@@ -50,6 +52,7 @@ import form540CatalogJson from "../public/forms/state/ca/540/catalog.json";
 const form8949Catalog = fixtureFileSchema.parse(form8949CatalogJson);
 const scheduleDCatalog = fixtureFileSchema.parse(scheduleDCatalogJson);
 const scheduleACatalog = fixtureFileSchema.parse(scheduleACatalogJson);
+const form8959Catalog = fixtureFileSchema.parse(form8959CatalogJson);
 const form1040Catalog = fixtureFileSchema.parse(form1040CatalogJson);
 const scheduleCaCatalog = fixtureFileSchema.parse(scheduleCaCatalogJson);
 const form540Catalog = fixtureFileSchema.parse(form540CatalogJson);
@@ -198,6 +201,7 @@ export const FORMS: FormSpec[] = [
     shortId: "8959",
     displayName: "Form 8959",
     relativeDir: "federal/8959",
+    register: registerForm8959,
   }),
   makeFormSpec({
     formId: "form-8960",
@@ -236,6 +240,7 @@ export const catalog: Catalog = buildCatalogFromFixtures([
   form8949Catalog,
   scheduleDCatalog,
   scheduleACatalog,
+  form8959Catalog,
   form1040Catalog,
   scheduleCaCatalog,
   form540Catalog,

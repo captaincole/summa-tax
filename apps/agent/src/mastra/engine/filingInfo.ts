@@ -31,6 +31,7 @@ import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js"
 import type { Form8949FilingInfo } from "./federal/8949/filingInfo.js";
 import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
 import type { ScheduleAFilingInfo } from "./federal/schedule-a/filingInfo.js";
+import type { Form8959FilingInfo } from "./federal/8959/filingInfo.js";
 import type { EngineDerivation } from "./types.js";
 import type { TradeFactValue } from "../facts/index.js";
 
@@ -95,7 +96,8 @@ export type FilingInfo = BaseFilingInfo &
   ScheduleCaFilingInfo &
   Form8949FilingInfo &
   ScheduleDFilingInfo &
-  ScheduleAFilingInfo;
+  ScheduleAFilingInfo &
+  Form8959FilingInfo;
 
 // ─── Resolver (hand-coded stand-in for the AI layer) ─────────────────────
 
@@ -375,6 +377,32 @@ export function resolveFilingInfo(opts: {
       return {
         mustFileScheduleD: r.value as ScheduleDFilingInfo["mustFileScheduleD"],
         mustFileScheduleDDerivation: r.derivation,
+      };
+    })(),
+
+    // ─── Form 8959 ──────────────────────────────────────────────────
+    // Default: required when the taxpayer's Medicare wages exceed
+    // $200,000 (the single-filer threshold the IRS uses as the
+    // employer-withholding cut-line; lower thresholds for MFJ/MFS
+    // apply but the conservative single-status fallback catches every
+    // case where the form COULD be required). Explicit
+    // `decisions.scope.must_file_8959` wins when set.
+    ...(() => {
+      const medicareWages = sumW2Box("box5");
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_8959",
+        fallbacks: [
+          {
+            rule: `fallback: W-2 box 5 (Medicare wages) sum $${medicareWages} > $200,000`,
+            value: medicareWages > 200000,
+          },
+        ],
+      });
+      return {
+        mustFile8959: r.value as Form8959FilingInfo["mustFile8959"],
+        mustFile8959Derivation: r.derivation,
+        w2MedicareWagesTotal: medicareWages as Form8959FilingInfo["w2MedicareWagesTotal"],
+        w2MedicareTaxWithheld: sumW2Box("box6") as Form8959FilingInfo["w2MedicareTaxWithheld"],
       };
     })(),
 

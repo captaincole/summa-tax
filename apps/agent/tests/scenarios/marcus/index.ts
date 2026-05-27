@@ -11,6 +11,7 @@ import { marcusFacts, MARCUS_TAX_YEAR, MARCUS_USER_ID } from "./facts.js";
 import { marcusDecisions } from "./decisions.js";
 import { marcusExpected } from "./expected.js";
 import { marcusScheduleAExpected } from "./expected-schedule-a.js";
+import { marcus8959Expected } from "./expected-8959.js";
 
 export const marcusScenario: Scenario = {
   name: "marcus",
@@ -28,6 +29,11 @@ export const marcusScenario: Scenario = {
       formId: "schedule-a",
       goldenPdfPath: "tests/scenarios/marcus/docs/Marcus-ScheduleA-Golden.pdf",
       expected: marcusScheduleAExpected,
+    },
+    {
+      formId: "form-8959",
+      goldenPdfPath: "tests/scenarios/marcus/docs/Marcus-8959-Golden.pdf",
+      expected: marcus8959Expected,
     },
     {
       formId: "form-1040",
