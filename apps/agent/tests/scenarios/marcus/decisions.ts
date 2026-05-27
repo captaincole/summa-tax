@@ -67,6 +67,11 @@ export const marcusDecisions: AIDecisionRow[] = [
     "Form 8949 is gated on Schedule D — both out of scope at this PR stage.",
   ),
   dec(
+    "decisions.scope.must_file_8959",
+    true,
+    "Marcus's W-2 Medicare wages of $243,500 exceed the single-filer threshold of $200,000 — Additional Medicare Tax applies.",
+  ),
+  dec(
     "decisions.scope.must_file_ca_540",
     false,
     "CA 540 plumbing is out of scope at this PR stage; the scenario today exercises only Form 1040 + Schedule A.",

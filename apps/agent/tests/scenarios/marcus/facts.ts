@@ -29,7 +29,11 @@ const w2: W2FactValue = {
   box3: 176100, // 2025 SS wage cap
   box4: 10918.2, // 6.2% of $176,100
   box5: 243500, // Medicare wages = gross − 401(k); HSA does NOT reduce box 5
-  box6: 3530.75, // 1.45% of $243,500 + 0.9% Add'l Medicare on excess over $200k
+  // Box 6 includes both regular 1.45% Medicare tax AND the employer-side
+  // 0.9% Additional Medicare Tax on wages above $200k:
+  //   1.45% × $243,500 + 0.9% × ($243,500 − $200,000)
+  //   = $3,530.75 + $391.50 = $3,922.25 → $3,922
+  box6: 3922,
   box12: [
     { code: "D", amount: 23500 }, // 2025 401(k) employee deferral max
     { code: "W", amount: 4150 }, // 2025 self-only HSA limit

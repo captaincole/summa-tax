@@ -181,6 +181,14 @@ export function register(): void {
       "line.24": (f) => sum(f["line.22"], f["line.23"]),
       // Sum of W-2 box 2 (federal income tax withheld) across all employers.
       "line.25a": (_, info) => info.w2FederalWithholding,
+      // MANUAL EDIT: line 25c = federal income tax withheld from "other"
+      // forms — for our scope today that means Form 8959 line 24
+      // (Additional Medicare Tax withholding). Future additions: W-2G
+      // box 4, Schedule K-1, Form 1042-S, etc.
+      "line.25c": (f) => {
+        const m = f["form-8959.0.line.24_total_additional_medicare_tax_withholding"];
+        return typeof m === "number" ? m : undefined;
+      },
       // Total federal income tax withheld = lines 25a + 25b + 25c.
       "line.25d": (f) => sum(f["line.25a"], f["line.25b"], f["line.25c"]),
       // Sum of total withholding (25d), estimated tax payments (26), and other refundable credits (32) per IRS instructions.
@@ -332,7 +340,6 @@ export function register(): void {
       "line.19": "Child tax credit / credit for other dependents from Schedule 8812. Schedule 8812 has not been ingested and no dependent-with-CTC scenario has been built yet.",
       "line.20": "Schedule 3 line 8 (nonrefundable credits) has not been ingested as a form yet — no cross-form reference path available.",
       "line.23": "Schedule 2 line 21 (other taxes including self-employment tax) has not been ingested as a form yet — no cross-form reference path available.",
-      "line.25c": "Federal income tax withheld from other forms (W-2G, Form 8959 Additional Medicare Tax, Schedule K-1, Form 1042-S, etc.) — no ingestion path for these source documents yet.",
       "line.26": "Estimated tax payments and prior-year overpayment applied forward have no ingestion path yet — no estimated_payments fact category exists.",
       "line.former_spouse_ssn": "Former spouse SSN for joint estimated tax split — no MFS/divorce scenario with prior joint estimated payments modeled yet; requires separate fact ingestion for former spouse identity.",
       "line.21": "Line 21 (lines 19 + 20) — child tax credit and Schedule 3 nonrefundable credits are both unsupported; the aggregate has no value to compute yet.",
