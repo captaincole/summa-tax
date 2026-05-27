@@ -12,3 +12,4 @@
 export * from "./kinds/trade.js";
 export * from "./kinds/wages.js";
 export * from "./kinds/dividends.js";
+export * from "./kinds/interest.js";
