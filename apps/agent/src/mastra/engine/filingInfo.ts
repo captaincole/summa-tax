@@ -33,7 +33,7 @@ import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
 import type { ScheduleAFilingInfo } from "./federal/schedule-a/filingInfo.js";
 import type { Form8959FilingInfo } from "./federal/8959/filingInfo.js";
 import type { EngineDerivation } from "./types.js";
-import type { TradeFactValue } from "../facts/index.js";
+import { isInterestFactKey, type TradeFactValue } from "../facts/index.js";
 
 // Mirrors the convention spelled out in src/mastra/facts/kinds/trade.ts.
 // Inlined here because parseTradeFact() expects a full TaxFactRow, but
@@ -178,15 +178,20 @@ export function resolveFilingInfo(opts: {
   };
   const trades = partitionTrades();
 
-  // Sum a numeric field across all 1099-DIV / investment_income facts.
-  // Returns 0 when no facts exist — same convention as sumW2Box, which
-  // means "taxpayer has no 1099-DIV at all → 0 dividends" rather than
-  // "we don't know, leave blank." That's the FTB / IRS convention for
-  // these lines.
-  const sumInvestmentBox = (boxKey: string): number => {
+  // Sum a numeric field across investment_income facts. The optional
+  // `keyFilter` narrows to a single 1099 section — 1099-DIV box1a doesn't
+  // overlap 1099-INT box1 today, but the filter makes the read explicit
+  // and protects against future per-section box-namespace overlap.
+  // Returns 0 when no facts match — same convention as sumW2Box: "no
+  // 1099-INT at all → 0 taxable interest" rather than "we don't know."
+  const sumInvestmentBox = (
+    boxKey: string,
+    keyFilter?: (key: string) => boolean,
+  ): number => {
     const rows = factsInCategory("investment_income");
     let total = 0;
     for (const row of rows) {
+      if (keyFilter && !keyFilter(row.key)) continue;
       const v = (row.value as Record<string, unknown>)?.[boxKey];
       if (typeof v === "number" && Number.isFinite(v)) total += v;
     }
@@ -250,6 +255,33 @@ export function resolveFilingInfo(opts: {
     form1099FederalWithholding: sumInvestmentBox(
       "box4",
     ) as Form1040FilingInfo["form1099FederalWithholding"],
+    // 1099-INT sums: box1 (taxable) and box8 (tax-exempt). Filtered
+    // because future 1099 sections (OID, MISC) may reuse low-number box
+    // names — the filter pins each aggregate to its source section.
+    // Slots remain undefined when the taxpayer has NO interest facts at
+    // all (rather than 0), so the renderer leaves the cells blank
+    // instead of writing "0" — matches the CPA-golden convention.
+    ...(() => {
+      const hasInterest = opts.facts.some(
+        (f) => f.category === "investment_income" && isInterestFactKey(f.key),
+      );
+      if (!hasInterest) {
+        return {
+          taxableInterestTotal: undefined,
+          taxExemptInterestTotal: undefined,
+        };
+      }
+      return {
+        taxableInterestTotal: sumInvestmentBox(
+          "box1",
+          isInterestFactKey,
+        ) as Form1040FilingInfo["taxableInterestTotal"],
+        taxExemptInterestTotal: sumInvestmentBox(
+          "box8",
+          isInterestFactKey,
+        ) as Form1040FilingInfo["taxExemptInterestTotal"],
+      };
+    })(),
     refundFullOverpaymentFederal: decisionByKey.get(
       "decisions.refund.refund_full_overpayment_federal",
     ) as boolean | undefined,

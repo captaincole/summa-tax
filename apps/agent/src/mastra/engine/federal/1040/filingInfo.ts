@@ -39,6 +39,12 @@ export interface Form1040FilingInfo extends BaseFilingInfo {
   /** Sum of 1099 Box 4 (federal income tax withheld on 1099 forms). */
   form1099FederalWithholding?: Money;
 
+  // ─── 1099-INT aggregates ─────────────────────────────────────────────
+  /** Sum of 1099-INT Box 1 (taxable interest income) across all accounts. */
+  taxableInterestTotal?: Money;
+  /** Sum of 1099-INT Box 8 (tax-exempt interest) across all accounts. */
+  taxExemptInterestTotal?: Money;
+
   /**
    * Refund the federal overpayment in full vs apply some to 2026 estimated
    * tax. Federal decision; the state-level analog lives on Form540FilingInfo

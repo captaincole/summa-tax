@@ -77,6 +77,14 @@ export function register(): void {
       "line.1a": (_, info) => info.w2WagesTotal,
       // Line 1z is the sum of lines 1a through 1h as directed by IRS instructions; unsupported terms will be treated as 0 by the engine.
       "line.1z": (f) => sum(f["line.1a"], f["line.1b"], f["line.1c"], f["line.1d"], f["line.1e"], f["line.1f"], f["line.1g"], f["line.1h_amount"]),
+      // MANUAL EDIT: 1099-INT box 8 sum (tax-exempt interest). Same
+      // per-payer fact-key shape as dividends/trades — slot populated
+      // by resolveFilingInfo via sumInvestmentBox filtered to interest
+      // keys.
+      "line.2a": (_, info) => info.taxExemptInterestTotal,
+      // MANUAL EDIT: 1099-INT box 1 sum (taxable interest). Flows into
+      // line 9 total income.
+      "line.2b": (_, info) => info.taxableInterestTotal,
       // Sum of Form 1099-DIV box 1b (qualified dividends) across all investment accounts.
       "line.3a": (_, info) => info.qualifiedDividends,
       // Sum of Form 1099-DIV box 1a (ordinary dividends) across all investment accounts.
@@ -297,8 +305,6 @@ export function register(): void {
       "line.1h_type": "Free-text label describing the type of other earned income on line 1h — no fact or decision maps to this descriptor field; no other-earned-income scenario built yet.",
       "line.1h_amount": "Other earned income (strike benefits, excess deferrals, etc.) — no ingestion path or scenario built for these miscellaneous earned income types yet.",
       "line.1i": "Nontaxable combat pay election — no combat pay fact ingestion or military-taxpayer scenario built yet.",
-      "line.2a": "Tax-exempt interest from 1099-INT box 8 / 1099-OID box 2 — no 1099-INT or 1099-OID fact ingestion path built yet.",
-      "line.2b": "Taxable interest from 1099-INT / 1099-OID — no 1099-INT or 1099-OID fact ingestion path built yet.",
       "line.3c_box1": "Checkbox indicating child's qualified dividends are included in line 3a — requires Form 8814 / dependent-income scenario which has not been built yet.",
       "line.3c_box2": "Checkbox indicating child's ordinary dividends are included in line 3b — requires Form 8814 / dependent-income scenario which has not been built yet.",
       "line.4a": "IRA gross distribution (Form 1099-R box 1) — no 1099-R fact ingestion path has been built yet.",

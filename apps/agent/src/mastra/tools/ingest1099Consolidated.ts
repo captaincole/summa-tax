@@ -4,8 +4,10 @@ import { recordFact } from "../db/taxFacts";
 import { recordDecision } from "../db/aiDecisions";
 import {
   makeDividendFactKey,
+  makeInterestFactKey,
   makeTradeFactKey,
   type DividendFactValue,
+  type InterestFactValue,
   type TradeFactValue,
 } from "../facts";
 import { requireUserContext } from "./userContext";
@@ -26,8 +28,8 @@ import { requireUserContext } from "./userContext";
 //   - 1 ai_decision (`decisions.scope.has_reportable_sales` = true) if
 //     trades are present.
 //
-// (1099-INT / 1099-MISC / 1099-OID sections will be added when we have a
-// scenario that uses them. For now, only DIV + B are accepted.)
+// (1099-MISC / 1099-OID sections will be added when we have a scenario
+// that uses them. INT, DIV, and B are accepted.)
 
 const AddressSchema = z.object({
   line1: z.string(),
@@ -73,7 +75,7 @@ const boxFor = (term: "short_term" | "long_term" | "unknown", basisReported: boo
 export const ingest1099Consolidated = createTool({
   id: "ingest-1099-consolidated",
   description:
-    "Ingest a consolidated 1099 (a multi-section broker statement). Thom reads the PDF and maps each broker's labels to IRS-canonical box numbers, then calls this tool with the structured data. Writes one tax fact for the dividend section, one per trade in the B section, and broker-reported classification decisions. Call ONCE per consolidated 1099. INT/MISC/OID sections are not yet supported — tell the user to call out what you see in those sections so we can add support when we hit a scenario that needs it.",
+    "Ingest a consolidated 1099 (a multi-section broker statement). Thom reads the PDF and maps each broker's labels to IRS-canonical box numbers, then calls this tool with the structured data. Writes one tax fact for the INT section, one for the dividend section, one per trade in the B section, and broker-reported classification decisions. Call ONCE per consolidated 1099. MISC/OID sections are not yet supported — tell the user to call out what you see in those sections so we can add support when we hit a scenario that needs it.",
   inputSchema: z.object({
     year: z.number().int(),
     accountSlug: z
@@ -89,6 +91,29 @@ export const ingest1099Consolidated = createTool({
       address: AddressSchema.optional(),
     }),
     accountNumber: z.string(),
+    int: z
+      .object({
+        box1: z.number().optional().describe("Interest income"),
+        box2: z.number().optional().describe("Early withdrawal penalty"),
+        box3: z.number().optional().describe("Interest on US savings bonds and Treasury obligations"),
+        box4: z.number().optional().describe("Federal income tax withheld"),
+        box5: z.number().optional().describe("Investment expenses"),
+        box6: z.number().optional().describe("Foreign tax paid"),
+        box7: z.string().optional().describe("Foreign country or US territory"),
+        box8: z.number().optional().describe("Tax-exempt interest"),
+        box9: z.number().optional().describe("Specified private activity bond interest"),
+        box10: z.number().optional().describe("Market discount"),
+        box11: z.number().optional().describe("Bond premium"),
+        box12: z.number().optional().describe("Bond premium on Treasury obligations"),
+        box13: z.number().optional().describe("Bond premium on tax-exempt bonds"),
+        box15: z.string().optional().describe("State"),
+        box16: z.string().optional().describe("State identification number"),
+        box17: z.number().optional().describe("State income tax withheld"),
+      })
+      .optional()
+      .describe(
+        "1099-INT section. Pass only the boxes that have non-zero values; omit the entire object if the section is absent or all-zero.",
+      ),
     div: z
       .object({
         box1a: z.number().optional().describe("Total ordinary dividends"),
@@ -164,6 +189,26 @@ export const ingest1099Consolidated = createTool({
     let factsWritten = 0;
     let decisionsWritten = 0;
     const tradeIds: string[] = [];
+
+    // ─── Interest section ───
+    if (input.int) {
+      const value: InterestFactValue = {
+        payerName: input.payer.name,
+        payerTin: input.payer.tin,
+        ...input.int,
+      };
+      await recordFact(supabase, {
+        id: crypto.randomUUID(),
+        userId,
+        filingId,
+        taxYear: year,
+        category: "investment_income",
+        key: makeInterestFactKey(slug),
+        value,
+        sourceNote,
+      });
+      factsWritten++;
+    }
 
     // ─── Dividend section ───
     if (input.div) {
