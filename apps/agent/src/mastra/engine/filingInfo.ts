@@ -30,6 +30,7 @@ import type { Form540FilingInfo } from "./state/ca/540/filingInfo.js";
 import type { ScheduleCaFilingInfo } from "./state/ca/schedule-ca/filingInfo.js";
 import type { Form8949FilingInfo } from "./federal/8949/filingInfo.js";
 import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
+import type { ScheduleAFilingInfo } from "./federal/schedule-a/filingInfo.js";
 import type { EngineDerivation } from "./types.js";
 import type { TradeFactValue } from "../facts/index.js";
 
@@ -93,7 +94,8 @@ export type FilingInfo = BaseFilingInfo &
   Form540FilingInfo &
   ScheduleCaFilingInfo &
   Form8949FilingInfo &
-  ScheduleDFilingInfo;
+  ScheduleDFilingInfo &
+  ScheduleAFilingInfo;
 
 // ─── Resolver (hand-coded stand-in for the AI layer) ─────────────────────
 
@@ -130,6 +132,13 @@ export function resolveFilingInfo(opts: {
       );
     }
     return v;
+  };
+
+  // Single-key numeric read. Returns undefined when missing or non-numeric;
+  // callers use ?? 0 when they need to compose into a sum.
+  const num = (key: string): number | undefined => {
+    const v = factByKey.get(key);
+    return typeof v === "number" && Number.isFinite(v) ? v : undefined;
   };
 
   const sumW2Box = (boxKey: string): number => {
@@ -242,6 +251,12 @@ export function resolveFilingInfo(opts: {
     refundFullOverpaymentFederal: decisionByKey.get(
       "decisions.refund.refund_full_overpayment_federal",
     ) as boolean | undefined,
+    useItemizedDeductions:
+      decisionByKey.get("decisions.itemize_vs_standard") === "itemized"
+        ? true
+        : decisionByKey.get("decisions.itemize_vs_standard") === "standard"
+          ? false
+          : undefined,
     fullYearMEC: factByKey.get("health_coverage.full_year_mec") as boolean | undefined,
 
     // ─── Form 540 (CA) ──────────────────────────────────────────────
@@ -362,8 +377,49 @@ export function resolveFilingInfo(opts: {
         mustFileScheduleDDerivation: r.derivation,
       };
     })(),
+
+    // ─── Schedule A ─────────────────────────────────────────────────
+    // Default: required when decisions.itemize_vs_standard chose
+    // itemized. Explicit `decisions.scope.must_file_schedule_a` wins
+    // when set. State-local income tax composes from existing W-2
+    // sums (box 17 + CA SDI); other slots are single-fact reads.
+    ...(() => {
+      const r = resolveMustFile(decisionByKey, {
+        explicitKey: "decisions.scope.must_file_schedule_a",
+        fallbacks: [
+          {
+            rule: "fallback: decisions.itemize_vs_standard = itemized",
+            value:
+              decisionByKey.get("decisions.itemize_vs_standard") === "itemized",
+            triggeredByDecisionKeys: ["decisions.itemize_vs_standard"],
+          },
+        ],
+      });
+      const w2Box17 = sumW2Box("box17");
+      const caSdi = sumCaSdi(factsInCategory("wages"));
+      const estStateTax = num("state_local_tax.estimated_payments");
+      return {
+        mustFileScheduleA: r.value as ScheduleAFilingInfo["mustFileScheduleA"],
+        mustFileScheduleADerivation: r.derivation,
+        medicalDentalExpenses: num("medical.expenses_total"),
+        stateLocalIncomeTaxPaid: w2Box17 + caSdi + (estStateTax ?? 0),
+        generalSalesTaxElection: decisionByKey.get(
+          "decisions.itemized.elect_general_sales_tax",
+        ) as boolean | undefined,
+        realEstateTaxes: num("state_local_tax.real_estate"),
+        personalPropertyTaxes: num("state_local_tax.personal_property"),
+        mortgageInterestForm1098: num("mortgage.interest_form_1098"),
+        mortgageInterestNotForm1098: num("mortgage.interest_not_form_1098"),
+        pointsNotForm1098: num("mortgage.points_not_form_1098"),
+        investmentInterest: num("investment_income.investment_interest_expense"),
+        giftsCashCheck: num("charitable.cash"),
+        giftsOtherThanCash: num("charitable.noncash"),
+        giftsCarryover: num("charitable.carryover"),
+      };
+    })(),
   };
 }
+
 
 /**
  * Resolve a must-file flag with explicit-decision-wins semantics, and

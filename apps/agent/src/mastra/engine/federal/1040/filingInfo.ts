@@ -45,4 +45,11 @@ export interface Form1040FilingInfo extends BaseFilingInfo {
    * because a taxpayer can choose differently between jurisdictions.
    */
   refundFullOverpaymentFederal?: boolean;
+
+  /**
+   * True when `decisions.itemize_vs_standard === "itemized"` — flips line
+   * 12e's source from the standard deduction table to Schedule A line 17.
+   * Undefined or "standard" leaves the standard deduction path in place.
+   */
+  useItemizedDeductions?: boolean;
 }

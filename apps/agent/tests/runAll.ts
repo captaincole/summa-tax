@@ -15,11 +15,13 @@ import { runScenario } from "./runScenario.js";
 import type { RunResult, Scenario } from "./types.js";
 import { alexScenario } from "./scenarios/alex/index.js";
 import { alejandroScenario } from "./scenarios/alejandro/index.js";
+import { marcusScenario } from "./scenarios/marcus/index.js";
 import { CATALOGS, runCatalogFillCheck } from "./catalogFill.js";
 
 const SCENARIOS: Scenario[] = [
   alexScenario,
   alejandroScenario,
+  marcusScenario,
 ];
 
 async function main() {
