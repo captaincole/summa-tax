@@ -4,7 +4,7 @@ Tracking doc for converting this project from a hosted, multi-tenant product int
 self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
 Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
 
-**Current status:** _baseline net locked (2026-06-13). The gate for every phase below = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage. Starting Phase 0._
+**Current status:** _Phase 0 complete (2026-06-13). Next: Phase 1 step 1 (Corpus → SQLite). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage._
 
 ---
 
@@ -42,15 +42,15 @@ _Note: `smoke:engine` was deleted during baselining — it was a stale hand-main
 
 ## Sequenced plan (10 gated stops — each is a shippable commit)
 
-### Phase 0 — Branding & license
-**Names settled (2026-06-13):** agent = **Luca**; project/product = **Summa** (after Pacioli's *Summa de arithmetica*); internal `wheel-of-time` IDs → `summa-*`. Unix dir stays `project-merrilin`.
-- [ ] Rename Thom → Luca (incl. the `thom` agent id + its wire surface `/api/agents/thom/stream`, mastraClient)
-- [ ] Merrilin → Summa (product) / Luca (where it was Thom's surname); `wheel-of-time` / "Wheel of Time" → `summa` / Summa
-- [ ] Rename `rand@localhost` seed user away from WoT
-- [ ] **Nynaeve: left untouched on purpose** — Phase 3 deletes the critic agent, so renaming now is throwaway; repo private until Phase 5
-- [ ] Add `LICENSE` (AGPL-3.0). **Contributor mechanism (CLA vs DCO) deferred to Phase 5** — nothing external contributes before then
-- **Gate:** builds + boots + smoke chat works + test net green (`test:unit` 25/25, `npm test` 14/14, manual browser pass)
-- _Do first — rename is cheapest before it spreads across more files._
+### Phase 0 — Branding & license ✅ DONE (2026-06-13, commits 1774a60 + 0b05c41)
+**Names settled:** agent = **Luca**; project/product = **Summa** (after Pacioli's *Summa de arithmetica*); internal `wheel-of-time` IDs → `summa-*`. Unix dir stays `project-merrilin`.
+- [x] Rename Thom → Luca (incl. the `luca` agent id + its wire surface `/api/agents/luca/stream`, `LUCA_AGENT_ID`)
+- [x] Merrilin → Summa (product); `wheel-of-time` / "Wheel of Time" → `summa` / Summa (package names, lockfiles, logger, storage ids, docs, migration comments, env templates)
+- [x] Rename seed user → `casey@localhost.com` / Casey Morgan
+- [x] **Nynaeve: left untouched on purpose** — Phase 3 deletes the critic agent, so renaming now is throwaway; repo private until Phase 5
+- [x] Add `LICENSE` (AGPL-3.0). **Contributor mechanism (CLA vs DCO) deferred to Phase 5**
+- [x] **Gate met:** agent tsc 0, web tsc 0, `test:unit` 25/25, `npm test` 14/14, manual browser pass verified (casey@).
+- _Bonus fix landed (0b05c41): `/app/state` 500 — case-state evaluated catalog-only forms missing from the runtime catalog. Pre-existing, unrelated to the rename; surfaced during the boot gate._
 
 ### Phase 1 — Rip out Supabase → SQLite (the only real engineering risk; one role at a time)
 1. [ ] **Corpus → SQLite.** Port `match_ref_blocks` Postgres fn → TS (FTS5 + sqlite-vec, merge/dedupe in JS); rewrite ingest write-side (vector serialization). _Gate:_ `searchRefDocs` / `compareRetrieval` / `smoke:review`. _Best first — self-contained behind the `search-ref-docs` tool, touches no user data._
