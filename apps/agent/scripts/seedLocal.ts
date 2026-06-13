@@ -29,14 +29,14 @@ import { Client as PgClient } from "pg";
 
 const TEST_OWNERS = [
   {
-    email: "rand@localhost",
+    email: "casey@localhost.com",
     password: "testpass123!",
-    displayName: "Rand al'Thor",
+    displayName: "Casey Morgan",
   },
 ];
 
 const TEST_CPA = {
-  email: "edwhite@localhost",
+  email: "edwhite@localhost.com",
   password: "testpass123!",
   profile: {
     displayName: "Ed White, CPA",

@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // authenticated user; we never pass a user_id filter at the call site.
 //
 // v1 only emits kind='upload'. The shape supports 'confirm' / 'decide'
-// for when Thom learns to surface structured non-document asks.
+// for when Luca learns to surface structured non-document asks.
 
 export type RequestedActionKind = "upload" | "confirm" | "decide";
 export type RequestedActionStatus =
@@ -66,8 +66,8 @@ export async function fetchOpenActions(
 }
 
 // Called the moment the user's upload reaches Supabase Storage. The card
-// stays visible (status='processing' shows a "Thom is reviewing this"
-// indicator) until Thom calls dismiss-requested-action after ingesting.
+// stays visible (status='processing' shows a "Luca is reviewing this"
+// indicator) until Luca calls dismiss-requested-action after ingesting.
 export async function markActionProcessing(
   supabase: SupabaseClient,
   actionId: string,

@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wheel of Time — Tax Prep",
+  title: "Summa — Tax Prep",
   description: "AI CPA platform for high-net-worth individuals.",
 };
 

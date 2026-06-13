@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { PlanItem, PlanItemStatus } from "@/lib/api";
 import { cn } from "@/lib/cn";
 
-// Renders Thom's rolling plan from /app/state. Refreshes whenever the parent
+// Renders Luca's rolling plan from /app/state. Refreshes whenever the parent
 // page re-fetches state (after each chat turn / reset). Items keep stable
 // ids across status changes so the same row visually transitions
 // todo → doing → done. When a row flips to done we keep it visible briefly
@@ -51,7 +51,7 @@ export function PlanCard({ plan }: PlanCardProps) {
         next.push(incoming);
       }
 
-      // Items the upstream plan dropped (e.g. Thom rewrote the array without
+      // Items the upstream plan dropped (e.g. Luca rewrote the array without
       // them) that we haven't already scheduled to leave — keep them around
       // briefly with whatever status they had so the disappearance isn't a
       // hard pop-out. We don't have visibility into "was this a deliberate
@@ -115,7 +115,7 @@ export function PlanCard({ plan }: PlanCardProps) {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {isEmpty ? (
           <div className="px-5 pb-5 pt-1 text-sm text-ink-muted leading-relaxed">
-            Thom&rsquo;s next steps will appear here as he works.
+            Luca&rsquo;s next steps will appear here as he works.
           </div>
         ) : (
           <ul className="px-5 pb-4 space-y-2.5">

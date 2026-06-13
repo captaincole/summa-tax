@@ -1,8 +1,8 @@
 {
-  "name": "wheel-of-time",
+  "name": "summa",
   "version": "0.1.0",
   "private": true,
-  "description": "Wheel of Time monorepo. apps/agent is the Mastra-based AI CPA backend; apps/web is the React frontend. Each app installs and deploys independently.",
+  "description": "Summa monorepo. apps/agent is the Mastra-based AI CPA backend; apps/web is the React frontend. Each app installs and deploys independently.",
   "scripts": {
     "dev": "npm --prefix apps/agent run dev",
     "dev:web": "npm --prefix apps/web run dev",
@@ -22,7 +22,6 @@
     "forms:ingest": "npm --prefix apps/agent run forms:ingest --",
     "forms:bind": "npm --prefix apps/agent run forms:bind --",
     "forms:ingest-ca-tax-table": "npm --prefix apps/agent run forms:ingest-ca-tax-table --",
-    "smoke:engine": "npm --prefix apps/agent run smoke:engine",
     "smoke:review": "npm --prefix apps/agent run smoke:review",
     "test": "npm --prefix apps/agent test",
     "test:alex": "npm --prefix apps/agent run test:alex",

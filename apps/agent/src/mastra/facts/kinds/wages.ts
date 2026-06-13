@@ -34,7 +34,7 @@ export interface W2FactValue {
   employerAddress?: W2Address;
   // Employee identity — boxes (a) SSN, (e) name, (f) address. Captured here
   // so a single W-2 ingest also populates the taxpayer's identity facts;
-  // the Thom flow doesn't need to re-ask for name/SSN/address.
+  // the Luca flow doesn't need to re-ask for name/SSN/address.
   employee?: {
     firstName: string;
     middleInitial?: string;

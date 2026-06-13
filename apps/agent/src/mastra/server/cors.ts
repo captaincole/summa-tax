@@ -2,7 +2,7 @@ import { cors } from "hono/cors";
 
 // Comma-separated list of origins allowed to call the API cross-origin.
 // Supports a single leading "*." wildcard for preview-deploy patterns:
-//   "https://wheel-of-time-web.vercel.app,https://*.vercel.app"
+//   "https://summa-web.vercel.app,https://*.vercel.app"
 // Empty / unset → allow all origins (intended for local dev only).
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")

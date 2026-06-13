@@ -1,8 +1,8 @@
 {
-  "name": "wheel-of-time-agent",
+  "name": "summa-agent",
   "version": "0.1.0",
   "private": true,
-  "description": "Mastra-based AI CPA backend. Conversational agent (Thom Merrilin) orchestrates fact-gathering and form generation; Nynaeve reviews every AI decision against the IRS reference corpus.",
+  "description": "Mastra-based AI CPA backend. Conversational agent (Luca) orchestrates fact-gathering and form generation; Nynaeve reviews every AI decision against the IRS reference corpus.",
   "scripts": {
     "dev": "mastra dev --env .env.development",
     "build": "mastra build --studio && tsx scripts/migrateMastra.ts",
@@ -19,7 +19,6 @@
     "forms:emit-types": "tsx scripts/emitFormTypes.ts",
     "forms:ingest-tax-table": "tsx scripts/ingestTaxTable.ts",
     "forms:ingest-ca-tax-table": "tsx scripts/ingestCATaxTable.ts",
-    "smoke:engine": "tsx scripts/smokeFormEngine.ts",
     "smoke:review": "tsx scripts/smokeReview.ts",
     "test": "tsx tests/runAll.ts",
     "test:alex": "tsx tests/scenarios/alex/run.ts",

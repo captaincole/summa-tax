@@ -4,7 +4,7 @@
 //   Top bar (logo + return switcher + workspace tabs + status)
 //   Desktop: chat 1/3 | workspace 2/3 (fixed split, no resize for v1)
 //   Mobile:  bottom tab bar swaps chat <-> workspace
-//   Hard-lock co-editing: toggle "Thom working" to see the dashboard lock
+//   Hard-lock co-editing: toggle "Luca working" to see the dashboard lock
 //
 // Static data only. Once Andrew greenlights the look, we promote this into
 // the real shell (delete SideNav, lift streaming into context, etc.).
@@ -35,7 +35,7 @@ const MOBILE_PANES = [
 type MobilePaneId = (typeof MOBILE_PANES)[number]["id"];
 
 const CHAT_MESSAGES = [
-  { role: "assistant" as const, content: "Hi Alex — I'm Thom. Let's get your 2025 return started. First, can you confirm your filing status is still **Single**?" },
+  { role: "assistant" as const, content: "Hi Alex — I'm Luca. Let's get your 2025 return started. First, can you confirm your filing status is still **Single**?" },
   { role: "user" as const, content: "Yes, still single." },
   { role: "assistant" as const, content: "Got it. And no dependents this year?" },
   { role: "user" as const, content: "Right, no dependents." },
@@ -81,9 +81,9 @@ interface Category {
 }
 
 // Categories drive the Progress strip + drill-down panel. Each item is a
-// concrete workflow Thom can run (e.g. "ask about 1099-DIV", "compare
+// concrete workflow Luca can run (e.g. "ask about 1099-DIV", "compare
 // standard vs itemized"). Click a strip segment → expand → click an item →
-// Thom starts that workflow (stubbed in the preview).
+// Luca starts that workflow (stubbed in the preview).
 const CATEGORIES: Category[] = [
   {
     id: "filing",
@@ -110,7 +110,7 @@ const CATEGORIES: Category[] = [
     label: "Investments",
     pct: 20,
     items: [
-      { id: "i1", label: "Dividends (1099-DIV)", status: "doing", note: "Thom is asking now" },
+      { id: "i1", label: "Dividends (1099-DIV)", status: "doing", note: "Luca is asking now" },
       { id: "i2", label: "Interest (1099-INT)", status: "done", note: "Chase Sapphire · $412" },
       { id: "i3", label: "Capital gains (Schedule D / 8949)", status: "todo" },
       { id: "i4", label: "Crypto disposals", status: "todo" },
@@ -152,7 +152,7 @@ export default function PreviewPage() {
   const [returnId, setReturnId] = useState("2025");
   const [tab, setTab] = useState<TabId>("home");
   const [mobilePane, setMobilePane] = useState<MobilePaneId>("workspace");
-  const [thomBusy, setThomBusy] = useState(false);
+  const [lucaBusy, setLucaBusy] = useState(false);
   const [returnMenu, setReturnMenu] = useState(false);
 
   const activeReturn = RETURNS.find((r) => r.id === returnId)!;
@@ -169,8 +169,8 @@ export default function PreviewPage() {
         }}
         tab={tab}
         onTab={setTab}
-        thomBusy={thomBusy}
-        onThomToggle={() => setThomBusy((v) => !v)}
+        lucaBusy={lucaBusy}
+        onLucaToggle={() => setLucaBusy((v) => !v)}
       />
 
       <main className="flex-1 min-h-0 flex">
@@ -181,19 +181,19 @@ export default function PreviewPage() {
             "border-r border-border-subtle bg-bg-subtle/40",
           )}
         >
-          <ChatPane busy={thomBusy} />
+          <ChatPane busy={lucaBusy} />
         </aside>
 
         <section className="flex-1 min-w-0 flex flex-col relative">
-          <WorkspacePane tab={tab} busy={thomBusy} />
+          <WorkspacePane tab={tab} busy={lucaBusy} />
         </section>
 
         {/* Mobile: single pane swap */}
         <div className="lg:hidden flex-1 min-w-0 flex flex-col absolute inset-x-0 top-14 bottom-14">
           {mobilePane === "chat" ? (
-            <ChatPane busy={thomBusy} mobile />
+            <ChatPane busy={lucaBusy} mobile />
           ) : (
-            <WorkspacePane tab={tab} busy={thomBusy} mobile />
+            <WorkspacePane tab={tab} busy={lucaBusy} mobile />
           )}
         </div>
       </main>
@@ -214,8 +214,8 @@ interface TopBarProps {
   onReturnPick: (id: string) => void;
   tab: TabId;
   onTab: (id: TabId) => void;
-  thomBusy: boolean;
-  onThomToggle: () => void;
+  lucaBusy: boolean;
+  onLucaToggle: () => void;
 }
 
 function TopBar({
@@ -225,8 +225,8 @@ function TopBar({
   onReturnPick,
   tab,
   onTab,
-  thomBusy,
-  onThomToggle,
+  lucaBusy,
+  onLucaToggle,
 }: TopBarProps) {
   return (
     <header className="shrink-0 h-14 border-b border-border-subtle bg-bg-base/95 backdrop-blur-sm flex items-center px-4 lg:px-6 gap-3 relative z-30">
@@ -319,17 +319,17 @@ function TopBar({
       <div className="flex items-center gap-2 shrink-0">
         {/* Hard-lock demo toggle */}
         <button
-          onClick={onThomToggle}
-          title="Toggle Thom-is-working state (preview only)"
+          onClick={onLucaToggle}
+          title="Toggle Luca-is-working state (preview only)"
           className={cn(
             "hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs border transition-colors",
-            thomBusy
+            lucaBusy
               ? "bg-amber-400/10 border-amber-400/30 text-amber-300"
               : "bg-bg-panel border-border-subtle text-ink-secondary hover:text-ink-primary",
           )}
         >
-          <span className={cn("w-1.5 h-1.5 rounded-full", thomBusy ? "bg-amber-400 animate-pulse-soft" : "bg-emerald-400")} />
-          {thomBusy ? "Thom working" : "Idle"}
+          <span className={cn("w-1.5 h-1.5 rounded-full", lucaBusy ? "bg-amber-400 animate-pulse-soft" : "bg-emerald-400")} />
+          {lucaBusy ? "Luca working" : "Idle"}
         </button>
 
         {/* Progress chip */}
@@ -373,7 +373,7 @@ function ChatPane({
             key={i}
             className={m.role === "user" ? "flex justify-end" : "flex gap-2.5 items-start"}
           >
-            {m.role === "assistant" && <ThomAvatar />}
+            {m.role === "assistant" && <LucaAvatar />}
             <div
               className={cn(
                 m.role === "user"
@@ -388,7 +388,7 @@ function ChatPane({
         ))}
         {busy && (
           <div className="flex gap-2.5 items-center">
-            <ThomAvatar pulsing />
+            <LucaAvatar pulsing />
             <div className="flex items-center gap-1 pt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-ink-muted animate-pulse-soft" />
               <span
@@ -411,7 +411,7 @@ function ChatPane({
   );
 }
 
-function ThomAvatar({ pulsing = false }: { pulsing?: boolean }) {
+function LucaAvatar({ pulsing = false }: { pulsing?: boolean }) {
   return (
     <div
       className={cn(
@@ -433,7 +433,7 @@ function ChatInput({ busy }: { busy: boolean }) {
       )}
     >
       <textarea
-        placeholder={busy ? "Thom is thinking…" : "Reply to Thom…"}
+        placeholder={busy ? "Luca is thinking…" : "Reply to Luca…"}
         disabled={busy}
         rows={2}
         className="w-full px-4 pt-3.5 pb-1 bg-transparent text-ink-primary placeholder:text-ink-muted text-[14px] leading-relaxed resize-none focus:outline-none disabled:opacity-50"
@@ -461,7 +461,7 @@ function ChatInput({ busy }: { busy: boolean }) {
           <span className="w-4 h-4 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center">
             <span className="font-serif text-accent text-[9px] leading-none">T</span>
           </span>
-          <span>Thom</span>
+          <span>Luca</span>
           <span className="text-ink-muted text-[10px] leading-none mt-0.5">▾</span>
         </button>
 
@@ -509,7 +509,7 @@ function WorkspacePane({
       {busy && (
         <div className="absolute inset-x-0 top-0 z-20 px-6 py-2.5 bg-amber-400/10 border-b border-amber-400/20 flex items-center gap-2 text-sm text-amber-200">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse-soft" />
-          <span>Thom is working — your turn next.</span>
+          <span>Luca is working — your turn next.</span>
         </div>
       )}
 
@@ -796,7 +796,7 @@ function FormsView() {
         <div className="mb-5 flex items-baseline justify-between">
           <div>
             <h2 className="font-serif text-2xl text-ink-primary">Working drafts</h2>
-            <p className="text-ink-secondary text-sm mt-1">Live as you talk — Thom fills lines as facts come in.</p>
+            <p className="text-ink-secondary text-sm mt-1">Live as you talk — Luca fills lines as facts come in.</p>
           </div>
           <span className="text-[11px] text-ink-muted uppercase tracking-wider">{FORMS.length} forms</span>
         </div>
@@ -921,7 +921,7 @@ function DocCard({ doc }: { doc: (typeof SOURCE_DOCS)[number] }) {
       </div>
       <div className="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button className="flex-1 text-xs py-1.5 rounded border border-border-subtle hover:border-border-strong text-ink-secondary hover:text-ink-primary">Preview</button>
-        <button className="flex-1 text-xs py-1.5 rounded border border-border-subtle hover:border-border-strong text-ink-secondary hover:text-ink-primary">Send to Thom</button>
+        <button className="flex-1 text-xs py-1.5 rounded border border-border-subtle hover:border-border-strong text-ink-secondary hover:text-ink-primary">Send to Luca</button>
       </div>
     </div>
   );

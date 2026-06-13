@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { getServiceRoleClient } from "../../db/supabase";
-import { thom } from "../../agents/thom";
+import { luca } from "../../agents/luca";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
 // POST /app/filings
@@ -35,7 +35,7 @@ function threadIdFor(userId: string, year: number | string): string {
 // be lazily created on the user's first message if this fails.
 async function ensureThread(userId: string, taxYear: number): Promise<void> {
   try {
-    const memory = await thom.getMemory();
+    const memory = await luca.getMemory();
     if (!memory) return;
     await memory.createThread({
       threadId: threadIdFor(userId, taxYear),

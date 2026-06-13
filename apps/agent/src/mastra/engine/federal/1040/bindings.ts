@@ -33,7 +33,7 @@ export function register(): void {
         info.homeAddressState ? true : undefined,
       // MANUAL EDIT: AI flagged both digital-assets widgets as
       // unsupported. The IRS makes this a mandatory yes/no for every
-      // 1040 filer, so Thom needs to ask. Driven by the explicit
+      // 1040 filer, so Luca needs to ask. Driven by the explicit
       // `decisions.scope.has_digital_assets` decision (boolean). The
       // matching checkbox renders when the decision lands on its side;
       // when undefined neither fires so an unanswered scenario fails

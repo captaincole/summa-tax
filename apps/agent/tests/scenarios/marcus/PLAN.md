@@ -283,9 +283,9 @@ encode whatever's on the goldens.
   range will itemize on SALT alone under the new $40k cap. Below ~$180k
   the standard usually wins; above ~$500k the phase-out kicks in.
 
-## Expected AI decisions Thom should record
+## Expected AI decisions Luca should record
 
-Thom should call `record-ai-decision` (fires Nynaeve synchronously) for:
+Luca should call `record-ai-decision` (fires Nynaeve synchronously) for:
 
 1. **`decisions.ira_deduction`** — "nondeductible trad IRA"
    - Supporting facts: trad IRA contribution amount, W-2 box 12 code D

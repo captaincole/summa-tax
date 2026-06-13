@@ -35,7 +35,7 @@ async function main(): Promise<void> {
   });
 
   const store = new PostgresStore({
-    id: "wheel-of-time-migrate",
+    id: "summa-migrate",
     pool,
     schemaName: "mastra",
     disableInit: false,

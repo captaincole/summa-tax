@@ -1,6 +1,6 @@
 // Alex Morales — AI decisions (the "setup").
 //
-// These are the judgment calls Thom (or Nynaeve, via review) would record
+// These are the judgment calls Luca (or Nynaeve, via review) would record
 // during a real intake. For the integration test we set them directly so
 // the engine has everything it needs without needing the agent loop.
 

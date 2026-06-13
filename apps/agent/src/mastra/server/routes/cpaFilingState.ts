@@ -12,12 +12,12 @@ import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 // cpa_reviewer membership on the requested filing before the engine runs.
 //
 // Differences from /app/state, all intentional:
-//   - No `plan` field. Thom's plan / working memory is keyed on the
+//   - No `plan` field. Luca's plan / working memory is keyed on the
 //     OWNER's userId+threadId; pulling the right thread for the CPA would
 //     require an owner-userId lookup that we don't need yet. The CPA's
 //     forms tab doesn't render the plan.
 //   - No `pendingFacts` / `pendingDecisions` — same reasoning; these are
-//     owner-facing prompts ("what should Thom ask the user next?").
+//     owner-facing prompts ("what should Luca ask the user next?").
 //     Build them back in when the CPA needs a "what's blocking this
 //     return?" view.
 //

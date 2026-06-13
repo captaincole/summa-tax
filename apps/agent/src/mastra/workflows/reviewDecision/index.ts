@@ -61,7 +61,7 @@ export const reviewDecisionWorkflow = createWorkflow({
 
 // ---------------------------------------------------------------------------
 // Public wrapper. Runs the workflow and returns the terminal output. Wraps
-// errors so a failed review row gets marked 'failed' on the way out — Thom
+// errors so a failed review row gets marked 'failed' on the way out — Luca
 // always sees a definitive state for every record-ai-decision call.
 // ---------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ export async function reviewDecision(
     );
   } catch (err) {
     // Best-effort failure recording: stamp the decision row + the review_runs
-    // row so Thom (and the trace log) see why this fell over. We don't have
+    // row so Luca (and the trace log) see why this fell over. We don't have
     // the reviewRunId reliably here (init may have failed), so we only stamp
     // the ai_decisions row in that case.
     const reason = err instanceof Error ? err.message : String(err);

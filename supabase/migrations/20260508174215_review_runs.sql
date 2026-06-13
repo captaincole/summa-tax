@@ -11,7 +11,7 @@
 -- the most recent review attempt; old rows (from before the workflow runs)
 -- stay null. open_questions.decision_id is populated when the workflow exits
 -- with verdict='needs_more_facts' and writes an open_question to bubble back
--- to Thom; null for questions Thom raises directly.
+-- to Luca; null for questions Luca raises directly.
 --
 -- verdict on ai_decisions remains a plain text column (no Postgres enum), so
 -- adding 'needs_more_facts' as a permitted value is a code-only change.

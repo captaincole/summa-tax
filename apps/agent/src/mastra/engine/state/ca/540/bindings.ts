@@ -181,7 +181,7 @@ export function register(): void {
       },
       // Refund or no amount due: line 99 minus contributions (110), interest/penalties (112), and underpayment penalty (113).
       "line.115_refund_or_no_amount_due": (f) => floor(0, sum(f["line.99_overpaid_tax_available"], f["line.110_total_contributions"] === undefined ? 0 : -f["line.110_total_contributions"], f["line.112_interest_and_late_penalties"] === undefined ? 0 : -f["line.112_interest_and_late_penalties"], f["line.113_underpayment_estimated_tax"] === undefined ? 0 : -f["line.113_underpayment_estimated_tax"])),
-      // Taxpayer email address from identity facts; marked optional since Thom auto-populates it from Supabase auth.
+      // Taxpayer email address from identity facts; marked optional since Luca auto-populates it from Supabase auth.
       "signing.taxpayer_email": (_, info) => info.taxpayerEmail,
       // Taxpayer preferred phone number from identity facts collected during intake.
       "signing.taxpayer_phone": (_, info) => info.taxpayerPhone,

@@ -2,7 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { requireUserContext } from "./userContext";
 
-// dismiss-requested-action: close a dashboard upload card after Thom has
+// dismiss-requested-action: close a dashboard upload card after Luca has
 // successfully ingested the corresponding document. Matches the most
 // recent open or processing action with the same document_type for the
 // current user.

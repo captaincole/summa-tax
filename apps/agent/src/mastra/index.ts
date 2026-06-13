@@ -3,7 +3,7 @@ import { Mastra } from "@mastra/core";
 import { StudioSupabaseAuth } from "./server/studioAuth";
 import { VercelDeployer } from "@mastra/deployer-vercel";
 import { ConsoleLogger } from "./server/consoleLogger";
-import { thom } from "./agents/thom";
+import { luca } from "./agents/luca";
 import { queryFormulator } from "./agents/nynaeve/queryFormulator";
 import { assessRiskAgent } from "./agents/nynaeve/assessRiskAgent";
 import { ruleAgent } from "./agents/nynaeve/ruleAgent";
@@ -31,10 +31,10 @@ const storage = await createStorage();
 // through the same logger as the rest of the app — Mastra's Hono integration
 // doesn't `logger.error()` unhandled handler exceptions before returning 500,
 // which would otherwise hide the failure in prod.
-const logger = new ConsoleLogger({ name: "wheel-of-time", level: "info" });
+const logger = new ConsoleLogger({ name: "summa", level: "info" });
 
 export const mastra = new Mastra({
-  agents: { thom, queryFormulator, assessRiskAgent, ruleAgent },
+  agents: { luca, queryFormulator, assessRiskAgent, ruleAgent },
   workflows: { reviewDecision: reviewDecisionWorkflow },
   storage,
   logger,
@@ -47,7 +47,7 @@ export const mastra = new Mastra({
   // /app/state and /app/session/reset routes. Run `mastra studio` locally
   // pointed at the prod URL when needed. (Once /app/* moves to Supabase RPCs
   // / shared package, studio: true becomes safe — see CLAUDE.md follow-ups.)
-  // maxDuration: 300 = Pro default; revisit if a Thom turn ever exceeds 60s,
+  // maxDuration: 300 = Pro default; revisit if a Luca turn ever exceeds 60s,
   // at which point we move Nynaeve to a background queue rather than raise it.
   // sfo1 keeps the function in the same region as Supabase US-West.
   deployer: new VercelDeployer({

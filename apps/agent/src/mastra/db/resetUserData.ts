@@ -1,6 +1,6 @@
 import type { Pool } from "pg";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { thom } from "../agents/thom";
+import { luca } from "../agents/luca";
 
 // Per-user data reset is the only reset path. The web "Reset session" button
 // hits POST /app/session/reset, which calls resetCurrentUserData below. There
@@ -78,7 +78,7 @@ export async function resetCurrentUserData(
   // teardown path in future versions. We list this user's threads, then
   // delete each one.
   let mastraThreadsDeleted = 0;
-  const memory = await thom.getMemory();
+  const memory = await luca.getMemory();
   if (memory) {
     const { threads } = await memory.listThreads({
       filter: { resourceId: userId },

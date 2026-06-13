@@ -1,4 +1,4 @@
--- User-data schema for the Wheel of Time agent. Two concerns covered here:
+-- User-data schema for the Summa agent. Two concerns covered here:
 --
 --   1. mastra schema — created so PostgresStore({ schemaName: 'mastra' }) has a
 --      home for its runtime tables (mastra_messages, mastra_threads,
@@ -13,7 +13,7 @@
 --   2. public.tax_facts / public.open_questions / public.ai_decisions — our
 --      domain tables, keyed by user_id uuid (FK to auth.users) so RLS policies
 --      can scope by auth.uid(). Replaces libsql equivalents that used a
---      Thom-invented "taxpayer_id" text column. Domain helpers will move from
+--      Luca-invented "taxpayer_id" text column. Domain helpers will move from
 --      @libsql/client → supabase-js with the user's JWT in a follow-up commit;
 --      RLS becomes active automatically on that client path.
 --
@@ -60,7 +60,7 @@ create policy "tax_facts: owner delete"
   using (user_id = auth.uid());
 
 -- ---------------------------------------------------------------------------
--- open_questions — Thom's questions to the user that haven't been resolved.
+-- open_questions — Luca's questions to the user that haven't been resolved.
 -- ---------------------------------------------------------------------------
 create table open_questions (
   id          text primary key,
@@ -94,7 +94,7 @@ create policy "open_questions: owner delete"
   using (user_id = auth.uid());
 
 -- ---------------------------------------------------------------------------
--- ai_decisions — judgment calls Thom made when facts were ambiguous.
+-- ai_decisions — judgment calls Luca made when facts were ambiguous.
 -- Each row is reviewed synchronously by Nynaeve; verdict columns are populated
 -- by the reviewDecision workflow after the initial insert.
 -- ---------------------------------------------------------------------------

@@ -65,7 +65,7 @@ export interface DerivationBlocked {
    * When true, this is an engine gap — we haven't built support for this
    * field yet (no example scenario, no fact ingestion path). caseState
    * filters unsupported results out of pendingDecisions / pendingFacts so
-   * Thom doesn't ask the user for input on fields we just don't compute
+   * Luca doesn't ask the user for input on fields we just don't compute
    * yet. The `fromFields` rule treats unsupported terms as 0 so downstream
    * sums continue without propagating the gap.
    */
@@ -93,7 +93,7 @@ export const blocked = (
  * Build a result that marks the field as unsupported — engine gap, not
  * user-input gap. Surfaces as blocked everywhere a value would be needed
  * (e.g. PDF rendering), but caseState skips it when aggregating pending
- * questions for Thom.
+ * questions for Luca.
  */
 export const unsupported = (reason: string): DerivationBlocked => ({
   ok: false,

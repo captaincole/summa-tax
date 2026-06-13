@@ -3,7 +3,7 @@
 Hi,
 
 Thanks for taking on Marcus's 2025 return. This is a synthetic test
-case we're using to build out Wheel of Time, our AI-CPA assistant. We
+case we're using to build out Summa, our AI-CPA assistant. We
 want to compare your prepared return against what our engine produces.
 Everything below is fabricated but internally consistent — please
 prepare exactly what you'd prepare for a real client with this facts

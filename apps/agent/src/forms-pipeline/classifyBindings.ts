@@ -94,7 +94,7 @@ const RULE_LIBRARY_SPEC = `Rule library — pick one rule per field:
 
 lookupFact — Read a single fact by key.
   params: { factKey: string, optional?: boolean }
-  Use for header/identity fields and any 1-to-1 fact mapping. Pass optional=true for sub-facts that the user often won't have (e.g. identity.address.apt) — missing optional facts return "" instead of blocking so Thom doesn't ask the user.
+  Use for header/identity fields and any 1-to-1 fact mapping. Pass optional=true for sub-facts that the user often won't have (e.g. identity.address.apt) — missing optional facts return "" instead of blocking so Luca doesn't ask the user.
 
 sumFacts — Aggregate a numeric field across all facts in a category (optionally filtered by key prefix).
   params: { category: string, keyPrefix?: string, fieldPath: string }
@@ -177,9 +177,9 @@ const AVAILABLE_DATA_SPEC = `Available tax_facts (fact_key patterns):
     - identity.address.street, identity.address.apt (optional), identity.address.city,
       identity.address.state, identity.address.zip
     - identity.address.county (CA 540 header asks for this — Alex example: "Alameda")
-    - identity.email     (Thom signs in via Supabase auth; auto-populated at doc-gen time; use with optional=true)
-    - identity.phone     (Thom asks during intake; format "703-953-0253")
-    - identity.occupation (Thom asks during intake; free-text like "Engineer")
+    - identity.email     (Luca signs in via Supabase auth; auto-populated at doc-gen time; use with optional=true)
+    - identity.phone     (Luca asks during intake; format "703-953-0253")
+    - identity.occupation (Luca asks during intake; free-text like "Engineer")
   Wages (category "wages"):
     - key "employer.{slug}" → { box1, box2, box3, …, box14, box15, box16, box17 } (one per W-2)
       box15 is the state abbreviation ("CA"); box16 is state wages; box17 is state income tax withheld

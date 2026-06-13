@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { getServiceRoleClient } from "../../db/supabase";
-import { thom } from "../../agents/thom";
+import { luca } from "../../agents/luca";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
 // DELETE /app/filings/:filingId
@@ -115,7 +115,7 @@ export const deleteFilingRoute = registerApiRoute(
       // when streaming (apps/web/lib/returns.ts:threadIdFor). Quietly
       // continue if Memory isn't configured or the thread is already gone.
       try {
-        const memory = await thom.getMemory();
+        const memory = await luca.getMemory();
         if (memory) {
           await memory.deleteThread(threadIdFor(callerId, taxYear));
         }

@@ -40,7 +40,7 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-sm animate-fade-in">
         <div className="mb-10 text-center">
           <div className="text-ink-muted text-[11px] uppercase tracking-[0.28em] mb-4">
-            Wheel of Time
+            Summa
           </div>
           <h1 className="font-serif text-4xl text-ink-primary mb-3">Sign in</h1>
           <p className="text-ink-secondary text-sm">

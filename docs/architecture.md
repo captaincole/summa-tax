@@ -1,4 +1,4 @@
-# Wheel of Time — Data Architecture
+# Summa — Data Architecture
 
 This document captures the layered data model the engine is being built around.
 It exists to keep the design coherent as we expand beyond the W-2-only MVP into
@@ -164,7 +164,7 @@ path left.
   bracket lookups don't need to be AI decisions — they're just math on
   values that themselves came from facts or decisions.
 - **Investment accounts get human-readable slugs**, not UUIDs
-  (`apex-individual`, not `acc_a8f3d…`). Both Thom and the user reference them.
+  (`apex-individual`, not `acc_a8f3d…`). Both Luca and the user reference them.
 - **Verbal confirmation is a synthetic Bronze row**, not a fact without a
   parent. Audit trail stays unbroken.
 - **W-2 path gets migrated in the same iteration as the investment work.**

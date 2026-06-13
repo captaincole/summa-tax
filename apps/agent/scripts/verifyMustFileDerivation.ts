@@ -5,7 +5,7 @@
 // Two passes over the Alejandro fixture:
 //   1. WITH explicit must_file_* decisions → derivation reports the
 //      explicit decision key.
-//   2. WITH those decisions stripped (simulating the live Thom flow where
+//   2. WITH those decisions stripped (simulating the live Luca flow where
 //      they aren't authored) → derivation reports the data-driven fallback
 //      (trade facts present, or must_file_ca_540 = true).
 //
@@ -86,7 +86,7 @@ async function evaluateScenario(label: string, stripFormScope: boolean) {
 async function main() {
   await evaluateScenario("PASS 1 — with explicit must-file decisions", false);
   await evaluateScenario(
-    "PASS 2 — must-file decisions stripped (live Thom flow)",
+    "PASS 2 — must-file decisions stripped (live Luca flow)",
     true,
   );
 }

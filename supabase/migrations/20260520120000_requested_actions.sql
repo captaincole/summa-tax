@@ -1,12 +1,12 @@
--- Requested actions — structured asks Thom surfaces to the user via the
+-- Requested actions — structured asks Luca surfaces to the user via the
 -- dashboard's Requested Actions card. v1 only supports kind='upload' for
 -- document requests (e.g. "Upload your 2025 W-2"). The shape allows for
--- future 'confirm' / 'decide' kinds but Thom doesn't emit those today.
+-- future 'confirm' / 'decide' kinds but Luca doesn't emit those today.
 --
 -- Status flow:
 --   open      → resolved (user uploaded the doc, resolved_document_id set)
---             → skipped  (user dismissed; Thom may re-ask if still needed)
---             → dismissed (Thom decided it's no longer needed)
+--             → skipped  (user dismissed; Luca may re-ask if still needed)
+--             → dismissed (Luca decided it's no longer needed)
 --
 -- Realtime publication is on so the frontend gets new requests + status
 -- flips without polling. Replica identity is widened to full because the
