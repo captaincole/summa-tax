@@ -10,14 +10,14 @@ import type { BaseFormField, EngineDerivation } from "../engine/types";
 import { resolveOwnerFilingForYear } from "../db/filings";
 import { requireUserContext } from "./userContext";
 
-// Live case state for Thom. Runs the four-form engine against the current
+// Live case state for Luca. Runs the four-form engine against the current
 // fact + decision state and returns:
 //   - per-form summaries (formId, mustFile result, line count, blockers)
 //   - aggregated pending decisions (unique decisionKeys any form is blocked on)
 //   - convenience money fields pulled from Form 1040 / CA 540 specific lines
 //   - the most recent AI decisions for activity-feed display
 //
-// Thom calls this at the start of every turn to know:
+// Luca calls this at the start of every turn to know:
 //   - Which forms are required, computed, or blocked
 //   - What scope decisions or facts are still missing (= what to ask next)
 //   - The current refund/owed picture if computed
@@ -83,7 +83,7 @@ export function buildCaseStateForScenario(scenario: EvaluatedScenario) {
   ];
 
   // Aggregate unique pending decisions / facts across all blockers (incl.
-  // mustFile blockers). Thom asks the user about these.
+  // mustFile blockers). Luca asks the user about these.
   const pendingDecisions = new Set<string>();
   const pendingFacts = new Set<string>();
   for (const s of summaries) {
@@ -102,7 +102,7 @@ export function buildCaseStateForScenario(scenario: EvaluatedScenario) {
   // object) passes the gate even though the resolver can't read it. Using
   // filingInfo means pendingFacts reflects exactly what the engine consumes.
   // identity.email is intentionally NOT in this list — it's a courtesy
-  // field that Thom auto-fills from authEmail at doc-generation time.
+  // field that Luca auto-fills from authEmail at doc-generation time.
   const REQUIRED_IDENTITY_SLOTS: Array<[string, () => unknown]> = [
     ["identity.name.first", () => filingInfo.taxpayerFirstName],
     ["identity.name.last", () => filingInfo.taxpayerLastName],
@@ -241,7 +241,7 @@ export const getCaseState = createTool({
       stateOwed: z.number(),
     }),
     factCount: z.number(),
-    /** Supabase login email — Thom records this as identity.email at doc-gen
+    /** Supabase login email — Luca records this as identity.email at doc-gen
      *  time after acknowledging it with the user. */
     authEmail: z.string().nullable(),
     aiDecisions: z.array(

@@ -15,7 +15,7 @@ import { requireUserContext } from "./userContext";
 // Ingest a consolidated 1099 (E*TRADE-style multi-section statement) as
 // structured tax_facts + a few broker-reported AI decisions.
 //
-// Thom (vision-capable) reads the 1099 PDF and maps whatever broker-specific
+// Luca (vision-capable) reads the 1099 PDF and maps whatever broker-specific
 // labels are used to IRS-canonical box numbers. The schema below is what
 // the LLM should produce; the tool writes it to the DB.
 //
@@ -75,7 +75,7 @@ const boxFor = (term: "short_term" | "long_term" | "unknown", basisReported: boo
 export const ingest1099Consolidated = createTool({
   id: "ingest-1099-consolidated",
   description:
-    "Ingest a consolidated 1099 (a multi-section broker statement). Thom reads the PDF and maps each broker's labels to IRS-canonical box numbers, then calls this tool with the structured data. Writes one tax fact for the INT section, one for the dividend section, one per trade in the B section, and broker-reported classification decisions. Call ONCE per consolidated 1099. MISC/OID sections are not yet supported — tell the user to call out what you see in those sections so we can add support when we hit a scenario that needs it.",
+    "Ingest a consolidated 1099 (a multi-section broker statement). Luca reads the PDF and maps each broker's labels to IRS-canonical box numbers, then calls this tool with the structured data. Writes one tax fact for the INT section, one for the dividend section, one per trade in the B section, and broker-reported classification decisions. Call ONCE per consolidated 1099. MISC/OID sections are not yet supported — tell the user to call out what you see in those sections so we can add support when we hit a scenario that needs it.",
   inputSchema: z.object({
     year: z.number().int(),
     accountSlug: z

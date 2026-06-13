@@ -14,13 +14,13 @@ import { recordAIDecision, listAIDecisions } from "../tools/aiDecisions";
 import { generateTaxDocuments } from "../tools/generateTaxDocuments";
 import { requestDocumentUpload } from "../tools/requestDocument";
 import { dismissRequestedAction } from "../tools/dismissRequestedAction";
-import { thomInstructions } from "./thom.instructions";
-import { thomWorkingMemorySchema } from "./thom.workingMemory";
+import { lucaInstructions } from "./luca.instructions";
+import { lucaWorkingMemorySchema } from "./luca.workingMemory";
 
-export const thom = new Agent({
-  id: "thom",
-  name: "Thom Merrilin",
-  instructions: thomInstructions,
+export const luca = new Agent({
+  id: "luca",
+  name: "Luca",
+  instructions: lucaInstructions,
   model: "anthropic/claude-sonnet-4-6",
   // Multi-step: get-case-state + maybe one ingest + a record-ai-decision +
   // optionally generate-tax-documents = ~5 steps per turn. 20 leaves headroom
@@ -29,7 +29,7 @@ export const thom = new Agent({
   defaultGenerateOptionsLegacy: { maxSteps: 20 },
   defaultStreamOptionsLegacy: { maxSteps: 20 },
   tools: {
-    // Primary tools Thom uses every turn
+    // Primary tools Luca uses every turn
     getCaseState,
     ingestW2,
     ingest1099Consolidated,
@@ -41,7 +41,7 @@ export const thom = new Agent({
     dismissRequestedAction,
     // End-of-session artifact generation
     generateTaxDocuments,
-    // Secondary — listOpenQuestions/resolveOpenQuestion remain so Thom can
+    // Secondary — listOpenQuestions/resolveOpenQuestion remain so Luca can
     // see and clear rows that Nynaeve's review workflow writes. He no longer
     // authors his own open questions — that lives in working memory now.
     listOpenQuestions: listOpenQuestionsTool,
@@ -50,7 +50,7 @@ export const thom = new Agent({
   },
   memory: new Memory({
     storage: new PostgresStore({
-      id: "thom-memory",
+      id: "luca-memory",
       pool: pgPool,
       schemaName: "mastra",
       // Schema migrations run during build via `npm run migrate:mastra`.
@@ -61,11 +61,11 @@ export const thom = new Agent({
       // Thread-scoped because we currently run a single demo thread per user.
       // Switch to "resource" once we split per tax year (2025 / 2026 / …).
       // Mastra auto-registers updateWorkingMemory as a tool; the schema
-      // shape is documented in thom.workingMemory.ts.
+      // shape is documented in luca.workingMemory.ts.
       workingMemory: {
         enabled: true,
         scope: "thread",
-        schema: thomWorkingMemorySchema,
+        schema: lucaWorkingMemorySchema,
       },
     },
   }),

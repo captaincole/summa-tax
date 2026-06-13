@@ -318,7 +318,7 @@ function EmptyReturnsCta() {
           Start your {CURRENT_TAX_YEAR} filing
         </h3>
         <p className="text-ink-secondary text-[14px] mt-2 max-w-xl leading-relaxed">
-          Thom will walk you through everything — wages, investments, deductions —
+          Luca will walk you through everything — wages, investments, deductions —
           and keep a citation for every fact. You can pause and pick up where
           you left off anytime.
         </p>
@@ -351,7 +351,7 @@ function StartFilingCard({ taxYear }: { taxYear: number }) {
       <div>
         <div className="text-[15px] font-medium text-ink-primary">Start a new filing</div>
         <div className="text-[13px] text-ink-secondary leading-relaxed mt-1">
-          Begin your {taxYear} return. Thom will guide intake from scratch.
+          Begin your {taxYear} return. Luca will guide intake from scratch.
         </div>
       </div>
       <StartFilingButton

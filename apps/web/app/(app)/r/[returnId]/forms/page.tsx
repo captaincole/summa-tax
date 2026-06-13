@@ -85,7 +85,7 @@ export default function FormsTab() {
         </div>
         <h1 className="font-serif text-3xl text-ink-primary mt-3">No forms yet</h1>
         <p className="text-ink-secondary text-[15px] mt-3 max-w-md mx-auto leading-relaxed">
-          Forms appear once Thom starts capturing facts. Switch to your 2025 Return to see them live.
+          Forms appear once Luca starts capturing facts. Switch to your 2025 Return to see them live.
         </p>
       </div>
     );
@@ -97,7 +97,7 @@ export default function FormsTab() {
         <div>
           <h2 className="font-serif text-2xl text-ink-primary">Tax forms</h2>
           <p className="text-ink-secondary text-sm mt-1">
-            Everything Thom is preparing for your 2025 return. Snapshots regenerate as facts land.
+            Everything Luca is preparing for your 2025 return. Snapshots regenerate as facts land.
           </p>
         </div>
         <span className="text-[11px] text-ink-muted uppercase tracking-wider">
@@ -109,7 +109,7 @@ export default function FormsTab() {
         <div className="card px-6 py-8 text-center">
           <div className="text-ink-muted text-sm">No forms yet.</div>
           <div className="mt-1 text-ink-faint text-xs">
-            They appear here as Thom captures facts and packages the return.
+            They appear here as Luca captures facts and packages the return.
           </div>
         </div>
       ) : (

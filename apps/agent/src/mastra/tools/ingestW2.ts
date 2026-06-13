@@ -12,7 +12,7 @@ import { requireUserContext } from "./userContext";
 //   key:      "employer.{employerSlug}"
 //   value:    W2FactValue
 //
-// Thom (vision-capable) reads the W-2 PDF and calls this tool with the
+// Luca (vision-capable) reads the W-2 PDF and calls this tool with the
 // extracted values. The schema mirrors IRS-canonical box numbers so any
 // W-2 layout maps to the same fields.
 
@@ -33,7 +33,7 @@ const slugify = (s: string): string =>
 export const ingestW2 = createTool({
   id: "ingest-w2-structured",
   description:
-    "Ingest a single W-2 as a structured tax fact. Thom (or whatever upstream extractor) reads the W-2 PDF and calls this with all the box values. Writes ONE tax_facts row with the full W-2 data; the Form Engine reads it via the fact catalog. Call once per W-2.",
+    "Ingest a single W-2 as a structured tax fact. Luca (or whatever upstream extractor) reads the W-2 PDF and calls this with all the box values. Writes ONE tax_facts row with the full W-2 data; the Form Engine reads it via the fact catalog. Call once per W-2.",
   inputSchema: z.object({
     year: z.number().int(),
     employer: z.object({

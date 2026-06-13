@@ -3,11 +3,11 @@ import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
 import { buildCaseState } from "../../tools/caseState";
-import { thom } from "../../agents/thom";
+import { luca } from "../../agents/luca";
 import {
-  thomWorkingMemorySchema,
+  lucaWorkingMemorySchema,
   type PlanItem,
-} from "../../agents/thom.workingMemory";
+} from "../../agents/luca.workingMemory";
 import { DEMO_TAX_YEAR } from "../demoSession";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 import { resolveOwnerFilingForYear } from "../../db/filings";
@@ -17,19 +17,19 @@ function threadIdFor(userId: string, returnId: string | number): string {
   return `${userId}::${returnId}`;
 }
 
-async function readThomPlan(threadId: string): Promise<PlanItem[]> {
-  // Read working memory off Thom's thread-scoped Memory. Returns [] when:
+async function readLucaPlan(threadId: string): Promise<PlanItem[]> {
+  // Read working memory off Luca's thread-scoped Memory. Returns [] when:
   //   - the thread has never had a turn (no working memory row yet)
   //   - the JSON parse fails (shouldn't happen since Mastra writes via the
   //     same schema, but defensive)
   //   - the schema validation fails (e.g. a field rename we haven't migrated)
   // We never want a malformed plan to take down the whole /app/state response.
   try {
-    const memory = await thom.getMemory();
+    const memory = await luca.getMemory();
     if (!memory) return [];
     const raw = await memory.getWorkingMemory({ threadId });
     if (!raw) return [];
-    const parsed = thomWorkingMemorySchema.safeParse(JSON.parse(raw));
+    const parsed = lucaWorkingMemorySchema.safeParse(JSON.parse(raw));
     if (!parsed.success) return [];
     return parsed.data.plan ?? [];
   } catch {
@@ -38,7 +38,7 @@ async function readThomPlan(threadId: string): Promise<PlanItem[]> {
 }
 
 // Live case state for the web app. Pass-through over buildCaseState plus
-// document URLs and Thom's plan. The previous handler adapted the engine
+// document URLs and Luca's plan. The previous handler adapted the engine
 // output to a legacy shape (openAsks / progress / draftUrl / 8949Url /
 // scheduleDUrl) that the new engine doesn't speak. The web app reads the
 // engine's native shape directly now — anything the engine doesn't compute
@@ -57,7 +57,7 @@ export const appStateRoute = registerApiRoute("/app/state", {
 
     const [caseState, plan, drafts] = await Promise.all([
       buildCaseState(supabase, DEMO_TAX_YEAR),
-      readThomPlan(threadIdFor(userId, DEMO_TAX_YEAR)),
+      readLucaPlan(threadIdFor(userId, DEMO_TAX_YEAR)),
       listDocuments(supabase, { category: "drafts", taxYear: DEMO_TAX_YEAR }),
     ]);
 

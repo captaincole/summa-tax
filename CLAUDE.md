@@ -1,20 +1,19 @@
-# Project Wheel of Time — Claude Development Guide
+# Project Summa — Claude Development Guide
 
 ## What this is
 
-**Wheel of Time** (formerly "Merrilin") is an AI CPA platform for high-net-worth individuals (HNWIs). Target user has W-2 income of $400k+/yr and $2–5M in investable assets, often with RSUs, K-1s, rental property, multi-state or foreign exposure, crypto, and meaningful charitable giving.
+**Summa** is an AI CPA platform for high-net-worth individuals (HNWIs). Target user has W-2 income of $400k+/yr and $2–5M in investable assets, often with RSUs, K-1s, rental property, multi-state or foreign exposure, crypto, and meaningful charitable giving. The name nods to Luca Pacioli's *Summa de arithmetica* (1494), the book that first described double-entry bookkeeping.
 
-Agents on the platform are named after characters from the *Wheel of Time* novels:
+Agents on the platform:
 
-- **Thom Merrilin** — the conversational front-desk agent; guides the user through the tax-prep flow, orchestrates workflows, narrates progress. First agent built.
-- **Nynaeve al'Meara** — critic agent; reviews every `record-ai-decision` synchronously and grounds it (or flags it) against the IRS reference corpus. Runs on Haiku 4.5. See "Reference-document RAG" section.
-- Future specialist agents get additional WoT character names as they land.
+- **Luca** — the conversational front-desk agent (named after Pacioli); guides the user through the tax-prep flow, orchestrates workflows, narrates progress. First agent built.
+- **Nynaeve al'Meara** — critic agent; reviews every `record-ai-decision` synchronously and grounds it (or flags it) against the IRS reference corpus. Runs on Haiku 4.5. See "Reference-document RAG" section. _(Legacy Wheel-of-Time name; this agent is being removed in the open-source transition's Phase 3 — see `OPEN_SOURCE_TRANSITION.md` — so it was deliberately not renamed.)_
 
-Note: the Unix working directory is still `project-merrilin` (the product was originally called Merrilin; it now lives on only as Thom's surname). Internal names / IDs / docs use "wheel-of-time" or "Wheel of Time".
+Note: the Unix working directory is still `project-merrilin` (the product's earliest name; later "Wheel of Time," now "Summa"). The directory name was left alone to avoid churning local paths/configs. Internal names / IDs / docs use "summa" or "Summa".
 
 The end goal is a three-stage workflow:
 
-1. **Gatherer** (Stage 1, where we are now) — Thom Merrilin runs conversational intake that captures structured tax facts with citations and produces a live-updating case state (draft 1040, open asks, decisions).
+1. **Gatherer** (Stage 1, where we are now) — Luca runs conversational intake that captures structured tax facts with citations and produces a live-updating case state (draft 1040, open asks, decisions).
 2. **Summarizer** (Stage 2, not built yet) — turns gathered facts into a human-reviewable tax summary / organizer.
 3. **Preparer** (Stage 3, not built yet) — fills out the actual forms (1040 + schedules, state returns). Human-in-the-loop is mandatory; a CPA signs off.
 
@@ -27,7 +26,7 @@ This is a monorepo. Two independent deploy units, each with its own `package.jso
 ```
 apps/
 ├── agent/                       # Mastra backend → deployed to Vercel
-│   ├── src/mastra/              # agent code (Thom, Nynaeve, tools, db, server, workflows)
+│   ├── src/mastra/              # agent code (Luca, Nynaeve, tools, db, server, workflows)
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
 │   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
@@ -107,10 +106,10 @@ npm run db:stop                 # shut docker down at end of day (optional)
 
 | email | role | password |
 | --- | --- | --- |
-| `rand@localhost` | taxpayer (owner) | `testpass123!` |
+| `casey@localhost` | taxpayer (owner) | `testpass123!` |
 | `edwhite@localhost` | CPA (no memberships yet) | `testpass123!` |
 
-Rand has one owner-role membership on a 2025 filing. Ed has a `cpa_profiles` row but is intentionally NOT attached to any filing — exercise the share flow (`/r/<filingId>/share`) by signing in as Rand, inviting `edwhite@localhost`, then signing out and back in as Ed to see the filing at `/cpa`.
+Casey has one owner-role membership on a 2025 filing. Ed has a `cpa_profiles` row but is intentionally NOT attached to any filing — exercise the share flow (`/r/<filingId>/share`) by signing in as Casey, inviting `edwhite@localhost`, then signing out and back in as Ed to see the filing at `/cpa`.
 
 **URLs to remember**:
 
@@ -140,11 +139,11 @@ We're building agent + UI together. When changes touch both, expect to:
 1. **Edit code** (backend in `apps/agent/src/mastra/`, frontend in `apps/web/{app,components,lib}/`).
 2. **Watch logs** for errors. Three places to look:
    - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
-   - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Thom do X?".
+   - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Luca do X?".
    - **Browser console + Network panel** — frontend errors and HTTP failures (401s from a wrong passcode, 404s from a missing proxy entry, etc.).
 3. **Verify the change in the browser** at http://localhost:3000. Sign in with a Supabase account; cookie-based session via `@supabase/ssr` persists across reloads. Hit **Reset session** in the side nav to wipe state between test runs. The activity rail and header counters refresh after each agent turn.
 
-For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/thom/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
+For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/luca/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
 
 ### Claude verifies UI changes via claude-in-chrome
 
@@ -163,7 +162,7 @@ The web "Reset session" button (side nav) → `POST /app/session/reset` → `res
 
 ## Mastra schema migrations
 
-We set `disableInit: true` on every `PostgresStore` we construct (the shared one in `server/storage.ts` AND the per-agent one in `agents/thom.ts` — Mastra agents that take a `memory: new Memory({ storage })` create their own store, and each tracks its own init state). This stops the framework from firing ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start, which pushed first-message-after-cold to ~10s on Vercel.
+We set `disableInit: true` on every `PostgresStore` we construct (the shared one in `server/storage.ts` AND the per-agent one in `agents/luca.ts` — Mastra agents that take a `memory: new Memory({ storage })` create their own store, and each tracks its own init state). This stops the framework from firing ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start, which pushed first-message-after-cold to ~10s on Vercel.
 
 Schema is kept in sync via a one-shot script:
 
@@ -252,7 +251,7 @@ Production runtime logs for the agent come through `vercel logs`, but with gotch
 - **Never invent a number.** If the taxpayer isn't sure, the agent records an open question, not a guess. This is enforced in the system prompt and should be enforced in prompt tests once we have them.
 - **Every fact has a citation.** The `source_note` field is required — document source, statement line number, or "verbal, date".
 - **Document minimalism — only ask for load-bearing forms.** Getting a form is expensive user labor (dig through email, HR portal, physical mail). The default is verbal confirmation; we escalate to "please upload X" only when (a) the form is required to compute or file the return, or (b) a fact on the form can't be reliably obtained another way. Example: don't ask for Form 1095-C if the only fact we need is "had coverage all year" — a yes/no scoping question gets it faster. Example: W-2 box 12 code D already proves 401(k) contribution, so we don't also ask for Form 5498.
-- **Bottom-up derivation, not top-down guessing.** The case engine computes state (draft 1040, scoping decisions, open asks) from facts via a graph of typed pure-function derivations. Thom *reads* the computed state to decide what to ask next; he doesn't invent scope or asks on his own.
+- **Bottom-up derivation, not top-down guessing.** The case engine computes state (draft 1040, scoping decisions, open asks) from facts via a graph of typed pure-function derivations. Luca *reads* the computed state to decide what to ask next; he doesn't invent scope or asks on his own.
 - **Reactive, not batch.** Every fact write triggers downstream re-derivation. At any turn, the draft 1040, open-asks list, and decisions reflect everything known so far. Observable at every step.
 - **Stage boundaries are hard.** Stage 1 (Gatherer) doesn't compute tax owed, suggest strategies, or fill forms. Cross-stage leakage is a bug.
 - **Human in the loop.** Stage 3 requires CPA sign-off before anything ships. The preparer will probably use Opus for accuracy over cost.
@@ -267,7 +266,7 @@ The system separates two kinds of data:
 
 Decisions flow back into the case engine: a decision with key `decisions.ca_residency` becomes a fact-like input that downstream derivations can consume. This means "is this person a full-year CA resident?" can be the output of AI reasoning, and the CA 540 scoping derivation reads it like any other fact.
 
-**Two-phase pattern — decide and ground synchronously.** Every `record-ai-decision` call now triggers Nynaeve, who reviews the decision against the supporting facts and the ingested IRS reference corpus, then writes one of four verdicts back to the row: `accurate` / `inaccurate` / `ungroundable` / `review_failed`. `authority_citations_json` populates with `{blockId, quote?}[]` when the verdict is `accurate`. Thom sees the verdict in the tool response and can re-ask the user if `inaccurate`. See the "Reference-document RAG" section for the corpus and retrieval pipeline.
+**Two-phase pattern — decide and ground synchronously.** Every `record-ai-decision` call now triggers Nynaeve, who reviews the decision against the supporting facts and the ingested IRS reference corpus, then writes one of four verdicts back to the row: `accurate` / `inaccurate` / `ungroundable` / `review_failed`. `authority_citations_json` populates with `{blockId, quote?}[]` when the verdict is `accurate`. Luca sees the verdict in the tool response and can re-ask the user if `inaccurate`. See the "Reference-document RAG" section for the corpus and retrieval pipeline.
 
 ## Tax facts schema
 
@@ -450,4 +449,4 @@ If you're a fresh Claude Code session starting in this folder: read this file, t
 - Direct IRS filing (human-in-the-loop CPA signs off first)
 - Multi-tenant auth / client portal (single-user for prototyping)
 - Pricing, payments, scheduling (Stage 1 only cares about extracting facts)
-- Anything outside the Alex-simple scenario (single CA filer, one W-2, no deps, standard deduction). When the user's situation goes outside, Thom responds "Oh, we don't handle that scenario yet" rather than inventing behavior.
+- Anything outside the Alex-simple scenario (single CA filer, one W-2, no deps, standard deduction). When the user's situation goes outside, Luca responds "Oh, we don't handle that scenario yet" rather than inventing behavior.

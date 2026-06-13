@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-// Thom's working memory — a thread-scoped, schema-typed scratchpad that
+// Luca's working memory — a thread-scoped, schema-typed scratchpad that
 // Mastra surfaces in the system prompt every turn and exposes via the
 // auto-registered `updateWorkingMemory` tool. The shape is read by the web
 // PlanCard via /app/state, so the field names here are part of the public
 // contract with the frontend.
 //
 // Mastra merge semantics (per the docs): top-level object fields are deep
-// merged, but ARRAYS are replaced wholesale. So when Thom updates the plan
+// merged, but ARRAYS are replaced wholesale. So when Luca updates the plan
 // he emits the full plan array each time.
 
 export const planItemStatus = z.enum(["todo", "doing", "done"]);
@@ -22,7 +22,7 @@ export const planItemSchema = z.object({
   title: z
     .string()
     .describe(
-      "What Thom is doing in plain language, e.g. 'Capture W-2 box 1 wages' or 'Confirm CA full-year residency'. Premium-feeling phrasing — short, specific, taxpayer-readable.",
+      "What Luca is doing in plain language, e.g. 'Capture W-2 box 1 wages' or 'Confirm CA full-year residency'. Premium-feeling phrasing — short, specific, taxpayer-readable.",
     ),
   status: planItemStatus.describe(
     "todo = not yet started, doing = currently working on, done = finished",
@@ -36,12 +36,12 @@ export const planItemSchema = z.object({
 });
 export type PlanItem = z.infer<typeof planItemSchema>;
 
-export const thomWorkingMemorySchema = z.object({
+export const lucaWorkingMemorySchema = z.object({
   plan: z
     .array(planItemSchema)
     .optional()
     .describe(
-      "Rolling 1–5 item plan of Thom's next steps. Empty/absent when there's genuinely nothing in flight.",
+      "Rolling 1–5 item plan of Luca's next steps. Empty/absent when there's genuinely nothing in flight.",
     ),
 });
-export type ThomWorkingMemory = z.infer<typeof thomWorkingMemorySchema>;
+export type LucaWorkingMemory = z.infer<typeof lucaWorkingMemorySchema>;

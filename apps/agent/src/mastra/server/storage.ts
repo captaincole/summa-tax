@@ -64,15 +64,15 @@ const origQuery = pgPool.query.bind(pgPool) as (...args: any[]) => Promise<any>;
 // schema. See scripts/migrateMastra.ts.
 export async function createStorage(): Promise<MastraCompositeStore> {
   const pg = new PostgresStore({
-    id: "wheel-of-time-storage",
+    id: "summa-storage",
     pool: pgPool,
     schemaName: "mastra",
     disableInit: true,
   });
-  const inMemory = new InMemoryStore({ id: "wheel-of-time-inmemory" });
+  const inMemory = new InMemoryStore({ id: "summa-inmemory" });
 
   return new MastraCompositeStore({
-    id: "wheel-of-time-composite",
+    id: "summa-composite",
     default: pg,
     domains: {
       observability: await inMemory.getStore("observability"),

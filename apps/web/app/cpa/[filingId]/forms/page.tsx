@@ -9,7 +9,7 @@
 //   - No useAppShell/AppShell context — the CPA layout doesn't provide
 //     one. State is fetched directly via fetchCpaFilingState(filingId).
 //   - No turn/reset ticks. The taxpayer side refetches drafts after every
-//     Thom turn (turnTick) and after every reset; the CPA has no agent
+//     Luca turn (turnTick) and after every reset; the CPA has no agent
 //     loop driving updates, so a single fetch on mount is the right
 //     default. We can add a manual refresh button later if reviewers ask.
 //   - No "no data available" placeholder — by the time we're rendering,

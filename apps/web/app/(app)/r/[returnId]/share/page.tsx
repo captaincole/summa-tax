@@ -46,7 +46,7 @@ export default async function SharePage({
           Share with a CPA
         </h1>
         <p className="text-ink-secondary text-[15px] mt-3 leading-relaxed">
-          Pick a registered CPA to invite. They'll see everything you've shared with Thom — facts, decisions, draft forms — in a read-only view. They can't edit, chat, or take actions on your behalf.
+          Pick a registered CPA to invite. They'll see everything you've shared with Luca — facts, decisions, draft forms — in a read-only view. They can't edit, chat, or take actions on your behalf.
         </p>
       </header>
 

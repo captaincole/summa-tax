@@ -2,7 +2,7 @@
 
 // The conversation surface. Lives in AppShell's left 1/3 on desktop, full
 // width inside the mobile "Chat" tab. No header — identity reads from the
-// avatar on each assistant message plus the Thom badge inside the input.
+// avatar on each assistant message plus the Luca badge inside the input.
 //
 // All actual sending is delegated to AppShell.sendChat — both the form
 // submit here and the Requested Actions card upload call the same
@@ -20,7 +20,7 @@ interface ChatPaneProps {
 }
 
 export function ChatPane({ activeReturn }: ChatPaneProps) {
-  const { messages, state, thomBusy, sendChat } = useAppShell();
+  const { messages, state, lucaBusy, sendChat } = useAppShell();
   const [input, setInput] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -33,15 +33,15 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
 
-  // sendChat disables the textarea via thomBusy — restore focus when it
+  // sendChat disables the textarea via lucaBusy — restore focus when it
   // flips back so the user can keep typing without clicking back in.
   useEffect(() => {
-    if (!thomBusy && !isPlaceholder) messageInputRef.current?.focus();
-  }, [thomBusy, isPlaceholder]);
+    if (!lucaBusy && !isPlaceholder) messageInputRef.current?.focus();
+  }, [lucaBusy, isPlaceholder]);
 
   async function onSubmit(e?: FormEvent) {
     e?.preventDefault();
-    if (isPlaceholder || thomBusy) return;
+    if (isPlaceholder || lucaBusy) return;
     const text = input.trim();
     const file = attachment;
     if (!text && !file) return;
@@ -55,7 +55,7 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
     await sendChat({ text, file: file ?? undefined });
   }
 
-  // For placeholder returns we render a single hardcoded Thom turn instead
+  // For placeholder returns we render a single hardcoded Luca turn instead
   // of the real message buffer — keeps the multi-return UX honest without
   // requiring backend support for non-2025 threads yet.
   const renderMessages: ChatMessage[] = isPlaceholder
@@ -68,7 +68,7 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-5 pt-6 pb-3 space-y-5">
         {isEmpty && (
           <div className="flex gap-2.5 items-start text-ink-muted text-sm">
-            <ThomAvatar />
+            <LucaAvatar />
             <div className="pt-0.5">Say hi to start.</div>
           </div>
         )}
@@ -77,7 +77,7 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
             key={msg.id}
             className={msg.role === "user" ? "flex justify-end" : "flex gap-2.5 items-start"}
           >
-            {msg.role === "assistant" && <ThomAvatar />}
+            {msg.role === "assistant" && <LucaAvatar />}
             <div
               className={cn(
                 msg.role === "user"
@@ -104,7 +104,7 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
                   msg.content
                 )
               ) : (
-                thomBusy && <TypingDots />
+                lucaBusy && <TypingDots />
               )}
             </div>
           </div>
@@ -164,13 +164,13 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
             placeholder={
               isPlaceholder
                 ? "This return is a placeholder."
-                : thomBusy
-                  ? "Thom is thinking…"
+                : lucaBusy
+                  ? "Luca is thinking…"
                   : attachment
                     ? "Add a note (optional)…"
-                    : "Reply to Thom…"
+                    : "Reply to Luca…"
             }
-            disabled={thomBusy || isPlaceholder}
+            disabled={lucaBusy || isPlaceholder}
             autoFocus={!isPlaceholder}
             className="w-full px-4 pt-3.5 pb-1 bg-transparent text-ink-primary placeholder:text-ink-muted text-[14px] leading-relaxed resize-none focus:outline-none disabled:cursor-not-allowed"
           />
@@ -178,7 +178,7 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
             <IconButton
               title="Attach a document"
               onClick={() => fileInputRef.current?.click()}
-              disabled={thomBusy || isPlaceholder}
+              disabled={lucaBusy || isPlaceholder}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -198,12 +198,12 @@ export function ChatPane({ activeReturn }: ChatPaneProps) {
               <span className="w-4 h-4 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center">
                 <span className="font-serif text-accent text-[9px] leading-none">T</span>
               </span>
-              <span>Thom</span>
+              <span>Luca</span>
             </div>
 
             <button
               type="submit"
-              disabled={thomBusy || isPlaceholder || (!input.trim() && !attachment)}
+              disabled={lucaBusy || isPlaceholder || (!input.trim() && !attachment)}
               title="Send"
               className="w-8 h-8 rounded-full bg-accent hover:bg-accent-hover disabled:bg-bg-elevated disabled:text-ink-muted text-white flex items-center justify-center transition-colors ml-1"
             >
@@ -300,7 +300,7 @@ function TypingDots() {
   );
 }
 
-function ThomAvatar() {
+function LucaAvatar() {
   return (
     <div className="shrink-0 w-7 h-7 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center mt-0.5">
       <span className="font-serif text-accent text-[11px] leading-none">T</span>

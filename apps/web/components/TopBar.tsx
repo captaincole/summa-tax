@@ -35,7 +35,7 @@ const TABS = [
 export function TopBar({ activeReturn, returns }: TopBarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { state, profile, thomBusy, onSignOut } = useAppShell();
+  const { state, profile, lucaBusy, onSignOut } = useAppShell();
   const [returnMenuOpen, setReturnMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -172,13 +172,13 @@ export function TopBar({ activeReturn, returns }: TopBarProps) {
 
       {/* Right cluster */}
       <div className="flex items-center gap-2 shrink-0">
-        {thomBusy && (
+        {lucaBusy && (
           <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-xs text-amber-200">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse-soft" />
-            <span>Thom is working</span>
+            <span>Luca is working</span>
           </div>
         )}
-        {state && activeReturn.realDataAvailable && !thomBusy && (
+        {state && activeReturn.realDataAvailable && !lucaBusy && (
           <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-bg-panel border border-border-subtle text-xs">
             <div className="w-16 h-1.5 rounded-full bg-bg-elevated overflow-hidden">
               <div className="h-full bg-accent transition-all duration-500" style={{ width: `${pct}%` }} />

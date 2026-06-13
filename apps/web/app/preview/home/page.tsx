@@ -24,7 +24,7 @@ const RETURNS = [
 ];
 
 const WORKFLOWS = [
-  { id: "new-2026", title: "Start 2026 return", desc: "Begin a new tax year. Thom will guide intake from scratch.", icon: "+" },
+  { id: "new-2026", title: "Start 2026 return", desc: "Begin a new tax year. Luca will guide intake from scratch.", icon: "+" },
   { id: "amend", title: "Amend a prior year", desc: "Open a previously filed return to correct or update.", icon: "↻" },
   { id: "planning", title: "Tax planning session", desc: "Look ahead — reduce next year's liability before December.", icon: "○" },
 ];

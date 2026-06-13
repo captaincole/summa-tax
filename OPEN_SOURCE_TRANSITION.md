@@ -1,0 +1,93 @@
+# Open-Source Transition Plan
+
+Tracking doc for converting this project from a hosted, multi-tenant product into a
+self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
+Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
+
+**Current status:** _baseline net locked (2026-06-13). The gate for every phase below = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage. Starting Phase 0._
+
+---
+
+## New usage model
+
+1. **Self-hosted.** Users run their own agent — locally or via a provided prod-deploy guide. We host nothing.
+2. **Single-user per agent.** One owner per instance. Auth complexity and large-DB concerns go away.
+3. **Two front doors.** Talk to the agent directly, or use the web UI as the easier surface.
+
+## Settled decisions (the "why", so we don't relitigate)
+
+- **Database → SQLite.** Rip out Supabase entirely. `@mastra/pg` → `@mastra/libsql`; FTS5 for text, sqlite-vec for vectors. No server, no Docker — "the DB is a file." Deletes all the pooler-6543 / `disableInit` / connection-limit machinery.
+- **Corpus → shipped `.db`.** Pre-built, Voyage-embedded corpus shipped as a release/seed asset so first-run costs $0 and needs no Voyage key for ingest. `refdocs:sync` stays as the dev path for extending coverage.
+- **Voyage expected, not required.** Anthropic key is always required (Luca + the grounding judge are LLM calls). Without a Voyage key, retrieval **gracefully degrades to FTS5 keyword search**; with one, semantic + rerank light up. No bundled local model.
+- **Keep the share/CPA schema dormant.** Single-user means delete RLS *enforcement*, not the owner/membership/CPA tables. Keeping them costs nothing and future-proofs "share with spouse/CPA."
+- **Remove Nynaeve; grounding becomes a workflow.** The critic agent goes away. Grounding = deterministic **retrieve → judge** pipeline (no agentic loop). Triggers on `record-ai-decision`, runs **fire-and-forget async** (self-host = long-running process, so this is now allowed); verdict written back to the row; `pending`/`inaccurate` surfaced into open-asks so Luca circles back. Grounds **decisions, not facts** (a fact is verbatim — nothing to ground).
+- **Rebrand to Luca.** Strip Wheel of Time names (Thom, Nynaeve, "wheel-of-time" IDs) — they're Robert Jordan/Amazon IP. Thom → Luca.
+- **License: AGPL-3.0 + CLA/DCO.** AGPL with a contributor agreement so the owner retains unilateral relicense rights. Must be in place before the first external PR.
+
+---
+
+## The test net (build first — this is the regression gate for every step)
+
+Lock in the existing safety surface before touching anything; every later step is "do these still pass?"
+
+**Baseline captured 2026-06-13 (on Supabase main, pre-transition):**
+
+- [x] **Goldens** — `npm test` → 14/14 green (alex / marcus / alejandro scenarios + 11 catalog-fill checks, byte-compared PDFs). Plus `npm run test:unit` → 25/25. **This is the real net:** identical goldens after a DB swap proves the fact/form engine survived.
+- [ ] **`smoke:review`** — **RED, deferred to Phase 3.** Stale: predates the Supabase RLS / user-scoped-client refactor (`recordFact`/`recordAIDecision` signatures changed; needs a seeded user+filing + fabricated runtime context). Left untouched on purpose — Phase 3 deletes the Nynaeve pipeline and rewrites grounding as a deterministic workflow, so the real automated grounding test gets built then. Grounding has **no automated baseline** until Phase 3; verify it manually in the meantime.
+- [x] **One manual browser pass** — verified 2026-06-13 (rand@localhost): fact ingest → draft 1040 updates → doc download all working. Manual stand-in for the deferred `smoke:review`; re-run by hand each phase until Phase 3 builds the real grounding test.
+
+_Note: `smoke:engine` was deleted during baselining — it was a stale hand-maintained placeholder fully superseded by the scenario goldens (its own header called it a Phase-F placeholder)._
+
+---
+
+## Sequenced plan (10 gated stops — each is a shippable commit)
+
+### Phase 0 — Branding & license
+**Names settled (2026-06-13):** agent = **Luca**; project/product = **Summa** (after Pacioli's *Summa de arithmetica*); internal `wheel-of-time` IDs → `summa-*`. Unix dir stays `project-merrilin`.
+- [ ] Rename Thom → Luca (incl. the `thom` agent id + its wire surface `/api/agents/thom/stream`, mastraClient)
+- [ ] Merrilin → Summa (product) / Luca (where it was Thom's surname); `wheel-of-time` / "Wheel of Time" → `summa` / Summa
+- [ ] Rename `rand@localhost` seed user away from WoT
+- [ ] **Nynaeve: left untouched on purpose** — Phase 3 deletes the critic agent, so renaming now is throwaway; repo private until Phase 5
+- [ ] Add `LICENSE` (AGPL-3.0). **Contributor mechanism (CLA vs DCO) deferred to Phase 5** — nothing external contributes before then
+- **Gate:** builds + boots + smoke chat works + test net green (`test:unit` 25/25, `npm test` 14/14, manual browser pass)
+- _Do first — rename is cheapest before it spreads across more files._
+
+### Phase 1 — Rip out Supabase → SQLite (the only real engineering risk; one role at a time)
+1. [ ] **Corpus → SQLite.** Port `match_ref_blocks` Postgres fn → TS (FTS5 + sqlite-vec, merge/dedupe in JS); rewrite ingest write-side (vector serialization). _Gate:_ `searchRefDocs` / `compareRetrieval` / `smoke:review`. _Best first — self-contained behind the `search-ref-docs` tool, touches no user data._
+2. [ ] **Domain tables → SQLite** (`tax_facts`, `ai_decisions`, …). _Gate:_ goldens byte-identical + browser flow.
+3. [ ] **Mastra runtime store → libsql** (`@mastra/pg` → `@mastra/libsql`). _Gate:_ chat persists, conversation resumes, traces in Studio.
+4. [ ] **Blobs → filesystem.** _Gate:_ upload a doc, read it back.
+5. [ ] **Delete Supabase** — dependency, local stack, config, two-system migrations.
+- _If a step breaks goldens you know exactly which layer did it._
+
+### Phase 2 — Single-user simplifications
+- [ ] Delete RLS *enforcement*, GoTrue seeding, bearer/cookie auth split
+- [ ] Keep owner/membership + CPA tables dormant
+- [ ] First-run "create your filing" replaces seeded demo users
+- **Gate:** full single-user flow still works
+
+### Phase 3 — Nynaeve → async grounding workflow
+- [ ] Remove the critic agent; grounding = deterministic retrieve → judge
+- [ ] Trigger on `record-ai-decision`, run fire-and-forget; write verdict back
+- [ ] Surface `pending`/`inaccurate` into open-asks
+- **Gate:** `smoke:review` + a decision goes `pending`→`inaccurate` and surfaces in open-asks
+
+### Phase 4 — Self-host packaging
+- [ ] One `.env.example` (Anthropic required; Voyage optional) + graceful-degrade wiring
+- [ ] Ship pre-built corpus `.db` as a release/seed asset
+- [ ] `docker compose up` *or* `npm run dev:all`; deploy-to-prod guide
+- **Gate:** clean clone boots from `.env.example`
+
+### Phase 5 — Make it look great
+- [ ] README: what it does, honest disclaimers (data→Anthropic each turn; not tax advice; narrow scenarios), quickstart
+- [ ] Architecture doc, CONTRIBUTING, scenario-coverage table
+- **Gate:** a stranger can clone, run, and understand it from the README alone
+
+---
+
+## Open questions (decide before the relevant phase)
+
+- **Agent sub-naming theme** — under Luca, do future specialist agents get a theme (historical accountants/mathematicians) or plain functional names? _(Only matters when a 2nd agent lands; Nynaeve is being deleted, so no rename pressure now.)_
+- ~~**CLA vs DCO**~~ — _deferred to Phase 5 (2026-06-13). License stubbed AGPL-3.0 in Phase 0; mechanism + tooling chosen just before the first external PR._
+- **Prod-deploy target** — what we recommend for self-hosters who want hosted (Fly.io / Railway / a VPS / Vercel-still-works?). Affects Phase 4 guide.
+- **Honest-data posture** — exact README wording on "tax data goes to Anthropic each turn" + scenario limits.

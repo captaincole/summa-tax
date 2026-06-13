@@ -1,11 +1,11 @@
 -- Add 'processing' as a valid status for requested_actions. Lifecycle:
 --
---   open       → Thom posted the card; user hasn't acted
+--   open       → Luca posted the card; user hasn't acted
 --   processing → user clicked Upload and the file is in Storage, but
---                Thom hasn't confirmed it satisfies the request yet
---   resolved   → Thom called dismiss-requested-action after ingesting
+--                Luca hasn't confirmed it satisfies the request yet
+--   resolved   → Luca called dismiss-requested-action after ingesting
 --   skipped    → user dismissed via the Skip button
---   dismissed  → reserved for "Thom decided no longer needed"
+--   dismissed  → reserved for "Luca decided no longer needed"
 --
 -- The original check constraint allowed only {open, resolved, skipped,
 -- dismissed}. We drop and recreate to widen the set. `if exists` keeps

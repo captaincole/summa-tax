@@ -22,7 +22,7 @@ interface UploadRow {
 }
 
 export default function DocumentsTab() {
-  const { activeReturn, resetTick, thomBusy, sendChat, setMobilePane } = useAppShell();
+  const { activeReturn, resetTick, lucaBusy, sendChat, setMobilePane } = useAppShell();
   const [uploads, setUploads] = useState<UploadRow[]>([]);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -58,9 +58,9 @@ export default function DocumentsTab() {
 
   // Mirrors the Requested Actions upload flow: write to user_documents
   // first (so the doc appears in the grid + has a real ID), then hand the
-  // file off to Thom via sendChat with skipUpload=true so he reacts to it
+  // file off to Luca via sendChat with skipUpload=true so he reacts to it
   // exactly like a chat-attached upload. setMobilePane("chat") so mobile
-  // users actually see Thom respond instead of staring at the same grid.
+  // users actually see Luca respond instead of staring at the same grid.
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
@@ -124,33 +124,33 @@ export default function DocumentsTab() {
         onClick={() => fileInputRef.current?.click()}
         onDragOver={(e) => {
           e.preventDefault();
-          if (!thomBusy) setDragOver(true);
+          if (!lucaBusy) setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => {
           e.preventDefault();
           setDragOver(false);
-          if (!thomBusy) handleFiles(e.dataTransfer.files);
+          if (!lucaBusy) handleFiles(e.dataTransfer.files);
         }}
-        disabled={uploading || thomBusy}
+        disabled={uploading || lucaBusy}
         className={cn(
           "w-full border-2 border-dashed rounded-2xl py-10 px-6 text-center transition-colors cursor-pointer",
           dragOver
             ? "border-accent/60 bg-accent/5"
             : "border-border-subtle hover:border-accent/40 bg-bg-subtle/40",
-          (uploading || thomBusy) && "opacity-60 cursor-not-allowed",
+          (uploading || lucaBusy) && "opacity-60 cursor-not-allowed",
         )}
       >
         <div className="text-3xl text-ink-muted">⬆</div>
         <div className="mt-2 text-sm text-ink-primary">
-          {thomBusy
-            ? "Wait for Thom to finish before uploading"
+          {lucaBusy
+            ? "Wait for Luca to finish before uploading"
             : uploading
               ? "Uploading…"
               : "Drop W-2s, 1099s, or other tax documents here"}
         </div>
         <div className="text-xs text-ink-muted mt-1">PDF, PNG, JPG · up to 10 MB each</div>
-        {!thomBusy && (
+        {!lucaBusy && (
           <div className="mt-4 text-xs text-accent hover:text-accent-hover">or browse files</div>
         )}
       </button>

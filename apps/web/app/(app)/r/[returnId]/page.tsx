@@ -89,7 +89,7 @@ const CATEGORIES: Category[] = [
     label: "Investments",
     pct: 20,
     items: [
-      { id: "i1", label: "Dividends (1099-DIV)", status: "doing", note: "Thom is asking now" },
+      { id: "i1", label: "Dividends (1099-DIV)", status: "doing", note: "Luca is asking now" },
       { id: "i2", label: "Interest (1099-INT)", status: "done" },
       { id: "i3", label: "Capital gains (Schedule D / 8949)", status: "todo" },
       { id: "i4", label: "Crypto disposals", status: "todo" },
@@ -210,7 +210,7 @@ export default function HomeTab() {
       </section>
 
       {/* Plan moved into the chat pane (always-visible above the input).
-          This slot is now for things Thom is asking the USER to do —
+          This slot is now for things Luca is asking the USER to do —
           uploads, confirmations, decisions — that don't fit a natural
           chat turn. Stubbed with one example until the agent emits
           structured action items. */}
@@ -520,7 +520,7 @@ function CategoryItemRow({ item }: { item: CategoryItem }) {
   );
 }
 
-// Requested Actions — things Thom needs the user to DO. Pulls live rows
+// Requested Actions — things Luca needs the user to DO. Pulls live rows
 // from public.requested_actions (status='open') and subscribes to realtime
 // inserts/updates so a freshly-emitted request lands without a refresh.
 //
@@ -529,12 +529,12 @@ function CategoryItemRow({ item }: { item: CategoryItem }) {
 // document id; Skip just flips status. Both make the card disappear
 // because the query filter is status='open'.
 function RequestedActionsCard() {
-  const { userId, thomBusy, sendChat, setMobilePane, resetTick, turnTick } = useAppShell();
+  const { userId, lucaBusy, sendChat, setMobilePane, resetTick, turnTick } = useAppShell();
   const supabase = useMemo(() => createClient(), []);
   const [actions, setActions] = useState<RequestedAction[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  // Re-fetch on mount, after every reset, and after every Thom turn.
+  // Re-fetch on mount, after every reset, and after every Luca turn.
   // Realtime is the primary update channel during a session (instant
   // inserts/updates without polling), but a refetch after each turn
   // catches anything realtime dropped and a refetch after reset clears
@@ -606,7 +606,7 @@ function RequestedActionsCard() {
     setBusyId(action.id);
     try {
       const uploaded = await uploadDocument(file);
-      // Card flips to "processing" — stays visible until Thom calls
+      // Card flips to "processing" — stays visible until Luca calls
       // dismiss-requested-action after ingesting. Optimistic: the
       // realtime UPDATE will also patch it (no-op if we got here first).
       await markActionProcessing(supabase, action.id, uploaded.id);
@@ -614,7 +614,7 @@ function RequestedActionsCard() {
         prev ? prev.map((x) => (x.id === action.id ? { ...x, status: "processing" } : x)) : prev,
       );
       // Mobile users can't see the chat from the workspace pane; flip
-      // them to it so they see Thom react to the upload.
+      // them to it so they see Luca react to the upload.
       setMobilePane("chat");
       // Same code path the textarea uses — sendChat is the canonical
       // entry point. skipUpload=true because we already wrote to
@@ -657,7 +657,7 @@ function RequestedActionsCard() {
       </div>
       {isEmpty ? (
         <div className="px-5 pb-5 pt-1 text-sm text-ink-muted leading-relaxed">
-          Nothing waiting on you. Thom will drop a card here when he needs a specific document.
+          Nothing waiting on you. Luca will drop a card here when he needs a specific document.
         </div>
       ) : (
         <div className="px-5 pb-5 space-y-2.5">
@@ -665,7 +665,7 @@ function RequestedActionsCard() {
             <ActionCard
               key={a.id}
               action={a}
-              busy={busyId === a.id || thomBusy}
+              busy={busyId === a.id || lucaBusy}
               onUpload={(file) => handleUpload(a, file)}
               onSkip={() => handleSkip(a)}
             />
@@ -717,7 +717,7 @@ function ActionCard({
         {isProcessing ? (
           <div className="text-[12px] text-amber-300/90 mt-0.5 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse-soft" />
-            <span>Thom is reviewing this…</span>
+            <span>Luca is reviewing this…</span>
           </div>
         ) : (
           action.detail && (
@@ -769,7 +769,7 @@ function ActionCard({
 // so any new tax_facts INSERT or ai_decisions INSERT/UPDATE animates in
 // live. Clicking a chip opens an ActivityDetail modal — handy for
 // surfacing the rationale + supporting facts + verdict reason behind a
-// decision, so the user can see exactly what Thom was thinking.
+// decision, so the user can see exactly what Luca was thinking.
 function ActivityTicker({ refreshKey }: { refreshKey: number }) {
   const { userId } = useAppShell();
   const supabase = useMemo(() => createClient(), []);
@@ -850,7 +850,7 @@ function ActivityTicker({ refreshKey }: { refreshKey: number }) {
         <div className="px-5 pb-5 text-sm text-ink-muted">Loading…</div>
       ) : items.length === 0 ? (
         <div className="px-5 pb-5 text-sm text-ink-muted">
-          Nothing yet. Items appear here the moment Thom records them.
+          Nothing yet. Items appear here the moment Luca records them.
         </div>
       ) : (
         <>
@@ -985,7 +985,7 @@ function ActivityDetailPanel({
         )}
 
         {isDecision && item.rationale && (
-          <DetailBlock label="Why Thom decided this">
+          <DetailBlock label="Why Luca decided this">
             <p className="text-ink-secondary leading-relaxed whitespace-pre-wrap">{item.rationale}</p>
           </DetailBlock>
         )}

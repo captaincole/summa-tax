@@ -2,7 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import { requireUserContext } from "./userContext";
 
-// request-document-upload: surface a structured "Thom needs you to upload X"
+// request-document-upload: surface a structured "Luca needs you to upload X"
 // card on the user's dashboard. Use this when a specific tax document is
 // load-bearing for the return and the user hasn't already uploaded it.
 //
@@ -40,7 +40,7 @@ export const requestDocumentUpload = createTool({
   execute: async (input, context) => {
     const { supabase, userId, filingId } = await requireUserContext(context);
 
-    // Dedup: one open|processing card per documentType. If Thom calls
+    // Dedup: one open|processing card per documentType. If Luca calls
     // this tool twice for "W-2" in the same turn (or across turns
     // before the user uploaded), we return the existing card's id
     // instead of stacking duplicates on the dashboard. The user only

@@ -369,7 +369,7 @@ export const finalizeStep = createStep({
       citations.length > 0 ? citations : null,
     );
 
-    // For needs_more_facts, surface to Thom via an open_questions row.
+    // For needs_more_facts, surface to Luca via an open_questions row.
     if (finalVerdict === "needs_more_facts") {
       openQuestionId = crypto.randomUUID();
       await noteQuestion(supabase, {

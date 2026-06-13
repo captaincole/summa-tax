@@ -6,7 +6,7 @@
 //   - Main: desktop = ChatPane (1/3) | {children} (2/3). Mobile = single
 //           pane swap via the bottom tab bar.
 //
-// AppShellContext exposes user state, the chat message buffer, thomBusy,
+// AppShellContext exposes user state, the chat message buffer, lucaBusy,
 // turnTick, mobile-pane setter, and the canonical sendChat function used
 // by both the chat input form and the Requested Actions card. Keeping
 // sendChat at this level means all callers go through the same code path
@@ -34,7 +34,7 @@ import {
 } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import { makeMastraClient } from "@/lib/mastraClient";
-import { THOM_AGENT_ID } from "@/lib/chatSession";
+import { LUCA_AGENT_ID } from "@/lib/chatSession";
 import { threadIdFor, type TaxReturn } from "@/lib/returns";
 import { getUserId } from "@/lib/auth";
 import { uploadDocument } from "@/lib/uploads";
@@ -70,9 +70,9 @@ interface AppShellContextValue {
   bumpTurn: () => void;
   messages: ChatMessage[];
   setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
-  thomBusy: boolean;
+  lucaBusy: boolean;
   setMobilePane: Dispatch<SetStateAction<MobilePane>>;
-  // Canonical entry point for sending a turn to Thom. Used by the chat
+  // Canonical entry point for sending a turn to Luca. Used by the chat
   // input on submit, and by the Requested Actions card after an upload.
   // Resolves once the stream finishes. No-op when busy or placeholder.
   sendChat: (opts: SendChatOpts) => Promise<void>;
@@ -122,11 +122,11 @@ export function AppShell({
   const [resetTick] = useState(0);
   const [turnTick, setTurnTick] = useState(0);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [thomBusy, setThomBusy] = useState(false);
+  const [lucaBusy, setLucaBusy] = useState(false);
   const [mobilePane, setMobilePane] = useState<MobilePane>("workspace");
-  // Synchronous gate against concurrent sendChat calls. setThomBusy is
+  // Synchronous gate against concurrent sendChat calls. setLucaBusy is
   // async, so two callers that fire in the same tick would both pass a
-  // `if (thomBusy)` check. The ref is updated synchronously inside
+  // `if (lucaBusy)` check. The ref is updated synchronously inside
   // sendChat and flips back in the finally block.
   const sendingRef = useRef(false);
 
@@ -157,7 +157,7 @@ export function AppShell({
       const client = await makeMastraClient();
       const thread = client.getMemoryThread({
         threadId: threadIdFor(userId, activeReturn.id),
-        agentId: THOM_AGENT_ID,
+        agentId: LUCA_AGENT_ID,
       });
       const res = await thread.listMessages({ perPage: 200 });
       const converted: ChatMessage[] = [];
@@ -208,7 +208,7 @@ export function AppShell({
     if (!text && !file) return;
 
     sendingRef.current = true;
-    setThomBusy(true);
+    setLucaBusy(true);
 
     const userMsg: ChatMessage = {
       id: freshId("u"),
@@ -265,7 +265,7 @@ export function AppShell({
       }
 
       const client = await makeMastraClient();
-      const stream = await client.getAgent(THOM_AGENT_ID).stream(
+      const stream = await client.getAgent(LUCA_AGENT_ID).stream(
         payload as string,
         {
           memory: {
@@ -310,7 +310,7 @@ export function AppShell({
         router.push("/login");
       }
     } finally {
-      setThomBusy(false);
+      setLucaBusy(false);
       sendingRef.current = false;
     }
   }
@@ -327,7 +327,7 @@ export function AppShell({
     bumpTurn,
     messages,
     setMessages,
-    thomBusy,
+    lucaBusy,
     setMobilePane,
     sendChat,
     onSignOut,
@@ -355,7 +355,7 @@ export function AppShell({
           </div>
         </main>
 
-        <MobileTabBar value={mobilePane} onChange={setMobilePane} busy={thomBusy} />
+        <MobileTabBar value={mobilePane} onChange={setMobilePane} busy={lucaBusy} />
       </div>
     </AppShellContext.Provider>
   );
