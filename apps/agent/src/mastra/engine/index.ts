@@ -67,7 +67,13 @@ export interface RenderedForm {
   warnings: string[];
 }
 
-const SCENARIO_FORM_IDS = FORMS.map((f) => f.formId);
+// Only evaluate forms that have bindings (a `register` fn). The bundled
+// runtime `catalog` spans exactly these forms; the "catalog-only" entries
+// in FORMS (schedule-b, schedule-2, 8889, 8960) exist solely for the
+// catalog-fill regression test (which loads catalogs from disk) and have no
+// bindings + are NOT in the bundled catalog — evaluating them here would
+// throw "no form … in the Catalog" and 500 the whole case-state build.
+const SCENARIO_FORM_IDS = FORMS.filter((f) => f.register).map((f) => f.formId);
 
 /**
  * Collapse a list to most-recent-per-key. Caller-supplied keyer extracts the
@@ -97,7 +103,7 @@ export async function evaluateScenario(
   const [factRowsRaw, decisionRowsRaw, authUserRes] = await Promise.all([
     listFacts(supabase, { filingId: filing.id, limit: 500 }),
     listDecisions(supabase, { filingId: filing.id, limit: 500 }),
-    // Enriching only — Thom acknowledges authEmail back to the user at
+    // Enriching only — Luca acknowledges authEmail back to the user at
     // doc-gen time and records it as identity.email before rendering.
     // Never load-bearing for the engine, so swallow failures.
     supabase.auth.getUser().catch(() => null),
