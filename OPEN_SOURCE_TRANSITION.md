@@ -4,7 +4,7 @@ Tracking doc for converting this project from a hosted, multi-tenant product int
 self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
 Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
 
-**Current status:** _Phase 0 complete (2026-06-13). Next: Phase 1 step 1 (Corpus → SQLite). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage._
+**Current status:** _Phase 1 step 1 complete (2026-07-03, corpus → libsql). Next: Phase 1 step 2 (domain tables → SQLite). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage._
 
 ---
 
@@ -55,7 +55,7 @@ _Note: `smoke:engine` was deleted during baselining — it was a stale hand-main
 - _Bonus fix landed (0b05c41): `/app/state` 500 — case-state evaluated catalog-only forms missing from the runtime catalog. Pre-existing, unrelated to the rename; surfaced during the boot gate._
 
 ### Phase 1 — Rip out Supabase → SQLite (the only real engineering risk; one role at a time)
-1. [ ] **Corpus → SQLite.** Port `match_ref_blocks` Postgres fn → TS (FTS5 + sqlite-vec, merge/dedupe in JS); rewrite ingest write-side (vector serialization). _Gate:_ `searchRefDocs` / `compareRetrieval` / `smoke:review`. _Best first — self-contained behind the `search-ref-docs` tool, touches no user data._
+1. [x] **Corpus → SQLite.** ✅ DONE (2026-07-03, commit 618ec3e). Ported `match_ref_blocks` PG fn → TS (FTS5 `MATCH` + **libsql-native `vector_distance_cos`** brute-force, merge/dedupe in JS); new `db/libsql.ts` (`getCorpusDb` + `ensureCorpusSchema`); rewrote `refDocs.ts` read+write (public API unchanged, so tool/ingest/workflow untouched); repointed `checkCorpus`/`refdocsStatus`/`refdocsReembed` off Supabase. `.data/` gitignored; corpus rebuilt via `refdocs:sync` (10 docs / 527 blocks / 100% embedded). _Gate met:_ FTS+vector+hybrid all correct via `compareRetrieval`; goldens 14/14; unit 25/25; agent+web tsc 0. `smoke:review` stays RED (Phase 3). **Manual browser grounding pass still pending** (verifies `mastra dev` runtime resolves `CORPUS_DB_PATH`). _Note: spike proved libsql#1811 (FTS5-insert panic) gone on `@libsql/client` 0.17.4._
 2. [ ] **Domain tables → SQLite** (`tax_facts`, `ai_decisions`, …). _Gate:_ goldens byte-identical + browser flow.
 3. [ ] **Mastra runtime store → libsql** (`@mastra/pg` → `@mastra/libsql`). _Gate:_ chat persists, conversation resumes, traces in Studio.
 4. [ ] **Blobs → filesystem.** _Gate:_ upload a doc, read it back.
