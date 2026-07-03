@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
+    "@libsql/client": "^0.17.4",
     "@mastra/auth-supabase": "^1.0.0",
     "@mastra/core": "^1.30.0",
     "@mastra/deployer-vercel": "^1.1.26",

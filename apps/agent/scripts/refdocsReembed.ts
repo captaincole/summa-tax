@@ -1,6 +1,8 @@
 import "dotenv/config";
-import { getServiceRoleClient } from "../src/mastra/db/supabase";
-import { setBlockEmbeddings } from "../src/mastra/db/refDocs";
+import {
+  setBlockEmbeddings,
+  listBlocksWithoutEmbeddings,
+} from "../src/mastra/db/refDocs";
 import { embed, batchByLimits } from "../src/refdocs/voyage";
 
 // Recovery script. Finds blocks with NULL embedding, embeds their
@@ -20,29 +22,16 @@ interface BlockRow {
 }
 
 async function main() {
-  const sb = getServiceRoleClient();
   if (!process.env.VOYAGE_API_KEY) {
     throw new Error("VOYAGE_API_KEY required for re-embed");
   }
 
-  // Pull all NULL-embedding blocks. With ~400 total blocks across 4 docs this
-  // fits in a single response easily; if the corpus grows large we'd page.
-  const PAGE_SIZE = 1000;
-  const allRows: BlockRow[] = [];
-  let from = 0;
-  while (true) {
-    const { data, error } = await sb
-      .from("ref_blocks")
-      .select("block_id, doc_id, contextualized_text, text")
-      .is("embedding", null)
-      .order("block_id")
-      .range(from, from + PAGE_SIZE - 1);
-    if (error) throw new Error(`select null-embedding blocks: ${JSON.stringify(error)}`);
-    if (!data || data.length === 0) break;
-    allRows.push(...(data as BlockRow[]));
-    if (data.length < PAGE_SIZE) break;
-    from += PAGE_SIZE;
-  }
+  const allRows: BlockRow[] = (await listBlocksWithoutEmbeddings()).map((b) => ({
+    block_id: b.blockId,
+    doc_id: b.docId,
+    contextualized_text: b.contextualizedText,
+    text: b.text,
+  }));
 
   if (allRows.length === 0) {
     console.log("[refdocs:reembed] no NULL-embedding blocks; nothing to do");

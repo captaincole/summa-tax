@@ -1,5 +1,9 @@
 .vercel
 
+# Local libsql reference-corpus DB. Rebuilt from forms/**/instructions.pdf via
+# `npm run refdocs:sync`; a prebuilt copy ships as a release asset (Phase 4).
+.data/
+
 # Source HTML cached by scripts/ingestTaxTable.ts (and future table-ingest
 # scripts). Provenance — URL, sha256, fetchedAt — lives in the generated
 # JSON, so reproducibility is preserved without checking in megabytes of

@@ -1,11 +1,10 @@
 import "dotenv/config";
-import { getServiceRoleClient } from "../src/mastra/db/supabase";
-import { getDocument } from "../src/mastra/db/refDocs";
+import { getDocument, listDocuments } from "../src/mastra/db/refDocs";
 import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
 import { projectRoot } from "../src/mastra/paths";
 
-// Read-only diff between forms/**/instructions.pdf and ref_documents in Supabase.
-// Exits 0 unless --strict is passed and there's any drift.
+// Read-only diff between forms/**/instructions.pdf and ref_documents in the
+// local corpus DB. Exits 0 unless --strict is passed and there's any drift.
 
 interface Categorized {
   present: CorpusEntry[];
@@ -40,14 +39,9 @@ async function categorize(): Promise<{
   }
 
   // Find DB-only docs (rows that no longer have a corresponding PDF in repo).
-  const supabase = getServiceRoleClient();
-  const { data, error } = await supabase
-    .from("ref_documents")
-    .select("doc_id, sha256");
-  if (error) throw error;
-  for (const row of data ?? []) {
-    if (!seenInRepo.has(row.doc_id)) {
-      cats.extra.push({ docId: row.doc_id, sha: row.sha256 });
+  for (const row of await listDocuments()) {
+    if (!seenInRepo.has(row.docId)) {
+      cats.extra.push({ docId: row.docId, sha: row.sha256 });
     }
   }
 
