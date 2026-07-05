@@ -109,6 +109,35 @@ export function ensureCorpusSchema(): Promise<void> {
            content,
            tokenize = 'porter unicode61'
          )`,
+        // Form catalog — the inventory side of the form engine (one row per
+        // (form_id, tax_year) + one per field). Written by the forms-ingest
+        // pipeline (--write-db); the runtime still reads the JSON fixtures
+        // (catalog.ts loadFromFixtures is authoritative, loadFromDb dormant).
+        // Lives in corpus.db because it's shared reference data that ships
+        // prebuilt, like the instruction corpus.
+        `CREATE TABLE IF NOT EXISTS forms (
+           form_id      TEXT NOT NULL,
+           tax_year     INTEGER NOT NULL,
+           jurisdiction TEXT NOT NULL,
+           title        TEXT NOT NULL,
+           created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+           updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+           PRIMARY KEY (form_id, tax_year)
+         )`,
+        `CREATE TABLE IF NOT EXISTS form_fields (
+           field_id        TEXT NOT NULL,
+           form_id         TEXT NOT NULL,
+           tax_year        INTEGER NOT NULL,
+           ordinal         INTEGER NOT NULL,
+           label           TEXT NOT NULL,
+           category        TEXT NOT NULL,
+           value_type      TEXT NOT NULL,
+           pdf_widget_name TEXT,
+           position        TEXT,
+           updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+           PRIMARY KEY (field_id, tax_year)
+         )`,
+        `CREATE INDEX IF NOT EXISTS idx_form_fields_form ON form_fields(form_id, tax_year, ordinal)`,
       ],
       "write",
     );

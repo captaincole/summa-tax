@@ -18,7 +18,6 @@
 
 import { promises as fs } from "node:fs";
 import { z } from "zod";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Category, FieldValueType } from "./types.js";
 
 // ─── Shapes ──────────────────────────────────────────────────────────────
@@ -266,55 +265,54 @@ export function buildCatalogFromFixtures(fixtures: FixtureFile[]): Catalog {
 // ─── DB loader ───────────────────────────────────────────────────────────
 
 /**
- * Load a Catalog for a given tax year out of Supabase. Reads everything in
- * two queries (forms, then fields) — there's no per-form filtering on the
- * runtime path because the engine consults the Catalog repeatedly and we'd
- * rather pay one round-trip up front than N during evaluation.
+ * Load a Catalog for a given tax year out of the libsql corpus DB. Reads
+ * everything in two queries (forms, then fields) — there's no per-form
+ * filtering on the runtime path because the engine consults the Catalog
+ * repeatedly and we'd rather pay one round-trip up front than N during
+ * evaluation.
  *
- * Filled in alongside the seed script once `forms` / `form_fields` exist.
+ * Dormant: the runtime uses loadFromFixtures (the JSON path is
+ * authoritative); this becomes live when the AI ingestion pipeline output
+ * is trusted (Phase C+ of the forms-catalog plan).
  */
-export async function loadFromDb(
-  supabase: SupabaseClient,
-  taxYear: number,
-): Promise<Catalog> {
-  const { data: formRows, error: formErr } = await supabase
-    .from("forms")
-    .select("form_id, tax_year, jurisdiction, title")
-    .eq("tax_year", taxYear);
-  if (formErr) {
-    throw new Error(`forms select failed: ${formErr.message}`);
-  }
-  const forms: FormDefinition[] = (formRows ?? []).map((r) => ({
-    formId: r.form_id as string,
-    taxYear: r.tax_year as number,
-    jurisdiction: r.jurisdiction as string,
-    title: r.title as string,
+export async function loadFromDb(taxYear: number): Promise<Catalog> {
+  const { getCorpusDb, ensureCorpusSchema } = await import("../db/libsql.js");
+  await ensureCorpusSchema();
+  const db = getCorpusDb();
+
+  const formRows = await db.execute({
+    sql: `SELECT form_id, tax_year, jurisdiction, title FROM forms WHERE tax_year = ?`,
+    args: [taxYear],
+  });
+  const forms: FormDefinition[] = formRows.rows.map((r) => ({
+    formId: String(r.form_id),
+    taxYear: Number(r.tax_year),
+    jurisdiction: String(r.jurisdiction),
+    title: String(r.title),
   }));
 
-  // TODO(db): add an `options` column (jsonb) to `form_fields` and read it
+  // TODO(db): add an `options` column (JSON) to `form_fields` and read it
   // here once multi_select fields need to live in the DB. Runtime currently
   // uses loadFromFixtures, so the JSON path is authoritative.
-  const { data: fieldRows, error: fieldErr } = await supabase
-    .from("form_fields")
-    .select(
-      "field_id, form_id, tax_year, label, category, value_type, pdf_widget_name, position, ordinal",
-    )
-    .eq("tax_year", taxYear)
-    .order("form_id")
-    .order("ordinal");
-  if (fieldErr) {
-    throw new Error(`form_fields select failed: ${fieldErr.message}`);
-  }
-  const fields: FieldInventory[] = (fieldRows ?? []).map((r) => ({
-    fieldId: r.field_id as string,
-    formId: r.form_id as string,
-    label: r.label as string,
-    category: r.category as Category,
-    valueType: r.value_type as FieldValueType,
-    pdfWidgetName: (r.pdf_widget_name as string | null) ?? undefined,
-    position: (r.position as { page: number; x: number; y: number } | null) ??
-      undefined,
-    ordinal: r.ordinal as number,
+  const fieldRows = await db.execute({
+    sql: `SELECT field_id, form_id, tax_year, label, category, value_type,
+                 pdf_widget_name, position, ordinal
+          FROM form_fields WHERE tax_year = ?
+          ORDER BY form_id, ordinal`,
+    args: [taxYear],
+  });
+  const fields: FieldInventory[] = fieldRows.rows.map((r) => ({
+    fieldId: String(r.field_id),
+    formId: String(r.form_id),
+    label: String(r.label),
+    category: String(r.category) as Category,
+    valueType: String(r.value_type) as FieldValueType,
+    pdfWidgetName: r.pdf_widget_name == null ? undefined : String(r.pdf_widget_name),
+    position:
+      r.position == null
+        ? undefined
+        : (JSON.parse(String(r.position)) as { page: number; x: number; y: number }),
+    ordinal: Number(r.ordinal),
   }));
 
   return buildCatalog({ forms, fields });

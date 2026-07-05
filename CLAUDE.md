@@ -17,7 +17,7 @@ The end goal is a three-stage workflow:
 2. **Summarizer** (Stage 2, not built yet) — turns gathered facts into a human-reviewable tax summary / organizer.
 3. **Preparer** (Stage 3, not built yet) — fills out the actual forms (1040 + schedules, state returns). Human-in-the-loop is mandatory; a CPA signs off.
 
-Everything routes through a Postgres-backed `tax_facts` table where each row has a `source_note` citing where the value came from. No fact exists without a citation.
+Everything routes through a `tax_facts` table (libsql/SQLite, `.data/app.db`) where each row has a `source_note` citing where the value came from. No fact exists without a citation.
 
 ## Repo structure
 
@@ -45,7 +45,7 @@ apps/
     ├── package.json             # web deps + scripts (next dev, next build)
     └── next.config.ts
 
-supabase/                        # shared DB infra: config.toml + migrations (public.*, RLS, publications)
+supabase/                        # AUTH ONLY (GoTrue via local Docker stack) — leaves in transition Phase 2
 package.json                     # workspace root: thin delegating scripts (dev, dev:all, refdocs:*, …)
 CLAUDE.md
 ```
@@ -58,8 +58,8 @@ Two services. Run both — backend changes hot-reload via Mastra file-watching, 
 
 ```bash
 npm run install:all                         # installs root + apps/agent + apps/web
-npm run db:start                            # boots local Supabase (see next section)
-npm run db:reset                            # migrations + mastra schema + seed test users
+npm run db:start                            # boots local Supabase (AUTH ONLY — see next section)
+npm run db:reset                            # resets auth DB + seeds test users/filings/threads
 npm run dev:all                             # mastra (:4111) + next (:3000)
 
 # or run them separately:
@@ -69,26 +69,36 @@ npm run dev:web      # next only
 npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
 ```
 
-All persistent state (user data, Mastra runtime tables, reference corpus, document blobs) lives in Supabase — `POSTGRES_URL` for the database, the service-role key for Storage. There is no local DB file. The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that still go through the agent (chat streaming, `/app/state`, `/app/session/reset`). Most data — drafts, uploads, activity feed, document downloads — is read directly from Supabase by Server Components / Route Handlers. Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls.
+All persistent state lives in local files under `apps/agent/.data/` ("the DB is a file"):
 
-## Running local Supabase
+| file | contents | owner |
+| --- | --- | --- |
+| `corpus.db` | reference corpus (ref_* tables, FTS5 + vectors) + forms catalog | `db/libsql.ts` |
+| `app.db` | domain data (tax_facts, ai_decisions, filings, …) | `db/appDb.ts` |
+| `mastra.db` | Mastra runtime (threads, messages, working memory) | `@mastra/libsql` |
+| `documents/` | document blobs `{filingId}/{category}/{slug}-{ulid}.{ext}` | `db/blobStore.ts` |
 
-Local dev runs against a Dockerized Supabase stack (Postgres, GoTrue, PostgREST, Storage, Realtime, Studio). Prod still lives at the hosted project; we just don't point at it during day-to-day development.
+Pin all four paths via env (`CORPUS_DB_PATH` / `APP_DB_PATH` / `MASTRA_DB_PATH` / `DOCUMENTS_PATH`) — module-relative defaults resolve differently inside Mastra's bundled output than in tsx scripts. The ONLY Supabase left is **auth** (GoTrue), which Phase 2 of the transition removes.
+
+The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that go through the agent (chat streaming, `/app/state`, filing create/delete/invite). Everything else — activity, drafts, uploads, filings lists — is read from `app.db` directly: Server Components via `lib/serverDb.ts`, browser code via the `/api/*` Route Handlers (the browser can't read a server-side file; there is no realtime channel — client components poll on a short interval). Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls. With RLS gone, **every query scopes explicitly** by `userId`/`filingId` (`Scope` in `db/appDb.ts`), and routes gate with membership checks before touching another filing's data.
+
+## Running local Supabase (auth only)
+
+Local dev still boots the Dockerized Supabase stack, but ONLY for auth (GoTrue + its Postgres backing store). Realtime and Storage are disabled in `config.toml`; there are no migrations of ours — domain data lives in the libsql files. This whole dependency leaves in transition Phase 2.
 
 **Prereqs**: Docker Desktop running, Supabase CLI ≥ 2.95 (`brew install supabase/tap/supabase`).
 
 **First-boot sequence** (one-time):
 
 ```bash
-npm run db:start                # docker pulls images, boots containers (~30s after first pull)
-npm run db:status               # prints API URL, anon key, service-role key, etc.
+npm run db:start                # docker pulls images, boots containers
+npm run db:status               # prints API URL + keys
 
-# Copy keys into .env.development from the templates:
-cp apps/agent/.env.local.example apps/agent/.env.development
-cp apps/web/.env.local.example apps/web/.env.development
-# …then paste SUPABASE_PUBLISHABLE_KEY + SUPABASE_SECRET_KEY from `db:status`.
+# Copy the examples and fill in values (keys from `db:status`, absolute .data paths):
+cp apps/agent/.env.example apps/agent/.env.development
+cp apps/web/.env.example apps/web/.env.development
 
-npm run db:reset                # applies migrations + mastra schema + seeds users
+npm run db:reset                # resets auth DB, then seeds users + filings + threads
 npm run dev:all                 # ready
 ```
 
@@ -113,24 +123,11 @@ Casey has one owner-role membership on a 2025 filing. Ed has a `cpa_profiles` ro
 
 **URLs to remember**:
 
-- API gateway: http://127.0.0.1:54321
-- Postgres: postgresql://postgres:postgres@127.0.0.1:54322/postgres
-- Studio (Supabase UI): http://127.0.0.1:54323 — table browser, SQL editor, auth user list
+- API gateway (auth): http://127.0.0.1:54321
+- Studio (Supabase UI): http://127.0.0.1:54323 — auth user list
 - Inbucket (email preview): http://127.0.0.1:54324 — any emails GoTrue would have sent show up here
 
-**Hitting prod from your laptop** (rare — debugging a prod-only issue): keep a separate `.env.development.prod` and pass it via `tsx --env-file=...` when running one-off scripts. Don't swap `.env.development` itself — too easy to forget which environment is loaded.
-
-**Why local seeding is a TypeScript script, not seed.sql.** `auth.users` rows have to exist before filings can reference them, but `supabase db reset` runs `seed.sql` after migrations and before anything else. We need the user IDs to seed memberships, so the GoTrue admin API is called from `apps/agent/scripts/seedLocal.ts` after reset finishes. `db.seed.sql_paths = []` in config.toml.
-
-**Local Postgres uses direct connection (port 54322), not a pooler.** The pooler-6543 guidance in the next section is prod-specific.
-
-## Supabase Postgres pooler — always use port 6543
-
-`POSTGRES_URL` must point at the **transaction pooler (6543)**, never the session pooler (5432). Same hostname, same database, only the port changes — use 6543 locally and on Vercel.
-
-**Why session mode breaks for us.** Mastra's `MastraCompositeStore.init()` parallel-inits ~17 storage domains on boot. Session mode pins one Postgres connection per client; free-tier Supabase caps at 15; `mastra dev` hot-reload leaves stale pinned connections that take minutes to reap — boot then fails with `EMAXCONNSESSION`. Serverless on Vercel hits the same wall from the other side (every cold function spins a new client).
-
-**Why transaction mode is safe.** It only sacrifices per-Postgres-session state: `LISTEN`/`NOTIFY`, server-side named prepared-statement caches, session `SET`, long-lived advisory locks. Mastra uses none of those — it goes through pg-node's unnamed-prepare path. Supabase Realtime watches table changes over WebSockets, so it's unaffected by pooler mode either way.
+**Why seeding is a TypeScript script, not seed.sql.** Auth users are created through the GoTrue admin API (bcrypt, identities, future schema changes handled by Supabase); their IDs then seed filings/memberships in the libsql app DB and the demo thread via the Memory API. See `apps/agent/scripts/seedLocal.ts`.
 
 ## Development workflow
 
@@ -141,7 +138,7 @@ We're building agent + UI together. When changes touch both, expect to:
    - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
    - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Luca do X?".
    - **Browser console + Network panel** — frontend errors and HTTP failures (401s from a wrong passcode, 404s from a missing proxy entry, etc.).
-3. **Verify the change in the browser** at http://localhost:3000. Sign in with a Supabase account; cookie-based session via `@supabase/ssr` persists across reloads. Hit **Reset session** in the side nav to wipe state between test runs. The activity rail and header counters refresh after each agent turn.
+3. **Verify the change in the browser** at http://localhost:3000. Sign in with a Supabase account; cookie-based session via `@supabase/ssr` persists across reloads. To wipe state between test runs use **Delete filing** (avatar menu, top-right) and start a fresh filing from the home page. The activity rail and header counters refresh after each agent turn (plus a short client-side poll).
 
 For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/luca/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
 
@@ -151,54 +148,26 @@ Claude has the `mcp__claude-in-chrome__*` toolset available. After any non-trivi
 
 Limits worth remembering:
 - These tools are deferred — load each one with `ToolSearch` (`select:mcp__claude-in-chrome__<name>`) before calling it.
-- Avoid triggering `alert()` / `confirm()` / `prompt()` dialogs — they freeze the extension. Our Reset button uses `confirm()`; if you need to test it programmatically, dispatch the click in the codepath that bypasses the confirm or temporarily comment it out.
+- Avoid triggering `alert()` / `confirm()` / `prompt()` dialogs — they freeze the extension. The Delete-filing button uses `confirm()`; if you need to test it programmatically, dispatch the click in the codepath that bypasses the confirm or temporarily comment it out.
 - If a browser tool errors twice in a row, stop and ask Andrew rather than retrying blindly.
 
 ### Resetting user data
 
-The web "Reset session" button (side nav) → `POST /app/session/reset` → `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts`. Per-user, RLS-scoped. The file header documents exactly what gets wiped (domain rows, storage objects, Mastra threads) — read it there.
+Two paths:
+- **UI: Delete filing** (avatar menu) → `DELETE /app/filings/:id` — removes the filing's blob directory, cascades every domain row, deletes the Mastra thread. Start a fresh filing from the home page afterwards.
+- **API: `POST /app/session/reset`** → `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts` — wipes the user's rows but keeps the filing + memberships. No UI button anymore.
 
-**Reference corpus and `apps/agent/forms/` always survive.** To wipe corpus state, `delete from ref_documents` in the Supabase SQL editor and `npm run refdocs:sync` to repopulate. To nuke everything for a clean slate, `TRUNCATE` directly against `mastra.*` + `public.{tax_facts, open_questions, ai_decisions, user_documents}`.
+**Reference corpus and `apps/agent/forms/` always survive.** To rebuild the corpus, delete `.data/corpus.db` and run `npm run refdocs:sync`. To nuke everything, delete the `.data/` directory and re-run `npm run db:reset`.
 
-## Mastra schema migrations
+## Mastra schema
 
-We set `disableInit: true` on every `PostgresStore` we construct (the shared one in `server/storage.ts` AND the per-agent one in `agents/luca.ts` — Mastra agents that take a `memory: new Memory({ storage })` create their own store, and each tracks its own init state). This stops the framework from firing ~200 `CREATE TABLE` / `ALTER TABLE` queries on every cold start, which pushed first-message-after-cold to ~10s on Vercel.
-
-Schema is kept in sync via a one-shot script:
-
-```bash
-npm run migrate:mastra                                # against .env.development
-POSTGRES_URL=<prod-url> npx tsx scripts/migrateMastra.ts   # against prod
-```
-
-Run it:
-- Once before the first deploy (so tables exist when runtime starts).
-- Whenever you bump `@mastra/core` or `@mastra/pg` to a version that adds schema (release notes will say).
-
-The script is idempotent (`CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ADD COLUMN IF NOT EXISTS`). Safe to re-run.
-
-### Two migration systems by design
-
-We deliberately keep two migration systems running side by side:
-
-1. **Supabase CLI for `public.*`** — versioned SQL files in `supabase/migrations/`, hand-written, applied via `supabase db push` from repo root. Owns our domain tables (`tax_facts`, `ai_decisions`, `ref_documents`, etc.) and any tweaks we make to Postgres-level config (publications, RLS, replica identity).
-2. **Mastra's `init()` for `mastra.*`** — auto-discovered from `@mastra/pg` package code, run via `npm run migrate:mastra` (which calls `MastraCompositeStore.init()`). Owns the runtime tables (`mastra_messages`, `mastra_threads`, `mastra_workflow_snapshot`, `mastra_traces`, …). The schema lives inside the framework, not in our repo.
-
-The agent's `build` script chains `mastra build && tsx scripts/migrateMastra.ts`, so Vercel runs the Mastra migration as part of every deploy. This couples migration to build — non-standard for production systems — but we accept it because: (a) build failure gates deploy, so a failing migration blocks bad code from shipping; (b) Mastra's init is idempotent and ~909ms when no-op; (c) we get fully automatic schema sync on every Mastra version bump with zero hand-written SQL.
-
-**Why we're not consolidating.** The "right" pattern would be to `pg_dump -s -n mastra` once, check that into `supabase/migrations/`, and hand-write a new SQL migration for every Mastra version bump going forward. The win is single source of truth + decoupled migration. The cost is ongoing vigilance — every `@mastra/core` upgrade becomes a manual schema review against their changelog. We've decided that cost isn't worth paying until Mastra's auto-init causes a concrete problem (e.g. a destructive migration in a future version).
-
-**When the calculus could change:** if we hit multi-user production load, OR if Mastra ships a release with a problematic migration. Until then, leave the two-system setup alone.
+The runtime store is `@mastra/libsql` (pinned; see `server/storage.ts` and `agents/luca.ts` — agents with `memory: new Memory({ storage })` create their own store instance against the same `mastra.db` file). Mastra runs its own idempotent `init()` on boot — a handful of local `CREATE TABLE IF NOT EXISTS` statements, cheap enough that the old `disableInit` + standalone-migration machinery is gone. On `@mastra/*` version bumps, the framework migrates its own schema; keep `mastra.db` separate from `app.db` so that can never touch user data.
 
 ## Data-model iteration: wipe + re-ingest, not migrations
 
-While the data model is in flux, breaking schema changes are handled by **wiping per-user data and re-ingesting from fixtures**, not by writing Supabase migrations or backfill scripts. The per-user reset endpoint (side-nav "Reset session" button) clears the signed-in user's domain rows; fixture-driven re-ingest restores a known-good state.
+While the data model is in flux, breaking schema changes are handled by **wiping and re-seeding**, not by migrations or backfill scripts: edit the `CREATE TABLE` statements in `db/appDb.ts` (or `db/libsql.ts` for the corpus), delete the affected `.data/*.db` file, and re-run `npm run db:seed` / `npm run refdocs:sync`. Delete-filing + fixture-driven re-ingest restores a known-good user state.
 
-Reach for a real migration only for:
-- Schema shapes we expect to keep (e.g. the `review_runs` / `review_run_steps` tables that record training data).
-- Postgres-level configuration that affects production behavior (RLS policies, realtime publications, replica identity).
-
-Anything else — renaming a fact_key, restructuring a fact_value blob, adding/removing a category — just iterate the code and let the next ingest produce rows in the new shape.
+There is no migration system for the libsql files — dev/test data only. That changes when real users have data worth preserving (revisit in Phase 4 packaging).
 
 ## Form engine — the FormField model
 
@@ -281,24 +250,17 @@ Add categories as the domain grows. Prefer splitting over lumping (it's easier t
 
 ### Where the corpus lives
 
-The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **Supabase Postgres** under the `public` schema. User data is in the same Postgres database (`public` schema, RLS-scoped). Mastra's runtime tables (threads, messages, traces, scorers, working memory) live in the `mastra` schema in the same database via `@mastra/pg`. The agent reads the corpus via `@supabase/supabase-js` with a service-role secret; user-scoped reads go through the per-request user-supabase client (RLS-enforced). Migration history lives in `supabase/migrations/` at the repo root — the supabase folder is shared infrastructure, not agent-owned (run `supabase db push` from repo root, not from `apps/agent/`).
+The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **`.data/corpus.db`** — a local libsql/SQLite file, separate from user data (`app.db`) because it's shared, read-mostly reference material that will ship prebuilt as a release asset (Phase 4). Client + schema live in `apps/agent/src/mastra/db/libsql.ts`; the same file also holds the forms catalog (`forms` / `form_fields`, written by the forms-ingest pipeline, dormant at runtime).
 
-Why split storage: the corpus is shared, read-mostly, and grows substantially as we cover more scenarios. User data is per-tenant and will eventually move to Supabase too (with RLS) — that's a separate phase.
-
-Required env vars (set on Vercel via `vercel env` or the dashboard; locally in `apps/agent/.env.development`):
-- `SUPABASE_URL` — project URL (https://<ref>.supabase.co)
-- `SUPABASE_SECRET_KEY` — `sb_secret_…` service-role key. Bypasses RLS; never expose to the browser.
-
-### Corpus shape (Postgres)
+### Corpus shape (libsql)
 
 ```
 ref_documents → ref_pages    (page char-ranges into canonical_text)
               → ref_sections (heading hierarchy with stable slugs)
               → ref_blocks   (paragraph/list_item/etc — the citable unit)
-                  + fts                  — generated tsvector column (English)
-                  + idx_ref_blocks_fts   — GIN index over fts
-                  + embedding            — vector(1024) (pgvector, voyage-law-2)
-                  + idx_ref_blocks_embedding — HNSW cosine
+                  + embedding          — F32_BLOB(1024) (libsql native, voyage-law-2)
+ref_blocks_fts                (FTS5 mirror of coalesce(contextualized_text, text),
+                               porter stemming; populated at write time)
 ```
 
 Stable IDs — used everywhere as citations:
@@ -327,11 +289,11 @@ Operator flow:
 ```bash
 # 1. Drop new/updated instructions.pdf + instructions.meta.json into the form's folder
 #    (apps/agent/forms/<jurisdiction>/<short>/)
-# 2. See what's drifted vs Supabase:
+# 2. See what's drifted vs the corpus DB:
 npm run refdocs:status           # diff: present / missing / sha-drift / extra / unconfigured
 npm run refdocs:status -- --strict  # exit non-zero on any drift (for CI/pre-push later)
 
-# 3. Sync changes to Supabase (idempotent, sha-skips already-ingested docs):
+# 3. Sync changes into corpus.db (idempotent, sha-skips already-ingested docs):
 npm run refdocs:sync             # ~$0.50 + ~5 min per new/changed doc
 
 # 4. If a previous sync wrote rows but failed at the embeddings step,
@@ -357,16 +319,16 @@ We write the rows BEFORE embedding so a Voyage failure doesn't waste the ~$0.50 
 
 ### Retrieval — `search-ref-docs` tool
 
-Single entry point. Calls the `match_ref_blocks(query_embedding, query_text, match_count, filter_doc_id)` Postgres function via `supabase.rpc()`. The function returns up to 2×N candidates: top-N from FTS leg (`websearch_to_tsquery` + `ts_rank_cd`) unioned with top-N from vector leg (`embedding <=> query`). The JS layer reranks via Voyage rerank-2.5.
+Single entry point. `callMatch` in `db/refDocs.ts` (the TS port of the old Postgres `match_ref_blocks` function) runs two legs and merges in JS: top-N from the FTS5 leg (`MATCH` + bm25, negated to higher-is-better) unioned with top-N from the vector leg (brute-force `vector_distance_cos` — exact and fast at low-thousands of blocks; no ANN index on purpose). The JS layer reranks via Voyage rerank-2.5.
 
 ```
 query
- → match_ref_blocks RPC ─┬─ FTS top-50 (ts_rank_cd over fts)    ┐
-                         └─ vector top-50 (cosine over embedding) ┘ → dedupe → rerank-2.5 → top-K
+ → callMatch ─┬─ FTS5 top-50 (bm25 over ref_blocks_fts)          ┐
+              └─ vector top-50 (vector_distance_cos over blocks) ┘ → dedupe → rerank-2.5 → top-K
 ```
 
 Falls back gracefully:
-- Voyage key absent → FTS-only (vector leg passes `query_embedding=null`, RPC returns FTS only)
+- Voyage key absent → FTS-only (vector leg skipped entirely)
 - Rerank API fails → return merged candidates ordered by best-of-leg
 
 `mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs.
@@ -383,7 +345,7 @@ All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from t
 
 | script | use |
 |---|---|
-| `refdocsStatus.ts` | diff repo PDFs vs Supabase (npm: `refdocs:status`) |
+| `refdocsStatus.ts` | diff repo PDFs vs corpus.db (npm: `refdocs:status`) |
 | `refdocsSync.ts` | idempotent corpus sync (npm: `refdocs:sync`) |
 | `refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
 | `ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
