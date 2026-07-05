@@ -1,15 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getStorageAdminClient } from "@/lib/supabaseAdmin";
+import { readBlob } from "@/lib/blobStore";
 import { getDocumentById, hasMembership } from "@/lib/serverDb";
 
-// Same-origin Route Handler that replaces the agent's /documents/{id} for
-// browser-initiated navigations. Reads the cookie (which the browser DOES
-// send on plain <a href> clicks, unlike the bearer header), validates the
-// user via Supabase server client, looks up the row in the libsql app DB,
-// verifies the caller holds a non-revoked membership on the document's
-// filing (the explicit RLS replacement), mints a 60-second signed Storage
-// URL, and 302s to it.
+// Same-origin Route Handler for document downloads. Reads the cookie (which
+// the browser DOES send on plain <a href> clicks, unlike the bearer header),
+// validates the user via the Supabase server client (auth is still Supabase
+// until Phase 2), looks up the row in the libsql app DB, verifies the caller
+// holds a non-revoked membership on the document's filing (the explicit RLS
+// replacement), and streams the file straight off the local documents dir —
+// no bucket, no signed URLs.
 //
 // `?download=1` flips Content-Disposition to attachment so the Documents
 // page's Download button forces a save instead of inline rendering.
@@ -41,21 +41,24 @@ export async function GET(
   }
 
   const wantsDownload = request.nextUrl.searchParams.get("download") === "1";
-  // Service-role for the signed URL — the bucket's RLS references the
-  // now-empty Postgres filing_members; membership was verified above.
-  const { data: signed, error: signError } = await getStorageAdminClient().storage
-    .from("user-documents")
-    .createSignedUrl(
-      doc.storagePath,
-      60,
-      wantsDownload ? { download: doc.filename } : undefined,
-    );
-  if (signError || !signed?.signedUrl) {
-    return NextResponse.json(
-      { error: `sign failed: ${signError?.message ?? "no url"}` },
-      { status: 500 },
-    );
+  let bytes: Buffer;
+  try {
+    bytes = await readBlob(doc.storagePath);
+  } catch {
+    // Row exists but the file is gone — surface as 404, not 500.
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.redirect(signed.signedUrl, 302);
+  const headers = new Headers({
+    "Content-Type": doc.mimeType ?? "application/octet-stream",
+    "Content-Length": String(bytes.byteLength),
+    "Cache-Control": "private, no-store",
+  });
+  // RFC 5987 filename* handles non-ASCII (em-dashes in draft names).
+  const encoded = encodeURIComponent(doc.filename);
+  headers.set(
+    "Content-Disposition",
+    `${wantsDownload ? "attachment" : "inline"}; filename*=UTF-8''${encoded}`,
+  );
+  return new NextResponse(new Uint8Array(bytes), { status: 200, headers });
 }
