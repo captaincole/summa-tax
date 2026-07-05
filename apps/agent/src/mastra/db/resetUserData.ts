@@ -1,6 +1,6 @@
 import { luca } from "../agents/luca";
 import { getAppDb, ensureAppSchema, asStr, asNum } from "./appDb";
-import { getServiceRoleClient } from "./supabase";
+import { deleteBlob } from "./blobStore";
 
 // Per-user data reset is the only reset path. The web "Reset session" button
 // hits POST /app/session/reset, which calls resetCurrentUserData below. There
@@ -20,9 +20,8 @@ export interface PerUserResetResult {
 
 // Per-user data reset, used by /app/session/reset. Deletes only the calling
 // user's data — domain rows (explicit WHERE user_id, since RLS is gone with
-// Postgres) + Mastra threads + documents (metadata rows here, storage objects
-// via the service-role client until blobs move local in step 4 — the
-// bucket's RLS references the now-empty Postgres filing_members).
+// Postgres) + Mastra threads + documents (metadata rows AND their local
+// blob files).
 export async function resetCurrentUserData(
   userId: string,
 ): Promise<PerUserResetResult> {
@@ -56,15 +55,9 @@ export async function resetCurrentUserData(
     counts[t] = asNum(res.rowsAffected);
   }
 
-  // Storage objects matching the rows we just deleted.
-  if (storagePaths.length > 0) {
-    const removal = await getServiceRoleClient().storage
-      .from("user-documents")
-      .remove(storagePaths);
-    if (removal.error) {
-      throw new Error(`reset storage remove failed: ${removal.error.message}`);
-    }
-  }
+  // Blob files matching the rows we just deleted. Best-effort per file —
+  // a missing blob is already the desired end state.
+  await Promise.all(storagePaths.map((p) => deleteBlob(p)));
 
   // Mastra memory cleanup goes through Memory.deleteThread() rather than
   // raw SQL — Mastra owns the cascade (messages, observational memory,

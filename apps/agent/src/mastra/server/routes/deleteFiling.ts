@@ -1,7 +1,7 @@
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
-import { getServiceRoleClient } from "../../db/supabase";
 import { getMembership, deleteFilingCascade } from "../../db/filings";
+import { deleteFilingBlobs } from "../../db/blobStore";
 import { luca } from "../../agents/luca";
 
 // DELETE /app/filings/:filingId
@@ -12,9 +12,8 @@ import { luca } from "../../agents/luca";
 //     user_documents, requested_actions, review_runs, review_run_steps.
 //     Every domain row carries a filing_id with cascade, so a single
 //     DELETE on filings is enough at the SQL level.
-//   - Storage objects under {filingId}/... are NOT cascaded (blobs still
-//     live in Supabase Storage until Phase 1 step 4). We list + remove
-//     them explicitly first via the service-role client.
+//   - Blob files under .data/documents/{filingId}/ are NOT cascaded by the
+//     DB — we remove the directory explicitly first.
 //   - Mastra thread keyed by `${userId}::${taxYear}` is also not FK-tied to
 //     filings — we delete it via Memory.deleteThread so the next filing the
 //     user creates for that year starts with a clean chat.
@@ -22,8 +21,6 @@ import { luca } from "../../agents/luca";
 // Errors:
 //   401 — no JWT / unverified caller
 //   403 — caller is not the filing's owner (or no such filing)
-
-const STORAGE_BUCKET = "user-documents";
 
 function threadIdFor(userId: string, year: number | string): string {
   return `${userId}::${year}`;
@@ -49,32 +46,8 @@ export const deleteFilingRoute = registerApiRoute(
       if (!ownership) return c.json({ error: "forbidden" }, 403);
       const taxYear = ownership.taxYear;
 
-      const admin = getServiceRoleClient();
-
-      // 1. Storage objects. List by folder prefix, then bulk-remove. Storage
-      // RLS would block the user-scoped client from seeing peer reviewers'
-      // uploads (none today, but defensive), so admin is the safer client.
-      const { data: objects, error: listErr } = await admin.storage
-        .from(STORAGE_BUCKET)
-        .list(filingId, { limit: 1000 });
-      if (listErr) {
-        return c.json(
-          { error: `storage list failed: ${listErr.message}` },
-          500,
-        );
-      }
-      const paths = (objects ?? []).map((o) => `${filingId}/${o.name}`);
-      if (paths.length > 0) {
-        const { error: removeErr } = await admin.storage
-          .from(STORAGE_BUCKET)
-          .remove(paths);
-        if (removeErr) {
-          return c.json(
-            { error: `storage remove failed: ${removeErr.message}` },
-            500,
-          );
-        }
-      }
+      // 1. Blob files — remove the filing's whole directory.
+      await deleteFilingBlobs(filingId);
 
       // 2. The filings row. FK cascade does the rest of the domain cleanup.
       await deleteFilingCascade(filingId);
@@ -91,12 +64,7 @@ export const deleteFilingRoute = registerApiRoute(
         // No-op — thread cleanup is best-effort.
       }
 
-      return c.json({
-        ok: true,
-        filingId,
-        taxYear,
-        storageObjectsDeleted: paths.length,
-      });
+      return c.json({ ok: true, filingId, taxYear });
     },
   },
 );

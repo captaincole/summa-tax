@@ -339,13 +339,14 @@ export interface DocumentLookup {
   filingId: string;
   storagePath: string;
   filename: string;
+  mimeType: string | null;
 }
 
 export async function getDocumentById(
   id: string,
 ): Promise<DocumentLookup | null> {
   const res = await db().execute({
-    sql: `SELECT id, filing_id, storage_path, filename
+    sql: `SELECT id, filing_id, storage_path, filename, mime_type
           FROM user_documents WHERE id = ? LIMIT 1`,
     args: [id],
   });
@@ -356,6 +357,7 @@ export async function getDocumentById(
     filingId: str(r.filing_id),
     storagePath: str(r.storage_path),
     filename: str(r.filename),
+    mimeType: strOrNull(r.mime_type),
   };
 }
 

@@ -1,5 +1,5 @@
 import type { InValue, Row } from "@libsql/client";
-import { getServiceRoleClient } from "./supabase";
+import { writeBlob } from "./blobStore";
 import {
   getAppDb,
   ensureAppSchema,
@@ -15,19 +15,14 @@ import {
 //
 // Two stores work in tandem:
 //   - user_documents (metadata, libsql app.db) — what files exist, when, what kind.
-//   - user-documents bucket (bytes, Supabase Storage) — the actual PDF/JSON/etc.
-//     Blobs move to the local filesystem in Phase 1 step 4. Until then the
-//     upload goes through the SERVICE-ROLE client: the bucket's RLS policies
-//     reference public.filing_members, which is empty now that memberships
-//     live in libsql — user-JWT storage calls are denied. Callers must have
-//     verified the user's filing access (requireUserContext) before calling.
+//   - .data/documents/ (bytes, local filesystem via blobStore) — the actual
+//     PDF/JSON/etc. Callers must have verified the user's filing access
+//     (requireUserContext) before calling; there is no storage-layer ACL.
 //
 // Storage paths are `{filingId}/{category}/{slug}-{ulid}.{ext}`. The ULID
 // suffix avoids collisions when generate-tax-documents runs multiple times
 // (each run creates new rows + new files; old chat-message links keep
 // resolving to the version they were generated against).
-
-const BUCKET = "user-documents";
 
 export type Category = "drafts" | "finals" | "uploads";
 
@@ -111,12 +106,12 @@ export interface CreateDocumentResult {
   storagePath: string;
 }
 
-// Upload bytes + insert metadata row in one operation. Returns the row's UUID
+// Write bytes + insert metadata row in one operation. Returns the row's UUID
 // so callers can build the public download path `/documents/{id}`.
 //
-// The bytes are uploaded BEFORE the row is inserted; if the row insert fails
-// we end up with an orphan blob in storage (cheap, will get cleaned up by a
-// future GC pass). The reverse ordering (insert first, then upload) leaves a
+// The bytes are written BEFORE the row is inserted; if the row insert fails
+// we end up with an orphan file on disk (cheap, will get cleaned up by a
+// future GC pass). The reverse ordering (insert first, then write) leaves a
 // row pointing at non-existent bytes which is worse — broken download links.
 export async function createDocument(
   input: CreateDocumentInput,
@@ -129,15 +124,7 @@ export async function createDocument(
     input.extension,
   );
 
-  const upload = await getServiceRoleClient().storage
-    .from(BUCKET)
-    .upload(storagePath, input.bytes, {
-      contentType: input.mimeType,
-      upsert: false,
-    });
-  if (upload.error) {
-    throw new Error(`createDocument upload failed: ${upload.error.message}`);
-  }
+  await writeBlob(storagePath, input.bytes);
 
   const expiresAt = input.expiresInDays
     ? new Date(Date.now() + input.expiresInDays * 86400000).toISOString()
