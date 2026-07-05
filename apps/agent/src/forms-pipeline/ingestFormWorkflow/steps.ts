@@ -32,7 +32,7 @@ import {
   type FieldEnrichment,
   type ValueType,
 } from "../classifyFields.js";
-import { getServiceRoleClient } from "../../mastra/db/supabase.js";
+import { getCorpusDb, ensureCorpusSchema } from "../../mastra/db/libsql.js";
 
 // ─── extract ─────────────────────────────────────────────────────────────
 
@@ -214,36 +214,54 @@ export const persistStep = createStep({
 
     let dbWritten = false;
     if (inputData.writeDb) {
-      const sb = getServiceRoleClient();
-      const { error: formErr } = await sb.from("forms").upsert(
-        {
-          form_id: inputData.formId,
-          tax_year: inputData.taxYear,
-          jurisdiction: inputData.jurisdiction,
-          title: inputData.formTitle,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "form_id,tax_year" },
-      );
-      if (formErr) throw new Error(`forms upsert failed: ${formErr.message}`);
-      const dbRows = catalog.map((f, i) => ({
-        field_id: f.fieldId,
-        form_id: inputData.formId,
-        tax_year: inputData.taxYear,
-        ordinal: i,
-        label: f.label,
-        category: f.category,
-        value_type: f.valueType,
-        pdf_widget_name: f.pdfWidgetName ?? null,
-        position: f.position,
-        updated_at: new Date().toISOString(),
-      }));
-      const { error: fieldErr } = await sb.from("form_fields").upsert(dbRows, {
-        onConflict: "field_id,tax_year",
+      await ensureCorpusSchema();
+      const db = getCorpusDb();
+      const now = new Date().toISOString();
+      await db.execute({
+        sql: `INSERT INTO forms (form_id, tax_year, jurisdiction, title, updated_at)
+              VALUES (?, ?, ?, ?, ?)
+              ON CONFLICT (form_id, tax_year) DO UPDATE SET
+                jurisdiction = excluded.jurisdiction,
+                title = excluded.title,
+                updated_at = excluded.updated_at`,
+        args: [
+          inputData.formId,
+          inputData.taxYear,
+          inputData.jurisdiction,
+          inputData.formTitle,
+          now,
+        ],
       });
-      if (fieldErr) {
-        throw new Error(`form_fields upsert failed: ${fieldErr.message}`);
-      }
+      await db.batch(
+        catalog.map((f, i) => ({
+          sql: `INSERT INTO form_fields
+                  (field_id, form_id, tax_year, ordinal, label, category,
+                   value_type, pdf_widget_name, position, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (field_id, tax_year) DO UPDATE SET
+                  form_id = excluded.form_id,
+                  ordinal = excluded.ordinal,
+                  label = excluded.label,
+                  category = excluded.category,
+                  value_type = excluded.value_type,
+                  pdf_widget_name = excluded.pdf_widget_name,
+                  position = excluded.position,
+                  updated_at = excluded.updated_at`,
+          args: [
+            f.fieldId,
+            inputData.formId,
+            inputData.taxYear,
+            i,
+            f.label,
+            f.category,
+            f.valueType,
+            f.pdfWidgetName ?? null,
+            f.position ? JSON.stringify(f.position) : null,
+            now,
+          ],
+        })),
+        "write",
+      );
       dbWritten = true;
     }
 

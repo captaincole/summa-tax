@@ -3,7 +3,6 @@ import {
   RequestContext,
   MASTRA_RESOURCE_ID_KEY,
 } from "@mastra/core/request-context";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import {
   loopCarrierSchema,
@@ -22,7 +21,6 @@ import {
 } from "../../db/reviewRuns";
 import { setDecisionVerdict } from "../../db/aiDecisions";
 import type { Scope } from "../../db/appDb";
-import { REQUEST_CONTEXT_KEYS } from "../../server/userSupabaseMiddleware";
 
 // ---------------------------------------------------------------------------
 // Loop body — gather → assess → rule. Wrapped as a child workflow so the
@@ -69,12 +67,10 @@ export const reviewDecisionWorkflow = createWorkflow({
 export type { ReviewDecisionOutput };
 
 export async function reviewDecision(
-  supabase: SupabaseClient,
   scope: Scope,
   decisionId: string,
 ): Promise<ReviewDecisionOutput> {
   const requestContext = new RequestContext();
-  requestContext.set(REQUEST_CONTEXT_KEYS.userSupabase, supabase);
   requestContext.set(MASTRA_RESOURCE_ID_KEY, scope.userId);
 
   const run = await reviewDecisionWorkflow.createRun({
