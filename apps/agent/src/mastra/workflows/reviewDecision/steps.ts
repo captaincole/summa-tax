@@ -51,9 +51,9 @@ export const initStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase, userId, filingId } = await requireUserContext({ requestContext });
+    const { scope, userId, filingId } = await requireUserContext({ requestContext });
 
-    const decision = await getDecisionById(supabase, inputData.decisionId);
+    const decision = await getDecisionById(scope, inputData.decisionId);
     if (!decision) {
       throw new Error(
         `init: no ai_decision with id ${inputData.decisionId}`,
@@ -61,13 +61,13 @@ export const initStep = createStep({
     }
 
     const reviewRunId = crypto.randomUUID();
-    await insertReviewRun(supabase, {
+    await insertReviewRun(scope, {
       id: reviewRunId,
       decisionId: decision.id,
       userId,
       filingId,
     });
-    await setDecisionLatestRunId(supabase, decision.id, reviewRunId);
+    await setDecisionLatestRunId(scope, decision.id, reviewRunId);
 
     const carrier: LoopCarrier = {
       decisionId: decision.id,
@@ -86,7 +86,7 @@ export const initStep = createStep({
       needMoreReasons: [],
     };
 
-    await recordReviewStep(supabase, {
+    await recordReviewStep(scope, {
       id: crypto.randomUUID(),
       runId: reviewRunId,
       userId,
@@ -114,8 +114,10 @@ export const gatherStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
+    // Scope from the carrier — init already resolved + verified the filing;
+    // re-deriving it here would just repeat the lookup on every iteration.
+    const scope = { userId: carrier.userId, filingId: carrier.filingId };
 
     // Iteration 1 → derive queries from the decision via the formulator.
     // Iterations 2/3 → use the queries the rule step put on the carrier.
@@ -127,7 +129,7 @@ export const gatherStep = createStep({
     // Pull facts cited by the decision. Append-only table; latest-per-key
     // collapsing happens inside listFactsByKeys.
     const facts = await listFactsByKeys(
-      supabase,
+      scope,
       carrier.taxYear,
       carrier.supportingFactKeys,
     );
@@ -173,7 +175,7 @@ export const gatherStep = createStep({
 
     const out: LoopCarrier = { ...carrier, queries, evidence };
 
-    await recordReviewStep(supabase, {
+    await recordReviewStep(scope, {
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
@@ -199,8 +201,8 @@ export const assessRiskStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
+    const scope = { userId: carrier.userId, filingId: carrier.filingId };
     if (!carrier.evidence) {
       throw new Error("assess: evidence missing — gather did not run");
     }
@@ -223,7 +225,7 @@ export const assessRiskStep = createStep({
 
     const out: LoopCarrier = { ...carrier, riskAssessment: parsed };
 
-    await recordReviewStep(supabase, {
+    await recordReviewStep(scope, {
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
@@ -250,8 +252,8 @@ export const ruleStep = createStep({
   outputSchema: loopCarrierSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
+    const scope = { userId: carrier.userId, filingId: carrier.filingId };
     if (!carrier.evidence || !carrier.riskAssessment) {
       throw new Error("rule: missing evidence or riskAssessment");
     }
@@ -294,7 +296,7 @@ export const ruleStep = createStep({
       needMoreReasons: nextReasons,
     };
 
-    await recordReviewStep(supabase, {
+    await recordReviewStep(scope, {
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,
@@ -327,8 +329,8 @@ export const finalizeStep = createStep({
   outputSchema: reviewDecisionOutputSchema,
   execute: async ({ inputData, requestContext }) => {
     const t0 = Date.now();
-    const { supabase } = await requireUserContext({ requestContext });
     const carrier = inputData;
+    const scope = { userId: carrier.userId, filingId: carrier.filingId };
     if (!carrier.ruleOutput) {
       throw new Error("finalize: ruleOutput missing — loop did not run");
     }
@@ -362,7 +364,7 @@ export const finalizeStep = createStep({
 
     // Persist verdict on ai_decisions.
     await setDecisionVerdict(
-      supabase,
+      scope,
       carrier.decisionId,
       finalVerdict,
       reason,
@@ -372,7 +374,7 @@ export const finalizeStep = createStep({
     // For needs_more_facts, surface to Luca via an open_questions row.
     if (finalVerdict === "needs_more_facts") {
       openQuestionId = crypto.randomUUID();
-      await noteQuestion(supabase, {
+      await noteQuestion(scope, {
         id: openQuestionId,
         userId: carrier.userId,
         filingId: carrier.filingId,
@@ -387,7 +389,7 @@ export const finalizeStep = createStep({
     // carrier was bumped to 4 by ruleStep — clamp to 3 for reporting.
     const iterationCount = Math.min(carrier.iteration, 3) as 1 | 2 | 3;
 
-    await completeReviewRun(supabase, {
+    await completeReviewRun(scope, {
       id: carrier.reviewRunId,
       status: "completed",
       finalVerdict,
@@ -407,7 +409,7 @@ export const finalizeStep = createStep({
       ...(whatsMissing ? { whatsMissing } : {}),
     };
 
-    await recordReviewStep(supabase, {
+    await recordReviewStep(scope, {
       id: crypto.randomUUID(),
       runId: carrier.reviewRunId,
       userId: carrier.userId,

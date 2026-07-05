@@ -1,11 +1,16 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import {
+  getAppDb,
+  ensureAppSchema,
+  type Scope,
+  nowIso,
+} from "./appDb";
 
 // Persistence for the review-decision workflow. Two tables:
 //   review_runs       — one row per workflow execution
 //   review_run_steps  — one row per step invocation across iterations
 //
-// Both are user-scoped via RLS on user_id, so all writes go through the
-// per-request supabase client (not the admin pool).
+// Scoping is explicit via Scope { userId, filingId } (RLS is gone with
+// Postgres).
 //
 // review_run_steps rows are the training-data substrate for future fine-tuning
 // (filter by step_kind to extract per-step (input, output) pairs). Keep the
@@ -22,17 +27,16 @@ export interface InsertReviewRunArgs {
 }
 
 export async function insertReviewRun(
-  supabase: SupabaseClient,
+  scope: Scope,
   args: InsertReviewRunArgs,
 ): Promise<void> {
-  const { error } = await supabase.from("review_runs").insert({
-    id: args.id,
-    decision_id: args.decisionId,
-    user_id: args.userId,
-    filing_id: args.filingId,
-    status: "running",
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `INSERT INTO review_runs (id, decision_id, user_id, filing_id, status, started_at)
+          VALUES (?, ?, ?, ?, 'running', ?)`,
+    args: [args.id, args.decisionId, args.userId, args.filingId, nowIso()],
   });
-  if (error) throw new Error(`insertReviewRun failed: ${error.message}`);
+  void scope;
 }
 
 export interface CompleteReviewRunArgs {
@@ -45,21 +49,26 @@ export interface CompleteReviewRunArgs {
 }
 
 export async function completeReviewRun(
-  supabase: SupabaseClient,
+  scope: Scope,
   args: CompleteReviewRunArgs,
 ): Promise<void> {
-  const { error } = await supabase
-    .from("review_runs")
-    .update({
-      status: args.status,
-      final_verdict: args.finalVerdict,
-      iteration_count: args.iterationCount,
-      duration_ms: args.durationMs,
-      completed_at: new Date().toISOString(),
-      error: args.error ?? null,
-    })
-    .eq("id", args.id);
-  if (error) throw new Error(`completeReviewRun failed: ${error.message}`);
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `UPDATE review_runs
+          SET status = ?, final_verdict = ?, iteration_count = ?, duration_ms = ?,
+              completed_at = ?, error = ?
+          WHERE id = ? AND filing_id = ?`,
+    args: [
+      args.status,
+      args.finalVerdict,
+      args.iterationCount,
+      args.durationMs,
+      nowIso(),
+      args.error ?? null,
+      args.id,
+      scope.filingId,
+    ],
+  });
 }
 
 export interface RecordStepArgs {
@@ -75,32 +84,38 @@ export interface RecordStepArgs {
 }
 
 export async function recordReviewStep(
-  supabase: SupabaseClient,
+  scope: Scope,
   args: RecordStepArgs,
 ): Promise<void> {
-  const { error } = await supabase.from("review_run_steps").insert({
-    id: args.id,
-    run_id: args.runId,
-    user_id: args.userId,
-    filing_id: args.filingId,
-    iteration: args.iteration,
-    step_kind: args.stepKind,
-    input_json: args.input,
-    output_json: args.output,
-    duration_ms: args.durationMs,
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `INSERT INTO review_run_steps
+            (id, run_id, user_id, filing_id, iteration, step_kind, input_json, output_json, duration_ms, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      args.id,
+      args.runId,
+      args.userId,
+      args.filingId,
+      args.iteration,
+      args.stepKind,
+      JSON.stringify(args.input ?? null),
+      JSON.stringify(args.output ?? null),
+      args.durationMs,
+      nowIso(),
+    ],
   });
-  if (error) throw new Error(`recordReviewStep failed: ${error.message}`);
+  void scope;
 }
 
 export async function setDecisionLatestRunId(
-  supabase: SupabaseClient,
+  scope: Scope,
   decisionId: string,
   runId: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from("ai_decisions")
-    .update({ latest_review_run_id: runId })
-    .eq("id", decisionId);
-  if (error)
-    throw new Error(`setDecisionLatestRunId failed: ${error.message}`);
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `UPDATE ai_decisions SET latest_review_run_id = ? WHERE id = ? AND filing_id = ?`,
+    args: [runId, decisionId, scope.filingId],
+  });
 }

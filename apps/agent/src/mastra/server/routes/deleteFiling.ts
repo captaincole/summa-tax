@@ -1,28 +1,27 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { getServiceRoleClient } from "../../db/supabase";
+import { getMembership, deleteFilingCascade } from "../../db/filings";
 import { luca } from "../../agents/luca";
-import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
 // DELETE /app/filings/:filingId
 //
 // Owner-only filing deletion. Cascades:
-//   - public.filings ON DELETE CASCADE → filing_members, filing_invites,
-//     tax_facts, ai_decisions, open_questions, user_documents,
-//     requested_actions, review_runs, review_run_steps. Every domain row
-//     carries a filing_id with cascade, so a single DELETE on filings is
-//     enough at the SQL level.
-//   - Storage objects under {filingId}/... are NOT cascaded by FK (storage
-//     is a separate subsystem). We list + remove them explicitly first.
+//   - filings ON DELETE CASCADE (libsql app DB) → filing_members,
+//     filing_invites, tax_facts, ai_decisions, open_questions,
+//     user_documents, requested_actions, review_runs, review_run_steps.
+//     Every domain row carries a filing_id with cascade, so a single
+//     DELETE on filings is enough at the SQL level.
+//   - Storage objects under {filingId}/... are NOT cascaded (blobs still
+//     live in Supabase Storage until Phase 1 step 4). We list + remove
+//     them explicitly first via the service-role client.
 //   - Mastra thread keyed by `${userId}::${taxYear}` is also not FK-tied to
 //     filings — we delete it via Memory.deleteThread so the next filing the
 //     user creates for that year starts with a clean chat.
 //
 // Errors:
 //   401 — no JWT / unverified caller
-//   403 — caller is not the filing's owner
-//   404 — no such filing (or RLS hides it from the caller)
+//   403 — caller is not the filing's owner (or no such filing)
 
 const STORAGE_BUCKET = "user-documents";
 
@@ -36,41 +35,19 @@ export const deleteFilingRoute = registerApiRoute(
     method: "DELETE",
     handler: async (c) => {
       const requestContext = c.get("requestContext");
-      const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
-        | SupabaseClient
-        | undefined;
       const callerId = requestContext?.get(MASTRA_RESOURCE_ID_KEY) as
         | string
         | undefined;
-      if (!supabase || !callerId) return c.json({ error: "unauthorized" }, 401);
+      if (!callerId) return c.json({ error: "unauthorized" }, 401);
 
       const filingId = c.req.param("filingId");
       if (!filingId) return c.json({ error: "missing filingId" }, 400);
 
-      // Ownership check via the user-scoped client. RLS already restricts
-      // visibility to the caller's filings; the explicit role='owner' makes
-      // the gate readable in logs.
-      const { data: ownership, error: ownerErr } = await supabase
-        .from("filing_members")
-        .select("filing_id, filings!inner(id, tax_year)")
-        .eq("filing_id", filingId)
-        .eq("user_id", callerId)
-        .eq("role", "owner")
-        .is("revoked_at", null)
-        .maybeSingle();
-      if (ownerErr) {
-        return c.json(
-          { error: `ownership check failed: ${ownerErr.message}` },
-          500,
-        );
-      }
+      // Ownership check — with RLS gone this explicit gate is the only
+      // thing standing between the caller and someone else's filing.
+      const ownership = await getMembership(filingId, callerId, "owner");
       if (!ownership) return c.json({ error: "forbidden" }, 403);
-      // PostgREST returns the joined `filings` as either an object or an
-      // array depending on the relationship cardinality — TypeScript types
-      // it as an array. Normalize defensively.
-      const filingsJoin = (ownership as { filings: unknown }).filings;
-      const filingRow = Array.isArray(filingsJoin) ? filingsJoin[0] : filingsJoin;
-      const taxYear = (filingRow as { tax_year: number }).tax_year;
+      const taxYear = ownership.taxYear;
 
       const admin = getServiceRoleClient();
 
@@ -100,16 +77,7 @@ export const deleteFilingRoute = registerApiRoute(
       }
 
       // 2. The filings row. FK cascade does the rest of the domain cleanup.
-      const { error: deleteErr } = await admin
-        .from("filings")
-        .delete()
-        .eq("id", filingId);
-      if (deleteErr) {
-        return c.json(
-          { error: `filings delete failed: ${deleteErr.message}` },
-          500,
-        );
-      }
+      await deleteFilingCascade(filingId);
 
       // 3. Mastra thread. The id format must match what the web app uses
       // when streaming (apps/web/lib/returns.ts:threadIdFor). Quietly

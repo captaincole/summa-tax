@@ -1,10 +1,19 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { InValue, Row } from "@libsql/client";
+import {
+  getAppDb,
+  ensureAppSchema,
+  type Scope,
+  asStr,
+  asStrOrNull,
+  asNum,
+  asJson,
+  nowIso,
+} from "./appDb";
 
-// All helpers take a user-scoped Supabase client (built per request from the
-// caller's JWT). RLS policies on public.tax_facts / public.open_questions
-// scope every read and write to auth.uid() — we don't write WHERE user_id
-// clauses ourselves, the database does. We still pass user_id explicitly on
-// inserts because RLS WITH CHECK validates it, and explicit beats implicit.
+// All helpers take an explicit Scope { userId, filingId } — the replacement
+// for the RLS policies that used to scope these queries in Postgres. Reads
+// filter on filing_id (matching the old member-read policy, so the CPA
+// review path keeps working); writes stamp both user_id and filing_id.
 
 export interface TaxFact {
   id: string;
@@ -28,45 +37,38 @@ export interface TaxFactRow {
   createdAt: string;
 }
 
-interface TaxFactDbRow {
-  id: string;
-  user_id: string;
-  tax_year: number;
-  category: string;
-  fact_key: string;
-  fact_value: unknown;
-  source_note: string | null;
-  created_at: string;
-}
-
-function rowToFact(r: TaxFactDbRow): TaxFactRow {
+function rowToFact(r: Row): TaxFactRow {
   return {
-    id: r.id,
-    userId: r.user_id,
-    taxYear: r.tax_year,
-    category: r.category,
-    key: r.fact_key,
-    value: r.fact_value,
-    sourceNote: r.source_note,
-    createdAt: r.created_at,
+    id: asStr(r.id),
+    userId: asStr(r.user_id),
+    taxYear: asNum(r.tax_year),
+    category: asStr(r.category),
+    key: asStr(r.fact_key),
+    value: asJson(r.fact_value),
+    sourceNote: asStrOrNull(r.source_note),
+    createdAt: asStr(r.created_at),
   };
 }
 
-export async function recordFact(
-  supabase: SupabaseClient,
-  fact: TaxFact,
-): Promise<void> {
-  const { error } = await supabase.from("tax_facts").insert({
-    id: fact.id,
-    user_id: fact.userId,
-    filing_id: fact.filingId,
-    tax_year: fact.taxYear,
-    category: fact.category,
-    fact_key: fact.key,
-    fact_value: fact.value,
-    source_note: fact.sourceNote ?? null,
+export async function recordFact(scope: Scope, fact: TaxFact): Promise<void> {
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `INSERT INTO tax_facts
+            (id, user_id, filing_id, tax_year, category, fact_key, fact_value, source_note, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      fact.id,
+      fact.userId,
+      fact.filingId,
+      fact.taxYear,
+      fact.category,
+      fact.key,
+      JSON.stringify(fact.value ?? null),
+      fact.sourceNote ?? null,
+      nowIso(),
+    ],
   });
-  if (error) throw new Error(`recordFact failed: ${error.message}`);
+  void scope; // scoping is explicit via fact.userId/filingId on insert
 }
 
 export interface ListFactsOpts {
@@ -77,40 +79,49 @@ export interface ListFactsOpts {
 }
 
 export async function listFacts(
-  supabase: SupabaseClient,
+  scope: Scope,
   opts: ListFactsOpts = {},
 ): Promise<TaxFactRow[]> {
-  let q = supabase
-    .from("tax_facts")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(Math.min(opts.limit ?? 100, 500));
-  if (opts.filingId) q = q.eq("filing_id", opts.filingId);
-  if (opts.taxYear !== undefined) q = q.eq("tax_year", opts.taxYear);
-  if (opts.category) q = q.eq("category", opts.category);
-  const { data, error } = await q;
-  if (error) throw new Error(`listFacts failed: ${error.message}`);
-  return (data ?? []).map(rowToFact);
+  await ensureAppSchema();
+  const conds: string[] = ["filing_id = ?"];
+  const args: InValue[] = [opts.filingId ?? scope.filingId];
+  if (opts.taxYear !== undefined) {
+    conds.push("tax_year = ?");
+    args.push(opts.taxYear);
+  }
+  if (opts.category) {
+    conds.push("category = ?");
+    args.push(opts.category);
+  }
+  args.push(Math.min(opts.limit ?? 100, 500));
+  const res = await getAppDb().execute({
+    sql: `SELECT * FROM tax_facts WHERE ${conds.join(" AND ")}
+          ORDER BY created_at DESC LIMIT ?`,
+    args,
+  });
+  return res.rows.map(rowToFact);
 }
 
 export async function listFactsByKeys(
-  supabase: SupabaseClient,
+  scope: Scope,
   taxYear: number,
   keys: string[],
 ): Promise<TaxFactRow[]> {
   if (keys.length === 0) return [];
-  const { data, error } = await supabase
-    .from("tax_facts")
-    .select("*")
-    .eq("tax_year", taxYear)
-    .in("fact_key", keys)
-    .order("created_at", { ascending: false });
-  if (error) throw new Error(`listFactsByKeys failed: ${error.message}`);
+  await ensureAppSchema();
+  const placeholders = keys.map(() => "?").join(",");
+  const res = await getAppDb().execute({
+    sql: `SELECT * FROM tax_facts
+          WHERE filing_id = ? AND tax_year = ? AND fact_key IN (${placeholders})
+          ORDER BY created_at DESC`,
+    args: [scope.filingId, taxYear, ...keys],
+  });
   // tax_facts is append-only; collapse to the latest row per fact_key.
   const latest = new Map<string, TaxFactRow>();
-  for (const r of (data ?? []) as TaxFactDbRow[]) {
-    if (latest.has(r.fact_key)) continue;
-    latest.set(r.fact_key, rowToFact(r));
+  for (const r of res.rows) {
+    const key = asStr(r.fact_key);
+    if (latest.has(key)) continue;
+    latest.set(key, rowToFact(r));
   }
   return Array.from(latest.values());
 }
@@ -141,66 +152,64 @@ export interface OpenQuestionRow {
   resolvedAt: string | null;
 }
 
-interface OpenQuestionDbRow {
-  id: string;
-  user_id: string;
-  status: string;
-  question: string;
-  context: string | null;
-  created_at: string;
-  resolved_at: string | null;
-}
-
-function rowToQuestion(r: OpenQuestionDbRow): OpenQuestionRow {
+function rowToQuestion(r: Row): OpenQuestionRow {
   return {
-    id: r.id,
-    userId: r.user_id,
-    status: r.status,
-    question: r.question,
-    context: r.context,
-    createdAt: r.created_at,
-    resolvedAt: r.resolved_at,
+    id: asStr(r.id),
+    userId: asStr(r.user_id),
+    status: asStr(r.status),
+    question: asStr(r.question),
+    context: asStrOrNull(r.context),
+    createdAt: asStr(r.created_at),
+    resolvedAt: asStrOrNull(r.resolved_at),
   };
 }
 
 export async function noteQuestion(
-  supabase: SupabaseClient,
+  scope: Scope,
   q: OpenQuestion,
 ): Promise<void> {
-  const { error } = await supabase.from("open_questions").insert({
-    id: q.id,
-    user_id: q.userId,
-    filing_id: q.filingId,
-    status: "open",
-    question: q.question,
-    context: q.context ?? null,
-    decision_id: q.decisionId ?? null,
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `INSERT INTO open_questions
+            (id, user_id, filing_id, status, question, context, decision_id, created_at)
+          VALUES (?, ?, ?, 'open', ?, ?, ?, ?)`,
+    args: [
+      q.id,
+      q.userId,
+      q.filingId,
+      q.question,
+      q.context ?? null,
+      q.decisionId ?? null,
+      nowIso(),
+    ],
   });
-  if (error) throw new Error(`noteQuestion failed: ${error.message}`);
+  void scope;
 }
 
 export async function listOpenQuestions(
-  supabase: SupabaseClient,
+  scope: Scope,
   status: "open" | "resolved" | "all" = "open",
 ): Promise<OpenQuestionRow[]> {
-  let q = supabase
-    .from("open_questions")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(200);
-  if (status !== "all") q = q.eq("status", status);
-  const { data, error } = await q;
-  if (error) throw new Error(`listOpenQuestions failed: ${error.message}`);
-  return ((data ?? []) as OpenQuestionDbRow[]).map(rowToQuestion);
+  await ensureAppSchema();
+  const conds = ["filing_id = ?"];
+  const args: InValue[] = [scope.filingId];
+  if (status !== "all") {
+    conds.push("status = ?");
+    args.push(status);
+  }
+  const res = await getAppDb().execute({
+    sql: `SELECT * FROM open_questions WHERE ${conds.join(" AND ")}
+          ORDER BY created_at DESC LIMIT 200`,
+    args,
+  });
+  return res.rows.map(rowToQuestion);
 }
 
-export async function resolveQuestion(
-  supabase: SupabaseClient,
-  id: string,
-): Promise<void> {
-  const { error } = await supabase
-    .from("open_questions")
-    .update({ status: "resolved", resolved_at: new Date().toISOString() })
-    .eq("id", id);
-  if (error) throw new Error(`resolveQuestion failed: ${error.message}`);
+export async function resolveQuestion(scope: Scope, id: string): Promise<void> {
+  await ensureAppSchema();
+  await getAppDb().execute({
+    sql: `UPDATE open_questions SET status = 'resolved', resolved_at = ?
+          WHERE id = ? AND filing_id = ?`,
+    args: [nowIso(), id, scope.filingId],
+  });
 }

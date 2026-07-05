@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { formatTaxpayerLabel, taxpayerNameForFiling } from "@/lib/cpa";
+import { getCpaFilingYear, taxpayerNameForFiling } from "@/lib/serverDb";
+import { formatTaxpayerLabel } from "@/lib/cpa";
 
 // Per-filing layout for the CPA review surface. Membership-gated; if the
 // signed-in user doesn't have a non-revoked cpa_reviewer row on this
@@ -25,22 +26,13 @@ export default async function CpaFilingLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Membership check: pulls the filing only if the caller has a non-revoked
-  // cpa_reviewer row. RLS makes this query empty for non-members anyway;
-  // the explicit eq() makes the gate readable.
-  const { data: filing, error } = await supabase
-    .from("filings")
-    .select(
-      "id, tax_year, status, filing_members!inner(role, revoked_at, user_id)",
-    )
-    .eq("id", filingId)
-    .eq("filing_members.user_id", user?.id ?? "")
-    .eq("filing_members.role", "cpa_reviewer")
-    .is("filing_members.revoked_at", null)
-    .maybeSingle();
-  if (error || !filing) notFound();
+  // Membership check — with RLS gone this explicit gate is the only thing
+  // standing between the caller and someone else's filing.
+  if (!user?.id) notFound();
+  const taxYear = await getCpaFilingYear(filingId, user.id);
+  if (taxYear === null) notFound();
 
-  const name = await taxpayerNameForFiling(supabase, filingId);
+  const name = await taxpayerNameForFiling(filingId);
   const label = formatTaxpayerLabel(name, filingId);
   const initials = (user?.email?.slice(0, 2) ?? "JD").toUpperCase();
 
@@ -61,7 +53,7 @@ export default async function CpaFilingLayout({
             {label}
           </span>
           <span className="text-[11px] uppercase tracking-[0.18em] text-ink-muted shrink-0">
-            Tax Year {(filing as { tax_year: number }).tax_year}
+            Tax Year {taxYear}
           </span>
         </div>
         <div className="flex-1" />

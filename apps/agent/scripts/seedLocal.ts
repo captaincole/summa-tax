@@ -1,17 +1,16 @@
 #!/usr/bin/env tsx
-// Local-Supabase seed.
+// Local seed.
 //
-// Runs AFTER `supabase db reset` (which has already applied migrations) and
-// creates:
+// Creates:
 //   1. Two auth users via the GoTrue admin API (one taxpayer owner + one
-//      registered CPA). We use the admin API rather than raw INSERT INTO
-//      auth.users because GoTrue handles bcrypt hashing, auth.identities
-//      row creation, and any future auth-schema additions Supabase ships.
-//      Resilient to upgrades.
+//      registered CPA). Auth is still Supabase until Phase 2, and we use the
+//      admin API rather than raw INSERT INTO auth.users because GoTrue
+//      handles bcrypt hashing, auth.identities row creation, and any future
+//      auth-schema additions Supabase ships. Resilient to upgrades.
 //   2. One 2025 owner filing for the taxpayer, with an `owner` filing_members
-//      row.
-//   3. A cpa_profiles row for the CPA user. The CPA is intentionally NOT
-//      pre-attached to any filing — the share flow (taxpayer invites CPA
+//      row — in the libsql app DB (.data/app.db), where domain data lives now.
+//   3. A cpa_profiles row (libsql) for the CPA user. The CPA is intentionally
+//      NOT pre-attached to any filing — the share flow (taxpayer invites CPA
 //      via /r/[id]/share) is what we want to exercise end-to-end.
 //
 // Idempotent — re-running this script after auth users / filings already
@@ -26,6 +25,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { Client as PgClient } from "pg";
+import { getAppDb, ensureAppSchema, nowIso } from "../src/mastra/db/appDb";
+import { createOwnerFiling } from "../src/mastra/db/filings";
 
 const TEST_OWNERS = [
   {
@@ -153,40 +154,22 @@ async function ensureOwnerFiling(
   taxYear: number,
 ): Promise<string> {
   // Look for an existing active owner membership for this (user, year).
-  const { data: existing, error: lookupError } = await admin
-    .from("filing_members")
-    .select("filing_id, filings!inner(id, tax_year)")
-    .eq("user_id", userId)
-    .eq("role", "owner")
-    .is("revoked_at", null)
-    .eq("filings.tax_year", taxYear);
-  if (lookupError) {
-    throw new Error(`filing lookup failed for ${email}: ${lookupError.message}`);
-  }
-  if (existing && existing.length > 0) {
-    const filingId = (existing[0] as { filing_id: string }).filing_id;
+  const db = getAppDb();
+  const existing = await db.execute({
+    sql: `SELECT m.filing_id FROM filing_members m
+          JOIN filings f ON f.id = m.filing_id
+          WHERE m.user_id = ? AND m.role = 'owner' AND m.revoked_at IS NULL
+            AND f.tax_year = ?`,
+    args: [userId, taxYear],
+  });
+  if (existing.rows.length > 0) {
+    const filingId = String(existing.rows[0].filing_id);
     console.log(`  filing for ${email} already exists (${filingId})`);
     return filingId;
   }
 
-  // Insert filing + owner membership. Two statements via the service-role
-  // client; we use crypto.randomUUID() in JS so we can reuse the id across
-  // both inserts without a RETURNING round-trip.
   const filingId = crypto.randomUUID();
-  const { error: filingError } = await admin
-    .from("filings")
-    .insert({ id: filingId, tax_year: taxYear, status: "draft" });
-  if (filingError) {
-    throw new Error(`insert filing for ${email} failed: ${filingError.message}`);
-  }
-  const { error: memberError } = await admin
-    .from("filing_members")
-    .insert({ filing_id: filingId, user_id: userId, role: "owner" });
-  if (memberError) {
-    throw new Error(
-      `insert filing_members for ${email} failed: ${memberError.message}`,
-    );
-  }
+  await createOwnerFiling({ filingId, userId, taxYear });
   console.log(
     `  created ${taxYear} owner filing for ${email} (${filingId})`,
   );
@@ -198,32 +181,32 @@ async function ensureCpaProfile(
   email: string,
   profile: { displayName: string; firm: string; licenseNumber: string },
 ): Promise<void> {
-  const { data: existing, error: lookupError } = await admin
-    .from("cpa_profiles")
-    .select("user_id")
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (lookupError) {
-    throw new Error(`cpa_profiles lookup for ${email} failed: ${lookupError.message}`);
-  }
-  if (existing) {
+  const db = getAppDb();
+  const existing = await db.execute({
+    sql: `SELECT user_id FROM cpa_profiles WHERE user_id = ? LIMIT 1`,
+    args: [userId],
+  });
+  if (existing.rows.length > 0) {
     console.log(`  cpa_profile for ${email} already exists`);
     return;
   }
-  const { error } = await admin.from("cpa_profiles").insert({
-    user_id: userId,
-    display_name: profile.displayName,
-    firm: profile.firm,
-    license_number: profile.licenseNumber,
+  await db.execute({
+    sql: `INSERT INTO cpa_profiles (user_id, display_name, firm, license_number, created_at)
+          VALUES (?, ?, ?, ?, ?)`,
+    args: [
+      userId,
+      profile.displayName,
+      profile.firm,
+      profile.licenseNumber,
+      nowIso(),
+    ],
   });
-  if (error) {
-    throw new Error(`insert cpa_profile for ${email} failed: ${error.message}`);
-  }
   console.log(`  created cpa_profile for ${email}`);
 }
 
 async function main() {
-  console.log(`Seeding local Supabase at ${SUPABASE_URL}`);
+  console.log(`Seeding local auth (${SUPABASE_URL}) + libsql app DB`);
+  await ensureAppSchema();
 
   const pg = new PgClient({ connectionString: POSTGRES_URL });
   await pg.connect();

@@ -1,4 +1,3 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 import {
@@ -8,6 +7,7 @@ import {
 } from "../engine";
 import type { BaseFormField, EngineDerivation } from "../engine/types";
 import { resolveOwnerFilingForYear } from "../db/filings";
+import type { Scope } from "../db/appDb";
 import { requireUserContext } from "./userContext";
 
 // Live case state for Luca. Runs the four-form engine against the current
@@ -45,31 +45,36 @@ type EvaluatedFormSummary = {
 };
 
 // Exported so server routes (appState.ts) can run the same computation
-// outside the Mastra tool surface, with the same supabase client. Thin
-// wrapper over the engine's evaluateScenario — adds the case-state-
-// specific summary/money/pendingFacts derivations on top of the raw
-// engine output.
+// outside the Mastra tool surface. Thin wrapper over the engine's
+// evaluateScenario — adds the case-state-specific summary/money/pendingFacts
+// derivations on top of the raw engine output.
 export async function buildCaseState(
-  supabase: SupabaseClient,
+  userId: string,
   year: number,
+  authEmail: string | null = null,
 ) {
-  const filingRow = await resolveOwnerFilingForYear(supabase, year);
+  const filingRow = await resolveOwnerFilingForYear(userId, year);
   const filing: EngineFiling = { id: filingRow.id, taxYear: filingRow.taxYear };
-  return buildCaseStateForScenario(await evaluateScenario(supabase, filing));
+  const scope: Scope = { userId, filingId: filingRow.id };
+  return buildCaseStateForScenario(
+    await evaluateScenario(scope, filing, authEmail),
+  );
 }
 
 // Variant that takes a filing identity directly — used by the CPA review
 // route, where the caller is NOT the owner and the owner resolver would
 // throw. Caller is responsible for verifying the user is allowed to read
-// this filing (e.g. via filing_members membership) BEFORE invoking; this
+// this filing (via filing_members membership) BEFORE invoking; this
 // function trusts the inputs.
 export async function buildCaseStateForFiling(
-  supabase: SupabaseClient,
-  filingId: string,
+  scope: Scope,
   taxYear: number,
+  authEmail: string | null = null,
 ) {
-  const filing: EngineFiling = { id: filingId, taxYear };
-  return buildCaseStateForScenario(await evaluateScenario(supabase, filing));
+  const filing: EngineFiling = { id: scope.filingId, taxYear };
+  return buildCaseStateForScenario(
+    await evaluateScenario(scope, filing, authEmail),
+  );
 }
 
 export function buildCaseStateForScenario(scenario: EvaluatedScenario) {
@@ -259,10 +264,11 @@ export const getCaseState = createTool({
     ),
   }),
   execute: async (_input, context) => {
-    const { supabase, filingId, taxYear } = await requireUserContext(context);
+    const { scope, filingId, taxYear, authEmail: jwtEmail } =
+      await requireUserContext(context);
     // requireUserContext already resolved the active filing — skip the extra
     // resolveOwnerFilingForYear that buildCaseState would do.
-    const scenario = await evaluateScenario(supabase, { id: filingId, taxYear });
+    const scenario = await evaluateScenario(scope, { id: filingId, taxYear }, jwtEmail);
     const {
       summaries,
       pendingDecisions,

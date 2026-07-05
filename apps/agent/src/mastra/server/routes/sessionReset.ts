@@ -24,7 +24,7 @@ export const sessionResetRoute = registerApiRoute("/app/session/reset", {
     if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
 
     const { domainRowsDeleted, mastraThreadsDeleted, documentsDeleted } =
-      await resetCurrentUserData(supabase, pgPool, userId);
+      await resetCurrentUserData(pgPool, userId);
 
     return c.json({
       ok: true,

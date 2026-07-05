@@ -1,18 +1,28 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { InValue, Row } from "@libsql/client";
+import { getServiceRoleClient } from "./supabase";
+import {
+  getAppDb,
+  ensureAppSchema,
+  type Scope,
+  asStr,
+  asStrOrNull,
+  asNumOrNull,
+  asJson,
+  nowIso,
+} from "./appDb";
 
 // Storage helper for user-owned documents (drafts, finals, uploads).
 //
 // Two stores work in tandem:
-//   - public.user_documents (metadata) — what files exist, when, what kind.
-//   - user-documents bucket (bytes) — the actual PDF/JSON/etc.
+//   - user_documents (metadata, libsql app.db) — what files exist, when, what kind.
+//   - user-documents bucket (bytes, Supabase Storage) — the actual PDF/JSON/etc.
+//     Blobs move to the local filesystem in Phase 1 step 4. Until then the
+//     upload goes through the SERVICE-ROLE client: the bucket's RLS policies
+//     reference public.filing_members, which is empty now that memberships
+//     live in libsql — user-JWT storage calls are denied. Callers must have
+//     verified the user's filing access (requireUserContext) before calling.
 //
-// Both layers enforce RLS via auth.uid(); supabase clients passed in here
-// must be user-scoped (built per-request from the user's JWT). Service-role
-// callers bypass RLS — only use them for admin operations like reset.
-//
-// Storage paths are `{filingId}/{category}/{slug}-{ulid}.{ext}`. Filing-id
-// prefix lets the storage.objects RLS policy gate access via filing_members
-// membership (parallel to the row-level policy on user_documents). The ULID
+// Storage paths are `{filingId}/{category}/{slug}-{ulid}.{ext}`. The ULID
 // suffix avoids collisions when generate-tax-documents runs multiple times
 // (each run creates new rows + new files; old chat-message links keep
 // resolving to the version they were generated against).
@@ -35,33 +45,19 @@ export interface UserDocumentRow {
   metadata: Record<string, unknown> | null;
 }
 
-interface UserDocumentDbRow {
-  id: string;
-  user_id: string;
-  category: string;
-  scenario: string | null;
-  filename: string;
-  storage_path: string;
-  size_bytes: number | null;
-  mime_type: string | null;
-  expires_at: string | null;
-  created_at: string;
-  metadata: Record<string, unknown> | null;
-}
-
-function rowToDocument(r: UserDocumentDbRow): UserDocumentRow {
+function rowToDocument(r: Row): UserDocumentRow {
   return {
-    id: r.id,
-    userId: r.user_id,
-    category: r.category as Category,
-    scenario: r.scenario,
-    filename: r.filename,
-    storagePath: r.storage_path,
-    sizeBytes: r.size_bytes,
-    mimeType: r.mime_type,
-    expiresAt: r.expires_at,
-    createdAt: r.created_at,
-    metadata: r.metadata,
+    id: asStr(r.id),
+    userId: asStr(r.user_id),
+    category: asStr(r.category) as Category,
+    scenario: asStrOrNull(r.scenario),
+    filename: asStr(r.filename),
+    storagePath: asStr(r.storage_path),
+    sizeBytes: asNumOrNull(r.size_bytes),
+    mimeType: asStrOrNull(r.mime_type),
+    expiresAt: asStrOrNull(r.expires_at),
+    createdAt: asStr(r.created_at),
+    metadata: asJson(r.metadata) as Record<string, unknown> | null,
   };
 }
 
@@ -123,9 +119,9 @@ export interface CreateDocumentResult {
 // future GC pass). The reverse ordering (insert first, then upload) leaves a
 // row pointing at non-existent bytes which is worse — broken download links.
 export async function createDocument(
-  supabase: SupabaseClient,
   input: CreateDocumentInput,
 ): Promise<CreateDocumentResult> {
+  await ensureAppSchema();
   const storagePath = buildStoragePath(
     input.filingId,
     input.category,
@@ -133,7 +129,7 @@ export async function createDocument(
     input.extension,
   );
 
-  const upload = await supabase.storage
+  const upload = await getServiceRoleClient().storage
     .from(BUCKET)
     .upload(storagePath, input.bytes, {
       contentType: input.mimeType,
@@ -147,27 +143,29 @@ export async function createDocument(
     ? new Date(Date.now() + input.expiresInDays * 86400000).toISOString()
     : null;
 
-  const { data, error } = await supabase
-    .from("user_documents")
-    .insert({
-      user_id: input.userId,
-      filing_id: input.filingId,
-      category: input.category,
-      scenario: input.scenario ?? null,
-      filename: input.filename,
-      storage_path: storagePath,
-      size_bytes: input.bytes.byteLength,
-      mime_type: input.mimeType,
-      expires_at: expiresAt,
-      metadata: input.metadata ?? null,
-    })
-    .select("id")
-    .single();
-  if (error) {
-    throw new Error(`createDocument insert failed: ${error.message}`);
-  }
+  const id = crypto.randomUUID();
+  await getAppDb().execute({
+    sql: `INSERT INTO user_documents
+            (id, user_id, filing_id, category, scenario, filename, storage_path,
+             size_bytes, mime_type, expires_at, created_at, metadata)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      id,
+      input.userId,
+      input.filingId,
+      input.category,
+      input.scenario ?? null,
+      input.filename,
+      storagePath,
+      input.bytes.byteLength,
+      input.mimeType,
+      expiresAt,
+      nowIso(),
+      input.metadata ? JSON.stringify(input.metadata) : null,
+    ],
+  });
 
-  return { id: data.id as string, storagePath };
+  return { id, storagePath };
 }
 
 export interface ListDocumentsOpts {
@@ -177,34 +175,46 @@ export interface ListDocumentsOpts {
   formId?: string;
   /** Filter by metadata.taxYear. */
   taxYear?: number;
-  /** Filter by filing_id. Required when a caller has membership on more than
-   *  one filing (e.g. a CPA reviewing multiple taxpayers) — without it
-   *  drafts from sibling filings co-mingle in the result. */
+  /** Override the scope's filing (e.g. a CPA reviewing another filing —
+   *  membership must be verified by the caller first). */
   filingId?: string;
   limit?: number;
 }
 
 export async function listDocuments(
-  supabase: SupabaseClient,
+  scope: Scope,
   opts: ListDocumentsOpts = {},
 ): Promise<UserDocumentRow[]> {
-  let q = supabase
-    .from("user_documents")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(Math.min(opts.limit ?? 100, 500));
-  if (opts.category) q = q.eq("category", opts.category);
+  await ensureAppSchema();
+  const conds: string[] = ["filing_id = ?"];
+  const args: InValue[] = [opts.filingId ?? scope.filingId];
+  if (opts.category) {
+    conds.push("category = ?");
+    args.push(opts.category);
+  }
   if (opts.scenario !== undefined) {
-    if (opts.scenario === null) q = q.is("scenario", null);
-    else q = q.eq("scenario", opts.scenario);
+    if (opts.scenario === null) conds.push("scenario IS NULL");
+    else {
+      conds.push("scenario = ?");
+      args.push(opts.scenario);
+    }
   }
-  if (opts.formId) q = q.eq("metadata->>formId", opts.formId);
+  if (opts.formId) {
+    conds.push(`json_extract(metadata, '$.formId') = ?`);
+    args.push(opts.formId);
+  }
   if (opts.taxYear !== undefined) {
-    q = q.eq("metadata->>taxYear", String(opts.taxYear));
+    // metadata.taxYear is stored as a JSON number; json_extract returns it
+    // numerically, so compare against the number (the old PostgREST ->> path
+    // compared text — SQLite lets us skip the stringify).
+    conds.push(`json_extract(metadata, '$.taxYear') = ?`);
+    args.push(opts.taxYear);
   }
-  if (opts.filingId) q = q.eq("filing_id", opts.filingId);
-  const { data, error } = await q;
-  if (error) throw new Error(`listDocuments failed: ${error.message}`);
-  return ((data ?? []) as UserDocumentDbRow[]).map(rowToDocument);
+  args.push(Math.min(opts.limit ?? 100, 500));
+  const res = await getAppDb().execute({
+    sql: `SELECT * FROM user_documents WHERE ${conds.join(" AND ")}
+          ORDER BY created_at DESC LIMIT ?`,
+    args,
+  });
+  return res.rows.map(rowToDocument);
 }
-

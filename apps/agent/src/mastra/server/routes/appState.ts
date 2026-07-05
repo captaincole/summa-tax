@@ -1,4 +1,3 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
@@ -47,18 +46,21 @@ export const appStateRoute = registerApiRoute("/app/state", {
   method: "GET",
   handler: async (c) => {
     const requestContext = c.get("requestContext");
-    const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
-      | SupabaseClient
-      | undefined;
     const userId = requestContext?.get(MASTRA_RESOURCE_ID_KEY) as
       | string
       | undefined;
-    if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
+    const authEmail =
+      (requestContext?.get(REQUEST_CONTEXT_KEYS.userEmail) as
+        | string
+        | undefined) ?? null;
+    if (!userId) return c.json({ error: "unauthorized" }, 401);
 
+    const filing = await resolveOwnerFilingForYear(userId, DEMO_TAX_YEAR);
+    const scope = { userId, filingId: filing.id };
     const [caseState, plan, drafts] = await Promise.all([
-      buildCaseState(supabase, DEMO_TAX_YEAR),
+      buildCaseState(userId, DEMO_TAX_YEAR, authEmail),
       readLucaPlan(threadIdFor(userId, DEMO_TAX_YEAR)),
-      listDocuments(supabase, { category: "drafts", taxYear: DEMO_TAX_YEAR }),
+      listDocuments(scope, { category: "drafts", taxYear: DEMO_TAX_YEAR }),
     ]);
 
     // Most recent draft per formId. listDocuments returns newest-first, so

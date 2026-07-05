@@ -1,26 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ACTIVITY_TAX_YEAR,
-  decisionRowToItem,
-  factRowToItem,
   fetchActivityItems,
   type ActivityItem,
   type Verdict,
 } from "@/lib/activity";
-import { createClient } from "@/lib/supabase/client";
-import { useAppShell } from "@/components/AppShell";
 import { cn } from "@/lib/cn";
 
 interface ActivityCardProps {
   // Bumped by the parent when activity may have changed (new turn, reset, etc).
   // Also serves as the "wipe and refetch" trigger after a session reset; the
-  // realtime subscription handles incremental updates between bumps.
+  // interval poll handles incremental updates between bumps.
   refreshKey: number;
 }
 
 const ACTIVITY_LIMIT = 50;
+// Plain interval polling against /api/activity — the libsql app DB has no
+// push channel (Supabase Realtime left with Postgres), and for one user on
+// one box a fast regular poll is indistinguishable from push.
+const POLL_INTERVAL_MS = 3000;
 
 const VERDICT_LABEL: Record<Verdict, string> = {
   pending: "Reviewing…",
@@ -98,112 +97,33 @@ function isObject(v: unknown): v is Record<string, unknown> {
 }
 
 export function ActivityCard({ refreshKey }: ActivityCardProps) {
-  const { userId } = useAppShell();
-  const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState<ActivityItem[] | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  // Initial fetch + reset re-fetch. The realtime subscription below handles
-  // everything in between, so we only fetch on mount and when the parent
-  // bumps refreshKey (post-reset or post-turn safety net).
+  // Fetch on mount / refreshKey bump, then poll on a fast regular interval.
+  // Both paths replace the whole list — the endpoint returns the newest
+  // ACTIVITY_LIMIT rows already sorted, so there's no client-side merge to
+  // get wrong, and verdict updates (pending → grounded) come along free.
   useEffect(() => {
     let cancelled = false;
-    fetchActivityItems(supabase, ACTIVITY_LIMIT)
-      .then((rows) => {
+
+    async function load() {
+      try {
+        const rows = await fetchActivityItems(ACTIVITY_LIMIT);
         if (!cancelled) setItems(rows);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.warn("[activity] fetch failed:", err);
-        if (!cancelled) setItems([]);
-      });
+        if (!cancelled) setItems((prev) => prev ?? []);
+      }
+    }
+
+    void load();
+    const timer = setInterval(() => void load(), POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
-  }, [refreshKey, supabase]);
-
-  // Realtime — one channel, three listeners. RLS already scopes broadcasts to
-  // the owner; the user_id filter is a defensive narrow that also avoids
-  // deserializing other tax years' rows.
-  useEffect(() => {
-    const userFilter = `user_id=eq.${userId}`;
-
-    function prepend(item: ActivityItem) {
-      setItems((prev) => {
-        const base = prev ?? [];
-        if (base.some((existing) => existing.id === item.id)) return base;
-        return [item, ...base].slice(0, ACTIVITY_LIMIT);
-      });
-    }
-
-    function patch(item: ActivityItem) {
-      setItems((prev) => {
-        if (!prev) return prev;
-        const idx = prev.findIndex((existing) => existing.id === item.id);
-        if (idx === -1) return prev;
-        const next = prev.slice();
-        next[idx] = item;
-        return next;
-      });
-    }
-
-    // Channel name MUST be unique per mount. supabase-js memoizes channels by
-    // name — a second call with the same name returns the existing channel,
-    // and calling `.on()` on a channel that already had `.subscribe()` throws.
-    // Route navigation in the new shell mounts/unmounts ActivityCard, and
-    // React Strict Mode double-mounts in dev, both of which collide on a
-    // stable name. Random suffix sidesteps the issue without leaning on
-    // removeChannel timing.
-    const channelName = `activity-${userId}-${Math.random().toString(36).slice(2, 10)}`;
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "tax_facts",
-          filter: userFilter,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-          prepend(factRowToItem(row));
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "ai_decisions",
-          filter: userFilter,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-          prepend(decisionRowToItem(row));
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "ai_decisions",
-          filter: userFilter,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-          patch(decisionRowToItem(row));
-        },
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [supabase, userId]);
+  }, [refreshKey]);
 
   function toggle(id: string) {
     setExpanded((prev) => {

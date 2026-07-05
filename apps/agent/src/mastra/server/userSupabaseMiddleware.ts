@@ -22,10 +22,15 @@ import { getUserScopedClient } from "../db/supabase";
 
 export const REQUEST_CONTEXT_KEYS = {
   userSupabase: "userSupabase",
+  // JWT email claim — replaces the supabase.auth.getUser() round-trip the
+  // engine used to make for authEmail enrichment (domain data now lives in
+  // libsql, so the engine no longer has a Supabase client to ask).
+  userEmail: "userEmail",
 } as const;
 
 interface JwtPayload {
   sub?: string;
+  email?: string;
 }
 
 function decodeJwtPayload(jwt: string): JwtPayload | null {
@@ -50,6 +55,9 @@ export const userSupabaseMiddleware: MiddlewareHandler = async (c, next) => {
       const payload = decodeJwtPayload(jwt);
       if (payload?.sub) {
         requestContext.set(MASTRA_RESOURCE_ID_KEY, payload.sub);
+      }
+      if (payload?.email) {
+        requestContext.set(REQUEST_CONTEXT_KEYS.userEmail, payload.email);
       }
     }
   }

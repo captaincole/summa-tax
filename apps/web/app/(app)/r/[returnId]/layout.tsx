@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/AppShell";
-import { listOwnerReturns } from "@/lib/returns";
+import { listOwnerReturns } from "@/lib/serverDb";
 import { deriveProfile } from "@/lib/profile";
 
 // Return-scoped layout. Resolves the route param against the caller's real
@@ -29,7 +29,7 @@ export default async function ReturnLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const returns = await listOwnerReturns(supabase);
+  const returns = await listOwnerReturns(user.id);
   const activeReturn = returns.find((r) => r.year === year);
   if (!activeReturn) redirect("/");
 

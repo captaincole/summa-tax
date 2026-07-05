@@ -1,16 +1,19 @@
 // Engine public API. Tools / HTTP routes / scripts call into the engine
 // through these two functions:
 //
-//   evaluateScenario(supabase, filing) → EvaluatedScenario
-//   renderForm(scenario, formId)        → RenderedForm
+//   evaluateScenario(scope, filing, authEmail?) → EvaluatedScenario
+//   renderForm(scenario, formId)                → RenderedForm
 //
-// evaluateScenario reads facts + decisions for a filing, superseded by
+// evaluateScenario reads facts + decisions for a filing (libsql app DB,
+// scoped explicitly via Scope now that RLS is gone), superseded by
 // most-recent-per-key, projects them into FilingInfo, and fixpoint-
 // evaluates every registered form against the resulting context. It
 // returns the raw evaluated forms map plus the underlying facts /
 // decisions / filingInfo / authEmail so downstream consumers
 // (case-state summarizer, document generator) can compute their own
-// derived views without re-reading the DB.
+// derived views without re-reading the DB. authEmail is enrichment-only
+// (Luca acknowledges it back to the user at doc-gen time) — callers pass
+// it from the JWT email claim; it's never load-bearing for evaluation.
 //
 // renderForm fills the catalog widgets on a form's blank PDF with the
 // values produced by evaluateScenario. The blank PDF lives at
@@ -24,7 +27,7 @@
 
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Scope } from "../db/appDb.js";
 import { listFacts, type TaxFactRow } from "../db/taxFacts.js";
 import { listDecisions, type AIDecisionRow } from "../db/aiDecisions.js";
 import { evaluateAllForms } from "./engine.js";
@@ -92,23 +95,19 @@ function supersede<T>(rows: T[], keyer: (row: T) => string): T[] {
 }
 
 export async function evaluateScenario(
-  supabase: SupabaseClient,
+  scope: Scope,
   filing: EngineFiling,
+  authEmail: string | null = null,
 ): Promise<EvaluatedScenario> {
   // Register all form bindings before evaluation. Idempotent — calling
   // twice overwrites in place — and cheap, so we do it on every call
   // rather than rely on module-load side effects.
   registerAllForms();
 
-  const [factRowsRaw, decisionRowsRaw, authUserRes] = await Promise.all([
-    listFacts(supabase, { filingId: filing.id, limit: 500 }),
-    listDecisions(supabase, { filingId: filing.id, limit: 500 }),
-    // Enriching only — Luca acknowledges authEmail back to the user at
-    // doc-gen time and records it as identity.email before rendering.
-    // Never load-bearing for the engine, so swallow failures.
-    supabase.auth.getUser().catch(() => null),
+  const [factRowsRaw, decisionRowsRaw] = await Promise.all([
+    listFacts(scope, { filingId: filing.id, limit: 500 }),
+    listDecisions(scope, { filingId: filing.id, limit: 500 }),
   ]);
-  const authEmail = authUserRes?.data?.user?.email ?? null;
 
   const facts = supersede(factRowsRaw, (r) => r.key);
   const decisions = supersede(decisionRowsRaw, (r) => r.decisionKey);

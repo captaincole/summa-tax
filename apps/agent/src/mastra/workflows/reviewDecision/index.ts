@@ -21,6 +21,7 @@ import {
   completeReviewRun,
 } from "../../db/reviewRuns";
 import { setDecisionVerdict } from "../../db/aiDecisions";
+import type { Scope } from "../../db/appDb";
 import { REQUEST_CONTEXT_KEYS } from "../../server/userSupabaseMiddleware";
 
 // ---------------------------------------------------------------------------
@@ -69,14 +70,16 @@ export type { ReviewDecisionOutput };
 
 export async function reviewDecision(
   supabase: SupabaseClient,
-  userId: string,
+  scope: Scope,
   decisionId: string,
 ): Promise<ReviewDecisionOutput> {
   const requestContext = new RequestContext();
   requestContext.set(REQUEST_CONTEXT_KEYS.userSupabase, supabase);
-  requestContext.set(MASTRA_RESOURCE_ID_KEY, userId);
+  requestContext.set(MASTRA_RESOURCE_ID_KEY, scope.userId);
 
-  const run = await reviewDecisionWorkflow.createRun({ resourceId: userId });
+  const run = await reviewDecisionWorkflow.createRun({
+    resourceId: scope.userId,
+  });
 
   try {
     const result = await run.start({
@@ -100,7 +103,7 @@ export async function reviewDecision(
     const reason = err instanceof Error ? err.message : String(err);
     try {
       await setDecisionVerdict(
-        supabase,
+        scope,
         decisionId,
         "review_failed",
         reason,
@@ -114,7 +117,7 @@ export async function reviewDecision(
     const runId = (err as { reviewRunId?: string }).reviewRunId;
     if (runId) {
       try {
-        await completeReviewRun(supabase, {
+        await completeReviewRun(scope, {
           id: runId,
           status: "failed",
           finalVerdict: "review_failed",

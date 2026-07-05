@@ -1,5 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
+import { getAppDb, nowIso } from "../db/appDb";
 import { requireUserContext } from "./userContext";
 
 // dismiss-requested-action: close a dashboard upload card after Luca has
@@ -27,32 +28,25 @@ export const dismissRequestedAction = createTool({
     actionId: z.string().nullable(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId } = await requireUserContext(context);
+    const { userId } = await requireUserContext(context);
+    const db = getAppDb();
 
-    const { data, error } = await supabase
-      .from("requested_actions")
-      .select("id")
-      .eq("user_id", userId)
-      .ilike("document_type", input.documentType)
-      .in("status", ["open", "processing"])
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (error) throw new Error(`dismiss-requested-action find: ${error.message}`);
-    if (!data || data.length === 0) {
+    const found = await db.execute({
+      sql: `SELECT id FROM requested_actions
+            WHERE user_id = ? AND lower(document_type) = lower(?)
+              AND status IN ('open','processing')
+            ORDER BY created_at DESC LIMIT 1`,
+      args: [userId, input.documentType],
+    });
+    if (found.rows.length === 0) {
       return { dismissed: false, actionId: null };
     }
 
-    const actionId = data[0].id as string;
-    const { error: updateError } = await supabase
-      .from("requested_actions")
-      .update({
-        status: "resolved",
-        resolved_at: new Date().toISOString(),
-      })
-      .eq("id", actionId);
-    if (updateError) {
-      throw new Error(`dismiss-requested-action update: ${updateError.message}`);
-    }
+    const actionId = String(found.rows[0].id);
+    await db.execute({
+      sql: `UPDATE requested_actions SET status = 'resolved', resolved_at = ? WHERE id = ?`,
+      args: [nowIso(), actionId],
+    });
     return { dismissed: true, actionId };
   },
 });

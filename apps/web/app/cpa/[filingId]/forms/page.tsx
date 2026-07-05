@@ -17,7 +17,6 @@
 
 import { use, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { fetchCpaFilingState, type CpaFilingState } from "@/lib/cpa";
 import type { FormSummary } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -63,21 +62,19 @@ export default function CpaFormsTab() {
 
   useEffect(() => {
     let cancelled = false;
-    const supabase = createClient();
-    supabase
-      .from("user_documents")
-      .select("id, filename, created_at, mime_type, size_bytes, metadata")
-      .eq("category", "drafts")
-      .eq("filing_id", filingId)
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          console.warn("[cpa-forms] drafts fetch failed:", error.message);
-          setDrafts([]);
-          return;
-        }
-        setDrafts((data ?? []) as DraftRow[]);
+    fetch(`/api/drafts?filingId=${encodeURIComponent(filingId)}`, {
+      cache: "no-store",
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return (await res.json()) as DraftRow[];
+      })
+      .then((rows) => {
+        if (!cancelled) setDrafts(rows);
+      })
+      .catch((err) => {
+        console.warn("[cpa-forms] drafts fetch failed:", err);
+        if (!cancelled) setDrafts([]);
       });
     return () => {
       cancelled = true;

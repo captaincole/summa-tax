@@ -18,7 +18,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { listOwnerReturns, type TaxReturn } from "@/lib/returns";
+import { hasCpaProfile, hasOwnerMembership, listOwnerReturns } from "@/lib/serverDb";
+import { type TaxReturn } from "@/lib/returns";
 import { deriveProfile, type UserProfile } from "@/lib/profile";
 import { cn } from "@/lib/cn";
 import { HomeTopBar } from "./HomeTopBar";
@@ -72,22 +73,15 @@ export default async function HomeHome() {
   // renders an empty 'Nothing to review' state). Mixed-role users (CPA who
   // also owns their own return) stay on the taxpayer home.
   if (user?.id) {
-    const { count: cpaProfileCount } = await supabase
-      .from("cpa_profiles")
-      .select("user_id", { count: "exact", head: true })
-      .eq("user_id", user.id);
-    if ((cpaProfileCount ?? 0) > 0) {
-      const { count: ownerCount } = await supabase
-        .from("filing_members")
-        .select("filing_id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("role", "owner")
-        .is("revoked_at", null);
-      if ((ownerCount ?? 0) === 0) redirect("/cpa");
+    if (
+      (await hasCpaProfile(user.id)) &&
+      !(await hasOwnerMembership(user.id))
+    ) {
+      redirect("/cpa");
     }
   }
 
-  const returns = await listOwnerReturns(supabase);
+  const returns = user?.id ? await listOwnerReturns(user.id) : [];
   const hasCurrentYear = returns.some((r) => r.year === CURRENT_TAX_YEAR);
   const hasAnyFiledReturn = returns.some((r) => r.state === "filed");
 

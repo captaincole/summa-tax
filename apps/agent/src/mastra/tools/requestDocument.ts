@@ -1,5 +1,6 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
+import { getAppDb, nowIso } from "../db/appDb";
 import { requireUserContext } from "./userContext";
 
 // request-document-upload: surface a structured "Luca needs you to upload X"
@@ -38,45 +39,45 @@ export const requestDocumentUpload = createTool({
     requested: z.boolean(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId } = await requireUserContext(context);
+    const { userId, filingId } = await requireUserContext(context);
+    const db = getAppDb();
 
     // Dedup: one open|processing card per documentType. If Luca calls
     // this tool twice for "W-2" in the same turn (or across turns
     // before the user uploaded), we return the existing card's id
     // instead of stacking duplicates on the dashboard. The user only
-    // ever has one Upload button per document to click.
-    const { data: existing, error: findErr } = await supabase
-      .from("requested_actions")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("tax_year", input.year)
-      .ilike("document_type", input.documentType)
-      .in("status", ["open", "processing"])
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (findErr) {
-      throw new Error(`request-document-upload find: ${findErr.message}`);
-    }
-    if (existing && existing.length > 0) {
-      return { id: existing[0].id as string, requested: false };
+    // ever has one Upload button per document to click. (The old
+    // PostgREST ilike had no wildcards — case-insensitive equality.)
+    const existing = await db.execute({
+      sql: `SELECT id FROM requested_actions
+            WHERE user_id = ? AND tax_year = ?
+              AND lower(document_type) = lower(?)
+              AND status IN ('open','processing')
+            ORDER BY created_at DESC LIMIT 1`,
+      args: [userId, input.year, input.documentType],
+    });
+    if (existing.rows.length > 0) {
+      return { id: String(existing.rows[0].id), requested: false };
     }
 
     const id = crypto.randomUUID();
-    const { error } = await supabase.from("requested_actions").insert({
-      id,
-      user_id: userId,
-      filing_id: filingId,
-      tax_year: input.year,
-      kind: "upload",
-      title: input.title,
-      detail: input.detail,
-      document_type: input.documentType,
-      accept_pattern: "application/pdf,image/png,image/jpeg,image/webp",
-      status: "open",
+    await db.execute({
+      sql: `INSERT INTO requested_actions
+              (id, user_id, filing_id, tax_year, kind, title, detail,
+               document_type, accept_pattern, status, created_at)
+            VALUES (?, ?, ?, ?, 'upload', ?, ?, ?, ?, 'open', ?)`,
+      args: [
+        id,
+        userId,
+        filingId,
+        input.year,
+        input.title,
+        input.detail,
+        input.documentType,
+        "application/pdf,image/png,image/jpeg,image/webp",
+        nowIso(),
+      ],
     });
-    if (error) {
-      throw new Error(`request-document-upload insert: ${error.message}`);
-    }
     return { id, requested: true };
   },
 });

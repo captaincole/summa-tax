@@ -55,9 +55,9 @@ export const recordAIDecision = createTool({
     verdictReason: z.string(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId } = await requireUserContext(context);
+    const { supabase, scope, userId, filingId } = await requireUserContext(context);
     const id = crypto.randomUUID();
-    await recordDecision(supabase, {
+    await recordDecision(scope, {
       id,
       userId,
       filingId,
@@ -79,7 +79,7 @@ export const recordAIDecision = createTool({
     // 'review_failed' on the row before re-throwing, so a failed review
     // shows up in the activity feed regardless.
     waitUntil(
-      reviewDecision(supabase, userId, id).catch((err) => {
+      reviewDecision(supabase, scope, id).catch((err) => {
         console.error(
           `[review-decision] background run failed for decision ${id}:`,
           err,
@@ -136,8 +136,8 @@ export const listAIDecisions = createTool({
     ),
   }),
   execute: async (input, context) => {
-    const { supabase } = await requireUserContext(context);
-    const decisions = await listDecisions(supabase, {
+    const { scope } = await requireUserContext(context);
+    const decisions = await listDecisions(scope, {
       taxYear: input.year,
       decisionKey: input.decisionKey,
       limit: input.limit,
