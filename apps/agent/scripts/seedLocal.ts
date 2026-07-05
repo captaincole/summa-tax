@@ -24,9 +24,11 @@
 // Test user credentials are hardcoded — this script is a local-dev-only tool.
 
 import { createClient } from "@supabase/supabase-js";
-import { Client as PgClient } from "pg";
+import { Memory } from "@mastra/memory";
+import { LibSQLStore } from "@mastra/libsql";
 import { getAppDb, ensureAppSchema, nowIso } from "../src/mastra/db/appDb";
 import { createOwnerFiling } from "../src/mastra/db/filings";
+import { mastraDbUrl } from "../src/mastra/server/storage";
 
 const TEST_OWNERS = [
   {
@@ -50,11 +52,10 @@ const TAX_YEAR = 2025;
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
-const POSTGRES_URL = process.env.POSTGRES_URL;
 
-if (!SUPABASE_URL || !SUPABASE_SECRET_KEY || !POSTGRES_URL) {
+if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
   console.error(
-    "SUPABASE_URL, SUPABASE_SECRET_KEY, and POSTGRES_URL must be set. For local dev, copy them from `supabase status` into apps/agent/.env.development.",
+    "SUPABASE_URL and SUPABASE_SECRET_KEY must be set (auth is still Supabase until Phase 2). For local dev, copy them from `supabase status` into apps/agent/.env.development.",
   );
   process.exit(1);
 }
@@ -127,25 +128,35 @@ async function ensureAuthUser(
   return data.user.id;
 }
 
-// Insert a mastra_threads row for the (userId, taxYear) pair if one doesn't
+// Create the Mastra thread for the (userId, taxYear) pair if it doesn't
 // already exist, so the web app's chat-history fetch on first page load
 // hits an empty thread instead of Mastra's "Thread not found" 500. Thread
-// id matches what apps/web/lib/returns.ts:threadIdFor produces.
+// id matches what apps/web/lib/returns.ts:threadIdFor produces. Goes
+// through the Memory API (same as the createFiling route) so Mastra owns
+// the row shape + schema init.
+let seedMemory: Memory | null = null;
+function getSeedMemory(): Memory {
+  if (!seedMemory) {
+    seedMemory = new Memory({
+      storage: new LibSQLStore({ id: "seed-memory", url: mastraDbUrl() }),
+    });
+  }
+  return seedMemory;
+}
+
 async function ensureMastraThread(
-  pg: PgClient,
   userId: string,
   taxYear: number,
 ): Promise<void> {
   const threadId = `${userId}::${taxYear}`;
-  // createdAt/updatedAt are `timestamp without time zone`; the *Z variants
-  // are `timestamp with time zone`. Let Postgres compute both via now()
-  // rather than coercing JS Date objects to the right shape per column.
-  await pg.query(
-    `insert into mastra.mastra_threads (id, "resourceId", title, metadata, "createdAt", "updatedAt", "createdAtZ", "updatedAtZ")
-     values ($1, $2, $3, null, (now() at time zone 'utc'), (now() at time zone 'utc'), now(), now())
-     on conflict (id) do nothing`,
-    [threadId, userId, `${taxYear} return`],
-  );
+  const memory = getSeedMemory();
+  const existing = await memory.getThreadById({ threadId }).catch(() => null);
+  if (existing) return;
+  await memory.createThread({
+    threadId,
+    resourceId: userId,
+    title: `${taxYear} return`,
+  });
 }
 
 async function ensureOwnerFiling(
@@ -208,28 +219,21 @@ async function main() {
   console.log(`Seeding local auth (${SUPABASE_URL}) + libsql app DB`);
   await ensureAppSchema();
 
-  const pg = new PgClient({ connectionString: POSTGRES_URL });
-  await pg.connect();
-
-  try {
-    for (const { email, password, displayName } of TEST_OWNERS) {
-      console.log(`\n${email}:`);
-      const userId = await ensureAuthUser(email, password, displayName);
-      await ensureOwnerFiling(userId, email, TAX_YEAR);
-      await ensureMastraThread(pg, userId, TAX_YEAR);
-      console.log(`  ensured mastra thread for ${email} (${TAX_YEAR})`);
-    }
-
-    console.log(`\n${TEST_CPA.email}:`);
-    const cpaUserId = await ensureAuthUser(
-      TEST_CPA.email,
-      TEST_CPA.password,
-      TEST_CPA.profile.displayName,
-    );
-    await ensureCpaProfile(cpaUserId, TEST_CPA.email, TEST_CPA.profile);
-  } finally {
-    await pg.end();
+  for (const { email, password, displayName } of TEST_OWNERS) {
+    console.log(`\n${email}:`);
+    const userId = await ensureAuthUser(email, password, displayName);
+    await ensureOwnerFiling(userId, email, TAX_YEAR);
+    await ensureMastraThread(userId, TAX_YEAR);
+    console.log(`  ensured mastra thread for ${email} (${TAX_YEAR})`);
   }
+
+  console.log(`\n${TEST_CPA.email}:`);
+  const cpaUserId = await ensureAuthUser(
+    TEST_CPA.email,
+    TEST_CPA.password,
+    TEST_CPA.profile.displayName,
+  );
+  await ensureCpaProfile(cpaUserId, TEST_CPA.email, TEST_CPA.profile);
 
   console.log(
     `\nDone. Test users sign in with password: testpass123!\n` +

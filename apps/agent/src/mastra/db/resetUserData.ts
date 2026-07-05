@@ -1,4 +1,3 @@
-import type { Pool } from "pg";
 import { luca } from "../agents/luca";
 import { getAppDb, ensureAppSchema, asStr, asNum } from "./appDb";
 import { getServiceRoleClient } from "./supabase";
@@ -25,7 +24,6 @@ export interface PerUserResetResult {
 // via the service-role client until blobs move local in step 4 — the
 // bucket's RLS references the now-empty Postgres filing_members).
 export async function resetCurrentUserData(
-  pool: Pool,
   userId: string,
 ): Promise<PerUserResetResult> {
   await ensureAppSchema();
@@ -84,11 +82,6 @@ export async function resetCurrentUserData(
     await Promise.all(threads.map((t) => memory.deleteThread(t.id)));
     mastraThreadsDeleted = threads.length;
   }
-  // pool param kept for future per-user state that lives outside Mastra's
-  // own ownership (e.g. workflow snapshots or traces if those become
-  // user-relevant).
-  void pool;
-
   return {
     domainRowsDeleted:
       counts.tax_facts +
