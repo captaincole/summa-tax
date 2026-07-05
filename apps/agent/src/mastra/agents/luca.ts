@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
-import { PostgresStore } from "@mastra/pg";
-import { pgPool } from "../server/storage";
+import { LibSQLStore } from "@mastra/libsql";
+import { mastraDbUrl } from "../server/storage";
 import {
   recordTaxFact,
   listOpenQuestionsTool,
@@ -49,13 +49,12 @@ export const luca = new Agent({
     listAIDecisions,
   },
   memory: new Memory({
-    storage: new PostgresStore({
+    // Same mastra.db file as the main runtime store — separate store
+    // instance because Memory owns its storage lifecycle, same database
+    // because threads/messages belong with the rest of the runtime state.
+    storage: new LibSQLStore({
       id: "luca-memory",
-      pool: pgPool,
-      schemaName: "mastra",
-      // Schema migrations run during build via `npm run migrate:mastra`.
-      // See server/storage.ts for the full reasoning.
-      disableInit: true,
+      url: mastraDbUrl(),
     }),
     options: {
       // Thread-scoped because we currently run a single demo thread per user.
