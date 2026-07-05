@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import { markActionProcessing, skipAction } from "@/lib/serverDb";
 
 // Status transitions the browser is allowed to drive:
@@ -14,11 +14,8 @@ export async function PATCH(
   const { id } = await params;
   if (!id) return NextResponse.json({ error: "missing id" }, { status: 400 });
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await getOwnerSession();
+  if (!session) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -36,9 +33,9 @@ export async function PATCH(
         { status: 400 },
       );
     }
-    await markActionProcessing(user.id, id, body.documentId);
+    await markActionProcessing(session.userId, id, body.documentId);
   } else if (body.status === "skipped") {
-    await skipAction(user.id, id);
+    await skipAction(session.userId, id);
   } else {
     return NextResponse.json(
       { error: `unsupported status '${body.status}'` },

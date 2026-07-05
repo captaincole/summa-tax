@@ -1,7 +1,7 @@
 // Activity-feed types + the browser-side fetcher. Domain data lives in the
 // libsql app DB on the server, so the browser reads it through the
-// /api/activity Route Handler (which authenticates via the Supabase session
-// cookie and queries lib/serverDb.ts). The old Supabase Realtime channel is
+// /api/activity Route Handler (which authenticates via the session cookie
+// and queries lib/serverDb.ts). The old realtime channel is
 // gone — ActivityCard polls this endpoint on a short interval instead.
 //
 // tax_facts and ai_decisions are append-only across both tables; no dedup

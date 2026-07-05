@@ -246,7 +246,7 @@ export const getCaseState = createTool({
       stateOwed: z.number(),
     }),
     factCount: z.number(),
-    /** Supabase login email — Luca records this as identity.email at doc-gen
+    /** Account email — Luca records this as identity.email at doc-gen
      *  time after acknowledging it with the user. */
     authEmail: z.string().nullable(),
     aiDecisions: z.array(

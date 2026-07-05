@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import { AppShell } from "@/components/AppShell";
 import { listOwnerReturns } from "@/lib/serverDb";
 import { deriveProfile } from "@/lib/profile";
@@ -23,21 +23,18 @@ export default async function ReturnLayout({
   const year = Number.parseInt(returnId, 10);
   if (!Number.isInteger(year)) redirect("/");
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const session = await getOwnerSession();
+  if (!session) redirect("/login");
 
-  const returns = await listOwnerReturns(user.id);
+  const returns = await listOwnerReturns(session.userId);
   const activeReturn = returns.find((r) => r.year === year);
   if (!activeReturn) redirect("/");
 
-  const profile = deriveProfile(user);
+  const profile = deriveProfile(session);
 
   return (
     <AppShell
-      userId={user.id}
+      userId={session.userId}
       activeReturn={activeReturn}
       returns={returns}
       profile={profile}

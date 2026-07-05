@@ -11,7 +11,7 @@
 // accidentally hit /cpa.
 
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import {
   listReviewableFilings,
   taxpayerNameForFiling,
@@ -25,13 +25,10 @@ interface FilingCardData {
 }
 
 export default async function CpaHome() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const initials = (user?.email?.slice(0, 2) ?? "JD").toUpperCase();
+  const session = await getOwnerSession();
+  const initials = (session?.email?.slice(0, 2) ?? "JD").toUpperCase();
 
-  const filings = user?.id ? await listReviewableFilings(user.id) : [];
+  const filings = session ? await listReviewableFilings(session.userId) : [];
   const cards: FilingCardData[] = await Promise.all(
     filings.map(async (f) => ({
       filing: f,

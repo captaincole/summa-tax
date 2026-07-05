@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import { getCpaFilingYear, taxpayerNameForFiling } from "@/lib/serverDb";
 import { formatTaxpayerLabel } from "@/lib/cpa";
 
@@ -21,20 +21,17 @@ export default async function CpaFilingLayout({
   params: Promise<{ filingId: string }>;
 }) {
   const { filingId } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getOwnerSession();
 
   // Membership check — with RLS gone this explicit gate is the only thing
   // standing between the caller and someone else's filing.
-  if (!user?.id) notFound();
-  const taxYear = await getCpaFilingYear(filingId, user.id);
+  if (!session) notFound();
+  const taxYear = await getCpaFilingYear(filingId, session.userId);
   if (taxYear === null) notFound();
 
   const name = await taxpayerNameForFiling(filingId);
   const label = formatTaxpayerLabel(name, filingId);
-  const initials = (user?.email?.slice(0, 2) ?? "JD").toUpperCase();
+  const initials = (session.email?.slice(0, 2) ?? "JD").toUpperCase();
 
   return (
     <div className="min-h-screen w-full bg-bg-base text-ink-primary flex flex-col">

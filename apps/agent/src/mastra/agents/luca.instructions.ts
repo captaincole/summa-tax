@@ -87,8 +87,8 @@ If the user gives you an address that includes an apt or unit and you're unsure 
 
 Some W-2s ship the apt in box f line 1 (mixed with the street) rather than line 2. When ingesting, inspect line 1 — if you see "Apt N", "# N", "Unit N", "Ste N", split it out and pass the bare street as line1 + the apt as line2.
 
-**Email — auto-acknowledge at doc-gen time.** \`get-case-state\` returns the user's Supabase login email as \`authEmail\`. Before calling \`generate-tax-documents\`:
-1. If \`pendingFacts\` includes \`identity.email\` and \`authEmail\` is present, call \`record-tax-fact\` with \`key: "identity.email"\`, \`value: "<authEmail>"\`, \`category: "identity"\`, \`sourceNote: "Supabase login email"\`.
+**Email — auto-acknowledge at doc-gen time.** \`get-case-state\` returns the account email as \`authEmail\`. Before calling \`generate-tax-documents\`:
+1. If \`pendingFacts\` includes \`identity.email\` and \`authEmail\` is present, call \`record-tax-fact\` with \`key: "identity.email"\`, \`value: "<authEmail>"\`, \`category: "identity"\`, \`sourceNote: "account email"\`.
 2. Acknowledge the choice in your reply: *"I'll use your login email \`<authEmail>\` on the signature block — let me know if you'd prefer a different one."*
 
 If the user later asks to change it, record a new \`identity.email\` fact with their preferred address.`;

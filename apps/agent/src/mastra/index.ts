@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { Mastra } from "@mastra/core";
-import { StudioSupabaseAuth } from "./server/studioAuth";
 import { VercelDeployer } from "@mastra/deployer-vercel";
 import { ConsoleLogger } from "./server/consoleLogger";
 import { luca } from "./agents/luca";
@@ -17,13 +16,7 @@ import { deleteFilingRoute } from "./server/routes/deleteFiling";
 import { inviteCpaRoute } from "./server/routes/inviteCpa";
 import { sessionResetRoute } from "./server/routes/sessionReset";
 import { createStorage } from "./server/storage";
-import { userSupabaseMiddleware } from "./server/userSupabaseMiddleware";
-
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY) {
-  throw new Error(
-    "SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY are required (see .env.example)",
-  );
-}
+import { ownerMiddleware } from "./server/ownerMiddleware";
 
 const storage = await createStorage();
 
@@ -57,20 +50,10 @@ export const mastra = new Mastra({
     regions: ["sfo1"],
   }),
   server: {
-    // StudioSupabaseAuth = MastraAuthSupabase (JWT verification for web-app
-    // requests) + ICredentialsProvider.signIn (so Studio renders an
-    // email/password login form). Sign-in is gated by STUDIO_ALLOWED_EMAILS;
-    // web-app users go through the existing JWT path and bypass that
-    // allowlist entirely. authorizeUser: () => true is the coarse "authed
-    // user is past the door" gate — per-row scoping comes from RLS at
-    // public.* tables and MASTRA_RESOURCE_ID_KEY (set by
-    // userSupabaseMiddleware) at mastra.* tables.
-    auth: new StudioSupabaseAuth({
-      url: process.env.SUPABASE_URL,
-      anonKey: process.env.SUPABASE_PUBLISHABLE_KEY,
-      authorizeUser: () => true,
-      protected: ["/api/*", "/app/*"],
-    }),
+    // Single-user model: no per-request auth provider. The web app fronts
+    // the agent (session cookie + server-side proxy); ownerMiddleware
+    // resolves the instance owner and optionally enforces AGENT_API_TOKEN
+    // for deployments where this port is reachable beyond localhost.
     // Mastra wraps every route handler in its own try/catch before any
     // server.middleware runs, so an uncaught throw never reaches middleware
     // — it's funneled through this hook instead. Without onError, Mastra
@@ -88,10 +71,10 @@ export const mastra = new Mastra({
       // CORS so cross-origin preflights short-circuit before everything else.
       // Configured by ALLOWED_ORIGINS env var; permissive when unset.
       corsMiddleware,
-      // Builds a per-request user-scoped Supabase client from the bearer JWT
-      // and stashes it on requestContext + Hono context. Tools and routes
-      // pull it via tools/userContext.ts and HONO_CONTEXT_KEYS respectively.
-      userSupabaseMiddleware,
+      // Optional AGENT_API_TOKEN gate + resolves the instance owner onto
+      // requestContext (resource id for memory scoping, email for the
+      // engine's authEmail enrichment).
+      ownerMiddleware,
     ],
     apiRoutes: [
       appStateRoute,

@@ -1,23 +1,22 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
+import { ownerExists } from "@/lib/localAuth";
 
 // Auth gate. The return-scoped sub-layout at /r/[returnId]/layout.tsx
 // wraps children in AppShell; the home-home at (app)/page.tsx renders
 // with its own minimal top bar (no AppShell needed there).
 //
-// getUser() contacts the Auth server (verified call), so this is safe
-// to use for authorization decisions. The proxy redirects unauthed
-// users earlier — this is the defense-in-depth check.
+// getOwnerSession() verifies the cookie HMAC against the owner row — the
+// proxy only did a presence check, this is the real gate.
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const session = await getOwnerSession();
+  if (!session) {
+    redirect((await ownerExists()) ? "/login" : "/setup");
+  }
 
   return <>{children}</>;
 }

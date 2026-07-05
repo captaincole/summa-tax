@@ -11,13 +11,13 @@
 // Fraunces renders numerals with cursive stylistic features that read
 // oddly on years like "2025"). Workspace tabs are subordinate.
 
+import { signOut } from "@/lib/auth";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAppShell } from "@/components/AppShell";
 import { type TaxReturn } from "@/lib/returns";
 import { deleteFiling, UnauthorizedError } from "@/lib/api";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
 
 interface TopBarProps {
@@ -57,7 +57,7 @@ export function TopBar({ activeReturn, returns }: TopBarProps) {
       router.refresh();
     } catch (err) {
       if (err instanceof UnauthorizedError) {
-        await createClient().auth.signOut();
+        await signOut();
         router.push("/login");
         return;
       }

@@ -12,7 +12,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import {
   getOwnerFilingForYear,
   listCpaDirectory,
@@ -32,12 +32,9 @@ export default async function SharePage({
   // in case someone hits the route with a non-numeric slug.
   if (!Number.isInteger(year)) redirect("/");
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  const filing = await getOwnerFilingForYear(user.id, year);
+  const session = await getOwnerSession();
+  if (!session) redirect("/login");
+  const filing = await getOwnerFilingForYear(session.userId, year);
   const [directory, invites] = await Promise.all([
     listCpaDirectory(),
     listFilingInvites(filing.id),

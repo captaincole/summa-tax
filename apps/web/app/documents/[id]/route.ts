@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import { readBlob } from "@/lib/blobStore";
 import { getDocumentById, hasMembership } from "@/lib/serverDb";
 
 // Same-origin Route Handler for document downloads. Reads the cookie (which
 // the browser DOES send on plain <a href> clicks, unlike the bearer header),
-// validates the user via the Supabase server client (auth is still Supabase
-// until Phase 2), looks up the row in the libsql app DB, verifies the caller
+// validates the owner session, looks up the row in the libsql app DB,
+// verifies the caller
 // holds a non-revoked membership on the document's filing (the explicit RLS
 // replacement), and streams the file straight off the local documents dir —
 // no bucket, no signed URLs.
@@ -22,11 +22,8 @@ export async function GET(
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await getOwnerSession();
+  if (!session) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +33,7 @@ export async function GET(
   }
   // Membership gate — 404 (not 403) so non-members can't probe which
   // document ids exist, matching the old RLS behavior.
-  if (!(await hasMembership(doc.filingId, user.id))) {
+  if (!(await hasMembership(doc.filingId, session.userId))) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
