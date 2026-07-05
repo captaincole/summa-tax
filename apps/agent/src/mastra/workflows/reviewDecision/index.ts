@@ -44,7 +44,11 @@ export const reviewLoopWorkflow = createWorkflow({
 
 export const reviewDecisionWorkflow = createWorkflow({
   id: "review-decision",
-  inputSchema: z.object({ decisionId: z.string() }),
+  inputSchema: z.object({
+    decisionId: z.string(),
+    userId: z.string(),
+    filingId: z.string(),
+  }),
   outputSchema: reviewDecisionOutputSchema,
 })
   .then(initStep)
@@ -79,7 +83,11 @@ export async function reviewDecision(
 
   try {
     const result = await run.start({
-      inputData: { decisionId },
+      inputData: {
+        decisionId,
+        userId: scope.userId,
+        filingId: scope.filingId,
+      },
       requestContext,
     });
     if (result.status === "success") {

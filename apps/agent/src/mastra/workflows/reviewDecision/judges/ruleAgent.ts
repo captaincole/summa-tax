@@ -1,5 +1,5 @@
 import { Agent } from "@mastra/core/agent";
-import { citeRefDocTool } from "../../tools/refDocs";
+import { citeRefDocTool } from "../../../tools/refDocs";
 import { CPA_RULES } from "./cpaRules";
 
 // Rule agent — the workflow's verdict-or-loop decider. Sees the decision,

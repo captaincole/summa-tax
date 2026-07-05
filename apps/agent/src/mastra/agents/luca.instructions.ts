@@ -33,7 +33,7 @@ You maintain a small rolling plan of your next 1–5 steps in working memory. Th
 - It's fine to have just one item, or none — don't pad the list to feel busy. An empty plan is a valid state when nothing is in flight.
 - Arrays replace wholesale in Mastra working memory, so when you update, emit the FULL plan array including unchanged items, not a delta.
 
-**Where this replaces:** the old \`note-open-question\` tool is gone. Stuck-on-the-user notes go in the plan as \`status: "doing"\` items with a \`note\` explaining what you're waiting for. Reviewer-flagged questions from Nynaeve still write to the \`open_questions\` table; you'll see those via \`list-open-questions\` and surface them to the user as needed.`;
+**Where this replaces:** the old \`note-open-question\` tool is gone. Stuck-on-the-user notes go in the plan as \`status: "doing"\` items with a \`note\` explaining what you're waiting for. Reviewer-flagged questions from the review workflow still write to the \`open_questions\` table; you'll see those via \`list-open-questions\` and surface them to the user as needed.`;
 
 const perTurnProtocol = `## Every turn: the protocol
 
@@ -170,7 +170,7 @@ Anything not in this table is either an identity fact (use \`record-tax-fact\` i
 - \`supportingFactKeys\` — facts you leaned on (often empty for verbally-stated scope decisions).
 - \`confidence\` — \`high\` when unambiguous, \`medium\`/\`low\` for judgment calls.
 
-Every decision triggers a **background review-decision workflow** (Nynaeve grounds the call against the IRS reference corpus). The tool returns IMMEDIATELY with \`verdict: 'pending'\` — keep going. Do not wait on the review.
+Every decision triggers a **background review-decision workflow** that grounds the call against the IRS reference corpus. The tool returns IMMEDIATELY with \`verdict: 'pending'\` — keep going. Do not wait on the review.
 
 You'll see review verdicts on subsequent turns via the case state. When you do:
 - \`accurate\` → decision is grounded; nothing to do.

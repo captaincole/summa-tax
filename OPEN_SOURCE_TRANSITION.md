@@ -4,7 +4,7 @@ Tracking doc for converting this project from a hosted, multi-tenant product int
 self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
 Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
 
-**Current status:** _PHASES 1–2 COMPLETE (2026-07-06) — zero external services: no Supabase, no Docker, no Postgres. Auth = first-run owner setup + password cookie; browser→agent goes through the web proxy. Next: Phase 3 (Nynaeve → deterministic grounding workflow, rebuilds `smoke:review`). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc)._
+**Current status:** _PHASES 1–3 COMPLETE (2026-07-06). Zero external services; one agent (Luca) + the review workflow with private judges; `smoke:review` is GREEN again (automated grounding coverage restored). Next: Phase 4 (self-host packaging). Gate = unit 25/25 + goldens 14/14 + smoke:review 3/3._
 
 ---
 
@@ -35,7 +35,7 @@ Lock in the existing safety surface before touching anything; every later step i
 **Baseline captured 2026-06-13 (on Supabase main, pre-transition):**
 
 - [x] **Goldens** — `npm test` → 14/14 green (alex / marcus / alejandro scenarios + 11 catalog-fill checks, byte-compared PDFs). Plus `npm run test:unit` → 25/25. **This is the real net:** identical goldens after a DB swap proves the fact/form engine survived.
-- [ ] **`smoke:review`** — **RED, deferred to Phase 3.** Stale: predates the Supabase RLS / user-scoped-client refactor (`recordFact`/`recordAIDecision` signatures changed; needs a seeded user+filing + fabricated runtime context). Left untouched on purpose — Phase 3 deletes the Nynaeve pipeline and rewrites grounding as a deterministic workflow, so the real automated grounding test gets built then. Grounding has **no automated baseline** until Phase 3; verify it manually in the meantime.
+- [x] **`smoke:review`** — **GREEN again as of Phase 3 (2026-07-06).** Rewritten for the libsql stack (temp DB, direct workflow invocation). Original note: **RED, deferred to Phase 3.** Stale: predates the Supabase RLS / user-scoped-client refactor (`recordFact`/`recordAIDecision` signatures changed; needs a seeded user+filing + fabricated runtime context). Left untouched on purpose — Phase 3 deletes the Nynaeve pipeline and rewrites grounding as a deterministic workflow, so the real automated grounding test gets built then. Grounding has **no automated baseline** until Phase 3; verify it manually in the meantime.
 - [x] **One manual browser pass** — verified 2026-06-13 (rand@localhost): fact ingest → draft 1040 updates → doc download all working. Manual stand-in for the deferred `smoke:review`; re-run by hand each phase until Phase 3 builds the real grounding test.
 
 _Note: `smoke:engine` was deleted during baselining — it was a stale hand-maintained placeholder fully superseded by the scenario goldens (its own header called it a Phase-F placeholder)._
@@ -73,11 +73,14 @@ _Note: `smoke:engine` was deleted during baselining — it was a stale hand-main
 - **Gate met:** factory-reset first-run → setup → login → chat (through proxy) → upload → drafts (manual pass); goldens 14/14, unit 25/25, both tsc 0, web prod build clean.
 - _Architecture settled en route (sketch session 2026-07-06): agent = the application; web = the rendered case state ("case file") + embedded chat pane as the single web→agent edge; DB = the contract. Channels (Discord etc.) become optional additional conversation surfaces. Deferred: shrink the edge further (filing lifecycle → web DB writes; case state materialized to DB) and possibly serve the UI from the agent process — revisit at Phase 4._
 
-### Phase 3 — Nynaeve → async grounding workflow
-- [ ] Remove the critic agent; grounding = deterministic retrieve → judge
-- [ ] Trigger on `record-ai-decision`, run fire-and-forget; write verdict back
-- [ ] Surface `pending`/`inaccurate` into open-asks
-- **Gate:** `smoke:review` + a decision goes `pending`→`inaccurate` and surfaces in open-asks
+### Phase 3 — Nynaeve → async grounding workflow ✅ DONE (2026-07-06)
+_Reality had drifted ahead of the plan: the monolithic critic agent was already gone, replaced by the reviewDecision workflow (init → gather → assess → rule ×≤3 → finalize) over three narrow structured-output judges. Phase 3 became relocate + test:_
+- [x] **Judges are workflow internals, not agents.** `agents/nynaeve/` → `workflows/reviewDecision/judges/` (queryFormulator / assessRiskAgent / ruleAgent / cpaRules); **deregistered from the Mastra instance** — `agents: { luca }` is now the truthful statement (they were exposed as chattable agents in Studio/API). Last Robert Jordan IP reference gone.
+- [x] Fire-and-forget on `record-ai-decision` + verdict write-back — already true; verified by smoke.
+- [x] `inaccurate` now also writes an `open_questions` row (previously only `needs_more_facts`).
+- [x] **Workflow fix found by the new test:** `initStep` re-resolved the owner filing (one-filing-per-year assumption) instead of using the caller's scope — scope now flows through the workflow input.
+- [x] **`smoke:review` GREEN — first automated grounding coverage since the baseline.** Rewritten for the libsql/Scope stack: temp app DB (real dev DB untouched; corpus read-only), direct `reviewDecision(scope, id)` invocation, asserts verdict/persistence/citations/open-question side effects. 3/3. Case 3 (CA residency) pinned to pipeline mechanics — verdict is borderline-by-design (540 booklet has thin residency detail); judge calibration belongs to a future eval dataset.
+- **Gate met:** smoke:review 3/3 (incl. `inaccurate` → open-asks), goldens 14/14, unit 25/25, tsc 0.
 
 ### Phase 4 — Self-host packaging
 - [ ] One `.env.example` (Anthropic required; Voyage optional) + graceful-degrade wiring

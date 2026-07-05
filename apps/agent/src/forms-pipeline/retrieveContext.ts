@@ -3,7 +3,7 @@
 // field, so Claude can ground rule + params choices against the actual
 // regulatory text instead of guessing from the field label alone.
 //
-// Uses the existing hybridSearchRefDocs (Nynaeve's retrieval path): FTS leg
+// Uses the existing hybridSearchRefDocs (the grounding review's retrieval path): FTS leg
 // + voyage-law-2 vector leg + voyage rerank-2.5. Runs per-field in parallel
 // with a concurrency cap so we don't burst the Voyage API.
 

@@ -42,7 +42,7 @@ export const luca = new Agent({
     // End-of-session artifact generation
     generateTaxDocuments,
     // Secondary — listOpenQuestions/resolveOpenQuestion remain so Luca can
-    // see and clear rows that Nynaeve's review workflow writes. He no longer
+    // see and clear rows that the review workflow writes. He no longer
     // authors his own open questions — that lives in working memory now.
     listOpenQuestions: listOpenQuestionsTool,
     resolveOpenQuestion,

@@ -24,7 +24,7 @@ import { requireUserContext } from "./userContext";
 //   - 1 TradeFactValue per trade in `b.trades`
 //   - 1 ai_decision per trade (`decisions.trade.{tradeId}.form_8949_box`)
 //     derived mechanically from the broker-reported (term, basisReported)
-//     pair — no Nynaeve grounding needed since the broker classified it.
+//     pair — no grounding review needed since the broker classified it.
 //   - 1 ai_decision (`decisions.scope.has_reportable_sales` = true) if
 //     trades are present.
 //
@@ -262,7 +262,7 @@ export const ingest1099Consolidated = createTool({
         factsWritten++;
 
         // Auto-record the form_8949_box decision since broker classified it.
-        // Skips Nynaeve grounding by writing directly through recordDecision —
+        // Skips the grounding review by writing directly through recordDecision —
         // the input is broker-reported, no judgment.
         const box = boxFor(t.term, t.basisReported);
         await recordDecision(scope, {

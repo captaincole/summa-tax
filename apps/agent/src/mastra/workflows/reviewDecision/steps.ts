@@ -22,10 +22,9 @@ import {
 } from "../../db/aiDecisions";
 import { listFactsByKeys, noteQuestion } from "../../db/taxFacts";
 import { hybridSearchRefDocs } from "../../db/refDocs";
-import { queryFormulator } from "../../agents/nynaeve/queryFormulator";
-import { assessRiskAgent } from "../../agents/nynaeve/assessRiskAgent";
-import { ruleAgent } from "../../agents/nynaeve/ruleAgent";
-import { requireUserContext } from "../../tools/userContext";
+import { queryFormulator } from "./judges/queryFormulator";
+import { assessRiskAgent } from "./judges/assessRiskAgent";
+import { ruleAgent } from "./judges/ruleAgent";
 
 // ---------------------------------------------------------------------------
 // Step constants — review_run_steps.step_kind values. Kept here (vs as an
@@ -47,11 +46,20 @@ const KIND = {
 
 export const initStep = createStep({
   id: "init",
-  inputSchema: z.object({ decisionId: z.string() }),
+  // Scope arrives in the workflow input — the caller (record-ai-decision via
+  // the reviewDecision wrapper) already knows the filing; re-resolving it
+  // here would re-impose a one-filing-per-year assumption the workflow
+  // doesn't need.
+  inputSchema: z.object({
+    decisionId: z.string(),
+    userId: z.string(),
+    filingId: z.string(),
+  }),
   outputSchema: loopCarrierSchema,
-  execute: async ({ inputData, requestContext }) => {
+  execute: async ({ inputData }) => {
     const t0 = Date.now();
-    const { scope, userId, filingId } = await requireUserContext({ requestContext });
+    const { userId, filingId } = inputData;
+    const scope = { userId, filingId };
 
     const decision = await getDecisionById(scope, inputData.decisionId);
     if (!decision) {
@@ -371,7 +379,8 @@ export const finalizeStep = createStep({
       citations.length > 0 ? citations : null,
     );
 
-    // For needs_more_facts, surface to Luca via an open_questions row.
+    // Surface non-accurate outcomes to Luca via an open_questions row so he
+    // circles back with the user instead of the verdict dying in the ledger.
     if (finalVerdict === "needs_more_facts") {
       openQuestionId = crypto.randomUUID();
       await noteQuestion(scope, {
@@ -380,6 +389,16 @@ export const finalizeStep = createStep({
         filingId: carrier.filingId,
         question: `Confirm the basis for decision \`${carrier.decisionKey}\` — review couldn't ground it.`,
         context: whatsMissing,
+        decisionId: carrier.decisionId,
+      });
+    } else if (finalVerdict === "inaccurate") {
+      openQuestionId = crypto.randomUUID();
+      await noteQuestion(scope, {
+        id: openQuestionId,
+        userId: carrier.userId,
+        filingId: carrier.filingId,
+        question: `Revisit decision \`${carrier.decisionKey}\` with the user — review found it conflicts with the evidence.`,
+        context: reason,
         decisionId: carrier.decisionId,
       });
     }

@@ -60,7 +60,7 @@ export interface TaxTableLookupOk {
   ok: true;
   tax: number;
   bracket: { low: number; high: number };
-  /** Provenance, useful for AI rationale / Nynaeve grounding. */
+  /** Provenance, useful for AI rationale / grounding review. */
   source: { tableId: string; taxYear: number; jurisdiction: string; url: string };
 }
 
