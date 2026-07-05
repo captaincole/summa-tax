@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 import { writeBlob, deleteBlob } from "@/lib/blobStore";
 import {
   getOwnerFilingForYear,
@@ -52,23 +52,17 @@ function extensionOf(filename: string, mimeType: string): string {
 
 // List the caller's uploads (Documents tab grid, home-tab quick links).
 export async function GET() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await getOwnerSession();
+  if (!session) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  const filing = await getOwnerFilingForYear(user.id, DEMO_TAX_YEAR);
+  const filing = await getOwnerFilingForYear(session.userId, DEMO_TAX_YEAR);
   return NextResponse.json(await listUploads(filing.id));
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  const session = await getOwnerSession();
+  if (!session) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
@@ -83,7 +77,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "file is required" }, { status: 400 });
   }
 
-  const filing = await getOwnerFilingForYear(user.id, DEMO_TAX_YEAR);
+  const filing = await getOwnerFilingForYear(session.userId, DEMO_TAX_YEAR);
 
   const slug = slugify(file.name);
   const ext = extensionOf(file.name, file.type);
@@ -101,7 +95,7 @@ export async function POST(request: Request) {
 
   try {
     const id = await insertUploadedDocument({
-      userId: user.id,
+      userId: session.userId,
       filingId: filing.id,
       filename: file.name,
       storagePath,

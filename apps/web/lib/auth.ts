@@ -1,25 +1,21 @@
-import { createClient } from "@/lib/supabase/client";
-
-// Read helpers backed by the browser Supabase client. supabase-js handles
-// background access-token refresh (the cookie gets updated by the proxy on
-// navigation and by supabase-js on token rotation). These helpers exist so
-// chat streaming + uploads can read the current JWT / user-id without
-// importing the client directly everywhere.
-
-export async function getAccessToken(): Promise<string | null> {
-  const { data } = await createClient().auth.getSession();
-  return data.session?.access_token ?? null;
-}
+// Client-side auth helpers. The session lives in an httpOnly cookie the
+// browser can't read, so identity checks go through /api/auth/me and
+// sign-out through /api/auth/logout. Agent calls need no headers anymore —
+// they ride the same cookie through the /api/agent proxy.
 
 export async function getUserId(): Promise<string | null> {
-  const { data } = await createClient().auth.getSession();
-  return data.session?.user.id ?? null;
+  const res = await fetch("/api/auth/me", { cache: "no-store" });
+  if (!res.ok) return null;
+  const body = (await res.json()) as { userId?: string };
+  return body.userId ?? null;
 }
 
-// Authorization header for cross-origin agent requests (chat streaming +
-// /app/session/reset). Same-origin Server Component reads use the cookie
-// instead via lib/supabase/server.ts.
+/** Kept for call-site compatibility: agent requests are same-origin via the
+ *  /api/agent proxy now, authenticated by the session cookie. */
 export async function authHeaders(): Promise<HeadersInit> {
-  const token = await getAccessToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
+}
+
+export async function signOut(): Promise<void> {
+  await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
 }

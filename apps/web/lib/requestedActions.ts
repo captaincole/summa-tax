@@ -1,6 +1,6 @@
 // Requested-action types + browser-side fetchers. Domain data lives in the
 // libsql app DB on the server; the browser goes through the
-// /api/requested-actions Route Handlers (Supabase session cookie auth →
+// /api/requested-actions Route Handlers (session cookie auth →
 // lib/serverDb.ts queries).
 //
 // v1 only emits kind='upload'. The shape supports 'confirm' / 'decide'

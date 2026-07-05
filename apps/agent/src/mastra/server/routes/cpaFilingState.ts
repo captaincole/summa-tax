@@ -3,7 +3,7 @@ import { registerApiRoute } from "@mastra/core/server";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
 import { getMembership } from "../../db/filings";
 import { buildCaseStateForFiling } from "../../tools/caseState";
-import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
+import { REQUEST_CONTEXT_KEYS } from "../ownerMiddleware";
 
 // Read-only case-state endpoint for CPA reviewers.
 //

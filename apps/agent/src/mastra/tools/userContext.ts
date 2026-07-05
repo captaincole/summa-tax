@@ -1,5 +1,5 @@
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
-import { REQUEST_CONTEXT_KEYS } from "../server/userSupabaseMiddleware";
+import { REQUEST_CONTEXT_KEYS } from "../server/ownerMiddleware";
 import { resolveOwnerFilingForYear } from "../db/filings";
 import type { Scope } from "../db/appDb";
 import { DEMO_TAX_YEAR } from "../server/demoSession";
@@ -17,9 +17,8 @@ export interface UserContext {
 
 // Pulls the user identity out of a tool's runtime context, then resolves the
 // caller's active owner filing for the current demo tax year from the libsql
-// app DB. Auth values are populated upstream:
-//   - userId + userEmail: by userSupabaseMiddleware (per-request JWT decode);
-//     MastraAuthSupabase verified the signature before any handler ran
+// app DB. Identity is populated upstream by ownerMiddleware (the instance
+// owner from app.db — single-user model).
 //
 // filingId comes from a DB lookup (one local libsql read per tool invocation).
 // Throws when any required value can't be resolved — that's a
@@ -32,7 +31,7 @@ export async function requireUserContext(
   const userId = rc.get(MASTRA_RESOURCE_ID_KEY) as string | undefined;
   const authEmail =
     (rc.get(REQUEST_CONTEXT_KEYS.userEmail) as string | undefined) ?? null;
-  if (!userId) throw new Error("user id missing — MastraAuthSupabase / userSupabaseMiddleware not configured?");
+  if (!userId) throw new Error("owner missing — complete first-run setup in the web app before chatting");
   const taxYear = DEMO_TAX_YEAR;
   const filing = await resolveOwnerFilingForYear(userId, taxYear);
   return {

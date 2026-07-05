@@ -7,7 +7,7 @@ import { agentUrl } from "@/lib/agentBase";
 // stays because it deletes Mastra threads via Memory.deleteThread (admin-
 // pool work).
 //
-// fetchActivity moved to lib/activity.ts (direct Supabase reads) — both
+// fetchActivity moved to lib/activity.ts (/api/activity poll) — both
 // the chat right rail and /activity page consume it.
 
 export type PlanItemStatus = "todo" | "doing" | "done";

@@ -7,13 +7,13 @@ import type { CpaDirectoryEntry, FilingInviteRow } from "@/lib/cpa";
 
 // SERVER-ONLY domain reads/writes against the shared libsql app DB
 // (.data/app.db under apps/agent — the agent owns schema creation; we just
-// query). Replaces the per-table Supabase reads that used to live in
+// query). Replaces the per-table Postgres reads that used to live in
 // lib/{activity,filings,returns,cpa,requestedActions}.ts.
 //
 // RLS is gone with Postgres, so every query here scopes explicitly by
 // userId / filingId. Callers (Server Components, Route Handlers) are
-// responsible for resolving the authenticated user via the Supabase server
-// client BEFORE calling in — auth itself is still Supabase until Phase 2.
+// responsible for verifying the owner session (lib/localAuth.ts)
+// BEFORE calling in.
 //
 // Never import this from a client component — @libsql/client and node:path
 // don't exist in the browser bundle, and the DB file lives on the server box.
@@ -35,6 +35,69 @@ const str = (v: unknown): string => (v == null ? "" : String(v));
 const strOrNull = (v: unknown): string | null => (v == null ? null : String(v));
 const num = (v: unknown): number => (v == null ? 0 : Number(v));
 const json = (v: unknown): unknown => (v == null ? null : JSON.parse(String(v)));
+
+// ─── Owner (single-user auth) ───────────────────────────────────────────
+
+export interface OwnerAuthRow {
+  id: string;
+  email: string;
+  displayName: string;
+  passwordHash: string;
+  sessionSecret: string;
+}
+
+// Idempotent — the agent's ensureAppSchema also creates this table, but the
+// web app's first-run /setup can happen before the agent ever booted, so
+// both sides CREATE IF NOT EXISTS. Keep the DDL in sync with
+// apps/agent/src/mastra/db/appDb.ts.
+let ownerTableReady: Promise<unknown> | null = null;
+function ensureOwnerTable() {
+  if (!ownerTableReady) {
+    ownerTableReady = db().execute(
+      `CREATE TABLE IF NOT EXISTS owner (
+         id            TEXT PRIMARY KEY,
+         email         TEXT NOT NULL,
+         display_name  TEXT NOT NULL,
+         password_hash TEXT NOT NULL,
+         session_secret TEXT NOT NULL,
+         created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+       )`,
+    );
+  }
+  return ownerTableReady;
+}
+
+export async function getOwnerAuthRow(): Promise<OwnerAuthRow | null> {
+  await ensureOwnerTable();
+  const res = await db().execute(
+    `SELECT id, email, display_name, password_hash, session_secret FROM owner LIMIT 1`,
+  );
+  const r = res.rows[0];
+  if (!r) return null;
+  return {
+    id: str(r.id),
+    email: str(r.email),
+    displayName: str(r.display_name),
+    passwordHash: str(r.password_hash),
+    sessionSecret: str(r.session_secret),
+  };
+}
+
+export async function insertOwnerRow(row: OwnerAuthRow): Promise<void> {
+  await ensureOwnerTable();
+  await db().execute({
+    sql: `INSERT INTO owner (id, email, display_name, password_hash, session_secret, created_at)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+    args: [
+      row.id,
+      row.email,
+      row.displayName,
+      row.passwordHash,
+      row.sessionSecret,
+      new Date().toISOString(),
+    ],
+  });
+}
 
 // ─── Filings / memberships ─────────────────────────────────────────────
 

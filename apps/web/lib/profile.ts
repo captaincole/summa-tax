@@ -1,9 +1,6 @@
-import type { User } from "@supabase/supabase-js";
-
-// User profile derivation. We don't have a user_profiles table — display
-// name lives on auth.users.raw_user_meta_data (set at signup or via
-// supabase.auth.admin.updateUserById). Pulling it through these helpers
-// keeps consumers from poking at user_metadata shapes directly.
+// User profile derivation from the instance owner (name/email live on the
+// owner row in app.db; see lib/localAuth.ts). These helpers keep consumers
+// from re-deriving initials/first names everywhere.
 
 export interface UserProfile {
   // Friendly display name. Either the explicit `display_name` from auth
@@ -26,13 +23,14 @@ function deriveFromEmail(email: string | null): string {
     .trim();
 }
 
-export function deriveProfile(user: User | null): UserProfile {
-  const email = user?.email ?? null;
-  const metadataName = (user?.user_metadata as { display_name?: string } | null)
-    ?.display_name;
+export function deriveProfile(
+  owner: { email: string | null; displayName?: string | null } | null,
+): UserProfile {
+  const email = owner?.email ?? null;
+  const explicitName = owner?.displayName;
   const displayName =
-    metadataName && metadataName.trim().length > 0
-      ? metadataName.trim()
+    explicitName && explicitName.trim().length > 0
+      ? explicitName.trim()
       : deriveFromEmail(email);
   const firstName = displayName.split(/\s+/)[0] ?? displayName;
   const initialsSource = displayName.split(/\s+/).filter(Boolean);

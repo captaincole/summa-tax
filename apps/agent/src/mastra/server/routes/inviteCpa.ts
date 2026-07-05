@@ -1,6 +1,5 @@
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
-import { getServiceRoleClient } from "../../db/supabase";
 import { getAppDb, ensureAppSchema, nowIso } from "../../db/appDb";
 import { getMembership } from "../../db/filings";
 
@@ -65,29 +64,20 @@ export const inviteCpaRoute = registerApiRoute(
       const ownerCheck = await getMembership(filingId, callerId, "owner");
       if (!ownerCheck) return c.json({ error: "forbidden" }, 403);
 
-      // Auth is still Supabase (until Phase 2) — the admin client is only
-      // used to verify the invitee exists in auth.users.
-      const admin = getServiceRoleClient();
-
-      // Verify the invitee actually exists in auth.users. Cheaper than
-      // letting the FK constraint fail mid-upsert + clearer error message.
-      const { data: inviteeAuth, error: inviteeAuthErr } =
-        await admin.auth.admin.getUserById(inviteeId);
-      if (inviteeAuthErr || !inviteeAuth?.user) {
-        return c.json({ error: "no user with that id" }, 404);
-      }
-
-      // cpa_profiles is informational only — used to surface the display
-      // name in the success response. A missing profile is not a gate.
+      // Dormant multi-user surface (single-user instances have no one to
+      // invite). The invitee must at least exist in cpa_profiles — the
+      // only user registry left now that auth-level users are gone.
       await ensureAppSchema();
       const db = getAppDb();
       const profile = await db.execute({
         sql: `SELECT display_name FROM cpa_profiles WHERE user_id = ? LIMIT 1`,
         args: [inviteeId],
       });
+      if (profile.rows.length === 0) {
+        return c.json({ error: "no registered CPA with that id" }, 404);
+      }
       const displayName =
         (profile.rows[0]?.display_name as string | undefined) ??
-        inviteeAuth.user.email ??
         "Unknown reviewer";
 
       // 1. filing_invites — the visible record. Auto-accepted today.

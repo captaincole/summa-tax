@@ -45,7 +45,7 @@ apps/
     ├── package.json             # web deps + scripts (next dev, next build)
     └── next.config.ts
 
-supabase/                        # AUTH ONLY (GoTrue via local Docker stack) — leaves in transition Phase 2
+(no other top-level infra — auth is a password gate in the web app; see below)
 package.json                     # workspace root: thin delegating scripts (dev, dev:all, refdocs:*, …)
 CLAUDE.md
 ```
@@ -58,9 +58,7 @@ Two services. Run both — backend changes hot-reload via Mastra file-watching, 
 
 ```bash
 npm run install:all                         # installs root + apps/agent + apps/web
-npm run db:start                            # boots local Supabase (AUTH ONLY — see next section)
-npm run db:reset                            # resets auth DB + seeds test users/filings/threads
-npm run dev:all                             # mastra (:4111) + next (:3000)
+npm run dev:all                             # mastra (:4111) + next (:3000) — that's everything
 
 # or run them separately:
 npm run dev          # mastra only — also opens Mastra Studio at :4111
@@ -78,56 +76,15 @@ All persistent state lives in local files under `apps/agent/.data/` ("the DB is 
 | `mastra.db` | Mastra runtime (threads, messages, working memory) | `@mastra/libsql` |
 | `documents/` | document blobs `{filingId}/{category}/{slug}-{ulid}.{ext}` | `db/blobStore.ts` |
 
-Pin all four paths via env (`CORPUS_DB_PATH` / `APP_DB_PATH` / `MASTRA_DB_PATH` / `DOCUMENTS_PATH`) — module-relative defaults resolve differently inside Mastra's bundled output than in tsx scripts. The ONLY Supabase left is **auth** (GoTrue), which Phase 2 of the transition removes.
+Pin all four paths via env (`CORPUS_DB_PATH` / `APP_DB_PATH` / `MASTRA_DB_PATH` / `DOCUMENTS_PATH`) — module-relative defaults resolve differently inside Mastra's bundled output than in tsx scripts. There are **no external services**: no Docker, no Postgres, no Supabase.
 
-The Next.js app reaches Mastra cross-origin via `NEXT_PUBLIC_AGENT_URL` for the calls that go through the agent (chat streaming, `/app/state`, filing create/delete/invite). Everything else — activity, drafts, uploads, filings lists — is read from `app.db` directly: Server Components via `lib/serverDb.ts`, browser code via the `/api/*` Route Handlers (the browser can't read a server-side file; there is no realtime channel — client components poll on a short interval). Cookie-based auth via `@supabase/ssr` means navigations carry auth automatically; bearer headers are only used for the cross-origin agent calls. With RLS gone, **every query scopes explicitly** by `userId`/`filingId` (`Scope` in `db/appDb.ts`), and routes gate with membership checks before touching another filing's data.
+**Auth (single-user):** identity = the instance. One `owner` row in `app.db` holds profile data (name/email) plus an scrypt password hash and the session-cookie HMAC secret — all created by the web app's first-run `/setup` screen. Login = one password → signed httpOnly cookie (`lib/localAuth.ts`, ~100 lines, node:crypto only). `proxy.ts` does an optimistic cookie-presence redirect; layouts/route handlers verify for real via `getOwnerSession()`.
 
-## Running local Supabase (auth only)
+**The browser never talks to the agent.** All agent calls (chat streaming, `/app/state`, filing lifecycle, thread history) go through the same-origin `/api/agent/[...path]` proxy — session-cookie authenticated, forwarded server-side to `AGENT_INTERNAL_URL` (default `http://127.0.0.1:4111`), streaming passed through. The agent itself has no user auth; `ownerMiddleware` resolves the instance owner from `app.db` for memory scoping, and an optional `AGENT_API_TOKEN` gates the port when it's reachable beyond localhost. Everything non-agent — activity, drafts, uploads, filings lists — is read from `app.db` directly: Server Components via `lib/serverDb.ts`, browser code via the `/api/*` Route Handlers (no realtime channel — client components poll on a short interval). With RLS gone, **every query scopes explicitly** by `userId`/`filingId` (`Scope` in `db/appDb.ts`), and routes gate with membership checks before touching another filing's data.
 
-Local dev still boots the Dockerized Supabase stack, but ONLY for auth (GoTrue + its Postgres backing store). Realtime and Storage are disabled in `config.toml`; there are no migrations of ours — domain data lives in the libsql files. This whole dependency leaves in transition Phase 2.
+## First run
 
-**Prereqs**: Docker Desktop running, Supabase CLI ≥ 2.95 (`brew install supabase/tap/supabase`).
-
-**First-boot sequence** (one-time):
-
-```bash
-npm run db:start                # docker pulls images, boots containers
-npm run db:status               # prints API URL + keys
-
-# Copy the examples and fill in values (keys from `db:status`, absolute .data paths):
-cp apps/agent/.env.example apps/agent/.env.development
-cp apps/web/.env.example apps/web/.env.development
-
-npm run db:reset                # resets auth DB, then seeds users + filings + threads
-npm run dev:all                 # ready
-```
-
-**Routine flow**:
-
-```bash
-npm run db:start                # if not already running
-npm run dev:all
-# …work…
-npm run db:reset                # wipe data + reseed (whenever you want a clean slate)
-npm run db:stop                 # shut docker down at end of day (optional)
-```
-
-**Seeded test users** (from `apps/agent/scripts/seedLocal.ts`):
-
-| email | role | password |
-| --- | --- | --- |
-| `casey@localhost` | taxpayer (owner) | `testpass123!` |
-| `edwhite@localhost` | CPA (no memberships yet) | `testpass123!` |
-
-Casey has one owner-role membership on a 2025 filing. Ed has a `cpa_profiles` row but is intentionally NOT attached to any filing — exercise the share flow (`/r/<filingId>/share`) by signing in as Casey, inviting `edwhite@localhost`, then signing out and back in as Ed to see the filing at `/cpa`.
-
-**URLs to remember**:
-
-- API gateway (auth): http://127.0.0.1:54321
-- Studio (Supabase UI): http://127.0.0.1:54323 — auth user list
-- Inbucket (email preview): http://127.0.0.1:54324 — any emails GoTrue would have sent show up here
-
-**Why seeding is a TypeScript script, not seed.sql.** Auth users are created through the GoTrue admin API (bcrypt, identities, future schema changes handled by Supabase); their IDs then seed filings/memberships in the libsql app DB and the demo thread via the Memory API. See `apps/agent/scripts/seedLocal.ts`.
+Delete `apps/agent/.data/` for a factory reset. On first visit, the web app redirects to `/setup` — create the owner account (name, email, password) — then start a filing from the home page. No seed scripts, no test users; the setup screen IS the seeding.
 
 ## Development workflow
 
@@ -138,7 +95,7 @@ We're building agent + UI together. When changes touch both, expect to:
    - **Mastra log** — backend errors, agent traces, tool-call output. When Claude runs mastra in the background it writes to `/private/tmp/claude-501/.../tasks/<id>.output`; otherwise it's whatever terminal you started `npm run dev` in.
    - **Mastra Studio** at http://localhost:4111 — the **Observability** tab shows full agent traces (which tools fired, with what args, in what order). This is the right place to debug "why did Luca do X?".
    - **Browser console + Network panel** — frontend errors and HTTP failures (401s from a wrong passcode, 404s from a missing proxy entry, etc.).
-3. **Verify the change in the browser** at http://localhost:3000. Sign in with a Supabase account; cookie-based session via `@supabase/ssr` persists across reloads. To wipe state between test runs use **Delete filing** (avatar menu, top-right) and start a fresh filing from the home page. The activity rail and header counters refresh after each agent turn (plus a short client-side poll).
+3. **Verify the change in the browser** at http://localhost:3000. Sign in with the owner password (session cookie persists across reloads). To wipe state between test runs use **Delete filing** (avatar menu, top-right) and start a fresh filing from the home page. The activity rail and header counters refresh after each agent turn (plus a short client-side poll).
 
 For backend-only changes you don't always need to open the browser — `curl` against `http://localhost:4111/app/state` (or `/api/agents/luca/stream`) with `Authorization: Bearer <DEMO_PASSCODE>` is faster.
 

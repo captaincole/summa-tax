@@ -1,34 +1,34 @@
 "use client";
 
+// Single-user login: one password, one owner. If setup hasn't run yet the
+// server layout for this route redirects to /setup before this renders.
+
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = createClient();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!email || !password || submitting) return;
+    if (!password || submitting) return;
     setSubmitting(true);
     setError(null);
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
     });
-    if (signInError) {
-      setError(signInError.message);
+    if (!res.ok) {
+      setError(res.status === 401 ? "Wrong password." : `Login failed (${res.status}).`);
       setSubmitting(false);
       return;
     }
     // refresh() re-runs Server Components with the new session cookie; push()
-    // navigates to the protected home page where the (app) layout will see
-    // the user.
+    // navigates to the protected home page.
     router.refresh();
     router.push("/");
   }
@@ -44,32 +44,24 @@ export default function LoginPage() {
           </div>
           <h1 className="font-serif text-4xl text-ink-primary mb-3">Sign in</h1>
           <p className="text-ink-secondary text-sm">
-            Enter your email and password to start a session.
+            Enter your password to unlock this instance.
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-3">
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            autoFocus
-            autoComplete="email"
-            className="input-base"
-          />
-          <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
+            autoFocus
             autoComplete="current-password"
             className="input-base"
           />
           {error && <div className="text-red-400 text-sm px-1">{error}</div>}
           <button
             type="submit"
-            disabled={submitting || !email || !password}
+            disabled={submitting || !password}
             className="btn-primary"
           >
             {submitting ? "Signing in…" : "Sign in"}
@@ -77,7 +69,7 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-10 text-center text-ink-faint text-xs">
-          For demo only · No data is shared between sessions
+          Self-hosted · Your data stays on this machine
         </div>
       </div>
     </div>

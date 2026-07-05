@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getOwnerSession } from "@/lib/localAuth";
 
 // Auth gate for the entire /cpa/* tree. Mirrors (app)/layout.tsx — the
 // proxy does an optimistic redirect to /login for unauthed traffic; this
@@ -14,11 +14,8 @@ export default async function CpaLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const session = await getOwnerSession();
+  if (!session) redirect("/login");
 
   return <>{children}</>;
 }

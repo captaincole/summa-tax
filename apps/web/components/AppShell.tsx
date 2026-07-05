@@ -32,11 +32,10 @@ import {
   UnauthorizedError,
   type CaseState,
 } from "@/lib/api";
-import { createClient } from "@/lib/supabase/client";
 import { makeMastraClient } from "@/lib/mastraClient";
 import { LUCA_AGENT_ID } from "@/lib/chatSession";
 import { threadIdFor, type TaxReturn } from "@/lib/returns";
-import { getUserId } from "@/lib/auth";
+import { getUserId, signOut } from "@/lib/auth";
 import { uploadDocument } from "@/lib/uploads";
 import { type UserProfile } from "@/lib/profile";
 import { cn } from "@/lib/cn";
@@ -141,7 +140,7 @@ export function AppShell({
       setState(await fetchState());
     } catch (err) {
       if (err instanceof UnauthorizedError) {
-        await createClient().auth.signOut();
+        await signOut();
         router.refresh();
         router.push("/login");
       }
@@ -191,7 +190,7 @@ export function AppShell({
   }, [activeReturn.id]);
 
   async function onSignOut() {
-    await createClient().auth.signOut();
+    await signOut();
     router.refresh();
     router.push("/login");
   }
@@ -258,7 +257,7 @@ export function AppShell({
 
       const userIdFresh = await getUserId();
       if (!userIdFresh) {
-        await createClient().auth.signOut();
+        await signOut();
         router.refresh();
         router.push("/login");
         return;
@@ -305,7 +304,7 @@ export function AppShell({
         ),
       );
       if (err instanceof UnauthorizedError) {
-        await createClient().auth.signOut();
+        await signOut();
         router.refresh();
         router.push("/login");
       }

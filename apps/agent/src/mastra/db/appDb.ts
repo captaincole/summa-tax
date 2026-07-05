@@ -71,6 +71,20 @@ export function ensureAppSchema(): Promise<void> {
     await db.execute("PRAGMA foreign_keys = ON");
     await db.batch(
       [
+        // The single owner of this instance. Identity = the instance; this
+        // row holds profile data (name/email, used for form prefill +
+        // authEmail) and the web gate's credentials (scrypt password hash +
+        // the HMAC secret for session cookies). Created by the web app's
+        // first-run /setup screen. The agent only READS it (ownerMiddleware
+        // resolves the owner as the resource id for every request).
+        `CREATE TABLE IF NOT EXISTS owner (
+           id            TEXT PRIMARY KEY,
+           email         TEXT NOT NULL,
+           display_name  TEXT NOT NULL,
+           password_hash TEXT NOT NULL,
+           session_secret TEXT NOT NULL,
+           created_at    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+         )`,
         `CREATE TABLE IF NOT EXISTS filings (
            id         TEXT PRIMARY KEY,
            tax_year   INTEGER NOT NULL,
@@ -213,4 +227,23 @@ export function ensureAppSchema(): Promise<void> {
     );
   })();
   return schemaReady;
+}
+
+// ---------------------------------------------------------------------------
+// Owner — the instance's single user. See the owner table comment above.
+// ---------------------------------------------------------------------------
+
+export interface Owner {
+  id: string;
+  email: string;
+  displayName: string;
+}
+
+/** The instance owner, or null before first-run setup has been completed. */
+export async function getOwner(): Promise<Owner | null> {
+  await ensureAppSchema();
+  const res = await getAppDb().execute(`SELECT id, email, display_name FROM owner LIMIT 1`);
+  const r = res.rows[0];
+  if (!r) return null;
+  return { id: asStr(r.id), email: asStr(r.email), displayName: asStr(r.display_name) };
 }

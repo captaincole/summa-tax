@@ -1,6 +1,6 @@
 // Uploads a user-attached file via the /api/uploads Route Handler, which
 // authenticates from the session cookie, streams the bytes to the
-// `user-documents` Storage bucket (blobs stay in Supabase Storage until
+// local documents dir (blobStore; bytes live on this machine until
 // Phase 1 step 4), and inserts the metadata row in the libsql app DB.
 //
 // The browser used to write both stores directly; with domain metadata in a

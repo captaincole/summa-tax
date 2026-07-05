@@ -4,7 +4,7 @@ Tracking doc for converting this project from a hosted, multi-tenant product int
 self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
 Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
 
-**Current status:** _PHASE 1 COMPLETE (2026-07-06) — Supabase is gone except GoTrue auth; all persistence is local files under `apps/agent/.data/`. Next: Phase 2 (replace Supabase auth with first-run owner setup + password session; then delete the Docker stack). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc) until Phase 3 restores automated grounding coverage._
+**Current status:** _PHASES 1–2 COMPLETE (2026-07-06) — zero external services: no Supabase, no Docker, no Postgres. Auth = first-run owner setup + password cookie; browser→agent goes through the web proxy. Next: Phase 3 (Nynaeve → deterministic grounding workflow, rebuilds `smoke:review`). The gate for every phase = `npm run test:unit` (25/25) + `npm test` (14/14 goldens) green, plus a manual browser pass (fact → 1040 → doc)._
 
 ---
 
@@ -64,11 +64,14 @@ _Note: `smoke:engine` was deleted during baselining — it was a stale hand-main
 
 **PHASE 1 COMPLETE (2026-07-06).** Every persistence role is a local file under `apps/agent/.data/` — corpus.db, app.db, mastra.db, documents/. The only Supabase left is GoTrue auth; Phase 2 removes it (design direction discussed 2026-07-06: owner row in app.db + first-run setup, simple password session cookie, proxy remaining agent calls through Next to kill the bearer/cookie split, static AGENT_API_TOKEN for direct agent access, then delete the Docker stack).
 
-### Phase 2 — Single-user simplifications
-- [ ] Delete RLS *enforcement*, GoTrue seeding, bearer/cookie auth split
-- [ ] Keep owner/membership + CPA tables dormant
-- [ ] First-run "create your filing" replaces seeded demo users
-- **Gate:** full single-user flow still works
+### Phase 2 — Single-user simplifications ✅ DONE (2026-07-06)
+- [x] **Auth = instance identity + one gate.** `owner` row in app.db (profile + scrypt password hash + auto-generated session-secret — no SESSION_SECRET env); first-run `/setup` screen creates it; login = one password → HMAC-signed httpOnly cookie (`lib/localAuth.ts`, ~100 lines, node:crypto only). Persists across restarts (secret on disk, 30-day cookie).
+- [x] **Bearer/cookie split deleted.** Browser → Next only; ALL agent calls proxied via `/api/agent/[...path]` (cookie-authed, streaming pass-through, server-side forward to `AGENT_INTERNAL_URL`). Agent: `ownerMiddleware` resolves the owner from app.db (memory scoping + authEmail); optional `AGENT_API_TOKEN` gate for non-localhost deployments; `MastraAuthSupabase`/`studioAuth` deleted.
+- [x] **Supabase fully deleted.** `@supabase/*` + `@mastra/auth-supabase` deps, `supabase/` dir, GoTrue seeding (seedLocal.ts), all `db:*` scripts, every SUPABASE_* env var. **Docker is no longer a dependency — `npm run dev:all` is the entire local story.**
+- [x] Owner/membership + CPA tables stay dormant (single owner holds every membership).
+- [x] First-run `/setup` replaces seeded demo users; "Start your 2025 filing" creates the filing.
+- **Gate met:** factory-reset first-run → setup → login → chat (through proxy) → upload → drafts (manual pass); goldens 14/14, unit 25/25, both tsc 0, web prod build clean.
+- _Architecture settled en route (sketch session 2026-07-06): agent = the application; web = the rendered case state ("case file") + embedded chat pane as the single web→agent edge; DB = the contract. Channels (Discord etc.) become optional additional conversation surfaces. Deferred: shrink the edge further (filing lifecycle → web DB writes; case state materialized to DB) and possibly serve the UI from the agent process — revisit at Phase 4._
 
 ### Phase 3 — Nynaeve → async grounding workflow
 - [ ] Remove the critic agent; grounding = deterministic retrieve → judge

@@ -5,10 +5,10 @@
 // rather than 500ing), then navigates to /r/<year>. Error state lands
 // inline below the button rather than disappearing into a console warn.
 
+import { signOut } from "@/lib/auth";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createFiling, UnauthorizedError } from "@/lib/api";
-import { createClient } from "@/lib/supabase/client";
 
 export function StartFilingButton({
   taxYear,
@@ -33,7 +33,7 @@ export function StartFilingButton({
       router.refresh();
     } catch (err) {
       if (err instanceof UnauthorizedError) {
-        await createClient().auth.signOut();
+        await signOut();
         router.push("/login");
         return;
       }
