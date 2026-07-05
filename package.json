@@ -7,6 +7,7 @@
     "dev": "npm --prefix apps/agent run dev",
     "dev:web": "npm --prefix apps/web run dev",
     "dev:all": "concurrently -k -n agent,web -c cyan,magenta \"npm:dev\" \"npm:dev:web\"",
+    "reset": "npm --prefix apps/agent run reset:data",
     "build": "npm --prefix apps/agent run build",
     "build:web": "npm --prefix apps/web run build",
     "start": "npm --prefix apps/agent run start",
