@@ -5,11 +5,10 @@
 // (inputs vs outputs are different concerns).
 //
 // Drop zone wraps the existing uploadDocument flow. Card list reads
-// directly from Supabase via the per-user RLS-scoped client.
+// /api/uploads (libsql app DB, session-cookie auth).
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppShell } from "@/components/AppShell";
-import { createClient } from "@/lib/supabase/client";
 import { uploadDocument } from "@/lib/uploads";
 import { cn } from "@/lib/cn";
 
@@ -31,20 +30,17 @@ export default function DocumentsTab() {
 
   const loadUploads = useCallback(() => {
     let cancelled = false;
-    const supabase = createClient();
-    supabase
-      .from("user_documents")
-      .select("id, filename, created_at, mime_type, size_bytes")
-      .eq("category", "uploads")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          console.warn("[documents] failed to load uploads:", error.message);
-          setUploads([]);
-          return;
-        }
-        setUploads((data ?? []) as UploadRow[]);
+    fetch("/api/uploads", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return (await res.json()) as UploadRow[];
+      })
+      .then((rows) => {
+        if (!cancelled) setUploads(rows);
+      })
+      .catch((err) => {
+        console.warn("[documents] failed to load uploads:", err);
+        if (!cancelled) setUploads([]);
       });
     return () => {
       cancelled = true;

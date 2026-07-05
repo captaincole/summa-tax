@@ -1,11 +1,11 @@
 import type { Pool } from "pg";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { luca } from "../agents/luca";
+import { getAppDb, ensureAppSchema, asStr, asNum } from "./appDb";
+import { getServiceRoleClient } from "./supabase";
 
 // Per-user data reset is the only reset path. The web "Reset session" button
 // hits POST /app/session/reset, which calls resetCurrentUserData below. There
-// is no wholesale-truncate path; for that, run TRUNCATE in the Supabase SQL
-// editor (or against a local Supabase instance once we have one).
+// is no wholesale-truncate path; for that, delete .data/app.db and reseed.
 //
 // Filings + filing_members are deliberately NOT wiped. Resetting the filing
 // to a known-empty state (zero facts, decisions, questions, documents,
@@ -20,50 +20,47 @@ export interface PerUserResetResult {
 }
 
 // Per-user data reset, used by /app/session/reset. Deletes only the calling
-// user's data — domain rows + Mastra threads + documents (both metadata rows
-// and storage objects). RLS scopes the user-scoped supabase client; the
-// mastra.* delete uses the admin pool with explicit resourceId because
-// framework tables don't carry RLS.
+// user's data — domain rows (explicit WHERE user_id, since RLS is gone with
+// Postgres) + Mastra threads + documents (metadata rows here, storage objects
+// via the service-role client until blobs move local in step 4 — the
+// bucket's RLS references the now-empty Postgres filing_members).
 export async function resetCurrentUserData(
-  supabase: SupabaseClient,
   pool: Pool,
   userId: string,
 ): Promise<PerUserResetResult> {
+  await ensureAppSchema();
+  const db = getAppDb();
+
   // Capture document storage paths BEFORE deleting rows — once the rows are
   // gone we lose the pointers to the bytes in storage and would orphan them.
-  const docPathsResult = await supabase
-    .from("user_documents")
-    .select("storage_path");
-  if (docPathsResult.error) {
-    throw new Error(
-      `reset document list failed: ${docPathsResult.error.message}`,
-    );
-  }
-  const storagePaths = (docPathsResult.data ?? []).map(
-    (r) => r.storage_path as string,
-  );
+  const docPaths = await db.execute({
+    sql: `SELECT storage_path FROM user_documents WHERE user_id = ?`,
+    args: [userId],
+  });
+  const storagePaths = docPaths.rows.map((r) => asStr(r.storage_path));
 
-  // Domain + document tables — RLS scopes to auth.uid() automatically. The
-  // `.gte("created_at", "1970-01-01")` filter is a universal-true predicate
-  // that works regardless of the id column's type (text vs uuid); it's
-  // PostgREST's "delete all matching rows" idiom — DELETE without any
-  // filter is rejected at the API layer.
-  const SENTINEL = "1970-01-01";
-  const [facts, questions, decisions, documents, actions] = await Promise.all([
-    supabase.from("tax_facts").delete().gte("created_at", SENTINEL),
-    supabase.from("open_questions").delete().gte("created_at", SENTINEL),
-    supabase.from("ai_decisions").delete().gte("created_at", SENTINEL),
-    supabase.from("user_documents").delete().gte("created_at", SENTINEL),
-    supabase.from("requested_actions").delete().gte("created_at", SENTINEL),
-  ]);
-  for (const r of [facts, questions, decisions, documents, actions]) {
-    if (r.error) throw new Error(`reset delete failed: ${r.error.message}`);
+  // Domain + document tables — explicit user_id scoping.
+  const tables = [
+    "tax_facts",
+    "open_questions",
+    "ai_decisions",
+    "user_documents",
+    "requested_actions",
+    "review_run_steps",
+    "review_runs",
+  ] as const;
+  const counts: Record<string, number> = {};
+  for (const t of tables) {
+    const res = await db.execute({
+      sql: `DELETE FROM ${t} WHERE user_id = ?`,
+      args: [userId],
+    });
+    counts[t] = asNum(res.rowsAffected);
   }
 
-  // Storage objects matching the rows we just deleted. RLS on storage.objects
-  // scopes by folder == user's id, so this only reaches their own files.
+  // Storage objects matching the rows we just deleted.
   if (storagePaths.length > 0) {
-    const removal = await supabase.storage
+    const removal = await getServiceRoleClient().storage
       .from("user-documents")
       .remove(storagePaths);
     if (removal.error) {
@@ -94,12 +91,13 @@ export async function resetCurrentUserData(
 
   return {
     domainRowsDeleted:
-      (facts.count ?? 0) +
-      (questions.count ?? 0) +
-      (decisions.count ?? 0) +
-      (actions.count ?? 0),
+      counts.tax_facts +
+      counts.open_questions +
+      counts.ai_decisions +
+      counts.requested_actions +
+      counts.review_run_steps +
+      counts.review_runs,
     mastraThreadsDeleted,
-    documentsDeleted: documents.count ?? 0,
+    documentsDeleted: counts.user_documents,
   };
 }
-

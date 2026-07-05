@@ -98,7 +98,7 @@ export const ingestW2 = createTool({
     factKey: z.string(),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId } = await requireUserContext(context);
+    const { scope, userId, filingId } = await requireUserContext(context);
     const { year, sourceNote } = input;
     const slug =
       input.employerSlug ||
@@ -129,7 +129,7 @@ export const ingestW2 = createTool({
     };
 
     const factKey = makeW2FactKey(slug);
-    await recordFact(supabase, {
+    await recordFact(scope, {
       id: crypto.randomUUID(),
       userId,
       filingId,
@@ -149,7 +149,7 @@ export const ingestW2 = createTool({
       const e = input.employee;
       const writeIdentity = async (key: string, value: unknown) => {
         if (value === undefined || value === null || value === "") return;
-        await recordFact(supabase, {
+        await recordFact(scope, {
           id: crypto.randomUUID(),
           userId,
           filingId,

@@ -1,19 +1,17 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
-import { getServiceRoleClient } from "../../db/supabase";
+import { getAppDb, ensureAppSchema } from "../../db/appDb";
+import { createOwnerFiling } from "../../db/filings";
 import { luca } from "../../agents/luca";
-import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
 // POST /app/filings
 // body: { taxYear?: number }
 //
-// Creates a new filing for the calling user with an `owner` membership. If
-// the caller already has a non-revoked owner membership for the requested
-// tax_year, return that existing filing (idempotent — the home-home "Start
-// your 2025 filing" button is safe to double-click). Both writes go through
-// the service-role client because filings + filing_members are write-locked
-// to service-role per the migration (see 20260521085200_filings.sql notes).
+// Creates a new filing for the calling user with an `owner` membership in
+// the libsql app DB. If the caller already has a non-revoked owner
+// membership for the requested tax_year, return that existing filing
+// (idempotent — the home-home "Start your 2025 filing" button is safe to
+// double-click).
 //
 // Errors:
 //   401 — no JWT / unverified caller
@@ -51,13 +49,10 @@ export const createFilingRoute = registerApiRoute("/app/filings", {
   method: "POST",
   handler: async (c) => {
     const requestContext = c.get("requestContext");
-    const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
-      | SupabaseClient
-      | undefined;
     const callerId = requestContext?.get(MASTRA_RESOURCE_ID_KEY) as
       | string
       | undefined;
-    if (!supabase || !callerId) return c.json({ error: "unauthorized" }, 401);
+    if (!callerId) return c.json({ error: "unauthorized" }, 401);
 
     let body: unknown = undefined;
     try {
@@ -74,55 +69,35 @@ export const createFilingRoute = registerApiRoute("/app/filings", {
       return c.json({ error: `taxYear out of range (${taxYear})` }, 400);
     }
 
-    // Idempotency check via the user-scoped client — RLS scopes this to
-    // filings the caller has membership on.
-    const { data: existing, error: lookupErr } = await supabase
-      .from("filings")
-      .select("id, tax_year, status, filing_members!inner(role, revoked_at)")
-      .eq("tax_year", taxYear)
-      .eq("filing_members.role", "owner")
-      .is("filing_members.revoked_at", null)
-      .maybeSingle();
-    if (lookupErr) {
-      return c.json(
-        { error: `filing lookup failed: ${lookupErr.message}` },
-        500,
-      );
-    }
-    if (existing) {
-      const row = existing as { id: string; tax_year: number; status: string };
+    // Idempotency check — explicit membership predicate (RLS is gone).
+    await ensureAppSchema();
+    const existing = await getAppDb().execute({
+      sql: `SELECT f.id, f.tax_year, f.status
+            FROM filings f
+            JOIN filing_members m ON m.filing_id = f.id
+            WHERE m.user_id = ? AND m.role = 'owner' AND m.revoked_at IS NULL
+              AND f.tax_year = ?
+            LIMIT 1`,
+      args: [callerId, taxYear],
+    });
+    if (existing.rows.length > 0) {
+      const row = existing.rows[0];
       // Defensive: ensure the thread exists even on the idempotent path,
       // in case an earlier filing created the row but the thread bootstrap
       // failed (or the filing pre-dates this route's thread-creation logic).
-      await ensureThread(callerId, row.tax_year);
+      await ensureThread(callerId, Number(row.tax_year));
       return c.json({
-        filing: { id: row.id, taxYear: row.tax_year, status: row.status },
+        filing: {
+          id: String(row.id),
+          taxYear: Number(row.tax_year),
+          status: String(row.status),
+        },
         created: false,
       });
     }
 
-    // Insert filing + owner membership via service-role. crypto.randomUUID()
-    // lets us reuse the id across both inserts without a RETURNING roundtrip.
-    const admin = getServiceRoleClient();
     const filingId = crypto.randomUUID();
-    const { error: filingErr } = await admin
-      .from("filings")
-      .insert({ id: filingId, tax_year: taxYear, status: "draft" });
-    if (filingErr) {
-      return c.json(
-        { error: `filings insert failed: ${filingErr.message}` },
-        500,
-      );
-    }
-    const { error: memberErr } = await admin
-      .from("filing_members")
-      .insert({ filing_id: filingId, user_id: callerId, role: "owner" });
-    if (memberErr) {
-      return c.json(
-        { error: `filing_members insert failed: ${memberErr.message}` },
-        500,
-      );
-    }
+    await createOwnerFiling({ filingId, userId: callerId, taxYear });
 
     await ensureThread(callerId, taxYear);
 

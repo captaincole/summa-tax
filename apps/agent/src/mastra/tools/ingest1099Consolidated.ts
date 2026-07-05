@@ -179,7 +179,7 @@ export const ingest1099Consolidated = createTool({
     tradeIds: z.array(z.string()),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId } = await requireUserContext(context);
+    const { scope, userId, filingId } = await requireUserContext(context);
     const { year, sourceNote } = input;
     const slug =
       input.accountSlug ||
@@ -197,7 +197,7 @@ export const ingest1099Consolidated = createTool({
         payerTin: input.payer.tin,
         ...input.int,
       };
-      await recordFact(supabase, {
+      await recordFact(scope, {
         id: crypto.randomUUID(),
         userId,
         filingId,
@@ -217,7 +217,7 @@ export const ingest1099Consolidated = createTool({
         payerTin: input.payer.tin,
         ...input.div,
       };
-      await recordFact(supabase, {
+      await recordFact(scope, {
         id: crypto.randomUUID(),
         userId,
         filingId,
@@ -249,7 +249,7 @@ export const ingest1099Consolidated = createTool({
           adjustmentCode: t.adjustmentCode,
           adjustmentAmount: t.adjustmentAmount,
         };
-        await recordFact(supabase, {
+        await recordFact(scope, {
           id: crypto.randomUUID(),
           userId,
           filingId,
@@ -265,7 +265,7 @@ export const ingest1099Consolidated = createTool({
         // Skips Nynaeve grounding by writing directly through recordDecision —
         // the input is broker-reported, no judgment.
         const box = boxFor(t.term, t.basisReported);
-        await recordDecision(supabase, {
+        await recordDecision(scope, {
           id: crypto.randomUUID(),
           userId,
           filingId,
@@ -283,7 +283,7 @@ export const ingest1099Consolidated = createTool({
       }
 
       // Scope decision: reportable sales exist
-      await recordDecision(supabase, {
+      await recordDecision(scope, {
         id: crypto.randomUUID(),
         userId,
         filingId,

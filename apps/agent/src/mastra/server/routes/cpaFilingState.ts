@@ -1,7 +1,7 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { MASTRA_RESOURCE_ID_KEY } from "@mastra/core/request-context";
 import { registerApiRoute } from "@mastra/core/server";
 import { listDocuments, type UserDocumentRow } from "../../db/userDocuments";
+import { getMembership } from "../../db/filings";
 import { buildCaseStateForFiling } from "../../tools/caseState";
 import { REQUEST_CONTEXT_KEYS } from "../userSupabaseMiddleware";
 
@@ -30,41 +30,29 @@ export const cpaFilingStateRoute = registerApiRoute(
     method: "GET",
     handler: async (c) => {
       const requestContext = c.get("requestContext");
-      const supabase = requestContext?.get(REQUEST_CONTEXT_KEYS.userSupabase) as
-        | SupabaseClient
-        | undefined;
       const userId = requestContext?.get(MASTRA_RESOURCE_ID_KEY) as
         | string
         | undefined;
-      if (!supabase || !userId) return c.json({ error: "unauthorized" }, 401);
+      const authEmail =
+        (requestContext?.get(REQUEST_CONTEXT_KEYS.userEmail) as
+          | string
+          | undefined) ?? null;
+      if (!userId) return c.json({ error: "unauthorized" }, 401);
 
       const filingId = c.req.param("filingId");
       if (!filingId) return c.json({ error: "missing filingId" }, 400);
 
-      // Membership gate via the filings table with an !inner join on the
-      // membership predicate. RLS would naturally hide non-member rows
-      // anyway; the explicit role/user_id eq() makes the gate readable in
-      // logs and keeps the query result a clean { id, tax_year } shape.
-      const { data: filing, error: filingErr } = await supabase
-        .from("filings")
-        .select("id, tax_year, filing_members!inner(role, revoked_at, user_id)")
-        .eq("id", filingId)
-        .eq("filing_members.user_id", userId)
-        .eq("filing_members.role", "cpa_reviewer")
-        .is("filing_members.revoked_at", null)
-        .maybeSingle();
-      if (filingErr) {
-        return c.json(
-          { error: `filing lookup failed: ${filingErr.message}` },
-          500,
-        );
-      }
-      if (!filing) return c.json({ error: "forbidden" }, 403);
-      const resolvedYear = (filing as { tax_year: number }).tax_year;
+      // Membership gate — with RLS gone this explicit check is the ONLY
+      // thing standing between a caller and someone else's filing. The
+      // scope below is only built after it passes.
+      const membership = await getMembership(filingId, userId, "cpa_reviewer");
+      if (!membership) return c.json({ error: "forbidden" }, 403);
+      const resolvedYear = membership.taxYear;
 
+      const scope = { userId, filingId };
       const [caseState, drafts] = await Promise.all([
-        buildCaseStateForFiling(supabase, filingId, resolvedYear),
-        listDocuments(supabase, {
+        buildCaseStateForFiling(scope, resolvedYear, authEmail),
+        listDocuments(scope, {
           category: "drafts",
           taxYear: resolvedYear,
           filingId,

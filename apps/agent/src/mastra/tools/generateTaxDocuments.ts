@@ -120,10 +120,11 @@ export const generateTaxDocuments = createTool({
     }),
   }),
   execute: async (input, context) => {
-    const { supabase, userId, filingId, taxYear } = await requireUserContext(context);
+    const { scope, userId, filingId, taxYear, authEmail } =
+      await requireUserContext(context);
     const { year } = input;
 
-    const scenario = await evaluateScenario(supabase, { id: filingId, taxYear });
+    const scenario = await evaluateScenario(scope, { id: filingId, taxYear }, authEmail);
     const { forms } = scenario;
 
     // ─── Render every form whose mustFile predicate evaluates true ───
@@ -156,7 +157,7 @@ export const generateTaxDocuments = createTool({
         console.warn(`[generate-tax-documents][${spec.formId}] ${w}`);
       }
       const filename = `${spec.displayName} — ${year}`;
-      const doc = await createDocument(supabase, {
+      const doc = await createDocument({
         userId,
         filingId,
         category: "drafts",
@@ -188,7 +189,7 @@ export const generateTaxDocuments = createTool({
       forms: sidecarForms,
     };
     const sidecarBytes = Buffer.from(JSON.stringify(sidecar, null, 2), "utf-8");
-    const sidecarDoc = await createDocument(supabase, {
+    const sidecarDoc = await createDocument({
       userId,
       filingId,
       category: "drafts",

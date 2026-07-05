@@ -12,8 +12,12 @@
 
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { listReviewableFilings, type ReviewableFilingRow } from "@/lib/filings";
-import { formatTaxpayerLabel, taxpayerNameForFiling } from "@/lib/cpa";
+import {
+  listReviewableFilings,
+  taxpayerNameForFiling,
+  type ReviewableFilingRow,
+} from "@/lib/serverDb";
+import { formatTaxpayerLabel } from "@/lib/cpa";
 
 interface FilingCardData {
   filing: ReviewableFilingRow;
@@ -27,14 +31,11 @@ export default async function CpaHome() {
   } = await supabase.auth.getUser();
   const initials = (user?.email?.slice(0, 2) ?? "JD").toUpperCase();
 
-  const filings = await listReviewableFilings(supabase);
+  const filings = user?.id ? await listReviewableFilings(user.id) : [];
   const cards: FilingCardData[] = await Promise.all(
     filings.map(async (f) => ({
       filing: f,
-      label: formatTaxpayerLabel(
-        await taxpayerNameForFiling(supabase, f.id),
-        f.id,
-      ),
+      label: formatTaxpayerLabel(await taxpayerNameForFiling(f.id), f.id),
     })),
   );
 

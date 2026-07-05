@@ -1,54 +1,12 @@
-import { createClient } from "@/lib/supabase/client";
-import { getUserId } from "@/lib/auth";
-import { getOwnerFilingForYear } from "@/lib/filings";
-
-// Persists a user-attached file to the `user-documents` Storage bucket
-// (`uploads` category) and inserts a metadata row in `user_documents`. RLS
-// scopes both operations to the caller's filing membership — storage paths
-// live under `{filingId}/...` and the metadata row carries `filing_id`.
+// Uploads a user-attached file via the /api/uploads Route Handler, which
+// authenticates from the session cookie, streams the bytes to the
+// `user-documents` Storage bucket (blobs stay in Supabase Storage until
+// Phase 1 step 4), and inserts the metadata row in the libsql app DB.
 //
-// This runs in parallel with the chat stream: bytes go browser → Supabase
-// directly (no agent in the path) while the same bytes also flow through
-// the chat message as base64 for the agent's vision-based extraction.
-
-const DEMO_TAX_YEAR = 2025;
-
-const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-
-function ulid(): string {
-  const time = Date.now();
-  let timeStr = "";
-  let t = time;
-  for (let i = 9; i >= 0; i--) {
-    timeStr = ULID_ALPHABET[t % 32] + timeStr;
-    t = Math.floor(t / 32);
-  }
-  const rand = new Uint8Array(16);
-  crypto.getRandomValues(rand);
-  let randStr = "";
-  for (let i = 0; i < 16; i++) randStr += ULID_ALPHABET[rand[i] % 32];
-  return timeStr + randStr;
-}
-
-function slugify(filename: string): string {
-  const base = filename.replace(/\.[^.]+$/, "");
-  const slug = base
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  return slug || "file";
-}
-
-function extensionOf(filename: string, mimeType: string): string {
-  const dot = filename.lastIndexOf(".");
-  if (dot > 0 && dot < filename.length - 1) {
-    return filename.slice(dot + 1).toLowerCase();
-  }
-  if (mimeType === "application/pdf") return "pdf";
-  if (mimeType.startsWith("image/")) return mimeType.slice("image/".length);
-  return "bin";
-}
+// The browser used to write both stores directly; with domain metadata in a
+// server-side file, the whole persist path moved behind the API route. The
+// same bytes still flow through the chat message as base64 for the agent's
+// vision-based extraction, in parallel with this call.
 
 export interface UploadResult {
   id: string;
@@ -57,49 +15,18 @@ export interface UploadResult {
 }
 
 export async function uploadDocument(file: File): Promise<UploadResult> {
-  const userId = await getUserId();
-  if (!userId) throw new Error("Not signed in — cannot upload");
-
-  const supabase = createClient();
-  const filing = await getOwnerFilingForYear(supabase, DEMO_TAX_YEAR);
-
-  const slug = slugify(file.name);
-  const ext = extensionOf(file.name, file.type);
-  // Path prefix is the filing id — the storage.objects RLS policy reads
-  // the first folder segment and checks filing_members membership.
-  const storagePath = `${filing.id}/uploads/${slug}-${ulid()}.${ext}`;
-
-  const upload = await supabase.storage
-    .from("user-documents")
-    .upload(storagePath, file, {
-      contentType: file.type || "application/octet-stream",
-      upsert: false,
-    });
-  if (upload.error) {
-    throw new Error(`upload failed: ${upload.error.message}`);
+  const form = new FormData();
+  form.append("file", file, file.name);
+  const res = await fetch("/api/uploads", { method: "POST", body: form });
+  if (!res.ok) {
+    let message = `upload failed (HTTP ${res.status})`;
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (body?.error) message = body.error;
+    } catch {
+      /* keep default */
+    }
+    throw new Error(message);
   }
-
-  const { data, error } = await supabase
-    .from("user_documents")
-    .insert({
-      user_id: userId,
-      filing_id: filing.id,
-      category: "uploads",
-      filename: file.name,
-      storage_path: storagePath,
-      size_bytes: file.size,
-      mime_type: file.type || null,
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    await supabase.storage
-      .from("user-documents")
-      .remove([storagePath])
-      .catch(() => {});
-    throw new Error(`upload metadata insert failed: ${error.message}`);
-  }
-
-  return { id: data.id as string, filename: file.name, storagePath };
+  return (await res.json()) as UploadResult;
 }

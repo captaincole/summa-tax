@@ -16,8 +16,6 @@ import { useAppShell } from "@/components/AppShell";
 import { computeOverallPct, type FormSummary } from "@/lib/api";
 import {
   ACTIVITY_TAX_YEAR,
-  decisionRowToItem,
-  factRowToItem,
   fetchActivityItems,
   type ActivityItem,
   type Verdict,
@@ -25,13 +23,16 @@ import {
 import {
   fetchOpenActions,
   markActionProcessing,
-  rowToAction,
   skipAction,
   type RequestedAction,
 } from "@/lib/requestedActions";
 import { uploadDocument } from "@/lib/uploads";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/cn";
+
+// Fast regular poll against the /api routes — the libsql app DB has no push
+// channel (Supabase Realtime left with Postgres); for one user on one box a
+// short interval is indistinguishable from push.
+const POLL_INTERVAL_MS = 3000;
 
 type CategoryItemStatus = "done" | "doing" | "todo";
 
@@ -142,19 +143,16 @@ export default function HomeTab() {
   useEffect(() => {
     if (!activeReturn.realDataAvailable) return;
     let cancelled = false;
-    const supabase = createClient();
-    supabase
-      .from("user_documents")
-      .select("id, filename, created_at")
-      .eq("category", "uploads")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          console.warn("[home] failed to load uploads:", error.message);
-          return;
-        }
-        setUploads((data ?? []) as UploadRow[]);
+    fetch("/api/uploads", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return (await res.json()) as UploadRow[];
+      })
+      .then((rows) => {
+        if (!cancelled) setUploads(rows);
+      })
+      .catch((err) => {
+        console.warn("[home] failed to load uploads:", err);
       });
     return () => {
       cancelled = true;
@@ -521,95 +519,49 @@ function CategoryItemRow({ item }: { item: CategoryItem }) {
 }
 
 // Requested Actions — things Luca needs the user to DO. Pulls live rows
-// from public.requested_actions (status='open') and subscribes to realtime
-// inserts/updates so a freshly-emitted request lands without a refresh.
+// from requested_actions (status='open'|'processing') via /api/requested-
+// actions on a fast poll, plus an immediate refetch after resets and turns.
 //
 // v1: only kind='upload' (document requests). Upload runs the existing
 // uploadDocument() flow then marks the action resolved with the new
 // document id; Skip just flips status. Both make the card disappear
 // because the query filter is status='open'.
 function RequestedActionsCard() {
-  const { userId, lucaBusy, sendChat, setMobilePane, resetTick, turnTick } = useAppShell();
-  const supabase = useMemo(() => createClient(), []);
+  const { lucaBusy, sendChat, setMobilePane, resetTick, turnTick } = useAppShell();
   const [actions, setActions] = useState<RequestedAction[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  // Re-fetch on mount, after every reset, and after every Luca turn.
-  // Realtime is the primary update channel during a session (instant
-  // inserts/updates without polling), but a refetch after each turn
-  // catches anything realtime dropped and a refetch after reset clears
-  // stale rows the wipe already removed from the DB.
+  // Fetch on mount / reset / turn, then poll — the poll replaces the old
+  // realtime channel and also catches Luca's background dismissals.
   useEffect(() => {
     let cancelled = false;
-    fetchOpenActions(supabase, ACTIVITY_TAX_YEAR)
-      .then((rows) => {
+
+    async function load() {
+      try {
+        const rows = await fetchOpenActions(ACTIVITY_TAX_YEAR);
         if (!cancelled) setActions(rows);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.warn("[actions] fetch failed:", err);
-        if (!cancelled) setActions([]);
-      });
+        if (!cancelled) setActions((prev) => prev ?? []);
+      }
+    }
+
+    void load();
+    const timer = setInterval(() => void load(), POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
-  }, [supabase, resetTick, turnTick]);
-
-  useEffect(() => {
-    const userFilter = `user_id=eq.${userId}`;
-    const channelName = `actions-${userId}-${Math.random().toString(36).slice(2, 10)}`;
-
-    function isVisible(a: RequestedAction): boolean {
-      return a.status === "open" || a.status === "processing";
-    }
-    function applyInsert(row: Record<string, unknown>) {
-      const a = rowToAction(row);
-      if (!isVisible(a)) return;
-      setActions((prev) => {
-        const base = prev ?? [];
-        if (base.some((x) => x.id === a.id)) return base;
-        return [a, ...base];
-      });
-    }
-    function applyUpdate(row: Record<string, unknown>) {
-      const a = rowToAction(row);
-      setActions((prev) => {
-        if (!prev) return prev;
-        if (!isVisible(a)) return prev.filter((x) => x.id !== a.id);
-        const idx = prev.findIndex((x) => x.id === a.id);
-        if (idx === -1) return [a, ...prev];
-        const next = prev.slice();
-        next[idx] = a;
-        return next;
-      });
-    }
-
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "requested_actions", filter: userFilter },
-        (payload) => applyInsert(payload.new as Record<string, unknown>),
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "requested_actions", filter: userFilter },
-        (payload) => applyUpdate(payload.new as Record<string, unknown>),
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [supabase, userId]);
+  }, [resetTick, turnTick]);
 
   async function handleUpload(action: RequestedAction, file: File) {
     setBusyId(action.id);
     try {
       const uploaded = await uploadDocument(file);
       // Card flips to "processing" — stays visible until Luca calls
-      // dismiss-requested-action after ingesting. Optimistic: the
-      // realtime UPDATE will also patch it (no-op if we got here first).
-      await markActionProcessing(supabase, action.id, uploaded.id);
+      // dismiss-requested-action after ingesting. Optimistic: the next
+      // poll will also patch it (no-op if we got here first).
+      await markActionProcessing(action.id, uploaded.id);
       setActions((prev) =>
         prev ? prev.map((x) => (x.id === action.id ? { ...x, status: "processing" } : x)) : prev,
       );
@@ -636,7 +588,7 @@ function RequestedActionsCard() {
   async function handleSkip(action: RequestedAction) {
     setBusyId(action.id);
     try {
-      await skipAction(supabase, action.id);
+      await skipAction(action.id);
       setActions((prev) => (prev ? prev.filter((x) => x.id !== action.id) : prev));
     } catch (err) {
       console.warn("[actions] skip failed:", err);
@@ -765,78 +717,35 @@ function ActionCard({
 
 // Horizontal live-wire of recent facts + decisions. Newest on the left,
 // older trailing right with a fade gradient on the right edge to signal
-// "more if you scroll." Pulls from fetchActivityItems + Supabase Realtime
-// so any new tax_facts INSERT or ai_decisions INSERT/UPDATE animates in
-// live. Clicking a chip opens an ActivityDetail modal — handy for
-// surfacing the rationale + supporting facts + verdict reason behind a
-// decision, so the user can see exactly what Luca was thinking.
+// "more if you scroll." Polls /api/activity on a short interval — new
+// tax_facts / ai_decisions rows (and verdict updates) land within one poll.
+// Clicking a chip opens an ActivityDetail modal — handy for surfacing the
+// rationale + supporting facts + verdict reason behind a decision, so the
+// user can see exactly what Luca was thinking.
 function ActivityTicker({ refreshKey }: { refreshKey: number }) {
-  const { userId } = useAppShell();
-  const supabase = useMemo(() => createClient(), []);
   const [items, setItems] = useState<ActivityItem[] | null>(null);
   const [selected, setSelected] = useState<ActivityItem | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchActivityItems(supabase, 30)
-      .then((rows) => {
+
+    async function load() {
+      try {
+        const rows = await fetchActivityItems(30);
         if (!cancelled) setItems(rows);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.warn("[ticker] fetch failed:", err);
-        if (!cancelled) setItems([]);
-      });
+        if (!cancelled) setItems((prev) => prev ?? []);
+      }
+    }
+
+    void load();
+    const timer = setInterval(() => void load(), POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
-  }, [refreshKey, supabase]);
-
-  useEffect(() => {
-    const userFilter = `user_id=eq.${userId}`;
-
-    function prepend(item: ActivityItem) {
-      setItems((prev) => {
-        const base = prev ?? [];
-        if (base.some((existing) => existing.id === item.id)) return base;
-        return [item, ...base].slice(0, 30);
-      });
-    }
-    function patch(item: ActivityItem) {
-      setItems((prev) => {
-        if (!prev) return prev;
-        const idx = prev.findIndex((existing) => existing.id === item.id);
-        if (idx === -1) return prev;
-        const next = prev.slice();
-        next[idx] = item;
-        return next;
-      });
-    }
-
-    // Unique channel name per mount — see ActivityCard for context.
-    const channelName = `ticker-${userId}-${Math.random().toString(36).slice(2, 10)}`;
-    const channel = supabase
-      .channel(channelName)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "tax_facts", filter: userFilter }, (payload) => {
-        const row = payload.new as Record<string, unknown>;
-        if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-        prepend(factRowToItem(row));
-      })
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ai_decisions", filter: userFilter }, (payload) => {
-        const row = payload.new as Record<string, unknown>;
-        if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-        prepend(decisionRowToItem(row));
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ai_decisions", filter: userFilter }, (payload) => {
-        const row = payload.new as Record<string, unknown>;
-        if (row.tax_year !== ACTIVITY_TAX_YEAR) return;
-        patch(decisionRowToItem(row));
-      })
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [supabase, userId]);
+  }, [refreshKey]);
 
   return (
     <section className="card">

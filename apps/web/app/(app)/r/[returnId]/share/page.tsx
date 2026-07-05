@@ -13,8 +13,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getOwnerFilingForYear } from "@/lib/filings";
-import { listCpaDirectory, listFilingInvites } from "@/lib/cpa";
+import {
+  getOwnerFilingForYear,
+  listCpaDirectory,
+  listFilingInvites,
+} from "@/lib/serverDb";
 import { ShareForm } from "./ShareForm";
 
 export default async function SharePage({
@@ -30,10 +33,14 @@ export default async function SharePage({
   if (!Number.isInteger(year)) redirect("/");
 
   const supabase = await createClient();
-  const filing = await getOwnerFilingForYear(supabase, year);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const filing = await getOwnerFilingForYear(user.id, year);
   const [directory, invites] = await Promise.all([
-    listCpaDirectory(supabase),
-    listFilingInvites(supabase, filing.id),
+    listCpaDirectory(),
+    listFilingInvites(filing.id),
   ]);
 
   return (
