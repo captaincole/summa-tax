@@ -3,9 +3,6 @@ import { Mastra } from "@mastra/core";
 import { VercelDeployer } from "@mastra/deployer-vercel";
 import { ConsoleLogger } from "./server/consoleLogger";
 import { luca } from "./agents/luca";
-import { queryFormulator } from "./agents/nynaeve/queryFormulator";
-import { assessRiskAgent } from "./agents/nynaeve/assessRiskAgent";
-import { ruleAgent } from "./agents/nynaeve/ruleAgent";
 import { reviewDecisionWorkflow } from "./workflows/reviewDecision";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
@@ -27,7 +24,11 @@ const storage = await createStorage();
 const logger = new ConsoleLogger({ name: "summa", level: "info" });
 
 export const mastra = new Mastra({
-  agents: { luca, queryFormulator, assessRiskAgent, ruleAgent },
+  // The app has exactly ONE agent. The review-decision judges are workflow
+  // internals (workflows/reviewDecision/judges/) and deliberately NOT
+  // registered — registering them would expose them as chattable agents in
+  // Studio and the public API.
+  agents: { luca },
   workflows: { reviewDecision: reviewDecisionWorkflow },
   storage,
   logger,
@@ -41,7 +42,7 @@ export const mastra = new Mastra({
   // pointed at the prod URL when needed. (Once /app/* moves to Supabase RPCs
   // / shared package, studio: true becomes safe — see CLAUDE.md follow-ups.)
   // maxDuration: 300 = Pro default; revisit if a Luca turn ever exceeds 60s,
-  // at which point we move Nynaeve to a background queue rather than raise it.
+  // at which point we move the grounding review to a background queue rather than raise it.
   // sfo1 keeps the function in the same region as Supabase US-West.
   deployer: new VercelDeployer({
     studio: false,

@@ -22,7 +22,7 @@ import type { FilingInfo } from "./filingInfo.js";
  * form was generated even when no AI decision was recorded.
  *
  * Distinct from AIDecisionRow on purpose: engine derivations are pure
- * functions of state, don't need Nynaeve grounding, and update implicitly
+ * functions of state, don't need grounding review, and update implicitly
  * when facts change. We expose them in case-state / sidecar output but
  * don't persist them as event rows. See conversation 2026-05-20 for the
  * design rationale (separate from ai_decisions; future-extends `decidedBy`).

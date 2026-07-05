@@ -16,7 +16,7 @@ import {
 
 export type Confidence = "low" | "medium" | "high";
 // Verdicts come from two paths:
-//   - the legacy single-agent reviewer (Nynaeve direct): accurate | inaccurate
+//   - the legacy single-agent reviewer (pre-workflow): accurate | inaccurate
 //     | ungroundable | review_failed
 //   - the multi-step review-decision workflow: accurate | inaccurate
 //     | needs_more_facts | review_failed

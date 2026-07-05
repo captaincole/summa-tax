@@ -7,7 +7,7 @@
 Agents on the platform:
 
 - **Luca** — the conversational front-desk agent (named after Pacioli); guides the user through the tax-prep flow, orchestrates workflows, narrates progress. First agent built.
-- **Nynaeve al'Meara** — critic agent; reviews every `record-ai-decision` synchronously and grounds it (or flags it) against the IRS reference corpus. Runs on Haiku 4.5. See "Reference-document RAG" section. _(Legacy Wheel-of-Time name; this agent is being removed in the open-source transition's Phase 3 — see `OPEN_SOURCE_TRANSITION.md` — so it was deliberately not renamed.)_
+There is exactly **one** agent. Grounding is NOT an agent: every `record-ai-decision` triggers the background **review-decision workflow** (`workflows/reviewDecision/`) — deterministic gather/retrieval plus three narrow LLM "judges" (`judges/`: queryFormulator, assessRiskAgent, ruleAgent on Haiku) that are workflow internals, deliberately not registered on the Mastra instance.
 
 Note: the Unix working directory is still `project-merrilin` (the product's earliest name; later "Wheel of Time," now "Summa"). The directory name was left alone to avoid churning local paths/configs. Internal names / IDs / docs use "summa" or "Summa".
 
@@ -26,7 +26,7 @@ This is a monorepo. Two independent deploy units, each with its own `package.jso
 ```
 apps/
 ├── agent/                       # Mastra backend → deployed to Vercel
-│   ├── src/mastra/              # agent code (Luca, Nynaeve, tools, db, server, workflows)
+│   ├── src/mastra/              # agent code (Luca, tools, db, server, workflows incl. review judges)
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
 │   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
@@ -192,7 +192,7 @@ The system separates two kinds of data:
 
 Decisions flow back into the case engine: a decision with key `decisions.ca_residency` becomes a fact-like input that downstream derivations can consume. This means "is this person a full-year CA resident?" can be the output of AI reasoning, and the CA 540 scoping derivation reads it like any other fact.
 
-**Two-phase pattern — decide and ground synchronously.** Every `record-ai-decision` call now triggers Nynaeve, who reviews the decision against the supporting facts and the ingested IRS reference corpus, then writes one of four verdicts back to the row: `accurate` / `inaccurate` / `ungroundable` / `review_failed`. `authority_citations_json` populates with `{blockId, quote?}[]` when the verdict is `accurate`. Luca sees the verdict in the tool response and can re-ask the user if `inaccurate`. See the "Reference-document RAG" section for the corpus and retrieval pipeline.
+**Two-phase pattern — decide, then ground in the background.** Every `record-ai-decision` call returns immediately with `verdict: 'pending'` and fires the review-decision workflow, which grounds the decision against the supporting facts + the IRS reference corpus and re-stamps the row: `accurate` / `inaccurate` / `needs_more_facts` / `review_failed` (legacy rows may carry `ungroundable`). `authority_citations` populates with `{blockId, quote?}[]` on `accurate`. Non-accurate verdicts also write an `open_questions` row so Luca circles back with the user. See the "Reference-document RAG" section for the corpus and retrieval pipeline.
 
 ## Tax facts schema
 
@@ -203,7 +203,7 @@ Categories (see `apps/agent/src/mastra/tools/taxFacts.ts` for the enum):
 
 Add categories as the domain grows. Prefer splitting over lumping (it's easier to roll up later than to untangle a bucket).
 
-## Reference-document RAG and the grounding workflow (Nynaeve)
+## Reference-document RAG and the grounding workflow
 
 ### Where the corpus lives
 
@@ -292,9 +292,13 @@ Falls back gracefully:
 
 ### The reviewDecision workflow
 
-`apps/agent/src/mastra/workflows/reviewDecision.ts` — synchronously called from `record-ai-decision` after the decision row is written. Loads the decision + supporting facts, invokes Nynaeve with `maxSteps: 10` and a Zod-typed structured output schema, persists `verdict` + `verdict_reason` + `authority_citations_json`. Logs every review with the `[nynaeve-review]` prefix in dev-server stdout — grep for it.
+`apps/agent/src/mastra/workflows/reviewDecision/` — fired in the background by `record-ai-decision` (fire-and-forget; the tool returns `pending` immediately). Shape: `init → (gather → assess → rule) ×≤3 → finalize`, driven by `reviewDecision(scope, decisionId)`.
 
-Nynaeve's prompt is in `apps/agent/src/mastra/agents/nynaeve.instructions.ts`. She has `search-ref-docs` and `cite-ref-docs` as tools, with a hard 3-search budget. Hard rule: never cite a `blockId` that didn't come back from one of those tools in the same review.
+- **gather** (deterministic) — loads the cited facts, runs hybrid retrieval per query (queries from the `queryFormulator` judge on iteration 1, from the rule step's `suggestedQueries` after).
+- **assess / rule** (LLM judges, `judges/` — Haiku, structured output) — risk tier, then verdict-or-loop. `ruleAgent` may use `cite-ref-docs` (bounded, maxSteps 4) to verify quotes; hard rule: never cite a `blockId` that wasn't retrieved in this run.
+- **finalize** — persists verdict + citations; `needs_more_facts`/`inaccurate` also write an `open_questions` row.
+- Shared CPA heuristics both judges import live in `judges/cpaRules.ts` — rules accumulate there as CPAs flag edge cases.
+- Every step logs to `review_run_steps` (raw input/output JSON — future fine-tuning substrate). `npm run smoke:review` is the end-to-end test (3 cases, temp DB, real Haiku calls).
 
 ### Inspection scripts
 
@@ -325,7 +329,7 @@ All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from t
 - **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Verify section attribution by querying `ref_blocks` directly before tuning retrieval.
 - **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `apps/agent/src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
 - **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
-- **Nynaeve uses Haiku because the task is narrow.** Read decision + facts + tool results, return one of four verdicts with citations. If verdict-quality drops on harder cases, swap to Sonnet — one-line change in `apps/agent/src/mastra/agents/nynaeve.ts`. Don't reach for it preemptively.
+- **The review judges use Haiku because each task is narrow.** Read decision + facts + retrieval, emit one structured output. If verdict-quality drops on harder cases, swap to Sonnet — one-line change per judge in `workflows/reviewDecision/judges/`. Don't reach for it preemptively.
 - **`structuredOutput.errorStrategy: "strict"` is right for production but loud during prompt iteration.** Catches malformed model output explicitly via the existing try/catch → `review_failed` verdict, so failures surface in the DB rather than being papered over.
 - **Pre-retrieval and curated topic indexes were dead ends for this domain.** We considered both; agent-with-good-tool wins on simplicity once the retrieval pipeline is strong. Resist re-introducing pre-retrieval plumbing unless evals show the agent genuinely can't formulate queries — and even then, fix the agent prompt first.
 
@@ -340,7 +344,7 @@ Lessons worth bringing forward:
 - **Advance dedup markers before processing, not after.** BBG was replying to the same mention multiple times because the "last processed" marker only advanced after the loop completed successfully. Set it first so a crash can't re-process.
 - **Research before building integrations.** For any new third-party API (IRS, state, Plaid, document OCR), do a research pass first, then build. Coding from memory against unfamiliar APIs wastes cycles. This is also saved in BBG's memory.
 - **`mastra dev` doesn't auto-load `.env`.** The `dev` script in `apps/agent/package.json` passes `--env .env.development` explicitly for a reason.
-- **Vercel Cron is the right primitive for scheduled work.** A `crons` entry in `vercel.json` triggers a function via HTTP at the given schedule; that function reads/writes Postgres like any other invocation, no shared-state problem. Don't reach for `setInterval` (won't survive function freeze on serverless) or external schedulers. Becomes relevant when we add Nynaeve-as-background-worker or document-ingestion pollers.
+- **Vercel Cron is the right primitive for scheduled work** *(historical — self-host runs a long-lived process now, so plain background tasks work)*. Kept for if a hosted deployment returns.
 
 ## Finding Mastra docs
 

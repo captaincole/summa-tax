@@ -1,4 +1,4 @@
-// Invoke the search-ref-docs Mastra tool directly — same code path Nynaeve
+// Invoke the search-ref-docs Mastra tool directly — same code path the review workflow
 // uses during a review. Lets you eyeball what she'd see for a given query.
 //
 // Usage:

@@ -5,6 +5,11 @@ import { Agent } from "@mastra/core/agent";
 // the topic. Output is consumed by the gather step on iteration 1; on later
 // iterations queries come from the rule step's `suggestedQueries`.
 //
+// NOTE: the judges/ modules use Mastra's Agent class purely as "prompt +
+// model + schema (+ bounded tools)" — they are workflow-step internals, NOT
+// registered on the Mastra instance, not conversational, no memory. The app
+// has exactly one agent: Luca.
+//
 // Narrow, deterministic-feeling task → Haiku, no tools, structured output is
 // just `{queries: string[]}`. Lives separately from rule/assess so its prompt
 // and evals can evolve independently.
