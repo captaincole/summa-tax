@@ -24,7 +24,7 @@ export type Confidence = "low" | "medium" | "high";
 // the old reviewer; new runs write `needs_more_facts` instead.
 //
 // `pending` is the initial state set by record-ai-decision when it kicks the
-// review off as a background task via waitUntil — the row gets re-stamped by
+// review off as a background task — the row gets re-stamped by
 // the workflow's finalizeStep when it completes (typically a few seconds to
 // a minute later).
 export type Verdict =

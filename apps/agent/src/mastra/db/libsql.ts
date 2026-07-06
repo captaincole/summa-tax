@@ -141,6 +141,18 @@ export function ensureCorpusSchema(): Promise<void> {
       ],
       "write",
     );
+    // Loud once-per-process nudge: an empty corpus means grounding reviews
+    // can't retrieve anything (verdicts degrade to needs_more_facts). The
+    // app keeps working — same graceful-degrade posture as a missing
+    // Voyage key.
+    const count = await db.execute(`SELECT count(*) AS n FROM ref_documents`);
+    if (Number(count.rows[0]?.n ?? 0) === 0) {
+      console.warn(
+        "[corpus] reference corpus is EMPTY — grounding reviews will return " +
+          "needs_more_facts. Run `npm run corpus:fetch` (prebuilt) or " +
+          "`npm run refdocs:sync` (rebuild, needs VOYAGE_API_KEY).",
+      );
+    }
   })();
   return schemaReady;
 }
