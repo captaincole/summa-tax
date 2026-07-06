@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { Mastra } from "@mastra/core";
-import { VercelDeployer } from "@mastra/deployer-vercel";
 import { ConsoleLogger } from "./server/consoleLogger";
 import { luca } from "./agents/luca";
 import { reviewDecisionWorkflow } from "./workflows/reviewDecision";
@@ -33,23 +32,8 @@ export const mastra = new Mastra({
   storage,
   logger,
   observability: createObservability(),
-  // `mastra build` emits .vercel/output/ for deployment.
-  // studio: false → deployer emits a catch-all route ({src: "/(.*)", dest: "/"})
-  // that sends every request to the function, including /app/*. With studio:
-  // true the deployer hardcodes /api/* and /health as the only function routes
-  // and falls everything else through to a Studio SPA — which would 404 our
-  // /app/state and /app/session/reset routes. Run `mastra studio` locally
-  // pointed at the prod URL when needed. (Once /app/* moves to Supabase RPCs
-  // / shared package, studio: true becomes safe — see CLAUDE.md follow-ups.)
-  // maxDuration: 300 = Pro default; revisit if a Luca turn ever exceeds 60s,
-  // at which point we move the grounding review to a background queue rather than raise it.
-  // sfo1 keeps the function in the same region as Supabase US-West.
-  deployer: new VercelDeployer({
-    studio: false,
-    maxDuration: 300,
-    memory: 1536,
-    regions: ["sfo1"],
-  }),
+  // Self-host: `mastra build` emits a plain Node server (.mastra/output);
+  // `npm start` runs it. No platform deployer.
   server: {
     // Single-user model: no per-request auth provider. The web app fronts
     // the agent (session cookie + server-side proxy); ownerMiddleware

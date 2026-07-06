@@ -4,7 +4,7 @@ Tracking doc for converting this project from a hosted, multi-tenant product int
 self-hosted, single-user, open-source app (working name **Luca**, after Luca Pacioli).
 Read this + `CLAUDE.md` to resume from a cold start. Update the checkboxes as steps land.
 
-**Current status:** _PHASES 1–3 COMPLETE (2026-07-06). Zero external services; one agent (Luca) + the review workflow with private judges; `smoke:review` is GREEN again (automated grounding coverage restored). Next: Phase 4 (self-host packaging). Gate = unit 25/25 + goldens 14/14 + smoke:review 3/3._
+**Current status:** _PHASES 1–4 COMPLETE (2026-07-06). Zero external services, zero-config boot, corpus via GitHub Release + `corpus:fetch`, Docker deploy. Next: Phase 5 (README polish, disclaimers, CONTRIBUTING, CLA/DCO — the public-launch gate). Gate = unit 25/25 + goldens 14/14 + smoke:review 3/3._
 
 ---
 
@@ -82,11 +82,13 @@ _Reality had drifted ahead of the plan: the monolithic critic agent was already 
 - [x] **`smoke:review` GREEN — first automated grounding coverage since the baseline.** Rewritten for the libsql/Scope stack: temp app DB (real dev DB untouched; corpus read-only), direct `reviewDecision(scope, id)` invocation, asserts verdict/persistence/citations/open-question side effects. 3/3. Case 3 (CA residency) pinned to pipeline mechanics — verdict is borderline-by-design (540 booklet has thin residency detail); judge calibration belongs to a future eval dataset.
 - **Gate met:** smoke:review 3/3 (incl. `inaccurate` → open-asks), goldens 14/14, unit 25/25, tsc 0.
 
-### Phase 4 — Self-host packaging
-- [ ] One `.env.example` (Anthropic required; Voyage optional) + graceful-degrade wiring
-- [ ] Ship pre-built corpus `.db` as a release/seed asset
-- [ ] `docker compose up` *or* `npm run dev:all`; deploy-to-prod guide
-- **Gate:** clean clone boots from `.env.example`
+### Phase 4 — Self-host packaging ✅ DONE (2026-07-06)
+- [x] **Zero-config boot:** `scripts/bootstrap-env.mjs` (predev hook) generates both `.env.development` files with correct absolute `.data` paths; only `ANTHROPIC_API_KEY` needs a human. Empty corpus logs a loud once-per-boot warning (graceful degrade: reviews → needs_more_facts).
+- [x] **Corpus distribution decided (2026-07-06): GitHub Release asset + `npm run corpus:fetch`** — `seed/corpus.manifest.json` (version/sha256/url) + sha-verified download; local-seed fallback (`CORPUS_SEED_PATH`) until the first public release; won't clobber a locally-extended corpus. Single file for now — everyone gets everything; per-state packs are the documented future option when 50-state coverage lands.
+- [x] **Vercel deployer deleted** (`@mastra/deployer-vercel`, `@vercel/functions` waitUntil → plain background promise). Prod = `mastra build` + `npm start`, a plain Node server.
+- [x] **Docker:** per-app Dockerfiles + `docker-compose.yml` (web published on :3000; agent internal-only — same proxy topology as dev; `./data` volume = the whole backup) + `DEPLOY.md` (Tailscale-first security posture; serverless explicitly unsupported).
+- [x] **Deferred, recorded:** serve-UI-from-agent consolidation + further edge-shrinking (filing lifecycle → web writes, case state → DB rows) — post-open-sourcing work, revisit with contributor feedback.
+- **Gate:** clean-clone worktree sim (bootstrap → corpus seed → both apps boot). Docker compose build/up verified by Andrew (needs Docker Desktop).
 
 ### Phase 5 — Make it look great
 - [ ] README: what it does, honest disclaimers (data→Anthropic each turn; not tax advice; narrow scenarios), quickstart

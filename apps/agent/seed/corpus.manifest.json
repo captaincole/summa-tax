@@ -1,0 +1,9 @@
+{
+  "version": "corpus-v1",
+  "description": "Prebuilt IRS/FTB reference corpus (FTS5 + voyage-law-2 embeddings) + forms catalog. 10 docs / 527 blocks, tax year 2025.",
+  "file": "corpus.db",
+  "sha256": "b71b8ed4c7300ee935be4833cc94e9a7d5cf6e37f1226ea7dba4e02ce1c53c9e",
+  "sizeBytes": 9568256,
+  "url": "",
+  "_notes": "url points at a GitHub Release asset (corpus-v1 tag) once the repo is public. Empty url → corpus:fetch falls back to CORPUS_SEED_PATH or an existing .data/corpus.db. Everyone downloads the full corpus; per-state packs are a future option if size demands it."
+}

@@ -80,14 +80,15 @@ flowchart TB
 
 ```bash
 npm run install:all
-cp apps/agent/.env.example apps/agent/.env.development   # add ANTHROPIC_API_KEY
-cp apps/web/.env.example apps/web/.env.development       # set the .data paths
-npm run dev:all
+npm run dev:all          # first run generates .env.development files
+# → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
+npm run corpus:fetch     # prebuilt IRS reference corpus
 ```
 
 Open http://localhost:3000 — first run redirects to `/setup` to create your
 owner account. `npm run reset` factory-resets user data (keeps the reference
-corpus).
+corpus). For a server: `ANTHROPIC_API_KEY=... docker compose up --build` —
+see `DEPLOY.md`.
 
 ## Development
 
