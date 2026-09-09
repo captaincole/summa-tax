@@ -13,7 +13,6 @@ Summa exists to democratize access to high-quality tax preparation, so you can t
 - [Scenario coverage](#scenario-coverage)
 - [Quick Start](#quick-start)
 - [Contributing](#contributing)
-- [Architecture](#architecture)
 - [License](#license)
 
 ## Before you use this — read honestly
@@ -56,7 +55,7 @@ conversation into data, and a deterministic engine that turns the data into your
 
 State coverage is California-only today.
 
-| Scenario | Federal (1040) | State (CA 540) |
+| Scenario | Federal | State (CA) |
 | --- | --- | --- |
 | Single filer, W-2 income | ✅ Supported | ✅ Supported |
 | Interest + dividend income (1099-INT / 1099-DIV) | ✅ Supported | ✅ Supported |
@@ -99,69 +98,12 @@ layout, commands, design principles), see [`ARCHITECTURE.md`](ARCHITECTURE.md).
 Tests: `npm test` (golden-PDF scenario suite) and
 `npm --prefix apps/agent run test:unit`.
 
-## Architecture
+## TODO - Explain The Agent Architecture
 
-<!-- TODO: rebuild — this diagram is too complicated for the README -->
+## TODO - Explain the web app architecture
 
-Two processes, one contract: the database. The browser only ever talks to
-the web app; the agent sits on localhost behind a server-side proxy.
+## TODO - Explain the engine architecture
 
-```mermaid
-flowchart TB
-    User(["👤 Owner"])
-
-    subgraph machine["Your machine"]
-        subgraph web["Web app · :3000 (Next.js)"]
-            Gate["Password gate<br/>(first-run /setup → session cookie)"]
-            CaseFile["Case file UI<br/>progress · activity · documents"]
-            Chat["Chat pane"]
-            Proxy["/api/agent proxy"]
-        end
-
-        subgraph agent["Agent · :4111 (Mastra)"]
-            Luca["Luca<br/>conversational intake"]
-            Engine["Form engine<br/>draft 1040 / 540 PDFs"]
-            Grounding["Grounding<br/>decisions vs IRS corpus"]
-        end
-
-        subgraph data[".data/ (SQLite + files)"]
-            AppDB[("app.db<br/>facts · decisions · filings")]
-            MastraDB[("mastra.db<br/>chat threads · memory")]
-            CorpusDB[("corpus.db<br/>IRS reference corpus")]
-            Docs[("documents/<br/>uploaded + generated PDFs")]
-        end
-    end
-
-    Anthropic["Anthropic API"]
-    Voyage["Voyage AI<br/>(optional)"]
-
-    User -->|session cookie| Gate
-    Gate --> CaseFile
-    Gate --> Chat
-    Chat --> Proxy
-    Proxy -->|localhost| Luca
-
-    CaseFile <--> AppDB
-    CaseFile <--> Docs
-
-    Luca <--> AppDB
-    Luca <--> MastraDB
-    Engine --> Docs
-    Grounding <--> CorpusDB
-
-    Luca -->|LLM calls| Anthropic
-    Grounding -.->|embeddings + rerank| Voyage
-```
-
-- **Web app** — password-gated case file over the shared DB, plus the chat
-  pane. All agent traffic rides the session cookie through the same-origin
-  proxy; the browser never holds an agent credential.
-- **Agent** — the application: runs the intake conversation, evaluates the
-  reactive form engine after every fact, grounds AI judgment calls against
-  ingested IRS instructions, renders PDFs.
-- **`.data/`** — everything persistent. Copy the directory, you've backed up
-  the instance. Delete it (`npm run reset` preserves the corpus), you've
-  factory-reset it.
 
 ## License
 
