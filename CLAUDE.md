@@ -368,7 +368,7 @@ If you're a fresh Claude Code session starting in this folder: read this file, t
 
 ## Things explicitly out of scope (for now)
 
-- Automatic document OCR / parsing (we'll add it later — probably a separate service; for MVP, ingestion takes structured payloads)
+- A dedicated OCR/parsing service. Document reading DOES work today — chat attachments are sent inline to Luca (base64 in the stream, `AppShell.tsx` `sendChat`), Claude reads the PDF/image natively, then calls the structured ingest tools (`ingestW2`, `ingest1099Consolidated`). Out of scope is only a separate extraction pipeline (batch OCR, non-chat ingestion paths).
 - Direct IRS filing (human-in-the-loop CPA signs off first)
 - Multi-tenant auth / client portal (single-user for prototyping)
 - Pricing, payments, scheduling (Stage 1 only cares about extracting facts)

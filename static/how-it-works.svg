@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 540" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>The Summa triangle: Web App → Luca → Form Engine → back to Web App</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7d8590"/>
+    </marker>
+  </defs>
+
+  <!-- edges (clockwise) -->
+  <path d="M 330 128 C 245 200 175 290 175 382" fill="none" stroke="#7d8590" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 316 446 L 484 446" fill="none" stroke="#7d8590" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 625 384 C 625 290 555 200 472 128" fill="none" stroke="#7d8590" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- edge labels -->
+  <g fill="#7d8590" font-size="14" text-anchor="middle">
+    <text x="100" y="244">your words</text>
+    <text x="100" y="264">+ documents</text>
+    <text x="400" y="430">tax facts + decisions</text>
+    <text x="700" y="244">draft return</text>
+    <text x="700" y="264">+ open questions</text>
+  </g>
+
+  <!-- Web App (top center) -->
+  <g>
+    <rect x="270" y="26" width="260" height="102" rx="12" fill="#2563eb" stroke="#1e40af" stroke-width="2"/>
+    <text x="400" y="62" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="700">🖥️ Web App</text>
+    <text x="400" y="88" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">chat · upload documents</text>
+    <text x="400" y="108" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">watch progress</text>
+  </g>
+
+  <!-- Luca (bottom left) -->
+  <g>
+    <rect x="40" y="390" width="270" height="112" rx="12" fill="#7c3aed" stroke="#5b21b6" stroke-width="2"/>
+    <text x="175" y="428" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="700">🤖 Luca — the AI agent</text>
+    <text x="175" y="454" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">captures cited tax facts</text>
+    <text x="175" y="474" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">makes grounded decisions</text>
+  </g>
+
+  <!-- Form Engine (bottom right) -->
+  <g>
+    <rect x="490" y="390" width="270" height="112" rx="12" fill="#059669" stroke="#065f46" stroke-width="2"/>
+    <text x="625" y="428" text-anchor="middle" fill="#ffffff" font-size="17" font-weight="700">🧮 Form Engine</text>
+    <text x="625" y="454" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">computes the return</text>
+    <text x="625" y="474" text-anchor="middle" fill="#ffffff" fill-opacity="0.88" font-size="13.5">pure rules · no AI</text>
+  </g>
+</svg>
