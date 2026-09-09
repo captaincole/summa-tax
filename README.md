@@ -1,20 +1,107 @@
-# Summa
+# Summa — AI Can Do Your Taxes
 
-A self-hosted AI tax assistant. **Luca**, the agent, runs a conversational tax
-intake — capturing facts with citations, flagging judgment calls, grounding
-them against IRS instructions, and rendering draft forms (1040, CA 540, and
-friends) as PDFs. The web app is the case file: progress, open questions,
-documents in and out.
+Taxes shouldn't be as hard as they are today. An entire industry profits from keeping the U.S. tax system difficult and opaque — but it doesn't have to be that way.
 
-Single user per instance. No external services — your tax data lives in
-SQLite files on your machine; the only network calls are the agent's LLM
-requests to Anthropic (and optionally Voyage AI for semantic retrieval).
+Summa exists to democratize access to high-quality tax preparation, so you can take back control of one of the biggest moments in your financial life. It's free, open source, and self-hosted: your data, your machine, your return.
 
-> **Status:** work in progress, narrow scenario coverage (single CA filer,
-> W-2 + investment income). Not tax advice; a CPA should review anything
-> this produces.
+![Summa home — your returns at a glance](static/summa-screenshot.png)
+
+## Table of Contents
+
+- [Before you use this — read honestly](#before-you-use-this--read-honestly)
+- [How It Works](#how-it-works)
+- [Scenario coverage](#scenario-coverage)
+- [Quick Start](#quick-start)
+- [Contributing](#contributing)
+- [Architecture](#architecture)
+- [License](#license)
+
+## Before you use this — read honestly
+
+- **Your tax data goes to your model provider.** Every conversation turn, and every background grounding check, is an API call carrying your tax facts to the model provider you configured (Anthropic today). Nothing else leaves your machine, but that does.
+- **This is not tax advice.** Summa is in a beta state and at the moment
+  produces *drafts*. Please double check the work with a CPA.
+- **Coverage is narrow** — see the table below. Outside the supported
+  scenario, Luca says "we don't handle that yet" rather than guessing.
+
+## How It Works
+
+Summa is built with three distinct parts working together: a web app you talk to, an AI agent that turns the
+conversation into data, and a deterministic engine that turns the data into your return.
+
+<p align="center">
+  <img src="static/how-it-works.svg" alt="The Summa triangle — your words and documents go to Luca, Luca turns them into tax facts and decisions, the Form Engine computes the draft return and open questions, and the results flow back to you" width="640">
+</p>
+
+- **Web App** — where you live: type messages, store documents, watch your
+  return take shape. This is your standard web application
+- **Luca (the agent)** — interviews you, and reads the documents you upload
+  (a W-2 PDF, a 1099, a photo of either) directly. From both it does two
+  critical jobs. It records **tax facts**: verbatim pieces of data, each with
+  a citation for where it came from (a document, a statement line, or "you
+  told me, on this date").
+  And it makes **decisions**: judgment calls where the facts are ambiguous —
+  each one double-checked in the background against the actual IRS/FTB
+  instruction text, which either cites the supporting passage or reopens the
+  question. Numbers are never invented — an unknown becomes an open question,
+  not a guess.
+- **Form Engine** — a solver. Takes the facts and decisions and computes the
+  draft 1040/540 by the tax rules — deterministic code, no AI anywhere in the
+  math. Every new fact re-computes the return, so your draft updates live as
+  you talk, and the open questions it surfaces are what Luca asks you next.
+
+## Scenario coverage
+
+<!-- TODO(andrew): verify cells against current engine state before publishing -->
+
+State coverage is California-only today.
+
+| Scenario | Federal (1040) | State (CA 540) |
+| --- | --- | --- |
+| Single filer, W-2 income | ✅ Supported | ✅ Supported |
+| Interest + dividend income (1099-INT / 1099-DIV) | ✅ Supported | ✅ Supported |
+| Standard deduction | ✅ Supported | ✅ Supported |
+| Capital gains (Schedule D / 8949) | 🚧 Partial | ❌ Not yet |
+| Itemized deductions (Schedule A) | ❌ Not yet | ❌ Not yet |
+| Dependents, MFJ/MFS/HoH | ❌ Not yet | ❌ Not yet |
+| Self-employment, K-1s, rental | ❌ Not yet | ❌ Not yet |
+
+## Quick Start
+
+You need an Anthropic API key. Optionally, a Voyage AI key upgrades corpus
+search from keyword to semantic retrieval.
+
+| Variable | Required | What it does |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | **Yes** | Powers Luca and the grounding judges. |
+| `VOYAGE_API_KEY` | No | Semantic retrieval + reranking over the IRS corpus. Without it, retrieval degrades gracefully to keyword (FTS) search. |
+| `AGENT_API_TOKEN` | No | Gates the agent port if it's ever reachable beyond localhost. |
+
+Everything else (ports, `.data` paths) is generated with working defaults by
+the first-run bootstrap.
+
+```bash
+npm run install:all
+npm run dev:all          # first run generates .env.development files
+# → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
+npm run corpus:fetch     # prebuilt IRS reference corpus
+```
+
+Open http://localhost:3000 — first run redirects to `/setup` to create your
+owner account.
+
+## Contributing
+
+<!-- TODO(andrew): CLA vs DCO decision goes here before first external PR -->
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). For a development guide (repo
+layout, commands, design principles), see [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Tests: `npm test` (golden-PDF scenario suite) and
+`npm --prefix apps/agent run test:unit`.
 
 ## Architecture
+
+<!-- TODO: rebuild — this diagram is too complicated for the README -->
 
 Two processes, one contract: the database. The browser only ever talks to
 the web app; the agent sits on localhost behind a server-side proxy.
@@ -76,26 +163,6 @@ flowchart TB
   the instance. Delete it (`npm run reset` preserves the corpus), you've
   factory-reset it.
 
-## Quickstart
-
-```bash
-npm run install:all
-npm run dev:all          # first run generates .env.development files
-# → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
-npm run corpus:fetch     # prebuilt IRS reference corpus
-```
-
-Open http://localhost:3000 — first run redirects to `/setup` to create your
-owner account. `npm run reset` factory-resets user data (keeps the reference
-corpus). For a server: `ANTHROPIC_API_KEY=... docker compose up --build` —
-see `DEPLOY.md`.
-
-## Development
-
-See `CLAUDE.md` for the full development guide and `OPEN_SOURCE_TRANSITION.md`
-for the roadmap. Tests: `npm test` (golden-PDF scenario suite) and
-`npm --prefix apps/agent run test:unit`.
-
 ## License
 
-AGPL-3.0 — see `LICENSE`.
+AGPL-3.0 — see [`LICENSE`](LICENSE).
