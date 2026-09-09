@@ -14,3 +14,4 @@ apps/agent/src/mastra/public/drafts/
 .DS_Store
 .claude/
 .vercel
+supabase/
