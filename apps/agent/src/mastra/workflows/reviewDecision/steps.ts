@@ -25,6 +25,7 @@ import { hybridSearchRefDocs } from "../../db/refDocs";
 import { queryFormulator } from "./judges/queryFormulator";
 import { assessRiskAgent } from "./judges/assessRiskAgent";
 import { ruleAgent } from "./judges/ruleAgent";
+import { modelFor } from "../../models";
 
 // ---------------------------------------------------------------------------
 // Step constants — review_run_steps.step_kind values. Kept here (vs as an
@@ -219,7 +220,7 @@ export const assessRiskStep = createStep({
     const result = await assessRiskAgent.generate(prompt, {
       structuredOutput: {
         schema: riskAssessmentSchema,
-        model: "anthropic/claude-haiku-4-5",
+        model: modelFor("judge"),
         errorStrategy: "strict",
       },
     });
@@ -272,7 +273,7 @@ export const ruleStep = createStep({
       maxSteps: 4,
       structuredOutput: {
         schema: ruleOutputSchema,
-        model: "anthropic/claude-haiku-4-5",
+        model: modelFor("judge"),
         errorStrategy: "strict",
       },
     });
@@ -489,7 +490,7 @@ async function formulateQueries(c: LoopCarrier): Promise<string[]> {
       // array properties, so the 1–2 cap lives in the prompt + the slice
       // below rather than in the schema.
       schema: z.object({ queries: z.array(z.string()).min(1) }),
-      model: "anthropic/claude-haiku-4-5",
+      model: modelFor("judge"),
       errorStrategy: "strict",
     },
   });
