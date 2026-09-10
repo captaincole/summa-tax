@@ -27,6 +27,13 @@ if (!existsSync(agentEnvPath)) {
 # REQUIRED — the one key the app cannot run without.
 ANTHROPIC_API_KEY=
 
+# REQUIRED — which model powers each role. No in-code defaults on purpose.
+# To use a local/self-hosted OpenAI-compatible server (Ollama, LM Studio,
+# vLLM, …) set e.g. LUCA_MODEL=ollama/qwen3-vl:8b and
+# LUCA_MODEL_URL=http://localhost:11434/v1 (same pattern for JUDGE_*).
+LUCA_MODEL=anthropic/claude-sonnet-4-6
+JUDGE_MODEL=anthropic/claude-haiku-4-5
+
 # Optional: semantic retrieval + reranking (FTS-only without it).
 VOYAGE_API_KEY=
 
