@@ -1,5 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { CPA_RULES } from "./cpaRules";
+import { modelFor } from "../../../models";
 
 // Risk-tier assessor for the review-decision workflow. Reads the decision
 // plus the gathered evidence (facts + retrieved IRS blocks) and emits a tier
@@ -41,5 +42,5 @@ export const assessRiskAgent = new Agent({
   id: "assessRiskAgent",
   name: "Risk Assessor",
   instructions,
-  model: "anthropic/claude-haiku-4-5",
+  model: modelFor("judge"),
 });

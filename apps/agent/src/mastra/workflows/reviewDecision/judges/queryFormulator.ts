@@ -1,4 +1,5 @@
 import { Agent } from "@mastra/core/agent";
+import { modelFor } from "../../../models";
 
 // First-iteration query formulator. Reads the decision and emits 1–2
 // search-ref-docs queries phrased the way a tax professional would describe
@@ -30,5 +31,5 @@ export const queryFormulator = new Agent({
   id: "queryFormulator",
   name: "Query Formulator",
   instructions,
-  model: "anthropic/claude-haiku-4-5",
+  model: modelFor("judge"),
 });

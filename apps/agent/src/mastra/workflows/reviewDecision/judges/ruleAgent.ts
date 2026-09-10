@@ -1,6 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { citeRefDocTool } from "../../../tools/refDocs";
 import { CPA_RULES } from "./cpaRules";
+import { modelFor } from "../../../models";
 
 // Rule agent — the workflow's verdict-or-loop decider. Sees the decision,
 // the evidence bundle, and the assessed risk tier. Returns a discriminated
@@ -53,7 +54,7 @@ export const ruleAgent = new Agent({
   id: "ruleAgent",
   name: "Rule Agent",
   instructions,
-  model: "anthropic/claude-haiku-4-5",
+  model: modelFor("judge"),
   tools: {
     citeRefDoc: citeRefDocTool,
   },
