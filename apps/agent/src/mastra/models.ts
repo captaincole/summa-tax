@@ -34,6 +34,18 @@ import type { MastraModelConfig } from "@mastra/core/llm";
 
 export type ModelRole = "luca" | "judge";
 
+// Providers whose APIs accept PDF file parts directly. Everything else
+// (notably any OpenAI-compatible URL) gets PDF attachments rasterized to
+// images first — see agents/pdfAttachments.ts.
+const PDF_NATIVE_PROVIDERS = new Set(["anthropic", "google", "vertex"]);
+
+export function modelReadsPdf(role: ModelRole): boolean {
+  const prefix = role.toUpperCase();
+  if (process.env[`${prefix}_MODEL_URL`]) return false;
+  const id = process.env[`${prefix}_MODEL`] ?? "";
+  return PDF_NATIVE_PROVIDERS.has(id.split("/")[0]);
+}
+
 export function modelFor(role: ModelRole): MastraModelConfig {
   const prefix = role.toUpperCase();
   const id = process.env[`${prefix}_MODEL`];

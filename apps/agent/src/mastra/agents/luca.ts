@@ -17,12 +17,14 @@ import { dismissRequestedAction } from "../tools/dismissRequestedAction";
 import { lucaInstructions } from "./luca.instructions";
 import { lucaWorkingMemorySchema } from "./luca.workingMemory";
 import { modelFor } from "../models";
+import { PdfAttachmentRasterizer } from "./pdfAttachments";
 
 export const luca = new Agent({
   id: "luca",
   name: "Luca",
   instructions: lucaInstructions,
   model: modelFor("luca"),
+  inputProcessors: [new PdfAttachmentRasterizer()],
   // Multi-step: get-case-state + maybe one ingest + a record-ai-decision +
   // optionally generate-tax-documents = ~5 steps per turn. 20 leaves headroom
   // for batched scope decisions on a single turn.
