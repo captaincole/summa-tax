@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // The dev-tools FAB defaults to bottom-left, which sits on top of the chat
+  // composer's attach button. Top-right corner is empty.
+  devIndicators: {
+    position: "top-right",
+  },
 };
 
 export default nextConfig;
