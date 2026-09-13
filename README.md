@@ -32,9 +32,9 @@ conversation into data, and a deterministic engine that turns the data into your
   <img src="static/how-it-works.svg" alt="The Summa triangle — your words and documents go to Luca, Luca turns them into tax facts and decisions, the Form Engine computes the draft return and open questions, and the results flow back to you" width="640">
 </p>
 
-- **Web App** — where you live: type messages, store documents, watch your
+- **Web App (apps/web)** — where you live: type messages, store documents, watch your
   return take shape. This is your standard web application
-- **Luca (the agent)** — interviews you, and reads the documents you upload
+- **Luca (apps/agent)** — the agent: interviews you, and reads the documents you upload
   (a W-2 PDF, a 1099, a photo of either) directly. From both it does two
   critical jobs. It records **tax facts**: verbatim pieces of data, each with
   a citation for where it came from (a document, a statement line, or "you
@@ -44,14 +44,14 @@ conversation into data, and a deterministic engine that turns the data into your
   instruction text, which either cites the supporting passage or reopens the
   question. Numbers are never invented — an unknown becomes an open question,
   not a guess.
-- **Form Engine** — a solver. Takes the facts and decisions and computes the
+- **Form Engine (apps/agent/src/engine)** — a solver. Takes the facts and decisions and computes the
   draft 1040/540 by the tax rules — deterministic code, no AI anywhere in the
   math. Every new fact re-computes the return, so your draft updates live as
   you talk, and the open questions it surfaces are what Luca asks you next.
 
 ## Scenario coverage
 
-<!-- TODO(andrew): verify cells against current engine state before publishing -->
+Scenario coverage is the core way we verify that our engine works. Each scenario is reviewed by a CPA to ensure correctness, and when we want to add new capabilities to our engine we need to add new scenarios to cover those capabilities. 
 
 State coverage is California-only today.
 
