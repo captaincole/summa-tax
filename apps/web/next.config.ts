@@ -9,9 +9,9 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   // The dev-tools FAB defaults to bottom-left, which sits on top of the chat
-  // composer's attach button. Top-right corner is empty.
+  // composer's attach button.
   devIndicators: {
-    position: "top-right",
+    position: "bottom-right",
   },
 };
 
