@@ -15,7 +15,7 @@ export interface ScenarioForm {
   /**
    * Form to evaluate + assert against. The runner looks up the spec
    * (catalog path, blank PDF, register fn) from the shared registry
-   * (`src/mastra/engine/registry.ts`) — scenarios don't repeat that
+   * (`src/engine/registry.ts`) — scenarios don't repeat that
    * config.
    */
   formId: string;

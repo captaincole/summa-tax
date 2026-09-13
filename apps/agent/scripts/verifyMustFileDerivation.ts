@@ -11,15 +11,15 @@
 //
 //   npx tsx scripts/verifyMustFileDerivation.ts
 
-import { registerAllForms, FORMS } from "../src/mastra/engine/registry.js";
-import { evaluateAllForms } from "../src/mastra/engine/engine.js";
-import { loadFromFixtures } from "../src/mastra/engine/catalog.js";
-import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
+import { registerAllForms, FORMS } from "../src/engine/registry.js";
+import { evaluateAllForms } from "../src/engine/engine.js";
+import { loadFromFixtures } from "../src/engine/catalog.js";
+import { resolveFilingInfo } from "../src/engine/filingInfo.js";
 import {
   makeDecisionsView,
   makeFactsView,
   type DerivationContext,
-} from "../src/mastra/engine/types.js";
+} from "../src/engine/types.js";
 import { alejandroScenario } from "../tests/scenarios/alejandro/index.js";
 
 registerAllForms();

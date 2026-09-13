@@ -9,6 +9,7 @@
 // the convention discoverable in one place and prevents convention drift
 // across forms.
 
+export * from "./rows.js";
 export * from "./kinds/trade.js";
 export * from "./kinds/wages.js";
 export * from "./kinds/dividends.js";

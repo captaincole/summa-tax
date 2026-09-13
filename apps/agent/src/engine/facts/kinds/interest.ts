@@ -13,8 +13,8 @@
 // that doesn't exist yet (same problem Schedule B / Schedule D capital
 // gains rows hit). Until that lands, Schedule B Part I stays unsupported.
 
-import type { FactsView } from "../../engine/types.js";
-import type { TaxFactRow } from "../../db/taxFacts.js";
+import type { FactsView } from "../../types.js";
+import type { TaxFactRow } from "../rows.js";
 
 export interface InterestFactValue {
   payerName: string;

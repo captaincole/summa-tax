@@ -8,8 +8,8 @@
 //   key:      "account.{accountSlug}.dividends"
 //   value:    DividendFactValue
 
-import type { FactsView } from "../../engine/types.js";
-import type { TaxFactRow } from "../../db/taxFacts.js";
+import type { FactsView } from "../../types.js";
+import type { TaxFactRow } from "../rows.js";
 
 export interface DividendFactValue {
   payerName: string;

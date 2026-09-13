@@ -14,7 +14,7 @@
 
 import { resolve } from "node:path";
 import { runIngestForm } from "../src/forms-pipeline/ingestFormWorkflow/index.js";
-import { projectRoot } from "../src/mastra/paths.js";
+import { projectRoot } from "../src/paths.js";
 
 interface Args {
   pdf: string;

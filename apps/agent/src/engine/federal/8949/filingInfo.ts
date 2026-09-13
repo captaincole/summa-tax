@@ -8,7 +8,7 @@
 
 import type { BaseFilingInfo } from "../../filingInfo.js";
 import type { EngineDerivation } from "../../types.js";
-import type { TradeFactValue } from "../../../facts/index.js";
+import type { TradeFactValue } from "../../facts/index.js";
 
 export interface Form8949FilingInfo extends BaseFilingInfo {
   /**

@@ -30,12 +30,12 @@ import {
   loadFromFixture,
   type Catalog,
   type FieldInventory,
-} from "../src/mastra/engine/catalog.js";
-import { fillFromCatalog } from "../src/mastra/engine/render/fillFromCatalog.js";
+} from "../src/engine/catalog.js";
+import { fillFromCatalog } from "../src/engine/render/fillFromCatalog.js";
 import type {
   AnyFormField,
   EvaluatedForm,
-} from "../src/mastra/engine/types.js";
+} from "../src/engine/types.js";
 import type { RunResult } from "./types.js";
 
 interface Args {
@@ -61,7 +61,7 @@ function parseArgs(argv: string[]): Args {
 // The set of forms with catalog-fill goldens is exactly the set of
 // forms in the shared registry — same source of truth. Re-export FORMS
 // under the CATALOGS name so runAll's iteration stays self-describing.
-import { FORMS, getFormSpec } from "../src/mastra/engine/registry.js";
+import { FORMS, getFormSpec } from "../src/engine/registry.js";
 
 export const CATALOGS = FORMS;
 

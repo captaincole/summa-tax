@@ -4,9 +4,10 @@ import { createDocument } from "../db/userDocuments";
 import {
   type AnyFormField,
   type EvaluatedForm,
-} from "../engine/types";
-import { evaluateScenario, renderForm } from "../engine";
-import { FORMS } from "../engine/registry";
+} from "../../engine/types";
+import { renderForm } from "../../engine";
+import { loadAndEvaluateScenario } from "../loadScenario";
+import { FORMS } from "../../engine/registry";
 import { requireUserContext } from "./userContext";
 
 function lineValue(
@@ -124,7 +125,7 @@ export const generateTaxDocuments = createTool({
       await requireUserContext(context);
     const { year } = input;
 
-    const scenario = await evaluateScenario(scope, { id: filingId, taxYear }, authEmail);
+    const scenario = await loadAndEvaluateScenario(scope, { id: filingId, taxYear }, authEmail);
     const { forms } = scenario;
 
     // ─── Render every form whose mustFile predicate evaluates true ───

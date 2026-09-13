@@ -17,7 +17,7 @@ import {
   workflowOutputSchema,
   type AfterRetrieve,
 } from "./schemas.js";
-import { loadFromFixture, type FieldInventory } from "../../mastra/engine/catalog.js";
+import { loadFromFixture, type FieldInventory } from "../../engine/catalog.js";
 import { retrieveContextPerField } from "../retrieveContext.js";
 import { classifyBindings } from "../classifyBindings.js";
 import { renderBindings } from "../renderBindings.js";

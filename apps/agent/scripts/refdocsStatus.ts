@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { getDocument, listDocuments } from "../src/mastra/db/refDocs";
 import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
-import { projectRoot } from "../src/mastra/paths";
+import { projectRoot } from "../src/paths";
 
 // Read-only diff between forms/**/instructions.pdf and ref_documents in the
 // local corpus DB. Exits 0 unless --strict is passed and there's any drift.

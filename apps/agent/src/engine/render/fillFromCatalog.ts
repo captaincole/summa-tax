@@ -32,7 +32,7 @@ import {
   type FieldInventory,
 } from "../catalog.js";
 import { getFormatter } from "../engine.js";
-import { verifiedWidget } from "../../../forms-pipeline/verifiedWidgets.js";
+import { verifiedWidget } from "./verifiedWidgets.js";
 
 export interface RenderedWidget {
   widgetName: string;
