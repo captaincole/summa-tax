@@ -67,14 +67,26 @@ State coverage is California-only today.
 
 ## Quick Start
 
-You need an Anthropic API key. Optionally, a Voyage AI key upgrades corpus
-search from keyword to semantic retrieval.
+The default setup uses Anthropic models (you need an API key), but Summa
+can run against **any OpenAI-compatible model server** — Ollama, LM Studio,
+vLLM, llama.cpp, or a self-hosted Hugging Face endpoint — including fully
+local models on your own machine. Optionally, a Voyage AI key upgrades
+corpus search from keyword to semantic retrieval.
 
 | Variable | Required | What it does |
 | --- | --- | --- |
-| `ANTHROPIC_API_KEY` | **Yes** | Powers Luca and the grounding judges. |
+| `LUCA_MODEL` | **Yes** | The conversation agent — must handle images (reads your W-2s). Default `anthropic/claude-sonnet-4-6`. |
+| `JUDGE_MODEL` | **Yes** | The grounding judges that double-check AI decisions. Default `anthropic/claude-haiku-4-5`. |
+| `ANTHROPIC_API_KEY` | With Anthropic models | Powers the two roles above when they point at Anthropic. |
+| `LUCA_MODEL_URL` / `JUDGE_MODEL_URL` | For local models | Point a role at an OpenAI-compatible server instead, e.g. `LUCA_MODEL=ollama/gemma4:26b` + `LUCA_MODEL_URL=http://localhost:11434/v1`. |
 | `VOYAGE_API_KEY` | No | Semantic retrieval + reranking over the IRS corpus. Without it, retrieval degrades gracefully to keyword (FTS) search. |
 | `AGENT_API_TOKEN` | No | Gates the agent port if it's ever reachable beyond localhost. |
+
+Local-model notes: vision, tool calling, and structured output all matter —
+we've verified the full flow (document reading included) on `gemma4` via
+Ollama. PDFs are rasterized to images automatically for models without
+native PDF input. Expect turns to take minutes, not seconds, on laptop
+hardware, and each model call must currently finish within 5 minutes.
 
 Everything else (ports, `.data` paths) is generated with working defaults by
 the first-run bootstrap.
