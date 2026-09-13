@@ -1,8 +1,8 @@
 // Form engine — binding registry + Catalog-driven evaluator.
 //
 // Per-form binding files live at
-// `src/mastra/engine/federal/<short>/bindings.ts` and
-// `src/mastra/engine/state/<state>/<short>/bindings.ts`. Each file calls
+// `src/engine/federal/<short>/bindings.ts` and
+// `src/engine/state/<state>/<short>/bindings.ts`. Each file calls
 // `register()` which invokes `defineForm<TForm, TInfo>` with the form's
 // typed binding functions. The engine joins those bindings against a
 // `Catalog` — inventory metadata (label, category, valueType, PDF widget,

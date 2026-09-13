@@ -6,8 +6,8 @@
 // Each helper takes an optional `prefix` (the formId) which gets prepended
 // to failure messages so multi-form scenarios are unambiguous.
 
-import type { EvaluatedForm, AnyFormField } from "../../src/mastra/engine/types.js";
-import type { RenderedWidget } from "../../src/mastra/engine/render/fillFromCatalog.js";
+import type { EvaluatedForm, AnyFormField } from "../../src/engine/types.js";
+import type { RenderedWidget } from "../../src/engine/render/fillFromCatalog.js";
 import type { GoldenValue } from "./goldenPdf.js";
 import { normalizeForCompare } from "./goldenPdf.js";
 

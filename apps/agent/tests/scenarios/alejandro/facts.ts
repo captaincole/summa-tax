@@ -16,7 +16,7 @@ import {
   type DividendFactValue,
   type TradeFactValue,
   type W2FactValue,
-} from "../../../src/mastra/facts/index.js";
+} from "../../../src/engine/facts/index.js";
 import { identityFact } from "../../helpers/fixtureBuilders.js";
 
 export const ALEJANDRO_USER_ID = "alejandro-integration";

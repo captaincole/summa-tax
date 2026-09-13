@@ -8,7 +8,7 @@
 // from Supabase auth at doc-gen time).
 
 import type { TaxFactRow } from "../../../src/mastra/db/taxFacts.js";
-import { makeW2FactKey, type W2FactValue } from "../../../src/mastra/facts/index.js";
+import { makeW2FactKey, type W2FactValue } from "../../../src/engine/facts/index.js";
 import { identityFact } from "../../helpers/fixtureBuilders.js";
 
 export const ALEX_USER_ID = "alex-integration";

@@ -9,8 +9,8 @@
 //    even when the answer is obvious.
 //  - Cross-form references go through ctx.formValues(...).
 
-import type { TaxFactRow } from "../db/taxFacts.js";
-import type { AIDecisionRow } from "../db/aiDecisions.js";
+import type { TaxFactRow } from "./facts/rows.js";
+import type { AIDecisionRow } from "./facts/rows.js";
 import type { FilingInfo } from "./filingInfo.js";
 
 // ─── Engine-derived decisions (audit trail for code-driven scope calls) ─

@@ -8,21 +8,21 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { projectRoot } from "../src/mastra/paths.js";
-import { evaluateAllForms } from "../src/mastra/engine/engine.js";
+import { projectRoot } from "../src/paths.js";
+import { evaluateAllForms } from "../src/engine/engine.js";
 import {
   loadFromFixtures,
   makeCatalog,
   type Catalog,
-} from "../src/mastra/engine/catalog.js";
-import { getFormSpec } from "../src/mastra/engine/registry.js";
+} from "../src/engine/catalog.js";
+import { getFormSpec } from "../src/engine/registry.js";
 import {
   makeDecisionsView,
   makeFactsView,
   type DerivationContext,
-} from "../src/mastra/engine/types.js";
-import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
-import { fillFromCatalog } from "../src/mastra/engine/render/fillFromCatalog.js";
+} from "../src/engine/types.js";
+import { resolveFilingInfo } from "../src/engine/filingInfo.js";
+import { fillFromCatalog } from "../src/engine/render/fillFromCatalog.js";
 import {
   assertEngineNumber,
   assertMatchesGolden,
@@ -86,7 +86,7 @@ export async function runScenario(s: Scenario): Promise<RunResult> {
 
   // Look up each scenario form's static config (catalog/blank/register)
   // from the shared registry. Scenarios just list `{ formId, expected }`;
-  // everything else comes from src/mastra/engine/registry.ts.
+  // everything else comes from src/engine/registry.ts.
   const specs = s.forms.map((sf) => ({ sf, spec: getFormSpec(sf.formId) }));
 
   // Register bindings for every form once. evaluateAllForms reads

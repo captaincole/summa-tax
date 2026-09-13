@@ -26,8 +26,16 @@ This is a monorepo. Two independent deploy units, each with its own `package.jso
 ```
 apps/
 ├── agent/                       # Mastra backend → deployed to Vercel
+│   ├── src/engine/              # THE FORM ENGINE — pure, deterministic, no AI/DB/network.
+│   │                              Owns the fact vocabulary (facts/), per-jurisdiction form
+│   │                              registries (federal/, state/ca/), worksheets, PDF fill.
+│   │                              Boundary enforced by src/engine/boundary.test.ts; contributor
+│   │                              guide at src/engine/README.md.
 │   ├── src/mastra/              # agent code (Luca, tools, db, server, workflows incl. review judges)
+│   │                              loadScenario.ts is the one db↔engine bridge; public/forms/
+│   │                              holds the promoted runtime form assets Mastra bundles.
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
+│   ├── src/forms-pipeline/      # dev-time form-catalog ingest (widget extraction, AI labeling)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
 │   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
 │   ├── forms/                   # one folder per tax form: blank.pdf (fillable template),
@@ -135,9 +143,9 @@ Every output form (1040, 540, 8949, Schedule D, …) is a collection of typed **
 - **`category: Category`** — which Filing Status panel bucket the field rolls up into. One of `personal_info | filing_scope | income | deductions_credits | other`.
 - **`valueType: FieldValueType`** — shape of the field's value. One of `numeric | single_select | text | boolean | date`.
 
-TypeScript enforces both. Adding a field without declaring them is a compile error — the categorization layer (`forms/categorization/categorize.ts`) is automatically consistent because it reads `field.category` directly off each field.
+TypeScript enforces both. Adding a field without declaring them is a compile error — the categorization layer (`src/engine/categorization/categorize.ts`) is automatically consistent because it reads `field.category` directly off each field.
 
-**When adding a new form** (e.g. Schedule A): define line types extending `BaseFormField`, write the evaluator, register in `caseState.ts`'s form list, add a PDF renderer. TypeScript will fail to compile until every field has its `category` and `valueType`. There's no separate registry file to keep in sync.
+**When adding a new form**: follow the checklist in `apps/agent/src/engine/README.md` — form folder under the jurisdiction (`engine/federal/<short>/` or `engine/state/<st>/<short>/`), one `makeFormSpec` entry in that jurisdiction's `index.ts`, assets in the two mirrored `forms/` trees. TypeScript will fail to compile until every field has its `category` and `valueType`.
 
 **Header fields** (top-of-form personal info, filing-status checkboxes) are modeled as FormFields too — text/single-select kinds that derive from identity facts / scope decisions. They sit in the same `EvaluatedForm.fields` array as the numeric lines. PDF renderers continue to read raw facts directly; the header fields exist for the Filing Status panel rollup.
 
@@ -152,7 +160,7 @@ Applies to:
 
 Why: the IRS instruction says "you may round off cents to whole dollars" without specifying direction. CPA software conventionally rounds up because that's conservative for the taxpayer (slight overpayment is fine, underpayment triggers penalties). Verified against an actual CPA-prepared 2024 return: their QDCG worksheet line 21 used `ceil(72,151 × 0.20) = 14,431` (not `round → 14,430`), and the cumulative ceiling rounding produced the exact $1 difference that confirmed the convention.
 
-Implementation pattern (used in `src/mastra/engine/worksheets/qdcg.ts`):
+Implementation pattern (used in `src/engine/worksheets/qdcg.ts`):
 ```ts
 const line1 = Math.ceil(inputs.taxableIncome);   // round inputs at entry
 const line18 = Math.ceil(line17 * 0.15);          // round percentage lines

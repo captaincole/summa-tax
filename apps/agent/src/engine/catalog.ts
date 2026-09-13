@@ -262,61 +262,12 @@ export function buildCatalogFromFixtures(fixtures: FixtureFile[]): Catalog {
   return buildCatalog({ forms, fields });
 }
 
-// ─── DB loader ───────────────────────────────────────────────────────────
-
-/**
- * Load a Catalog for a given tax year out of the libsql corpus DB. Reads
- * everything in two queries (forms, then fields) — there's no per-form
- * filtering on the runtime path because the engine consults the Catalog
- * repeatedly and we'd rather pay one round-trip up front than N during
- * evaluation.
- *
- * Dormant: the runtime uses loadFromFixtures (the JSON path is
- * authoritative); this becomes live when the AI ingestion pipeline output
- * is trusted (Phase C+ of the forms-catalog plan).
- */
-export async function loadFromDb(taxYear: number): Promise<Catalog> {
-  const { getCorpusDb, ensureCorpusSchema } = await import("../db/libsql.js");
-  await ensureCorpusSchema();
-  const db = getCorpusDb();
-
-  const formRows = await db.execute({
-    sql: `SELECT form_id, tax_year, jurisdiction, title FROM forms WHERE tax_year = ?`,
-    args: [taxYear],
-  });
-  const forms: FormDefinition[] = formRows.rows.map((r) => ({
-    formId: String(r.form_id),
-    taxYear: Number(r.tax_year),
-    jurisdiction: String(r.jurisdiction),
-    title: String(r.title),
-  }));
-
-  // TODO(db): add an `options` column (JSON) to `form_fields` and read it
-  // here once multi_select fields need to live in the DB. Runtime currently
-  // uses loadFromFixtures, so the JSON path is authoritative.
-  const fieldRows = await db.execute({
-    sql: `SELECT field_id, form_id, tax_year, label, category, value_type,
-                 pdf_widget_name, position, ordinal
-          FROM form_fields WHERE tax_year = ?
-          ORDER BY form_id, ordinal`,
-    args: [taxYear],
-  });
-  const fields: FieldInventory[] = fieldRows.rows.map((r) => ({
-    fieldId: String(r.field_id),
-    formId: String(r.form_id),
-    label: String(r.label),
-    category: String(r.category) as Category,
-    valueType: String(r.value_type) as FieldValueType,
-    pdfWidgetName: r.pdf_widget_name == null ? undefined : String(r.pdf_widget_name),
-    position:
-      r.position == null
-        ? undefined
-        : (JSON.parse(String(r.position)) as { page: number; x: number; y: number }),
-    ordinal: Number(r.ordinal),
-  }));
-
-  return buildCatalog({ forms, fields });
-}
+// NOTE: a corpus-DB catalog loader (loadFromDb) used to live here — it was
+// dormant (runtime uses the bundled JSON fixtures) and it was the engine's
+// only import of the db layer, so it moved out with the engine/mastra
+// boundary split. When the AI forms-ingest output is trusted (Phase C+),
+// the loader belongs on the mastra side: load rows there, build the
+// Catalog via makeCatalog(), and pass it in.
 
 // ─── Pure utility (used by smoke tests and the seed script) ─────────────
 

@@ -15,6 +15,11 @@ import {
 // filter on filing_id (matching the old member-read policy, so the CPA
 // review path keeps working); writes stamp both user_id and filing_id.
 
+// The row shape is engine vocabulary — the engine defines it, this module
+// persists it. Re-exported so db-side callers keep importing from here.
+import type { TaxFactRow } from "../../engine/facts/rows";
+export type { TaxFactRow };
+
 export interface TaxFact {
   id: string;
   userId: string;
@@ -24,17 +29,6 @@ export interface TaxFact {
   key: string;
   value: unknown;
   sourceNote?: string;
-}
-
-export interface TaxFactRow {
-  id: string;
-  userId: string;
-  taxYear: number;
-  category: string;
-  key: string;
-  value: unknown;
-  sourceNote: string | null;
-  createdAt: string;
 }
 
 function rowToFact(r: Row): TaxFactRow {

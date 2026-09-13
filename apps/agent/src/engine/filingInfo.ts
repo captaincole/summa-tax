@@ -33,9 +33,9 @@ import type { ScheduleDFilingInfo } from "./federal/schedule-d/filingInfo.js";
 import type { ScheduleAFilingInfo } from "./federal/schedule-a/filingInfo.js";
 import type { Form8959FilingInfo } from "./federal/8959/filingInfo.js";
 import type { EngineDerivation } from "./types.js";
-import { isInterestFactKey, type TradeFactValue } from "../facts/index.js";
+import { isInterestFactKey, type TradeFactValue } from "./facts/index.js";
 
-// Mirrors the convention spelled out in src/mastra/facts/kinds/trade.ts.
+// Mirrors the convention spelled out in src/engine/facts/kinds/trade.ts.
 // Inlined here because parseTradeFact() expects a full TaxFactRow, but
 // resolveFilingInfo only sees a {key, value, category} projection — the
 // thinner shape is enough to recognize and decode a trade fact.

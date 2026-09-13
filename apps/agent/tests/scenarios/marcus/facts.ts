@@ -13,7 +13,7 @@ import {
   type DividendFactValue,
   type InterestFactValue,
   type W2FactValue,
-} from "../../../src/mastra/facts/index.js";
+} from "../../../src/engine/facts/index.js";
 import { identityFact } from "../../helpers/fixtureBuilders.js";
 
 export const MARCUS_USER_ID = "marcus-integration";

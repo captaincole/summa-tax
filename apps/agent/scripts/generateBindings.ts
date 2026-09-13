@@ -8,8 +8,8 @@
 //   --catalog defaults to forms/<jurisdiction>/<short>/catalog.json
 //             (auto-discovered: federal/<short>, then state/ca/<short>, state/ny/<short>, …)
 //   --output  derived from catalog location + formId:
-//               federal  → src/mastra/engine/federal/<short>/bindings.ts
-//               state/CA → src/mastra/engine/state/ca/<short>/bindings.ts
+//               federal  → src/engine/federal/<short>/bindings.ts
+//               state/CA → src/engine/state/ca/<short>/bindings.ts
 //             where <short> is the formId with "form-" stripped.
 //
 // Both can be overridden with --catalog=… and --output=… flags.
@@ -17,7 +17,7 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { runGenerateBindings } from "../src/forms-pipeline/generateBindingsWorkflow/index.js";
-import { projectRoot } from "../src/mastra/paths.js";
+import { projectRoot } from "../src/paths.js";
 
 // Auto-discover the catalog file in the conventional locations. Each form
 // has its own folder under forms/<jurisdiction>/<short>/ holding catalog.json.
@@ -50,20 +50,20 @@ interface Args {
 
 // Derive the bindings output path from the catalog path + formId.
 // Catalog under forms/state/<state>/<short>/ → output under
-// src/mastra/engine/state/<state>/<short>/bindings.ts. Federal catalog
-// (forms/federal/<short>/) → src/mastra/engine/federal/<short>/bindings.ts.
+// src/engine/state/<state>/<short>/bindings.ts. Federal catalog
+// (forms/federal/<short>/) → src/engine/federal/<short>/bindings.ts.
 function findDefaultOutput(formId: string, catalogPath: string): string {
   const shortName = formId.replace(/^form-/, "");
   const stateMatch = /\bforms\/state\/([a-z]+)\//.exec(catalogPath);
   if (stateMatch) {
     return resolve(
       projectRoot,
-      `src/mastra/engine/state/${stateMatch[1]}/${shortName}/bindings.ts`,
+      `src/engine/state/${stateMatch[1]}/${shortName}/bindings.ts`,
     );
   }
   return resolve(
     projectRoot,
-    `src/mastra/engine/federal/${shortName}/bindings.ts`,
+    `src/engine/federal/${shortName}/bindings.ts`,
   );
 }
 

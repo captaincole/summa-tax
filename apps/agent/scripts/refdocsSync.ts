@@ -2,7 +2,7 @@ import "dotenv/config";
 import { getDocument } from "../src/mastra/db/refDocs";
 import { ingestRefDoc } from "../src/refdocs/ingest";
 import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
-import { projectRoot } from "../src/mastra/paths";
+import { projectRoot } from "../src/paths";
 
 // Idempotent corpus sync. Walks forms/**/instructions.pdf, ingests anything
 // missing or sha-drifted. The ingest pipeline's own sha-skip handles re-runs

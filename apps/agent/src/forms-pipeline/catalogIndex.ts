@@ -11,7 +11,7 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { projectRoot } from "../mastra/paths.js";
+import { projectRoot } from "../paths.js";
 
 export interface IndexedField {
   fieldId: string;

@@ -96,7 +96,7 @@ export const workflowInputSchema = z.object({
   catalogPath: z.string(),
   /**
    * Where to write the generated TS — e.g.
-   * src/mastra/engine/federal/1040/bindings.ts.
+   * src/engine/federal/1040/bindings.ts.
    */
   outputPath: z.string(),
   /**

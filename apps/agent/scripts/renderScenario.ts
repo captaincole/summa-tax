@@ -11,17 +11,17 @@ import "dotenv/config";
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { evaluateAllForms } from "../src/mastra/engine/engine.js";
-import { loadFromFixtures } from "../src/mastra/engine/catalog.js";
-import { getFormSpec } from "../src/mastra/engine/registry.js";
-import { fillFromCatalog } from "../src/mastra/engine/render/fillFromCatalog.js";
-import { resolveFilingInfo } from "../src/mastra/engine/filingInfo.js";
+import { evaluateAllForms } from "../src/engine/engine.js";
+import { loadFromFixtures } from "../src/engine/catalog.js";
+import { getFormSpec } from "../src/engine/registry.js";
+import { fillFromCatalog } from "../src/engine/render/fillFromCatalog.js";
+import { resolveFilingInfo } from "../src/engine/filingInfo.js";
 import {
   makeDecisionsView,
   makeFactsView,
   type DerivationContext,
-} from "../src/mastra/engine/types.js";
-import { projectRoot } from "../src/mastra/paths.js";
+} from "../src/engine/types.js";
+import { projectRoot } from "../src/paths.js";
 import type { Scenario } from "../tests/types.js";
 
 // Pretty short-name fragment for filenames. Maps formId → the PascalCase

@@ -1,17 +1,18 @@
 // Engine public API. Tools / HTTP routes / scripts call into the engine
 // through these two functions:
 //
-//   evaluateScenario(scope, filing, authEmail?) → EvaluatedScenario
-//   renderForm(scenario, formId)                → RenderedForm
+//   evaluateScenario({filing, facts, decisions, authEmail?}) → EvaluatedScenario
+//   renderForm(scenario, formId)                             → RenderedForm
 //
-// evaluateScenario reads facts + decisions for a filing (libsql app DB,
-// scoped explicitly via Scope now that RLS is gone), superseded by
+// The engine never touches a database: callers load the filing's fact and
+// decision rows (see mastra/loadScenario.ts for the runtime bridge) and
+// pass them in, newest-first. evaluateScenario supersedes them to
 // most-recent-per-key, projects them into FilingInfo, and fixpoint-
 // evaluates every registered form against the resulting context. It
 // returns the raw evaluated forms map plus the underlying facts /
 // decisions / filingInfo / authEmail so downstream consumers
 // (case-state summarizer, document generator) can compute their own
-// derived views without re-reading the DB. authEmail is enrichment-only
+// derived views without re-reading anything. authEmail is enrichment-only
 // (Luca acknowledges it back to the user at doc-gen time) — callers pass
 // it from the JWT email claim; it's never load-bearing for evaluation.
 //
@@ -27,9 +28,8 @@
 
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { Scope } from "../db/appDb.js";
-import { listFacts, type TaxFactRow } from "../db/taxFacts.js";
-import { listDecisions, type AIDecisionRow } from "../db/aiDecisions.js";
+import type { TaxFactRow } from "./facts/rows.js";
+import type { AIDecisionRow } from "./facts/rows.js";
 import { evaluateAllForms } from "./engine.js";
 import { resolveFilingInfo, type FilingInfo } from "./filingInfo.js";
 import { fillFromCatalog, type RenderedWidget } from "./render/fillFromCatalog.js";
@@ -50,6 +50,14 @@ import {
 export interface EngineFiling {
   id: string;
   taxYear: number;
+}
+
+export interface ScenarioInputs {
+  filing: EngineFiling;
+  /** Raw rows, newest-first (as list* returns them); the engine supersedes. */
+  facts: TaxFactRow[];
+  decisions: AIDecisionRow[];
+  authEmail?: string | null;
 }
 
 export interface EvaluatedScenario {
@@ -94,23 +102,16 @@ function supersede<T>(rows: T[], keyer: (row: T) => string): T[] {
   return out;
 }
 
-export async function evaluateScenario(
-  scope: Scope,
-  filing: EngineFiling,
-  authEmail: string | null = null,
-): Promise<EvaluatedScenario> {
+export function evaluateScenario(inputs: ScenarioInputs): EvaluatedScenario {
+  const { filing, authEmail = null } = inputs;
+
   // Register all form bindings before evaluation. Idempotent — calling
   // twice overwrites in place — and cheap, so we do it on every call
   // rather than rely on module-load side effects.
   registerAllForms();
 
-  const [factRowsRaw, decisionRowsRaw] = await Promise.all([
-    listFacts(scope, { filingId: filing.id, limit: 500 }),
-    listDecisions(scope, { filingId: filing.id, limit: 500 }),
-  ]);
-
-  const facts = supersede(factRowsRaw, (r) => r.key);
-  const decisions = supersede(decisionRowsRaw, (r) => r.decisionKey);
+  const facts = supersede(inputs.facts, (r) => r.key);
+  const decisions = supersede(inputs.decisions, (r) => r.decisionKey);
 
   const filingInfo = resolveFilingInfo({
     facts: facts.map((f) => ({ key: f.key, value: f.value, category: f.category })),

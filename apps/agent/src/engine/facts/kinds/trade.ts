@@ -10,8 +10,8 @@
 // to build the key, paired with the typed value. Both sides reference the
 // same conventions so they can't drift.
 
-import type { FactsView } from "../../engine/types.js";
-import type { TaxFactRow } from "../../db/taxFacts.js";
+import type { FactsView } from "../../types.js";
+import type { TaxFactRow } from "../rows.js";
 
 export interface TradeFactValue {
   tradeId: string;

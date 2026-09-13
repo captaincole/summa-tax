@@ -18,7 +18,7 @@
 
 import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
-import { projectRoot } from "../src/mastra/paths.js";
+import { projectRoot } from "../src/paths.js";
 
 interface CatalogField {
   fieldId: string;

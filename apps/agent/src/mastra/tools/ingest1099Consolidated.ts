@@ -9,7 +9,7 @@ import {
   type DividendFactValue,
   type InterestFactValue,
   type TradeFactValue,
-} from "../facts";
+} from "../../engine/facts";
 import { requireUserContext } from "./userContext";
 
 // Ingest a consolidated 1099 (E*TRADE-style multi-section statement) as

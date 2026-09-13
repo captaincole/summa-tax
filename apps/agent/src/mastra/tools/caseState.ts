@@ -1,11 +1,8 @@
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import {
-  evaluateScenario,
-  type EngineFiling,
-  type EvaluatedScenario,
-} from "../engine";
-import type { BaseFormField, EngineDerivation } from "../engine/types";
+import type { EngineFiling, EvaluatedScenario } from "../../engine";
+import { loadAndEvaluateScenario } from "../loadScenario";
+import type { BaseFormField, EngineDerivation } from "../../engine/types";
 import { resolveOwnerFilingForYear } from "../db/filings";
 import type { Scope } from "../db/appDb";
 import { requireUserContext } from "./userContext";
@@ -57,7 +54,7 @@ export async function buildCaseState(
   const filing: EngineFiling = { id: filingRow.id, taxYear: filingRow.taxYear };
   const scope: Scope = { userId, filingId: filingRow.id };
   return buildCaseStateForScenario(
-    await evaluateScenario(scope, filing, authEmail),
+    await loadAndEvaluateScenario(scope, filing, authEmail),
   );
 }
 
@@ -73,7 +70,7 @@ export async function buildCaseStateForFiling(
 ) {
   const filing: EngineFiling = { id: scope.filingId, taxYear };
   return buildCaseStateForScenario(
-    await evaluateScenario(scope, filing, authEmail),
+    await loadAndEvaluateScenario(scope, filing, authEmail),
   );
 }
 
@@ -268,7 +265,7 @@ export const getCaseState = createTool({
       await requireUserContext(context);
     // requireUserContext already resolved the active filing — skip the extra
     // resolveOwnerFilingForYear that buildCaseState would do.
-    const scenario = await evaluateScenario(scope, { id: filingId, taxYear }, jwtEmail);
+    const scenario = await loadAndEvaluateScenario(scope, { id: filingId, taxYear }, jwtEmail);
     const {
       summaries,
       pendingDecisions,
