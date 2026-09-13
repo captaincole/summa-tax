@@ -1,5 +1,7 @@
 # tests
 
+Scenario tests should cover *EVERY* supported form field at some level. This is the core way that we can establish that our engine is accurate, as all scenarios are CPA reviewed. 
+
 The offline golden suite — `npm test` from the repo root, and what the
 pre-commit hook runs. Fast, deterministic, no network, no AI: it exercises
 the form engine and PDF fill entirely in memory.

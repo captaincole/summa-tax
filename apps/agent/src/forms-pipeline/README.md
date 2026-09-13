@@ -4,6 +4,8 @@ Dev-time tooling that turns a blank IRS/FTB PDF into the assets the form
 engine consumes. Nothing here runs in production — the engine reads the
 finished artifacts (`catalog.json`, data tables), never this code.
 
+NOTE: This is still a work in progress. I use this part of the project to get started, specifically to create typed fields for all forms I want to ingest. The rules part (bindings) of this form engine doesn't work well yet and still needs to be hand verified after generation but the types are normally pretty good. 
+
 ```
 blank.pdf ──ingest──► catalog.json ──promote──► runtime copy ──bind──► bindings.ts draft
 ```
