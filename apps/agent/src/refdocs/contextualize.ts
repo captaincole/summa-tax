@@ -17,7 +17,14 @@ import { createHash } from "node:crypto";
 
 const ANTHROPIC_BASE = "https://api.anthropic.com/v1";
 const ANTHROPIC_VERSION = "2023-06-01";
-const SUMMARIZER_MODEL = "claude-haiku-4-5";
+
+// Contextual-summary model. Haiku default keeps refdocs:sync cheap for
+// contributors adding a document (~$0.50/doc); the official published
+// corpus is built by the maintainer with REFDOCS_MODEL=claude-opus-5
+// (~5x cost, one payer). Mixing models across docs is fine mechanically
+// (sha-skip preserves existing rows) but the published corpus should be
+// one model end-to-end — rebuild fully when switching.
+const SUMMARIZER_MODEL = process.env.REFDOCS_MODEL ?? "claude-haiku-4-5";
 
 const PROMPT_INSTRUCTION = `The chunk above lives in a larger document. Here is the chunk we want to situate within the document:
 <chunk>
