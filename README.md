@@ -103,19 +103,7 @@ owner account.
 
 ## Contributing
 
-<!-- TODO(andrew): CLA vs DCO decision goes here before first external PR -->
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). For a development guide (repo
-layout, commands, design principles), see [`ARCHITECTURE.md`](ARCHITECTURE.md).
-Tests: `npm test` (golden-PDF scenario suite) and
-`npm --prefix apps/agent run test:unit`.
-
-## TODO - Explain The Agent Architecture
-
-## TODO - Explain the web app architecture
-
-## TODO - Explain the engine architecture
-
+Because this project deals with tax calculations, I need to limit contributions until I can verify the person behind those contributions is real. Contributions will only be accepted in this repo by approved contributors. In order to get approved you need to contact the owner and maintainer of this repository. You can do that by filing a bug in this repo and suggesting who you are and why you want to contribute.
 
 ## License
 
