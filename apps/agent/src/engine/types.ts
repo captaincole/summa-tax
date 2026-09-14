@@ -3,7 +3,7 @@
 // (mustFile result + per-field results). Evaluators are pure functions —
 // deterministic given the input fact + decision state.
 //
-// Per docs/architecture.md the rules are:
+// The rules are:
 //  - Pure aggregation (sums, math, table lookups) lives in code.
 //  - Classification or judgment ALWAYS defers to an ai_decisions lookup,
 //    even when the answer is obvious.
