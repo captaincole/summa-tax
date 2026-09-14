@@ -1,9 +1,9 @@
 {
   "version": "corpus-v1",
-  "description": "Prebuilt IRS/FTB reference corpus (FTS5 + voyage-law-2 embeddings) + forms catalog. 10 docs / 527 blocks, tax year 2025.",
+  "description": "Prebuilt IRS/FTB reference corpus (FTS5 + voyage-law-2 embeddings, claude-opus-5 contextual summaries) + forms catalog. 10 docs / 527 blocks, tax year 2025.",
   "file": "corpus.db",
-  "sha256": "b71b8ed4c7300ee935be4833cc94e9a7d5cf6e37f1226ea7dba4e02ce1c53c9e",
-  "sizeBytes": 9568256,
-  "url": "",
-  "_notes": "url points at a GitHub Release asset (corpus-v1 tag) once the repo is public. Empty url → corpus:fetch falls back to CORPUS_SEED_PATH or an existing .data/corpus.db. Everyone downloads the full corpus; per-state packs are a future option if size demands it."
+  "sha256": "d2363ad5c36cd318b74c783f0ce0ced7db1d119b9f947d5c4796cb8bb5f26652",
+  "sizeBytes": 9596928,
+  "url": "https://github.com/captaincole/summa-tax/releases/download/corpus-v1/corpus.db",
+  "_notes": "GitHub Release asset (corpus-v1 tag). NOTE: repo is private \u2014 unauthenticated download 404s until the repo goes public; until then corpus:fetch falls back to CORPUS_SEED_PATH or 'gh release download corpus-v1'. Everyone downloads the full corpus; per-state packs are a future option if size demands it."
 }
