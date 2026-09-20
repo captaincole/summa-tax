@@ -1,32 +1,28 @@
-# Summa — AI Can Do Your Taxes
+# Summa by @captaincole — AI Can Do Your Taxes
 
-Taxes shouldn't be as hard as they are today. An entire industry profits from keeping the U.S. tax system difficult and opaque — but it doesn't have to be that way.
+Summa is a local-capable AI harness that allows you to build all the documents you need to either estimate or file your taxes. 
 
-Summa exists to democratize access to high-quality tax preparation, so you can take back control of one of the biggest moments in your financial life. It's free, open source, and self-hosted: your data, your machine, your return.
+## Why? - Let's Break The System...
 
-![Summa home — your returns at a glance](static/summa-screenshot.png)
+Taxes shouldn't be as hard as they are today. An entire industry profits from keeping the U.S. tax system difficult and opaque, but it doesn't have to be that way and this project is an attempt to change that system. 
+
+I personally have suffered through the companies that provide tax products only to ask myself if there was a better way. You shouldn't have to pay a private company to help you figure out how much money you have to pay to the government!
+
+This project was going to be a startup, but life changed directions. Now I want this to be a collaborative project that has the greatest impact it can. Join me in disrupting the tax cabal. 
 
 ## Table of Contents
 
-- [Before you use this — read honestly](#before-you-use-this--read-honestly)
-- [How It Works](#how-it-works)
+- [What Is Summa?](#what-is-summa)
 - [Scenario coverage](#scenario-coverage)
+- [Before you use this — read honestly](#before-you-use-this--read-honestly)
 - [Quick Start](#quick-start)
 - [Contributing](#contributing)
+- [Developer Guide](#developer-guide)
 - [License](#license)
 
-## Before you use this — read honestly
+## What Is Summa?
 
-- **Your tax data goes to your model provider.** Every conversation turn, and every background grounding check, is an API call carrying your tax facts to the model provider you configured (Anthropic today). Nothing else leaves your machine, but that does.
-- **This is not tax advice.** Summa is in a beta state and at the moment
-  produces *drafts*. Please double check the work with a CPA.
-- **Coverage is narrow** — see the table below. Outside the supported
-  scenario, Luca says "we don't handle that yet" rather than guessing.
-
-## How It Works
-
-Summa is built with three distinct parts working together: a web app you talk to, an AI agent that turns the
-conversation into data, and a deterministic engine that turns the data into your return.
+Summa is a local-capable AI harness that allows you to build all the documents you need to either estimate or file your taxes. Summa is built with three distinct parts working together: a web app you talk to, an AI agent that turns the conversation into data, and a deterministic engine that turns the data into your return.
 
 <p align="center">
   <img src="static/how-it-works.svg" alt="The Summa triangle — your words and documents go to Luca, Luca turns them into tax facts and decisions, the Form Engine computes the draft return and open questions, and the results flow back to you" width="640">
@@ -60,36 +56,46 @@ State coverage is California-only today.
 | Single filer, W-2 income | ✅ Supported | ✅ Supported |
 | Interest + dividend income (1099-INT / 1099-DIV) | ✅ Supported | ✅ Supported |
 | Standard deduction | ✅ Supported | ✅ Supported |
-| Capital gains (Schedule D / 8949) | 🚧 Partial | ❌ Not yet |
+| Capital gains — brokerage stock sales (consolidated 1099-B, covered lots → Schedule D / 8949) | ✅ Supported | ✅ Supported |
+| Capital gains — crypto (1099-DA), wash sales, non-covered lots | ❌ Not yet | ❌ Not yet |
 | Itemized deductions (Schedule A) | ❌ Not yet | ❌ Not yet |
 | Dependents, MFJ/MFS/HoH | ❌ Not yet | ❌ Not yet |
 | Self-employment, K-1s, rental | ❌ Not yet | ❌ Not yet |
 
+## Before you use this — read honestly
+
+- **Your tax data goes to your model.** Every conversation turn, and every background grounding check, is an API call carrying your tax facts to the model you configured. If you use a local model, or spin up your own private infra you are fine, but if you use Anthropic or OpenAI just remember that. 
+- **This is not tax advice.** Summa is in a beta state and at the moment
+  produces *drafts*. Please double check the work with a CPA.
+- **Coverage is narrow** — see the [scenario coverage](#scenario-coverage) table above. Outside the supported
+  scenario, Luca says "we don't handle that yet" rather than guessing.
+
 ## Quick Start
 
-The default setup uses Anthropic models (you need an API key), but Summa
-can run against **any OpenAI-compatible model server** — Ollama, LM Studio,
-vLLM, llama.cpp, or a self-hosted Hugging Face endpoint — including fully
-local models on your own machine. Optionally, a Voyage AI key upgrades
-corpus search from keyword to semantic retrieval.
+The default setup uses Anthropic models (just for ease of startup), but Summa can run against **any OpenAI-compatible model server**. I've personally tested this using Ollama + Gemma4 on my MacBook Air M4. Optionally, a Voyage AI key upgrades
+corpus search from keyword to semantic retrieval (tbd on a local model that does embeddings).
 
 | Variable | Required | What it does |
 | --- | --- | --- |
-| `LUCA_MODEL` | **Yes** | The conversation agent — must handle images (reads your W-2s). Default `anthropic/claude-sonnet-4-6`. |
-| `JUDGE_MODEL` | **Yes** | The grounding judges that double-check AI decisions. Default `anthropic/claude-haiku-4-5`. |
+| `LUCA_MODEL` | **Yes** | The conversation agent — must handle images (reads your W-2s). There is no in-code default: the app refuses to start without it. |
+| `JUDGE_MODEL` | **Yes** | The grounding judges that double-check AI decisions. Also required at startup. |
 | `ANTHROPIC_API_KEY` | With Anthropic models | Powers the two roles above when they point at Anthropic. |
 | `LUCA_MODEL_URL` / `JUDGE_MODEL_URL` | For local models | Point a role at an OpenAI-compatible server instead, e.g. `LUCA_MODEL=ollama/gemma4:26b` + `LUCA_MODEL_URL=http://localhost:11434/v1`. |
 | `VOYAGE_API_KEY` | No | Semantic retrieval + reranking over the IRS corpus. Without it, retrieval degrades gracefully to keyword (FTS) search. |
 | `AGENT_API_TOKEN` | No | Gates the agent port if it's ever reachable beyond localhost. |
 
 Local-model notes: vision, tool calling, and structured output all matter —
-we've verified the full flow (document reading included) on `gemma4` via
+I've verified the full flow (document reading included) on `gemma4` via
 Ollama. PDFs are rasterized to images automatically for models without
 native PDF input. Expect turns to take minutes, not seconds, on laptop
 hardware, and each model call must currently finish within 5 minutes.
 
-Everything else (ports, `.data` paths) is generated with working defaults by
-the first-run bootstrap.
+You don't have to write this file from scratch: the first-run bootstrap
+generates `apps/agent/.env.development` with the two model roles pre-filled
+to Anthropic models (`anthropic/claude-sonnet-4-6` / `anthropic/claude-haiku-4-5`)
+and working values for ports and `.data` paths. **The one thing it cannot
+fill in is your `ANTHROPIC_API_KEY`** — set that yourself (or repoint the
+model roles at a local server) before the app will do anything useful.
 
 ```bash
 npm run install:all
@@ -104,6 +110,83 @@ owner account.
 ## Contributing
 
 Because this project deals with tax calculations, I need to limit contributions until I can verify the person behind those contributions is real. Contributions will only be accepted in this repo by approved contributors. In order to get approved you need to contact the owner and maintainer of this repository. You can do that by filing a bug in this repo and suggesting who you are and why you want to contribute.
+
+## Developer Guide
+
+Congratulations on wanting to be a developer! The point of this project is that it should be collaborative. 
+
+If you want to get setup locally to be able to add capabilities to this system there are a few things you need to know. I would really like the patterns that have been established to stay the same unless there is a significantly improved pattern that a core contributor wants to recommend. 
+
+### Understanding The Agent
+
+The current agent Luca is built off of the [Mastra](https://mastra.ai/docs) framework. If you want to watch the agent run, checkout the [mastra studio](http://localhost:4111) locally. We don't currently use all the features of the framework but there are two core concepts that we utilize:
+
+* Agent Setup: Mastra allows us to have a really simple agent setup that uses either your local provided model or a cloud model. We have environment configurations for you to setup either of them. 
+* Workflows: We have developed several workflows that help us reduce context and verify that what Luca is saying is actually based in facts. See the **apps/agent/src/mastra/workflows** to learn more about workflows
+
+### Generating The Corpus
+
+The agent and the workflows use a corpus of IRS provided guides to ground its information in truth and to generate the original bindings of the form engine. Here is how that corpus is turned into our data model that the agents can then search. We store information in both vector format and in plain text format for two reasons. First, so there is a backup option if you don't want to use voyage or an embedding model, and second because if you add plain text search queries it makes the model's retrieval capabilities better for corpus search. 
+
+1. *Read* Using unpdf, we read the instructions files (ex: forms/federal/1040/instructions.pdf) from the IRS and turn them into text documents for further processing
+2. *Parse (parse.ts)* turns those text documents into sections based on headers deterministically (No AI) with stable section IDs. 
+3. *Contextualize (contextualize.ts)* receives each block and sends that to an LLM (haiku) that then adds contextual information as part of the block.
+4. *Store* Then we store everything in the DB, as ref_documents (parent), ref_pages, ref_sections, and ref_blocks
+5. *Embeddings* Next we convert each blocks summary + text into RAG capable embeddings via Voyage. We store those vectors in each block's embedding column. 
+
+### Scenario Creation
+
+The core of this project is the scenarios that we test against, which validates that both our engine is correct and we can then use to validate the capabilities of different models against real CPA guidance. 
+
+Right now, scenarios are broken down by "people" in the apps/agent/tests/scenarios folder. Each scenario has a set of input documents which are the expected documents we would need to be able to complete a tax analysis (ex: W2, 1099, etc...), as well as a brief description document. We have not yet implemented but intend to implement tests for how well the AI can process these documents through document ingestion workflows. 
+
+Then for our engine integration tests, we generate a set of facts that reflect the decisions the AI engine would generate for a complete run of our form engine. Facts are things like "filing single" that would be questions the AI would normally ask in conversation flow. 
+
+The simplest example we have of a scenario is *alex* who is a single filer california resident who makes <100k and does not have any other income other than a W2. 
+
+*Every new field that we support in a document, or new document we support needs to have a scenario that uses it*
+
+These scenarios are then run by a CPA in order to produce the *expected\*.ts* files (e.g. `expected.ts`, `expected-540.ts`) that verify the output. 
+
+### Understanding The Form Engine
+
+The form engine is what makes this project special, because it is the tool that the AI uses to understand what information it needs to gather to generate real tax documents. The form engine is really just an obtuse DAG (my wording) that resolves after several "runs" instead of trying to do the DAG computation every time. 
+
+Each form field relies on either
+
+1. A simple fact directly
+
+example: 
+
+``` 
+/// state/ca/540/bindings.ts
+"signing.taxpayer_email": (_, info) => info.taxpayerEmail,
+```
+
+2. An AI decision
+
+```
+      "header.filing_status_single": (_, info) => info.filingStatus === "single",
+```
+
+3. Some math
+
+```
+"line.14": (f) => sum(f["line.12e"], f["line.13a"], f["line.13b"]),
+```
+
+4. Dependent on a calculation in another form or table
+
+```
+"line.25c": (f) => {
+  const m = f["form-8959.0.line.24_total_additional_medicare_tax_withholding"];
+  return typeof m === "number" ? m : undefined;
+},
+```
+
+Or some combination of all the above. If a line has not yet been developed it is explicitly marked in the form as *Unsupported*. 
+
+Because there is a dependency tree involved, and I am not confident that the IRS docs system is a non-repeating DAG, we start by calculating the values we can in the form and then repeat that process. See *evaluateAllForms* for the code. 
 
 ## License
 
