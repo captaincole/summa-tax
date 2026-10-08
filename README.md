@@ -102,11 +102,10 @@ npm run dev:all          # first run generates .env.development files
 # → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
 npm run corpus -- fetch  # prebuilt IRS reference corpus
 ollama pull embeddinggemma-2          # local embedding model for RAG
-npm run corpus -- reembed --all       # rebuild corpus vectors locally (~4 min)
 ```
 
-The last two steps enable semantic (RAG) search over the IRS corpus and
-require [Ollama](https://ollama.com). They're optional: without them the
+The last step enables semantic (RAG) search over the IRS corpus and
+requires [Ollama](https://ollama.com). It's optional: without it the
 agent still works, and reference search falls back to keyword matching —
 see [Semantic search](#semantic-search-rag-vs-keyword-fallback) below.
 
@@ -147,10 +146,9 @@ Reference-corpus search runs two legs: a keyword leg (SQLite FTS5) and a semanti
 ```bash
 # one-time setup
 ollama pull embeddinggemma-2          # 1.3 GB; needs Ollama ≥ 0.40
-npm run corpus -- reembed --all       # rebuild the corpus vectors locally (~4 min, free)
 ```
 
-The re-embed is needed after `corpus fetch` because the published corpus-v1 asset still ships vectors from the retired Voyage pipeline; search detects the model mismatch and refuses to mix vector spaces.
+The prebuilt corpus (corpus-v2, via `npm run corpus -- fetch`) ships EmbeddingGemma 2 vectors, so no re-embedding is needed. If you have an older corpus-v1 db (Voyage-era vectors) or switch embedding models, run `npm run corpus -- reembed --all` (~4 min, free) — search detects the model mismatch and refuses to mix vector spaces until you do.
 
 **If Ollama isn't running, nothing breaks** — searches log a warning and fall back to keyword (FTS) matching, which is a real but lower-recall mode: exact-term queries work well, paraphrased/semantic queries suffer. Fine for end users trying the app; not fine for judging retrieval quality or developing anything RAG-adjacent. Use `npm run corpus -- search "your query" --mode vector` (vs `--mode fts`) to see each leg's behavior, and `npm run corpus -- check` to confirm every block has an embedding.
 

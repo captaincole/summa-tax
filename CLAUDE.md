@@ -37,13 +37,15 @@ apps/
 │   ├── src/refdocs/             # reference-corpus ingest pipeline (parse, contextualize, embed)
 │   ├── src/forms-pipeline/      # dev-time form-catalog ingest (widget extraction, AI labeling)
 │   ├── fixtures/                # canonical test scenarios + PDF render pipeline
-│   ├── scripts/                 # operator scripts (refdocs:*, smoke:review, etc.)
+│   ├── scripts/                 # operator CLIs: corpus/ + formEngine/ subcommand
+│   │                              CLIs on a shared dispatcher (scripts/lib/cli.ts),
+│   │                              plus standalone diagnostics (smokeReview, …)
 │   ├── forms/                   # one folder per tax form: blank.pdf (fillable template),
 │   │                              catalog.json (widget inventory), instructions.pdf
 │   │                              (IRS booklet), instructions.meta.json (corpus metadata),
 │   │                              instructions.canonical.txt (extracted text). Federal
 │   │                              forms under federal/<short>/, state under state/<st>/<short>/.
-│   ├── package.json             # agent deps + scripts (mastra dev, fixtures:build, refdocs:*)
+│   ├── package.json             # agent deps + scripts (mastra dev, corpus, form-engine, test)
 │   └── tsconfig.json
 └── web/                         # Next.js 16 (App Router) frontend → deployed to Vercel
     ├── app/                     # /login, (app)/{page,documents,activity}, /documents/[id] route handler
@@ -54,7 +56,7 @@ apps/
     └── next.config.ts
 
 (no other top-level infra — auth is a password gate in the web app; see below)
-package.json                     # workspace root: thin delegating scripts (dev, dev:all, refdocs:*, …)
+package.json                     # workspace root: thin delegating scripts (dev, dev:all, corpus, form-engine, …)
 CLAUDE.md
 ```
 
@@ -72,7 +74,7 @@ npm run dev:all                             # mastra (:4111) + next (:3000) — 
 npm run dev          # mastra only — also opens Mastra Studio at :4111
 npm run dev:web      # next only
 
-npm run fixtures:build   # regenerates test PDFs under apps/agent/fixtures/docs/
+npm test             # offline golden suite; positional filters work (npm test -- alex)
 ```
 
 All persistent state lives in local files under `apps/agent/.data/` ("the DB is a file"):
@@ -92,7 +94,7 @@ Pin all four paths via env (`CORPUS_DB_PATH` / `APP_DB_PATH` / `MASTRA_DB_PATH` 
 
 ## First run / factory reset
 
-`npm run reset` wipes user data (app.db, mastra.db, documents/) while **preserving corpus.db** (rebuilding it costs Voyage/Haiku money). After a reset, the web app redirects to `/setup` — create the owner account (name, email, password) — then start a filing from the home page. No seed scripts, no test users; the setup screen IS the seeding.
+`npm run reset` wipes user data (app.db, mastra.db, documents/) while **preserving corpus.db** (rebuilding it costs Haiku money for contextualization). After a reset, the web app redirects to `/setup` — create the owner account (name, email, password) — then start a filing from the home page. No seed scripts, no test users; the setup screen IS the seeding.
 
 ## Development workflow
 
@@ -122,7 +124,7 @@ Two paths:
 - **UI: Delete filing** (avatar menu) → `DELETE /app/filings/:id` — removes the filing's blob directory, cascades every domain row, deletes the Mastra thread. Start a fresh filing from the home page afterwards.
 - **API: `POST /app/session/reset`** → `resetCurrentUserData` in `apps/agent/src/mastra/db/resetUserData.ts` — wipes the user's rows but keeps the filing + memberships. No UI button anymore.
 
-**Reference corpus and `apps/agent/forms/` always survive.** To rebuild the corpus, delete `.data/corpus.db` and run `npm run refdocs:sync`. To nuke everything, delete the `.data/` directory and re-run `npm run db:reset`.
+**Reference corpus and `apps/agent/forms/` always survive.** To rebuild the corpus, delete `.data/corpus.db` and run `npm run corpus -- sync` (or `npm run corpus -- fetch` for the prebuilt release). To nuke everything, delete the `.data/` directory and re-run `npm run reset`.
 
 ## Mastra schema
 
@@ -130,7 +132,7 @@ The runtime store is `@mastra/libsql` (pinned; see `server/storage.ts` and `agen
 
 ## Data-model iteration: wipe + re-ingest, not migrations
 
-While the data model is in flux, breaking schema changes are handled by **wiping and re-seeding**, not by migrations or backfill scripts: edit the `CREATE TABLE` statements in `db/appDb.ts` (or `db/libsql.ts` for the corpus), delete the affected `.data/*.db` file, and re-run `npm run db:seed` / `npm run refdocs:sync`. Delete-filing + fixture-driven re-ingest restores a known-good user state.
+While the data model is in flux, breaking schema changes are handled by **wiping and re-seeding**, not by migrations or backfill scripts: edit the `CREATE TABLE` statements in `db/appDb.ts` (or `db/libsql.ts` for the corpus), delete the affected `.data/*.db` file, and re-run `npm run reset` / `npm run corpus -- sync`. Delete-filing + fixture-driven re-ingest restores a known-good user state.
 
 There is no migration system for the libsql files — dev/test data only. That changes when real users have data worth preserving (revisit in Phase 4 packaging).
 
@@ -223,9 +225,12 @@ The reference corpus (IRS pubs/instructions, FTB booklets, etc.) lives in **`.da
 ref_documents → ref_pages    (page char-ranges into canonical_text)
               → ref_sections (heading hierarchy with stable slugs)
               → ref_blocks   (paragraph/list_item/etc — the citable unit)
-                  + embedding          — F32_BLOB(1024) (libsql native, voyage-law-2)
+                  + embedding          — F32_BLOB (libsql native; 768-dim
+                                         embeddinggemma-2 via local Ollama)
 ref_blocks_fts                (FTS5 mirror of coalesce(contextualized_text, text),
                                porter stemming; populated at write time)
+ref_meta                      (key/value; embedding_model = which model built the
+                               stored vectors — search refuses to mix models)
 ```
 
 Stable IDs — used everywhere as citations:
@@ -249,24 +254,27 @@ Each form's instructions live at `apps/agent/forms/<jurisdiction>/<short>/instru
 }
 ```
 
-Operator flow:
+Operator flow (the `corpus` CLI — `npm run corpus` with no args lists all subcommands, `-- <cmd> --help` shows options):
 
 ```bash
 # 1. Drop new/updated instructions.pdf + instructions.meta.json into the form's folder
 #    (apps/agent/forms/<jurisdiction>/<short>/)
 # 2. See what's drifted vs the corpus DB:
-npm run refdocs:status           # diff: present / missing / sha-drift / extra / unconfigured
-npm run refdocs:status -- --strict  # exit non-zero on any drift (for CI/pre-push later)
+npm run corpus -- status            # diff: present / missing / sha-drift / extra / unconfigured
+npm run corpus -- status --strict   # exit non-zero on any drift (for CI/pre-push later)
 
 # 3. Sync changes into corpus.db (idempotent, sha-skips already-ingested docs):
-npm run refdocs:sync             # ~$0.50 + ~5 min per new/changed doc
+npm run corpus -- sync              # ~$0.50 + ~5 min per new/changed doc
 
-# 4. If a previous sync wrote rows but failed at the embeddings step,
+# 4. If a previous sync wrote rows but embeddings failed (Ollama down),
 #    re-embed without re-paying for Haiku contextualization:
-npm run refdocs:reembed
+npm run corpus -- reembed
+#    After switching EMBEDDINGS_MODEL (or fetching a corpus built with a
+#    different model), rebuild every vector:
+npm run corpus -- reembed --all
 ```
 
-Cost: ~$0.50 Haiku contextualization + ~$0.02 Voyage embeddings + ~$0 rerank per doc. Sha-skip means re-runs are free.
+Cost: ~$0.50 Haiku contextualization per doc; embeddings are local and free (EmbeddingGemma 2 via Ollama). Sha-skip means re-runs are free.
 
 ### Ingest pipeline
 
@@ -276,27 +284,28 @@ PDF → shaOfFile (compare to ref_documents.sha256 — skip if match)
     → parseDoc (heading detection → Document/Section/Block tree, stable IDs)
     → contextualize (Haiku per block, section-scoped prompt cache)
     → writeDocument (insert rows, embedding=NULL)
-    → embed (voyage-law-2, batched by 128 inputs OR 120k tokens)
-    → setBlockEmbeddings (per-row UPDATE, concurrency 10)
+    → embed (embeddinggemma-2 via Ollama /api/embed, batches of 32, task prefixes)
+    → setBlockEmbeddings (batched UPDATEs + ref_meta.embedding_model stamp)
 ```
 
-We write the rows BEFORE embedding so a Voyage failure doesn't waste the ~$0.50 of Haiku contextualization — that's what `refdocs:reembed` recovers from. `block_text_sha1` column is in place for future "skip re-summarize when text unchanged" optimization (not yet wired).
+We write the rows BEFORE embedding so an embed failure (Ollama down) doesn't waste the ~$0.50 of Haiku contextualization — that's what `corpus reembed` recovers from. `block_text_sha1` column is in place for future "skip re-summarize when text unchanged" optimization (not yet wired).
 
 ### Retrieval — `search-ref-docs` tool
 
-Single entry point. `callMatch` in `db/refDocs.ts` (the TS port of the old Postgres `match_ref_blocks` function) runs two legs and merges in JS: top-N from the FTS5 leg (`MATCH` + bm25, negated to higher-is-better) unioned with top-N from the vector leg (brute-force `vector_distance_cos` — exact and fast at low-thousands of blocks; no ANN index on purpose). The JS layer reranks via Voyage rerank-2.5.
+Single entry point. `callMatch` in `db/refDocs.ts` (the TS port of the old Postgres `match_ref_blocks` function) runs two legs and merges in JS: top-N from the FTS5 leg (`MATCH` + bm25, negated to higher-is-better) unioned with top-N from the vector leg (brute-force `vector_distance_cos` — exact and fast at low-thousands of blocks; no ANN index on purpose). Final ordering is merged best-of-leg: blocks hit by BOTH legs first, then best single-leg signal. Query embedding comes from the local model via `src/refdocs/embeddings.ts` (`EMBEDDINGS_MODEL`, default `ollama/embeddinggemma-2`).
 
 ```
 query
+ → embedQuery (local Ollama) ┐
  → callMatch ─┬─ FTS5 top-50 (bm25 over ref_blocks_fts)          ┐
-              └─ vector top-50 (vector_distance_cos over blocks) ┘ → dedupe → rerank-2.5 → top-K
+              └─ vector top-50 (vector_distance_cos over blocks) ┘ → dedupe → merge → top-K
 ```
 
-Falls back gracefully:
-- Voyage key absent → FTS-only (vector leg skipped entirely)
-- Rerank API fails → return merged candidates ordered by best-of-leg
+Falls back gracefully to keyword-only (searching always works; semantic quality is what degrades):
+- Ollama down / model not pulled → FTS-only with a warning
+- `ref_meta.embedding_model` ≠ active model (e.g. prebuilt corpus from another model) → FTS-only with a warning; fix with `npm run corpus -- reembed --all`
 
-`mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs.
+`mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs. (The retired Voyage pipeline reranked with rerank-2.5; a local cross-encoder is the future option if ordering quality becomes the bottleneck.)
 
 ### The reviewDecision workflow
 
@@ -308,19 +317,28 @@ Falls back gracefully:
 - Shared CPA heuristics both judges import live in `judges/cpaRules.ts` — rules accumulate there as CPAs flag edge cases.
 - Every step logs to `review_run_steps` (raw input/output JSON — future fine-tuning substrate). `npm run smoke:review` is the end-to-end test (3 cases, temp DB, real Haiku calls).
 
-### Inspection scripts
+### Operator CLIs and inspection scripts
 
-All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from the repo root (which delegates into the agent's `package.json`).
+Everything lives under `apps/agent/scripts/`. Two subcommand CLIs (shared dispatcher in `scripts/lib/cli.ts` — no args lists subcommands, `-- <cmd> --help` shows options) plus standalone diagnostics. All run from the repo root; `--` passes args through both npm layers.
+
+**`npm run corpus`** — the RAG knowledge base, end to end:
+
+| subcommand | use |
+|---|---|
+| `fetch` | install the prebuilt corpus.db (local seed or sha-verified release download) |
+| `sync` | idempotent corpus sync from `forms/**/instructions.pdf` |
+| `status [--strict]` | diff repo PDFs vs corpus.db |
+| `ingest` | manual single-doc ingest (any PDF path; debug flags) |
+| `reembed [--all]` | re-embed NULL blocks; `--all` after a model switch |
+| `check` | row counts + per-doc embedding coverage |
+| `search "q" [--mode …]` | invoke the production search tool |
+
+**`npm run form-engine`** — documents → form-engine assets: `generate-catalog`, `generate-bindings`, `generate-types`, `ingest-federal-tax-table`, `ingest-ca-tax-table`, `promote`.
+
+**Standalone diagnostics** (run via `npx tsx` from `apps/agent/`):
 
 | script | use |
 |---|---|
-| `refdocsStatus.ts` | diff repo PDFs vs corpus.db (npm: `refdocs:status`) |
-| `refdocsSync.ts` | idempotent corpus sync (npm: `refdocs:sync`) |
-| `refdocsReembed.ts` | re-embed NULL-embedding blocks (npm: `refdocs:reembed`) |
-| `ingestRefDoc.ts` | manual single-doc ingest (npm: `refdocs:ingest`) |
-| `checkCorpus.ts` | row counts + per-doc embedding coverage |
-| `searchRefDocs.ts` | invoke the production search tool with a query |
-| `compareRetrieval.ts` | same query through FTS / vector / hybrid+rerank |
 | `smokeReview.ts` | three end-to-end review scenarios (npm: `smoke:review`) |
 | `inspectLastReview.ts` | dump most recent review-decision workflow run + trace |
 | `renderScenario.ts` | render every form in a scenario to PDF for spot-checking |
@@ -329,12 +347,10 @@ All scripts live under `apps/agent/scripts/` and run via `npm run <name>` from t
 
 - **Mastra `maxSteps` defaults to 5 — too low for "ungroundable" verdicts.** Nynaeve burns steps chasing publications the corpus references but doesn't include (e.g. FTB Pub 1031). When she hits the limit mid-tool-call, no final summary is produced and the structuring agent has nothing to convert → `review_failed` with "no structured output". Bump to 10 in `reviewDecision.ts` AND give the agent a hard search budget in the prompt.
 - **Mastra structured-output with tools needs `structuredOutput.model` (separate structuring agent) OR `jsonPromptInjection: true`.** We use the former — Nynaeve does tool calls naturally, then a second Haiku pass extracts structured output from her final text. Direct JSON injection conflicts with critic-style prompts where the agent reasons in prose.
-- **Supabase `upsert` validates NOT NULL columns on the INSERT side, even when conflict triggers UPDATE.** `setBlockEmbeddings` originally tried to upsert `(block_id, embedding)` only — PostgREST rejected because `text`, `doc_id`, etc. are NOT NULL. Fix: per-row `UPDATE … WHERE block_id = …` with concurrency 10. RPC bulk-update is the next optimization if 383 rows × ~50ms ever becomes a bottleneck.
-- **Wrap Supabase errors as `Error` instances at the call site.** They're plain `{ message, code, details, hint }` objects, so `String(err)` becomes `[object Object]` in any try/catch. `assertOk()` in `apps/agent/src/mastra/db/refDocs.ts` does this — copy the pattern when adding new query helpers.
 - **The cookbook's "send the whole document" doesn't fit big tax docs.** 1040 instructions alone are ~211k tokens — over Haiku's 200k. We use **section-scoped context** for contextual summarization: each block is summarized with its section text as the cached prefix. Same caching benefit (cache hits across blocks within a section), no doc-size ceiling.
-- **Voyage has TWO per-batch limits: 128 inputs OR 120k tokens.** Tokens hit first for our contextualized text. `batchByLimits()` in `apps/agent/src/refdocs/voyage.ts` respects both. Token estimator: `chars / 2.5` is the conservative ratio for our Markdown-formatted text (chars/3.5 underestimates and overflows).
-- **pgvector embedding literals serialize as strings, not arrays.** `vectorLiteral([1,2,3])` returns `"[1,2,3]"` — pass that as the column value. Passing a JS array silently fails or coerces. The `vector(1024)` column type must match the embedding model's dimensions exactly (voyage-law-2 = 1024).
-- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → reranker → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Verify section attribution by querying `ref_blocks` directly before tuning retrieval.
+- **Embedding models need their documented task prefixes.** EmbeddingGemma expects `task: search result | query: …` for queries and `title: none | text: …` for documents (applied in `src/refdocs/embeddings.ts`); skipping them silently degrades retrieval precision. When swapping embedding models, read the model card for its prompt convention — and remember vectors from different models (or dims) are never comparable, which is why `ref_meta.embedding_model` gates the vector leg.
+- **Vector literals serialize as strings, not arrays.** `vectorLiteral([1,2,3])` returns `"[1,2,3]"` — that string feeds libsql's `vector32()`. Passing a JS array silently fails or coerces. (SQLite doesn't enforce the declared `F32_BLOB` dim — only query-vs-stored dim equality matters at distance time.)
+- **Diagnose retrieval failures bottom-up.** Order: parser → FTS index → embeddings → merge ordering → agent prompt. Don't blame the corpus first. Our headline parsing failure was attributing the `§ Single` block to `(Preamble)`, not a corpus or retrieval gap. Verify section attribution by querying `ref_blocks` directly before tuning retrieval.
 - **Heading detection needs both regex and named prose.** `Line Nx`, `Part N`, `Schedule N` come from regex. Standalone Title Case headings like `Single`, `Married Filing Jointly`, `Head of Household` need an explicit `KNOWN_PROSE_HEADINGS` set in `apps/agent/src/refdocs/parse.ts`. Title-case continuation rule absorbs multi-line headings (`Qualifying Surviving` + `Spouse`).
 - **One-off smoke tests miss "fixed A but broke B" patterns.** A 3-case smoke gave us false confidence twice during this build. Phase 6 of the original plan (a real Mastra eval dataset with scorers) is the next thing to build before any further prompt/retrieval changes.
 - **The review judges use Haiku because each task is narrow.** Read decision + facts + retrieval, emit one structured output. If verdict-quality drops on harder cases, swap to Sonnet — one-line change per judge in `workflows/reviewDecision/judges/`. Don't reach for it preemptively.
