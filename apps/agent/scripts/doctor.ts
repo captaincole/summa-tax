@@ -39,10 +39,6 @@ function mb(bytes: number): string {
   return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
 }
 
-function mask(secret: string): string {
-  return secret.length > 8 ? `${secret.slice(0, 7)}…${secret.slice(-4)}` : "set";
-}
-
 // ─── Machine ────────────────────────────────────────────────────────────
 
 function machineSection(): void {
@@ -64,8 +60,7 @@ function configSection(): void {
     const v = process.env[key];
     row(key, v ?? `${BAD} unset — the app refuses to start without it`);
   }
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  row("ANTHROPIC_API_KEY", apiKey ? `set (${mask(apiKey)})` : `${DIM} unset`);
+  row("ANTHROPIC_API_KEY", process.env.ANTHROPIC_API_KEY ? `${OK} set` : `${DIM} unset`);
   const embeddings = process.env.EMBEDDINGS_MODEL;
   row(
     "EMBEDDINGS_MODEL",
