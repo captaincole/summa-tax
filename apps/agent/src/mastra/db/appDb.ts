@@ -10,9 +10,9 @@ import { createClient, type Client } from "@libsql/client";
 //
 // RLS is gone with Postgres, so scoping is explicit: every helper in
 // taxFacts/aiDecisions/etc. takes a `Scope { userId, filingId }` and writes
-// the WHERE clauses the database used to add for us. The multi-user tables
-// (filing_members, cpa_profiles, filing_invites) are kept dormant per the
-// transition plan — single-user instances just have one owner membership.
+// the WHERE clauses the database used to add for us. filing_members holds
+// exactly one owner membership per filing — the CPA-reviewer multi-user
+// surface was removed with the self-hosted transition.
 //
 // Path resolution mirrors db/libsql.ts: APP_DB_PATH env wins, else
 // <apps/agent>/.data/app.db anchored to this module so cwd doesn't matter.
@@ -95,29 +95,12 @@ export function ensureAppSchema(): Promise<void> {
         `CREATE TABLE IF NOT EXISTS filing_members (
            filing_id  TEXT NOT NULL REFERENCES filings(id) ON DELETE CASCADE,
            user_id    TEXT NOT NULL,
-           role       TEXT NOT NULL CHECK (role IN ('owner','cpa_reviewer')),
+           role       TEXT NOT NULL CHECK (role IN ('owner')),
            added_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
            revoked_at TEXT,
            PRIMARY KEY (filing_id, user_id)
          )`,
         `CREATE INDEX IF NOT EXISTS idx_filing_members_user ON filing_members(user_id) WHERE revoked_at IS NULL`,
-        `CREATE TABLE IF NOT EXISTS cpa_profiles (
-           user_id        TEXT PRIMARY KEY,
-           display_name   TEXT NOT NULL,
-           firm           TEXT,
-           license_number TEXT,
-           created_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-         )`,
-        `CREATE TABLE IF NOT EXISTS filing_invites (
-           filing_id          TEXT NOT NULL REFERENCES filings(id) ON DELETE CASCADE,
-           invitee_user_id    TEXT NOT NULL,
-           invited_by_user_id TEXT NOT NULL,
-           status             TEXT NOT NULL CHECK (status IN ('pending','accepted','revoked')),
-           invited_at         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-           accepted_at        TEXT,
-           revoked_at         TEXT,
-           PRIMARY KEY (filing_id, invitee_user_id)
-         )`,
         `CREATE TABLE IF NOT EXISTS tax_facts (
            id          TEXT PRIMARY KEY,
            user_id     TEXT NOT NULL,

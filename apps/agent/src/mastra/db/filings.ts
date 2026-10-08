@@ -8,7 +8,7 @@ import { getAppDb, ensureAppSchema, asStr, asNum, nowIso } from "./appDb";
 // For the current single-owner-per-user flow there's one active filing per
 // (user, tax_year).
 
-export type FilingMemberRole = "owner" | "cpa_reviewer";
+export type FilingMemberRole = "owner";
 
 export interface FilingRow {
   id: string;

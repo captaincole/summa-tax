@@ -18,7 +18,7 @@
 
 import { redirect } from "next/navigation";
 import { getOwnerSession } from "@/lib/localAuth";
-import { hasCpaProfile, hasOwnerMembership, listOwnerReturns } from "@/lib/serverDb";
+import { listOwnerReturns } from "@/lib/serverDb";
 import { type TaxReturn } from "@/lib/returns";
 import { deriveProfile, type UserProfile } from "@/lib/profile";
 import { cn } from "@/lib/cn";
@@ -63,19 +63,6 @@ export default async function HomeHome() {
   const session = await getOwnerSession();
   if (!session) redirect("/login");
   const profile = deriveProfile(session);
-
-  // Registered CPAs (anyone with a cpa_profiles row) who don't ALSO own a
-  // filing get bounced to /cpa so they don't land on the taxpayer home.
-  // cpa_profile existence is the right signal here, not membership count —
-  // a CPA without invites yet still belongs on the CPA surface (which
-  // renders an empty 'Nothing to review' state). Mixed-role users (CPA who
-  // also owns their own return) stay on the taxpayer home.
-  if (
-    (await hasCpaProfile(session.userId)) &&
-    !(await hasOwnerMembership(session.userId))
-  ) {
-    redirect("/cpa");
-  }
 
   const returns = await listOwnerReturns(session.userId);
   const hasCurrentYear = returns.some((r) => r.year === CURRENT_TAX_YEAR);

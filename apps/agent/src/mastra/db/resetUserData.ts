@@ -8,9 +8,8 @@ import { deleteBlob } from "./blobStore";
 //
 // Filings + filing_members are deliberately NOT wiped. Resetting the filing
 // to a known-empty state (zero facts, decisions, questions, documents,
-// requests) shouldn't terminate any CPA shares or force the owner to
-// re-create the filing. The row + memberships persist; everything inside
-// the filing gets cleared.
+// requests) shouldn't force the owner to re-create the filing. The row +
+// membership persist; everything inside the filing gets cleared.
 
 export interface PerUserResetResult {
   domainRowsDeleted: number;

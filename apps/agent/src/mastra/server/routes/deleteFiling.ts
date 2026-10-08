@@ -8,7 +8,7 @@ import { luca } from "../../agents/luca";
 //
 // Owner-only filing deletion. Cascades:
 //   - filings ON DELETE CASCADE (libsql app DB) → filing_members,
-//     filing_invites, tax_facts, ai_decisions, open_questions,
+//     tax_facts, ai_decisions, open_questions,
 //     user_documents, requested_actions, review_runs, review_run_steps.
 //     Every domain row carries a filing_id with cascade, so a single
 //     DELETE on filings is enough at the SQL level.

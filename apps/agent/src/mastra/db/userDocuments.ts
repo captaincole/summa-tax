@@ -162,9 +162,6 @@ export interface ListDocumentsOpts {
   formId?: string;
   /** Filter by metadata.taxYear. */
   taxYear?: number;
-  /** Override the scope's filing (e.g. a CPA reviewing another filing —
-   *  membership must be verified by the caller first). */
-  filingId?: string;
   limit?: number;
 }
 
@@ -174,7 +171,7 @@ export async function listDocuments(
 ): Promise<UserDocumentRow[]> {
   await ensureAppSchema();
   const conds: string[] = ["filing_id = ?"];
-  const args: InValue[] = [opts.filingId ?? scope.filingId];
+  const args: InValue[] = [scope.filingId];
   if (opts.category) {
     conds.push("category = ?");
     args.push(opts.category);

@@ -3,12 +3,11 @@ import { resolve } from "node:path";
 import type { ActivityItem } from "@/lib/activity";
 import type { RequestedAction } from "@/lib/requestedActions";
 import type { TaxReturn } from "@/lib/returns";
-import type { CpaDirectoryEntry, FilingInviteRow } from "@/lib/cpa";
 
 // SERVER-ONLY domain reads/writes against the shared libsql app DB
 // (.data/app.db under apps/agent — the agent owns schema creation; we just
 // query). Replaces the per-table Postgres reads that used to live in
-// lib/{activity,filings,returns,cpa,requestedActions}.ts.
+// lib/{activity,filings,returns,requestedActions}.ts.
 //
 // RLS is gone with Postgres, so every query here scopes explicitly by
 // userId / filingId. Callers (Server Components, Route Handlers) are
@@ -154,131 +153,18 @@ export async function getOwnerFilingForYear(
   return { id: ret.filingId, taxYear: ret.year, status: ret.status };
 }
 
-export interface ReviewableFilingRow extends FilingRow {
-  createdAt: string;
-}
-
-export async function listReviewableFilings(
-  userId: string,
-): Promise<ReviewableFilingRow[]> {
-  const res = await db().execute({
-    sql: `SELECT f.id, f.tax_year, f.status, f.created_at
-          FROM filings f JOIN filing_members m ON m.filing_id = f.id
-          WHERE m.user_id = ? AND m.role = 'cpa_reviewer' AND m.revoked_at IS NULL
-          ORDER BY f.created_at DESC`,
-    args: [userId],
-  });
-  return res.rows.map((r) => ({
-    id: str(r.id),
-    taxYear: num(r.tax_year),
-    status: str(r.status),
-    createdAt: str(r.created_at),
-  }));
-}
-
 /** Non-revoked membership check — the explicit RLS replacement used before
  *  reading anything belonging to a filing the caller doesn't own outright. */
 export async function hasMembership(
   filingId: string,
   userId: string,
-  role?: "owner" | "cpa_reviewer",
 ): Promise<boolean> {
-  const conds = ["filing_id = ?", "user_id = ?", "revoked_at IS NULL"];
-  const args: InValue[] = [filingId, userId];
-  if (role) {
-    conds.push("role = ?");
-    args.push(role);
-  }
-  const res = await db().execute({
-    sql: `SELECT 1 FROM filing_members WHERE ${conds.join(" AND ")} LIMIT 1`,
-    args,
-  });
-  return res.rows.length > 0;
-}
-
-export async function getCpaFilingYear(
-  filingId: string,
-  userId: string,
-): Promise<number | null> {
-  const res = await db().execute({
-    sql: `SELECT f.tax_year FROM filings f
-          JOIN filing_members m ON m.filing_id = f.id
-          WHERE f.id = ? AND m.user_id = ? AND m.role = 'cpa_reviewer'
-            AND m.revoked_at IS NULL LIMIT 1`,
-    args: [filingId, userId],
-  });
-  return res.rows[0] ? num(res.rows[0].tax_year) : null;
-}
-
-export async function hasCpaProfile(userId: string): Promise<boolean> {
-  const res = await db().execute({
-    sql: `SELECT 1 FROM cpa_profiles WHERE user_id = ? LIMIT 1`,
-    args: [userId],
-  });
-  return res.rows.length > 0;
-}
-
-export async function hasOwnerMembership(userId: string): Promise<boolean> {
   const res = await db().execute({
     sql: `SELECT 1 FROM filing_members
-          WHERE user_id = ? AND role = 'owner' AND revoked_at IS NULL LIMIT 1`,
-    args: [userId],
+          WHERE filing_id = ? AND user_id = ? AND revoked_at IS NULL LIMIT 1`,
+    args: [filingId, userId],
   });
   return res.rows.length > 0;
-}
-
-// ─── CPA directory / invites / taxpayer names ──────────────────────────
-
-export async function listCpaDirectory(): Promise<CpaDirectoryEntry[]> {
-  const res = await db().execute(
-    `SELECT user_id, display_name, firm, license_number
-     FROM cpa_profiles ORDER BY display_name ASC`,
-  );
-  return res.rows.map((r) => ({
-    userId: str(r.user_id),
-    displayName: str(r.display_name),
-    firm: strOrNull(r.firm),
-    licenseNumber: strOrNull(r.license_number),
-  }));
-}
-
-export async function listFilingInvites(
-  filingId: string,
-): Promise<FilingInviteRow[]> {
-  const res = await db().execute({
-    sql: `SELECT invitee_user_id, status, invited_at, accepted_at, revoked_at
-          FROM filing_invites WHERE filing_id = ? ORDER BY invited_at DESC`,
-    args: [filingId],
-  });
-  return res.rows.map((r) => ({
-    inviteeUserId: str(r.invitee_user_id),
-    status: str(r.status) as FilingInviteRow["status"],
-    invitedAt: str(r.invited_at),
-    acceptedAt: strOrNull(r.accepted_at),
-    revokedAt: strOrNull(r.revoked_at),
-  }));
-}
-
-export async function taxpayerNameForFiling(
-  filingId: string,
-): Promise<{ firstName: string | null; lastName: string | null }> {
-  const res = await db().execute({
-    sql: `SELECT fact_key, fact_value FROM tax_facts
-          WHERE filing_id = ? AND fact_key IN ('identity.name.first','identity.name.last')
-          ORDER BY created_at DESC`,
-    args: [filingId],
-  });
-  const byKey = new Map<string, unknown>();
-  for (const r of res.rows) {
-    const key = str(r.fact_key);
-    if (!byKey.has(key)) byKey.set(key, json(r.fact_value));
-  }
-  const sv = (v: unknown) =>
-    typeof v === "string" && v.length > 0 ? v : null;
-  return {
-    firstName: sv(byKey.get("identity.name.first")),
-    lastName: sv(byKey.get("identity.name.last")),
-  };
 }
 
 // ─── Activity feed ──────────────────────────────────────────────────────
@@ -460,8 +346,8 @@ export interface DraftListRow {
   metadata: Record<string, unknown> | null;
 }
 
-/** Engine-generated drafts for a filing, newest first — the Forms tabs
- *  (owner + CPA). snake_case keys preserved for the existing components. */
+/** Engine-generated drafts for a filing, newest first — the Forms tab.
+ *  snake_case keys preserved for the existing components. */
 export async function listDrafts(filingId: string): Promise<DraftListRow[]> {
   const res = await db().execute({
     sql: `SELECT id, filename, created_at, mime_type, size_bytes, metadata

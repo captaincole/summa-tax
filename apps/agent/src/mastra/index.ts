@@ -6,10 +6,8 @@ import { reviewDecisionWorkflow } from "./workflows/reviewDecision";
 import { corsMiddleware } from "./server/cors";
 import { createObservability } from "./server/observability";
 import { appStateRoute } from "./server/routes/appState";
-import { cpaFilingStateRoute } from "./server/routes/cpaFilingState";
 import { createFilingRoute } from "./server/routes/createFiling";
 import { deleteFilingRoute } from "./server/routes/deleteFiling";
-import { inviteCpaRoute } from "./server/routes/inviteCpa";
 import { sessionResetRoute } from "./server/routes/sessionReset";
 import { createStorage } from "./server/storage";
 import { ownerMiddleware } from "./server/ownerMiddleware";
@@ -63,10 +61,8 @@ export const mastra = new Mastra({
     ],
     apiRoutes: [
       appStateRoute,
-      cpaFilingStateRoute,
       createFilingRoute,
       deleteFilingRoute,
-      inviteCpaRoute,
       sessionResetRoute,
     ],
   },
