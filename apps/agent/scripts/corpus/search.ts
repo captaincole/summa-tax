@@ -10,7 +10,7 @@ async function run(argv: string[]): Promise<void> {
     args: argv,
     options: {
       limit: { type: "string", default: "5" },
-      mode: { type: "string", default: "auto" },
+      mode: { type: "string", default: "hybrid" },
       "doc-id": { type: "string" },
     },
     allowPositionals: true,
@@ -25,7 +25,7 @@ async function run(argv: string[]): Promise<void> {
     execute: (input: {
       query: string;
       limit?: number;
-      mode?: "auto" | "fts" | "vector" | "hybrid";
+      mode?: "fts" | "vector" | "hybrid";
       docId?: string;
     }) => Promise<{
       query: string;
@@ -42,7 +42,7 @@ async function run(argv: string[]): Promise<void> {
   }).execute({
     query,
     limit: Math.max(1, Math.min(Number(values.limit), 25)),
-    mode: values.mode as "auto" | "fts" | "vector" | "hybrid",
+    mode: values.mode as "fts" | "vector" | "hybrid",
     docId: values["doc-id"],
   });
 
@@ -65,8 +65,8 @@ export const searchCommand: Command = {
   options: [
     { flag: "--limit <n>", desc: "max results, 1–25 (default: 5)" },
     {
-      flag: "--mode auto|fts|vector|hybrid",
-      desc: "retrieval mode; auto runs hybrid, degrading to FTS when Ollama is unavailable (default: auto)",
+      flag: "--mode fts|vector|hybrid",
+      desc: "retrieval mode; hybrid degrades to FTS when Ollama is unavailable (default: hybrid)",
     },
     { flag: "--doc-id <id>", desc: "restrict to one document, e.g. irs-1040-inst-2025" },
   ],

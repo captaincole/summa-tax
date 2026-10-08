@@ -339,30 +339,6 @@ export async function searchRefDocs(opts: SearchOpts): Promise<SearchHit[]> {
     .map((r) => rowToHit(r, -(r.fts_rank ?? 0)));
 }
 
-export interface VectorSearchOpts {
-  queryEmbedding: number[];
-  docId?: string;
-  limit?: number;
-}
-
-/** Vector-only search. Kept for compareRetrieval.ts evals. */
-export async function vectorSearchRefDocs(
-  opts: VectorSearchOpts,
-): Promise<SearchHit[]> {
-  const limit = Math.min(opts.limit ?? 5, 50);
-  const rows = await callMatch({
-    queryText: null,
-    queryEmbedding: opts.queryEmbedding,
-    matchCount: limit,
-    filterDocId: opts.docId,
-  });
-  return rows
-    .filter((r) => r.vector_distance != null)
-    .sort((a, b) => (a.vector_distance ?? 0) - (b.vector_distance ?? 0))
-    .slice(0, limit)
-    .map((r) => rowToHit(r, r.vector_distance ?? 0));
-}
-
 export interface HybridSearchOpts {
   query: string;
   docId?: string;
@@ -371,9 +347,9 @@ export interface HybridSearchOpts {
   /** How many candidates to pull from each leg before merging.
    *  Bigger = more recall. Default 50. */
   candidatesPerLeg?: number;
-  /** Force a specific retrieval path. Default "auto" = hybrid, degrading to
+  /** Force a specific retrieval path. Default "hybrid", which degrades to
    *  FTS when the local embedding model is unavailable or stale. */
-  mode?: "auto" | "fts" | "vector" | "hybrid";
+  mode?: "fts" | "vector" | "hybrid";
 }
 
 /** Hybrid retrieval: FTS top-N ∪ vector top-N → merged ordering → top-K.
@@ -382,8 +358,7 @@ export interface HybridSearchOpts {
  * can't run — searching always works, semantic quality is what degrades:
  *   - Ollama down / embedding model not pulled → FTS-only with a warning
  *   - Stored vectors built by a DIFFERENT embedding model than the active
- *     one (e.g. a prebuilt corpus from the retired Voyage pipeline) →
- *     FTS-only with a warning; fix with `npm run corpus -- reembed --all`
+ *     one → FTS-only with a warning; fix with `npm run corpus -- reembed --all`
  */
 export async function hybridSearchRefDocs(
   opts: HybridSearchOpts,
@@ -394,8 +369,7 @@ export async function hybridSearchRefDocs(
   const { resolveEmbeddings, embedQuery } = await import(
     "../../refdocs/embeddings"
   );
-  const mode: "fts" | "vector" | "hybrid" =
-    opts.mode && opts.mode !== "auto" ? opts.mode : "hybrid";
+  const mode = opts.mode ?? "hybrid";
 
   // Embed the query if we're going to use the vector leg — but only when the
   // stored vectors came from the same model (cross-model cosine is garbage),
@@ -565,7 +539,7 @@ export async function writeDocument(payload: IngestPayload): Promise<void> {
   }
 
   // 4) blocks + their FTS5 mirror row. Embedding goes through vector32() when
-  //    present, NULL otherwise (--no-embed / pre-embed ingest).
+  //    present, NULL otherwise (pre-embed ingest; the embed step UPDATEs later).
   const BLOCK_CHUNK = 200;
   for (let i = 0; i < blocks.length; i += BLOCK_CHUNK) {
     const slice = blocks.slice(i, i + BLOCK_CHUNK);
@@ -678,7 +652,7 @@ export async function listBlocksWithoutEmbeddings(
 // Corpus metadata (ref_meta) — which embedding model built the stored vectors.
 // ---------------------------------------------------------------------------
 
-export async function getCorpusMeta(key: string): Promise<string | null> {
+async function getCorpusMeta(key: string): Promise<string | null> {
   await ensureCorpusSchema();
   const res = await getCorpusDb().execute({
     sql: `SELECT value FROM ref_meta WHERE key = ?`,
@@ -687,7 +661,7 @@ export async function getCorpusMeta(key: string): Promise<string | null> {
   return res.rows.length > 0 ? asStr(res.rows[0].value) : null;
 }
 
-export async function setCorpusMeta(key: string, value: string): Promise<void> {
+async function setCorpusMeta(key: string, value: string): Promise<void> {
   await ensureCorpusSchema();
   await getCorpusDb().execute({
     sql: `INSERT INTO ref_meta (key, value) VALUES (?, ?)
@@ -696,16 +670,9 @@ export async function setCorpusMeta(key: string, value: string): Promise<void> {
   });
 }
 
-/** The embedding-model identity the stored vectors were built with. A corpus
- *  with embeddings but no stamp predates the stamp — treat as the legacy
- *  Voyage default (the only writer that existed then). */
+/** The embedding-model identity the stored vectors were built with, or null
+ *  for a corpus that has never been embedded by current code (every writer
+ *  stamps on embed). */
 export async function storedEmbeddingModel(): Promise<string | null> {
-  const stamped = await getCorpusMeta("embedding_model");
-  if (stamped) return stamped;
-  const res = await getCorpusDb().execute(
-    `SELECT count(embedding) AS n FROM ref_blocks`,
-  );
-  if (asNum(res.rows[0]?.n) === 0) return null;
-  const { LEGACY_EMBEDDING_ID } = await import("../../refdocs/embeddings");
-  return LEGACY_EMBEDDING_ID;
+  return getCorpusMeta("embedding_model");
 }

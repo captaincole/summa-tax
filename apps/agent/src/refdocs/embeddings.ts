@@ -5,10 +5,8 @@
 // LUCA_MODEL / JUDGE_MODEL (see src/mastra/models.ts):
 //
 //   EMBEDDINGS_MODEL      default "ollama/embeddinggemma-2". Only the
-//                         ollama provider is supported (Voyage was removed
-//                         2026-10; see git history).
+//                         ollama provider is supported.
 //   EMBEDDINGS_MODEL_URL  Ollama endpoint. Default http://localhost:11434.
-//   EMBEDDINGS_DIMS       override for models not in KNOWN_DIMS.
 //
 // Ollama not running / model not pulled is NOT fatal: the search path
 // catches embed failures and falls back to keyword (FTS) retrieval, and
@@ -26,37 +24,11 @@ export interface EmbeddingsConfig {
   model: string;
   /** Full "provider/model" identity — stamped into ref_meta on write. */
   id: string;
-  dims: number;
   /** Ollama endpoint base URL. */
   url: string;
 }
 
-export const DEFAULT_EMBEDDINGS_MODEL = "ollama/embeddinggemma-2";
-
-/** What corpora embedded before the ref_meta stamp existed were built with
- *  (the retired Voyage pipeline — includes the published corpus-v1 release
- *  asset). Seeing this from storedEmbeddingModel() means `reembed --all`. */
-export const LEGACY_EMBEDDING_ID = "voyage/voyage-law-2";
-
-const KNOWN_DIMS: Record<string, number> = {
-  // EmbeddingGemma 2 is 768-dim native at every Ollama size tag
-  // (Matryoshka truncation exists but we store full vectors).
-  "embeddinggemma-2": 768,
-  embeddinggemma: 768,
-};
-
-function dimsFor(model: string): number {
-  const envDims = process.env.EMBEDDINGS_DIMS;
-  if (envDims) return Number(envDims);
-  // Match "embeddinggemma-2:570m" → "embeddinggemma-2".
-  const known = KNOWN_DIMS[model.split(":")[0]];
-  if (!known) {
-    throw new Error(
-      `Unknown embedding dims for model "${model}" — set EMBEDDINGS_DIMS.`,
-    );
-  }
-  return known;
-}
+const DEFAULT_EMBEDDINGS_MODEL = "ollama/embeddinggemma-2";
 
 /** Resolve the active embeddings config. Always returns one — availability
  *  is a runtime question (callers catch embed failures and degrade to FTS). */
@@ -68,15 +40,13 @@ export function resolveEmbeddings(): EmbeddingsConfig {
   if (provider !== "ollama" || !model) {
     throw new Error(
       `EMBEDDINGS_MODEL is "${raw}" — expected "ollama/<model>" ` +
-        `(e.g. ${DEFAULT_EMBEDDINGS_MODEL}). The Voyage provider was removed; ` +
-        `embeddings now run locally via Ollama.`,
+        `(e.g. ${DEFAULT_EMBEDDINGS_MODEL}); embeddings run locally via Ollama.`,
     );
   }
   return {
     provider: "ollama",
     model,
     id: raw,
-    dims: dimsFor(model),
     url: process.env.EMBEDDINGS_MODEL_URL ?? "http://localhost:11434",
   };
 }

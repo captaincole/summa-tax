@@ -21,6 +21,8 @@ export interface Command {
 }
 
 interface Cli {
+  /** Short CLI name used in error prefixes, e.g. "corpus". */
+  name: string;
   /** How the user invokes this from the repo root, e.g. `npm run corpus --` */
   bin: string;
   description: string;
@@ -79,7 +81,7 @@ export async function runCli(cli: Cli): Promise<void> {
         : typeof err === "object" && err !== null
           ? JSON.stringify(err)
           : String(err);
-    console.error(`[${cli.bin.replace(/^npm run /, "").replace(" --", "")} ${cmd.name}] failed: ${msg}`);
+    console.error(`[${cli.name} ${cmd.name}] failed: ${msg}`);
     process.exit(1);
   }
 }

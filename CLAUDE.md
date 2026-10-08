@@ -305,7 +305,7 @@ Falls back gracefully to keyword-only (searching always works; semantic quality 
 - Ollama down / model not pulled → FTS-only with a warning
 - `ref_meta.embedding_model` ≠ active model (e.g. prebuilt corpus from another model) → FTS-only with a warning; fix with `npm run corpus -- reembed --all`
 
-`mode` parameter (`auto` | `fts` | `vector` | `hybrid`) lets evals A/B specific legs. (The retired Voyage pipeline reranked with rerank-2.5; a local cross-encoder is the future option if ordering quality becomes the bottleneck.)
+`mode` parameter (`fts` | `vector` | `hybrid`, default hybrid) lets evals A/B specific legs. (A local cross-encoder reranker is the future option if merge-ordering quality ever becomes the bottleneck.)
 
 ### The reviewDecision workflow
 

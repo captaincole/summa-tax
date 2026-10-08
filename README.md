@@ -148,7 +148,7 @@ Reference-corpus search runs two legs: a keyword leg (SQLite FTS5) and a semanti
 ollama pull embeddinggemma-2          # 1.3 GB; needs Ollama ≥ 0.40
 ```
 
-The prebuilt corpus (corpus-v2, via `npm run corpus -- fetch`) ships EmbeddingGemma 2 vectors, so no re-embedding is needed. If you have an older corpus-v1 db (Voyage-era vectors) or switch embedding models, run `npm run corpus -- reembed --all` (~4 min, free) — search detects the model mismatch and refuses to mix vector spaces until you do.
+The prebuilt corpus (corpus-v2, via `npm run corpus -- fetch`) ships EmbeddingGemma 2 vectors, so no re-embedding is needed. If you switch embedding models, run `npm run corpus -- reembed --all` (~4 min, free) — the corpus records which model built its vectors, and search refuses to mix vector spaces until you do.
 
 **If Ollama isn't running, nothing breaks** — searches log a warning and fall back to keyword (FTS) matching, which is a real but lower-recall mode: exact-term queries work well, paraphrased/semantic queries suffer. Fine for end users trying the app; not fine for judging retrieval quality or developing anything RAG-adjacent. Use `npm run corpus -- search "your query" --mode vector` (vs `--mode fts`) to see each leg's behavior, and `npm run corpus -- check` to confirm every block has an embedding.
 

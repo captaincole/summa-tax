@@ -40,10 +40,10 @@ export const searchRefDocsTool = createTool({
       .optional()
       .describe("Max hits to return (default 8)."),
     mode: z
-      .enum(["auto", "fts", "vector", "hybrid"])
+      .enum(["fts", "vector", "hybrid"])
       .optional()
       .describe(
-        "Retrieval mode. Default 'auto' runs hybrid (FTS + vector), degrading to FTS-only when the local embedding model is unavailable. Override only for evals/debugging.",
+        "Retrieval mode. Default 'hybrid' (FTS + vector), degrading to FTS-only when the local embedding model is unavailable. Override only for evals/debugging.",
       ),
   }),
   outputSchema: z.object({

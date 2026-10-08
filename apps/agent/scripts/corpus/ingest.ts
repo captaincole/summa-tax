@@ -1,7 +1,6 @@
 // Manual single-doc ingest — the debugging seam under `sync`. Unlike sync,
 // this can ingest a PDF from anywhere on disk (not just the forms/ tree)
-// and can skip the expensive pipeline stages via --no-contextualize /
-// --no-embed.
+// and can skip the paid contextualization stage via --no-contextualize.
 
 import { parseArgs } from "node:util";
 import { ingestRefDoc } from "../../src/refdocs/ingest";
@@ -19,7 +18,6 @@ async function run(argv: string[]): Promise<void> {
       "source-url": { type: "string" },
       force: { type: "boolean", default: false },
       "no-contextualize": { type: "boolean", default: false },
-      "no-embed": { type: "boolean", default: false },
       "parser-style": { type: "string", default: "irs" },
     },
     strict: true,
@@ -48,7 +46,6 @@ async function run(argv: string[]): Promise<void> {
     sourceUrl: values["source-url"] ?? null,
     force: values.force,
     noContextualize: values["no-contextualize"],
-    noEmbed: values["no-embed"],
     parserStyle,
   });
 
@@ -77,7 +74,6 @@ export const ingestCommand: Command = {
     { flag: "--source-url <url>", desc: "where the PDF was downloaded from" },
     { flag: "--force", desc: "re-ingest even if the sha matches the DB" },
     { flag: "--no-contextualize", desc: "skip the Haiku contextualization stage" },
-    { flag: "--no-embed", desc: "skip the Voyage embedding stage" },
     { flag: "--parser-style irs|ftb", desc: "heading-detection style (default: irs)" },
   ],
   run,

@@ -3,7 +3,6 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { mkdirSync } from "node:fs";
 import { createClient, type Client } from "@libsql/client";
-import { resolveEmbeddings } from "../../refdocs/embeddings";
 
 // The reference corpus lives in a single local libsql/SQLite file — "the DB is
 // a file." This replaces the Supabase/Postgres corpus store (ref_* tables +
@@ -28,22 +27,6 @@ function corpusDbPath(): string {
 
 let cached: Client | null = null;
 let schemaReady: Promise<void> | null = null;
-
-// Declared dimension for the ref_blocks.embedding column on a FRESH db
-// (voyage-law-2 = 1024, embeddinggemma-2 = 768). Only consulted at CREATE
-// TABLE time — SQLite doesn't enforce the declared dim, and we have no ANN
-// index, so an existing db keeps working if the provider changes; what
-// actually matters is that stored and query vectors come from the same
-// model, which ref_meta.embedding_model guards (see db/refDocs.ts).
-function embeddingDims(): number {
-  try {
-    return resolveEmbeddings()?.dims ?? 1024;
-  } catch {
-    // Misconfigured EMBEDDINGS_MODEL shouldn't block schema creation; the
-    // embed/search paths surface the real error.
-    return 1024;
-  }
-}
 
 export function getCorpusDb(): Client {
   if (cached) return cached;
@@ -110,7 +93,9 @@ export function ensureCorpusSchema(): Promise<void> {
            contextual_summary  TEXT,
            contextualized_text TEXT,
            block_text_sha1     TEXT,
-           embedding           F32_BLOB(${embeddingDims()})
+           -- 768 = embeddinggemma-2. SQLite doesn't enforce the declared
+           -- dim; ref_meta.embedding_model is the real cross-model guard.
+           embedding           F32_BLOB(768)
          )`,
         `CREATE INDEX IF NOT EXISTS idx_ref_blocks_doc_ord ON ref_blocks(doc_id, ordinal)`,
         `CREATE INDEX IF NOT EXISTS idx_ref_blocks_section ON ref_blocks(section_id, ordinal)`,

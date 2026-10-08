@@ -27,10 +27,6 @@ export interface IngestInput {
    *  iteration where you only care about the parser. Without contextualization
    *  the embedding step still runs against raw block text. */
   noContextualize?: boolean;
-  /** Skip the embedding step entirely (fast parser-only iteration). An
-   *  unreachable Ollama is handled separately: the embed step fails soft and
-   *  the system degrades to FTS-only retrieval until `corpus reembed`. */
-  noEmbed?: boolean;
   /** Heading-detection profile. Defaults to "irs"; FTB-published docs (e.g.
    *  Schedule CA instructions) need "ftb" for their en-dash inline-body
    *  convention. See `ParserStyle` in `./parse`. */
@@ -211,28 +207,26 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
   // rows keep NULL embeddings, retrieval runs FTS-only, and
   // `npm run corpus -- reembed` finishes the job once Ollama is up.
   let embedded = false;
-  if (!input.noEmbed) {
-    try {
-      const embedCfg = resolveEmbeddings();
-      const start = Date.now();
-      const inputs = blocks.map((b) => b.contextualizedText ?? b.text);
-      const vectors = await embedDocuments(embedCfg, inputs, (done, total) =>
-        console.log(`  embedding ${done}/${total} blocks… (${embedCfg.id})`),
-      );
-      await setBlockEmbeddings(
-        blocks.map((b, i) => ({ blockId: b.blockId, embedding: vectors[i] })),
-        { embeddingModel: embedCfg.id },
-      );
-      embedded = true;
-      console.log(
-        `  embedding done in ${Math.round((Date.now() - start) / 1000)}s`,
-      );
-    } catch (err) {
-      console.warn(
-        `  (embedding skipped — ${err instanceof Error ? err.message : String(err)}\n` +
-          `   retrieval will be FTS-only; run \`npm run corpus -- reembed\` once Ollama is up)`,
-      );
-    }
+  try {
+    const embedCfg = resolveEmbeddings();
+    const start = Date.now();
+    const inputs = blocks.map((b) => b.contextualizedText ?? b.text);
+    const vectors = await embedDocuments(embedCfg, inputs, (done, total) =>
+      console.log(`  embedding ${done}/${total} blocks… (${embedCfg.id})`),
+    );
+    await setBlockEmbeddings(
+      blocks.map((b, i) => ({ blockId: b.blockId, embedding: vectors[i] })),
+      { embeddingModel: embedCfg.id },
+    );
+    embedded = true;
+    console.log(
+      `  embedding done in ${Math.round((Date.now() - start) / 1000)}s`,
+    );
+  } catch (err) {
+    console.warn(
+      `  (embedding skipped — ${err instanceof Error ? err.message : String(err)}\n` +
+        `   retrieval will be FTS-only; run \`npm run corpus -- reembed\` once Ollama is up)`,
+    );
   }
 
   return {

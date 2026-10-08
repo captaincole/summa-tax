@@ -7,9 +7,8 @@
 //   (default)  only blocks with NULL embedding — recovers a `corpus sync`
 //              that ran while Ollama was down, without re-paying for
 //              contextualization.
-//   --all      EVERY block — required after switching embedding models, and
-//              after `corpus fetch` of a corpus built with a different model
-//              (e.g. the Voyage-era corpus-v1 release asset), since vectors
+//   --all      EVERY block — required after switching embedding models (or
+//              fetching a corpus built with a different one), since vectors
 //              from different models live in different spaces.
 
 import {

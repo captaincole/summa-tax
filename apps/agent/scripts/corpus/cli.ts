@@ -15,6 +15,7 @@ import { checkCommand } from "./check";
 import { searchCommand } from "./search";
 
 runCli({
+  name: "corpus",
   bin: "npm run corpus --",
   description:
     "Reference corpus for RAG grounding: ingest instruction PDFs, fetch/inspect/search corpus.db.",

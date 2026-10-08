@@ -23,6 +23,7 @@ config({ path: resolve(projectRoot, ".env.development") });
 config(); // plain .env, if present (never overrides already-set vars)
 
 runCli({
+  name: "form-engine",
   bin: "npm run form-engine --",
   description:
     "Form-engine asset pipeline: blank PDFs and tax tables → catalogs, bindings, types, runtime tree.",

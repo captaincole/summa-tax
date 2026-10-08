@@ -62,7 +62,7 @@ async function run(argv: string[]): Promise<void> {
   if (existsSync(seedPath)) {
     copyFileSync(seedPath, target);
     console.log(`[corpus fetch] seeded from ${seedPath} → ${target}`);
-    printReembedHint();
+    await checkEmbeddingStamp();
     return;
   }
 
@@ -95,18 +95,27 @@ async function run(argv: string[]): Promise<void> {
   }
   writeFileSync(target, bytes);
   console.log(`[corpus fetch] installed ${manifest.version} → ${target}`);
-  printReembedHint();
+  await checkEmbeddingStamp();
 }
 
-// The corpus-v1 release asset ships vectors from the retired Voyage pipeline.
-// Search detects the model mismatch and runs keyword-only until the vectors
-// are rebuilt with the local embedding model (~4 min, free, needs Ollama).
-function printReembedHint(): void {
-  console.log(
-    `[corpus fetch] if this corpus was built with a different embedding model ` +
-      `(corpus-v1 was), run 'npm run corpus -- reembed --all' to rebuild vectors ` +
-      `locally — until then reference search is keyword-only.`,
-  );
+// Compare the installed corpus's embedding-model stamp against the active
+// local model. On mismatch, search runs keyword-only until the vectors are
+// rebuilt (~4 min, free, needs Ollama) — say so now rather than at query time.
+// getCorpusDb resolves the same CORPUS_DB_PATH/default this script installed to.
+async function checkEmbeddingStamp(): Promise<void> {
+  const { storedEmbeddingModel } = await import("../../src/mastra/db/refDocs");
+  const { resolveEmbeddings } = await import("../../src/refdocs/embeddings");
+  const stored = await storedEmbeddingModel();
+  const active = resolveEmbeddings().id;
+  if (stored === active) {
+    console.log(`[corpus fetch] embeddings match the active model (${active}) — RAG ready.`);
+  } else {
+    console.log(
+      `[corpus fetch] corpus embeddings are ${stored ?? "unstamped"} but the active ` +
+        `model is ${active} — run 'npm run corpus -- reembed --all' to rebuild them ` +
+        `locally; until then reference search is keyword-only.`,
+    );
+  }
 }
 
 export const fetchCommand: Command = {
