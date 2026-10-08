@@ -1,10 +1,7 @@
 // Ingest the California FTB Tax Table (2025 540 booklet appendix) from a
 // cached PDF into a checked-in JSON file. Same shape as the federal
-// scripts/ingestTaxTable.ts pipeline but reading from PDF text rather than
+// ingest-federal-tax-table pipeline but reading from PDF text rather than
 // HTML.
-//
-//   npm run forms:ingest-ca-tax-table -- --year 2025
-//   npm run forms:ingest-ca-tax-table -- --year 2025 --refresh
 //
 // `--refresh` re-downloads from ftb.ca.gov; default uses the cached PDF
 // next to the JSON output.
@@ -14,12 +11,13 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   parseCATaxTable,
   validateCACoverage,
   type CATaxTableRow,
-} from "../src/forms-pipeline/tables/parseCATaxTable.js";
+} from "../../src/forms-pipeline/tables/parseCATaxTable.js";
+import { projectRoot } from "../../src/paths.js";
+import type { Command } from "../lib/cli";
 
 interface SpotCheck {
   taxableIncome: number;
@@ -63,8 +61,10 @@ const SOURCES: Record<number, CATaxTableSource> = {
   },
 };
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+const LOG = "[ingest-ca-tax-table]";
+
+async function run(argv: string[]): Promise<void> {
+  const args = parseCmdArgs(argv);
   const year = args.year;
   const source = SOURCES[year];
   if (!source) {
@@ -73,21 +73,18 @@ async function main() {
     );
   }
 
-  const dataDir = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    "../src/mastra/forms/data",
-  );
+  const dataDir = path.resolve(projectRoot, "src/mastra/forms/data");
   const pdfPath = path.join(dataDir, `ca-tax-table-${year}.source.pdf`);
   const jsonPath = path.join(dataDir, `ca-tax-table-${year}.json`);
 
-  console.log(`[ingest-ca-tax-table] year=${year}`);
-  console.log(`[ingest-ca-tax-table] source ${source.url}`);
-  console.log(`[ingest-ca-tax-table] cache  ${path.relative(process.cwd(), pdfPath)}`);
+  console.log(`${LOG} year=${year}`);
+  console.log(`${LOG} source ${source.url}`);
+  console.log(`${LOG} cache  ${path.relative(process.cwd(), pdfPath)}`);
 
   let pdfBytes: Buffer;
   let cached = true;
   if (args.refresh) {
-    console.log(`[ingest-ca-tax-table] --refresh: fetching from ${source.url}`);
+    console.log(`${LOG} --refresh: fetching from ${source.url}`);
     const res = await fetch(source.url);
     if (!res.ok) {
       throw new Error(`FTB fetch failed: ${res.status} ${res.statusText}`);
@@ -100,28 +97,28 @@ async function main() {
   }
   const sha256 = await sha256Hex(pdfBytes);
   console.log(
-    `[ingest-ca-tax-table] pdf ${cached ? "from cache" : "fetched"} ` +
+    `${LOG} pdf ${cached ? "from cache" : "fetched"} ` +
       `(${(pdfBytes.length / 1024).toFixed(1)}KB, sha256 ${sha256.slice(0, 12)}…)`,
   );
 
   const { rows, diagnostics } = await parseCATaxTable(new Uint8Array(pdfBytes));
   console.log(
-    `[ingest-ca-tax-table] parsed ${rows.length} rows ` +
+    `${LOG} parsed ${rows.length} rows ` +
       `(accepted ${diagnostics.linesAccepted}/${diagnostics.linesInspected} lines, ` +
       `rejected ${diagnostics.linesRejected})`,
   );
 
   const coverage = validateCACoverage(rows);
   console.log(
-    `[ingest-ca-tax-table] coverage [${coverage.minIncome}, ${coverage.maxIncome}] ` +
+    `${LOG} coverage [${coverage.minIncome}, ${coverage.maxIncome}] ` +
       `(${coverage.rowCount} rows, gaps=${coverage.gaps.length}, overlaps=${coverage.overlaps.length})`,
   );
   if (!coverage.ok) {
     if (coverage.gaps.length > 0) {
-      console.error(`[ingest-ca-tax-table] gaps:`, coverage.gaps.slice(0, 5));
+      console.error(`${LOG} gaps:`, coverage.gaps.slice(0, 5));
     }
     if (coverage.overlaps.length > 0) {
-      console.error(`[ingest-ca-tax-table] overlaps:`, coverage.overlaps.slice(0, 5));
+      console.error(`${LOG} overlaps:`, coverage.overlaps.slice(0, 5));
     }
     throw new Error("Coverage validation failed; refusing to write JSON.");
   }
@@ -135,7 +132,7 @@ async function main() {
   });
   const failed = spotResults.filter((r) => !r.pass);
   console.log(
-    `[ingest-ca-tax-table] spot checks ${spotResults.length - failed.length}/${spotResults.length} pass`,
+    `${LOG} spot checks ${spotResults.length - failed.length}/${spotResults.length} pass`,
   );
   for (const f of failed) {
     console.error(
@@ -171,7 +168,7 @@ async function main() {
     },
   };
   await fs.writeFile(jsonPath, serializeWithCompactRows(header, rows), "utf8");
-  console.log(`[ingest-ca-tax-table] wrote ${path.relative(process.cwd(), jsonPath)}`);
+  console.log(`${LOG} wrote ${path.relative(process.cwd(), jsonPath)}`);
 }
 
 function serializeWithCompactRows(
@@ -194,7 +191,7 @@ async function sha256Hex(bytes: Buffer): Promise<string> {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function parseArgs(argv: string[]): { year: number; refresh: boolean } {
+function parseCmdArgs(argv: string[]): { year: number; refresh: boolean } {
   let year = 2025;
   let refresh = false;
   for (let i = 0; i < argv.length; i++) {
@@ -212,7 +209,12 @@ function parseArgs(argv: string[]): { year: number; refresh: boolean } {
   return { year, refresh };
 }
 
-main().catch((err) => {
-  console.error("[ingest-ca-tax-table] fatal:", err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+export const ingestCaTaxTableCommand: Command = {
+  name: "ingest-ca-tax-table",
+  summary: "CA FTB 540 tax table (PDF) → checked-in JSON, with spot-checks",
+  options: [
+    { flag: "--year <year>", desc: "tax year with a SOURCES entry (default: 2025)" },
+    { flag: "--refresh", desc: "re-download from ftb.ca.gov instead of the cached PDF" },
+  ],
+  run,
+};

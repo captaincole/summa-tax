@@ -4,7 +4,7 @@ import { resolve, dirname } from "node:path";
 import { extractPdf } from "./extract";
 import { parseDoc, type ParserStyle } from "./parse";
 import { summarizeBlocks, sha1 } from "./contextualize";
-import { embed, batchByLimits } from "./voyage";
+import { resolveEmbeddings, embedDocuments } from "./embeddings";
 import {
   deleteDocument,
   getDocument,
@@ -27,8 +27,9 @@ export interface IngestInput {
    *  iteration where you only care about the parser. Without contextualization
    *  the embedding step still runs against raw block text. */
   noContextualize?: boolean;
-  /** Skip the Voyage embedding step. Set automatically when VOYAGE_API_KEY is
-   *  not present, so the system gracefully degrades to FTS-only retrieval. */
+  /** Skip the embedding step entirely (fast parser-only iteration). An
+   *  unreachable Ollama is handled separately: the embed step fails soft and
+   *  the system degrades to FTS-only retrieval until `corpus reembed`. */
   noEmbed?: boolean;
   /** Heading-detection profile. Defaults to "irs"; FTB-published docs (e.g.
    *  Schedule CA instructions) need "ftb" for their en-dash inline-body
@@ -66,7 +67,7 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
 
   // Sha-skip: hash the file before any expensive step. If the existing row's
   // sha matches and the caller didn't pass --force, we have nothing to do.
-  // This is what makes `refdocs:sync` cheap to run on every dev tick.
+  // This is what makes `corpus sync` cheap to run on every dev tick.
   const fileSha = await shaOfFile(pdfPath);
   const existing = await getDocument(input.docId);
   if (existing && existing.sha256 === fileSha && !input.force) {
@@ -205,31 +206,33 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
     blocks,
   });
 
-  // Embed AFTER writing rows so a mid-embed crash doesn't lose summaries.
-  // Uses UPDATE rather than re-INSERT.
-  const shouldEmbed = !input.noEmbed && !!process.env.VOYAGE_API_KEY;
-  if (shouldEmbed) {
-    const start = Date.now();
-    const inputs = blocks.map((b) => b.contextualizedText ?? b.text);
-    const batches = batchByLimits(inputs);
-    const vectors: number[][] = [];
-    let processed = 0;
-    for (const batch of batches) {
-      const batchVecs = await embed(batch, { inputType: "document" });
-      vectors.push(...batchVecs);
-      processed += batch.length;
-      console.log(`  embedding ${processed}/${inputs.length} blocks…`);
+  // Embed AFTER writing rows so an embed failure (e.g. Ollama not running)
+  // doesn't lose the contextual summaries we just paid for. Fails soft:
+  // rows keep NULL embeddings, retrieval runs FTS-only, and
+  // `npm run corpus -- reembed` finishes the job once Ollama is up.
+  let embedded = false;
+  if (!input.noEmbed) {
+    try {
+      const embedCfg = resolveEmbeddings();
+      const start = Date.now();
+      const inputs = blocks.map((b) => b.contextualizedText ?? b.text);
+      const vectors = await embedDocuments(embedCfg, inputs, (done, total) =>
+        console.log(`  embedding ${done}/${total} blocks… (${embedCfg.id})`),
+      );
+      await setBlockEmbeddings(
+        blocks.map((b, i) => ({ blockId: b.blockId, embedding: vectors[i] })),
+        { embeddingModel: embedCfg.id },
+      );
+      embedded = true;
+      console.log(
+        `  embedding done in ${Math.round((Date.now() - start) / 1000)}s`,
+      );
+    } catch (err) {
+      console.warn(
+        `  (embedding skipped — ${err instanceof Error ? err.message : String(err)}\n` +
+          `   retrieval will be FTS-only; run \`npm run corpus -- reembed\` once Ollama is up)`,
+      );
     }
-    await setBlockEmbeddings(
-      blocks.map((b, i) => ({ blockId: b.blockId, embedding: vectors[i] })),
-    );
-    console.log(
-      `  embedding done in ${Math.round((Date.now() - start) / 1000)}s`,
-    );
-  } else if (!input.noEmbed) {
-    console.log(
-      "  (VOYAGE_API_KEY not set — skipping embeddings; system will use FTS-only)",
-    );
   }
 
   return {
@@ -242,7 +245,7 @@ export async function ingestRefDoc(input: IngestInput): Promise<IngestResult> {
     canonicalTextPath,
     replaced,
     contextualized: !input.noContextualize,
-    embedded: shouldEmbed,
+    embedded,
     skipped: false,
   };
 }

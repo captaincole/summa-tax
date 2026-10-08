@@ -3,6 +3,11 @@
 // pre-commit hooks: fast, deterministic, offline, exits non-zero on any
 // failure.
 //
+// Positional args filter by check name (case-insensitive substring):
+//   npm test -- alex               → just the alex scenario
+//   npm test -- catalog-fill       → all catalog-fill checks
+//   npm test -- form-540 marcus    → any check matching either
+//
 // Adding a new scenario: import its bundled Scenario and add to the
 // SCENARIOS array below.
 //
@@ -25,15 +30,36 @@ const SCENARIOS: Scenario[] = [
 ];
 
 async function main() {
-  const totalChecks = SCENARIOS.length + CATALOGS.length;
+  const filters = process.argv
+    .slice(2)
+    .filter((a) => !a.startsWith("-"))
+    .map((f) => f.toLowerCase());
+  const matches = (name: string) =>
+    filters.length === 0 || filters.some((f) => name.toLowerCase().includes(f));
+
+  const catalogs = CATALOGS.filter((c) => matches(`catalog-fill:${c.formId}`));
+  const scenarios = SCENARIOS.filter((s) => matches(s.name));
+
+  if (catalogs.length + scenarios.length === 0) {
+    console.error(`No checks match filter(s): ${filters.join(", ")}`);
+    console.error(
+      `Available: ${[
+        ...SCENARIOS.map((s) => s.name),
+        ...CATALOGS.map((c) => `catalog-fill:${c.formId}`),
+      ].join(", ")}`,
+    );
+    process.exit(1);
+  }
+
+  const totalChecks = scenarios.length + catalogs.length;
   const colWidth = Math.max(
     16,
-    ...SCENARIOS.map((s) => s.name.length),
-    ...CATALOGS.map((c) => `catalog-fill:${c.formId}`.length),
+    ...scenarios.map((s) => s.name.length),
+    ...catalogs.map((c) => `catalog-fill:${c.formId}`.length),
   );
 
   console.log(
-    `Running ${SCENARIOS.length} scenario(s) + ${CATALOGS.length} catalog-fill check(s)\n`,
+    `Running ${scenarios.length} scenario(s) + ${catalogs.length} catalog-fill check(s)\n`,
   );
   const t0 = Date.now();
   const results: RunResult[] = [];
@@ -58,8 +84,8 @@ async function main() {
   // doesn't match the formatter-free golden. Keeping catalog-fill as a
   // pure catalog→widget check (no bindings registered) sidesteps the
   // problem and keeps the two test surfaces conceptually distinct.
-  for (const c of CATALOGS) record(await runCatalogFillCheck(c.formId));
-  for (const s of SCENARIOS) record(await runScenario(s));
+  for (const c of catalogs) record(await runCatalogFillCheck(c.formId));
+  for (const s of scenarios) record(await runScenario(s));
 
   const totalMs = Date.now() - t0;
   const passed = results.filter((r) => r.passed).length;

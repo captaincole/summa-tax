@@ -3,21 +3,19 @@
 // the JSON. Use `--refresh` to re-fetch from irs.gov (validates the upstream
 // hasn't changed since we last ingested by diffing the sha256).
 //
-//   npm run forms:ingest-tax-table -- --year 2025
-//   npm run forms:ingest-tax-table -- --year 2025 --refresh
-//
 // Spot-checks are hand-keyed from the published table; any change to the
 // extraction logic must keep them passing.
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { fetchHtml } from "../src/forms-pipeline/tables/fetchHtml.js";
+import { fetchHtml } from "../../src/forms-pipeline/tables/fetchHtml.js";
 import {
   parseTaxTable,
   validateCoverage,
   type TaxTableRow,
-} from "../src/forms-pipeline/tables/parseTaxTable.js";
+} from "../../src/forms-pipeline/tables/parseTaxTable.js";
+import { projectRoot } from "../../src/paths.js";
+import type { Command } from "../lib/cli";
 
 // ─── Per-year source config ──────────────────────────────────────────────
 // Adding a new year = adding an entry here + the spot-check set below.
@@ -70,26 +68,25 @@ const SOURCES: Record<number, TaxTableSource> = {
 
 // ─── Driver ──────────────────────────────────────────────────────────────
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+const LOG = "[ingest-federal-tax-table]";
+
+async function run(argv: string[]): Promise<void> {
+  const args = parseCmdArgs(argv);
   const year = args.year;
   const source = SOURCES[year];
   if (!source) {
     throw new Error(
-      `No source configured for tax year ${year}. Add an entry to SOURCES in ${path.relative(process.cwd(), fileURLToPath(import.meta.url))}.`,
+      `No source configured for tax year ${year}. Add an entry to SOURCES in scripts/formEngine/ingestFederalTaxTable.ts.`,
     );
   }
 
-  const dataDir = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    "../src/mastra/forms/data",
-  );
+  const dataDir = path.resolve(projectRoot, "src/mastra/forms/data");
   const htmlPath = path.join(dataDir, `tax-table-${year}.source.html`);
   const jsonPath = path.join(dataDir, `tax-table-${year}.json`);
 
-  console.log(`[ingest-tax-table] year=${year}`);
-  console.log(`[ingest-tax-table] source ${source.url}`);
-  console.log(`[ingest-tax-table] cache  ${path.relative(process.cwd(), htmlPath)}`);
+  console.log(`${LOG} year=${year}`);
+  console.log(`${LOG} source ${source.url}`);
+  console.log(`${LOG} cache  ${path.relative(process.cwd(), htmlPath)}`);
 
   const { html, source: prov, cached } = await fetchHtml({
     url: source.url,
@@ -97,18 +94,18 @@ async function main() {
     refresh: args.refresh,
   });
   console.log(
-    `[ingest-tax-table] html ${cached ? "from cache" : "fetched"} ` +
+    `${LOG} html ${cached ? "from cache" : "fetched"} ` +
       `(${(html.length / 1024).toFixed(1)}KB, sha256 ${prov.sha256.slice(0, 12)}…)`,
   );
 
   const { rows, diagnostics } = parseTaxTable(html);
   console.log(
-    `[ingest-tax-table] parsed ${rows.length} rows ` +
+    `${LOG} parsed ${rows.length} rows ` +
       `(${diagnostics.tablesAccepted}/${diagnostics.tablesInspected} tables accepted)`,
   );
   if (diagnostics.tablesRejected.length > 0) {
     console.warn(
-      `[ingest-tax-table] ${diagnostics.tablesRejected.length} table(s) ` +
+      `${LOG} ${diagnostics.tablesRejected.length} table(s) ` +
         `looked tax-table-shaped but produced no rows:`,
     );
     for (const r of diagnostics.tablesRejected) {
@@ -118,15 +115,15 @@ async function main() {
 
   const coverage = validateCoverage(rows);
   console.log(
-    `[ingest-tax-table] coverage [${coverage.minIncome}, ${coverage.maxIncome}) ` +
+    `${LOG} coverage [${coverage.minIncome}, ${coverage.maxIncome}) ` +
       `(${coverage.rowCount} rows, gaps=${coverage.gaps.length}, overlaps=${coverage.overlaps.length})`,
   );
   if (!coverage.ok) {
     if (coverage.gaps.length > 0) {
-      console.error(`[ingest-tax-table] gaps:`, coverage.gaps.slice(0, 5));
+      console.error(`${LOG} gaps:`, coverage.gaps.slice(0, 5));
     }
     if (coverage.overlaps.length > 0) {
-      console.error(`[ingest-tax-table] overlaps:`, coverage.overlaps.slice(0, 5));
+      console.error(`${LOG} overlaps:`, coverage.overlaps.slice(0, 5));
     }
     throw new Error("Coverage validation failed; refusing to write JSON.");
   }
@@ -138,7 +135,7 @@ async function main() {
   });
   const failed = spotResults.filter((r) => !r.pass);
   console.log(
-    `[ingest-tax-table] spot checks ${spotResults.length - failed.length}/${spotResults.length} pass`,
+    `${LOG} spot checks ${spotResults.length - failed.length}/${spotResults.length} pass`,
   );
   for (const f of failed) {
     console.error(
@@ -169,7 +166,7 @@ async function main() {
     },
   };
   await fs.writeFile(jsonPath, serializeWithCompactRows(header, rows), "utf8");
-  console.log(`[ingest-tax-table] wrote ${path.relative(process.cwd(), jsonPath)}`);
+  console.log(`${LOG} wrote ${path.relative(process.cwd(), jsonPath)}`);
 }
 
 // Pretty-print the header object but write each row on its own line. Keeps
@@ -191,7 +188,7 @@ function serializeWithCompactRows(
   return `${headerOpen.trimEnd()},\n  "rows": [\n${rowLines}\n  ]\n}\n`;
 }
 
-function parseArgs(argv: string[]): { year: number; refresh: boolean } {
+function parseCmdArgs(argv: string[]): { year: number; refresh: boolean } {
   let year = 2025;
   let refresh = false;
   for (let i = 0; i < argv.length; i++) {
@@ -209,7 +206,12 @@ function parseArgs(argv: string[]): { year: number; refresh: boolean } {
   return { year, refresh };
 }
 
-main().catch((err) => {
-  console.error("[ingest-tax-table] fatal:", err instanceof Error ? err.message : err);
-  process.exit(1);
-});
+export const ingestFederalTaxTableCommand: Command = {
+  name: "ingest-federal-tax-table",
+  summary: "IRS Pub 17 tax table (HTML) → checked-in JSON, with spot-checks",
+  options: [
+    { flag: "--year <year>", desc: "tax year with a SOURCES entry (default: 2025)" },
+    { flag: "--refresh", desc: "re-fetch from irs.gov instead of the cached HTML" },
+  ],
+  run,
+};

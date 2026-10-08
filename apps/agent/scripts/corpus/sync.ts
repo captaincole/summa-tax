@@ -1,15 +1,17 @@
-import "dotenv/config";
-import { getDocument } from "../src/mastra/db/refDocs";
-import { ingestRefDoc } from "../src/refdocs/ingest";
-import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
-import { projectRoot } from "../src/paths";
-
 // Idempotent corpus sync. Walks forms/**/instructions.pdf, ingests anything
 // missing or sha-drifted. The ingest pipeline's own sha-skip handles re-runs
 // where the PDF hasn't changed, so this is also cheap to run on every dev tick.
 //
 // Continues past per-doc failures so one bad PDF doesn't block the rest;
-// exits non-zero at end if any failed.
+// exits non-zero at end if any failed. If a run dies at the embeddings step,
+// `npm run corpus -- reembed` finishes the job without re-paying for
+// contextualization.
+
+import { getDocument } from "../../src/mastra/db/refDocs";
+import { ingestRefDoc } from "../../src/refdocs/ingest";
+import { walkCorpus, type CorpusEntry } from "../../src/refdocs/walkCorpus";
+import { projectRoot } from "../../src/paths";
+import type { Command } from "../lib/cli";
 
 interface SyncResult {
   ok: { docId: string; action: "ingested" | "replaced" | "skipped" }[];
@@ -42,16 +44,16 @@ async function syncOne(entry: CorpusEntry): Promise<{
   };
 }
 
-async function main() {
+async function run(): Promise<void> {
   const walk = await walkCorpus(projectRoot);
   const result: SyncResult = { ok: [], failed: [], unconfigured: [] };
 
   for (const u of walk.unconfigured) {
-    console.warn(`[refdocs:sync] unconfigured: ${u.pdfRelPath} — ${u.reason}`);
+    console.warn(`[corpus sync] unconfigured: ${u.pdfRelPath} — ${u.reason}`);
     result.unconfigured.push(u.pdfRelPath);
   }
 
-  console.log(`[refdocs:sync] processing ${walk.entries.length} doc(s)`);
+  console.log(`[corpus sync] processing ${walk.entries.length} doc(s)`);
   for (const entry of walk.entries) {
     try {
       const r = await syncOne(entry);
@@ -72,7 +74,7 @@ async function main() {
   const ingested = result.ok.filter((r) => r.action !== "skipped").length;
   const skipped = result.ok.filter((r) => r.action === "skipped").length;
   console.log(
-    `\n[refdocs:sync] done: ${ingested} ingested/replaced, ${skipped} skipped, ${result.failed.length} failed, ${result.unconfigured.length} unconfigured`,
+    `\n[corpus sync] done: ${ingested} ingested/replaced, ${skipped} skipped, ${result.failed.length} failed, ${result.unconfigured.length} unconfigured`,
   );
 
   if (result.failed.length > 0 || result.unconfigured.length > 0) {
@@ -80,7 +82,8 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("[refdocs:sync] fatal:", err);
-  process.exit(1);
-});
+export const syncCommand: Command = {
+  name: "sync",
+  summary: "Ingest new/sha-drifted forms/**/instructions.pdf into corpus.db (idempotent)",
+  run,
+};

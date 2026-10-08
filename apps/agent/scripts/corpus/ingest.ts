@@ -1,9 +1,15 @@
-import "dotenv/config";
-import { parseArgs } from "node:util";
-import { ingestRefDoc } from "../src/refdocs/ingest";
+// Manual single-doc ingest — the debugging seam under `sync`. Unlike sync,
+// this can ingest a PDF from anywhere on disk (not just the forms/ tree)
+// and can skip the expensive pipeline stages via --no-contextualize /
+// --no-embed.
 
-async function main() {
+import { parseArgs } from "node:util";
+import { ingestRefDoc } from "../../src/refdocs/ingest";
+import type { Command } from "../lib/cli";
+
+async function run(argv: string[]): Promise<void> {
   const { values } = parseArgs({
+    args: argv,
     options: {
       pdf: { type: "string", short: "p" },
       "doc-id": { type: "string" },
@@ -22,9 +28,7 @@ async function main() {
 
   if (!values.pdf || !values["doc-id"] || !values.title) {
     console.error(
-      "usage: tsx scripts/ingestRefDoc.ts --pdf <path> --doc-id <id> --title <title>" +
-        " [--publisher IRS] [--tax-year 2025] [--source-url <url>] [--force]" +
-        " [--parser-style irs|ftb]",
+      "required: --pdf <path> --doc-id <id> --title <title> (see --help for all options)",
     );
     process.exit(1);
   }
@@ -61,7 +65,20 @@ async function main() {
   if (result.replaced) console.log("  (replaced previous ingestion)");
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+export const ingestCommand: Command = {
+  name: "ingest",
+  summary: "Manually ingest one PDF (any path on disk) into corpus.db",
+  options: [
+    { flag: "--pdf <path>", desc: "path to the PDF (required; -p shorthand)" },
+    { flag: "--doc-id <id>", desc: "stable doc id, e.g. irs-1040-inst-2025 (required)" },
+    { flag: "--title <title>", desc: "human-readable document title (required)" },
+    { flag: "--publisher <name>", desc: "publisher (default: IRS)" },
+    { flag: "--tax-year <year>", desc: "tax year, e.g. 2025" },
+    { flag: "--source-url <url>", desc: "where the PDF was downloaded from" },
+    { flag: "--force", desc: "re-ingest even if the sha matches the DB" },
+    { flag: "--no-contextualize", desc: "skip the Haiku contextualization stage" },
+    { flag: "--no-embed", desc: "skip the Voyage embedding stage" },
+    { flag: "--parser-style irs|ftb", desc: "heading-detection style (default: irs)" },
+  ],
+  run,
+};

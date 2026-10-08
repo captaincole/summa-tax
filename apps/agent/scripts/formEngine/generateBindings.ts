@@ -1,8 +1,5 @@
-// Phase D CLI — thin wrapper around the generateBindingsWorkflow.
-//
-//   npx tsx --env-file=.env.development scripts/generateBindings.ts \
-//     --form-id=form-1040 \
-//     --tax-year=2025
+// Thin wrapper around the generateBindingsWorkflow: AI-generate the
+// bindings.ts that maps engine FormFields to a catalog's PDF widgets.
 //
 // Defaults:
 //   --catalog defaults to forms/<jurisdiction>/<short>/catalog.json
@@ -11,13 +8,12 @@
 //               federal  → src/engine/federal/<short>/bindings.ts
 //               state/CA → src/engine/state/ca/<short>/bindings.ts
 //             where <short> is the formId with "form-" stripped.
-//
-// Both can be overridden with --catalog=… and --output=… flags.
 
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { runGenerateBindings } from "../src/forms-pipeline/generateBindingsWorkflow/index.js";
-import { projectRoot } from "../src/paths.js";
+import { runGenerateBindings } from "../../src/forms-pipeline/generateBindingsWorkflow/index.js";
+import { projectRoot } from "../../src/paths.js";
+import type { Command } from "../lib/cli";
 
 // Auto-discover the catalog file in the conventional locations. Each form
 // has its own folder under forms/<jurisdiction>/<short>/ holding catalog.json.
@@ -67,7 +63,7 @@ function findDefaultOutput(formId: string, catalogPath: string): string {
   );
 }
 
-function parseArgs(argv: string[]): Args {
+function parseCmdArgs(argv: string[]): Args {
   const get = (flag: string): string | undefined => {
     const arg = argv.find((a) => a.startsWith(`${flag}=`));
     return arg ? arg.slice(flag.length + 1) : undefined;
@@ -104,10 +100,10 @@ function parseArgs(argv: string[]): Args {
   };
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+async function run(argv: string[]): Promise<void> {
+  const args = parseCmdArgs(argv);
 
-  console.log(`Phase D: generating bindings for ${args.formId} (${args.taxYear})`);
+  console.log(`generate-bindings: ${args.formId} (${args.taxYear})`);
   console.log(`  Catalog:        ${args.catalogPath}`);
   console.log(`  Output:         ${args.outputPath}`);
   console.log(`  Min confidence: ${args.minConfidence}`);
@@ -142,7 +138,15 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+export const generateBindingsCommand: Command = {
+  name: "generate-bindings",
+  summary: "AI-generate src/engine/<…>/bindings.ts from a form's catalog",
+  options: [
+    { flag: "--form-id=<id>", desc: "e.g. form-1040 (required)" },
+    { flag: "--tax-year=<year>", desc: "e.g. 2025 (required)" },
+    { flag: "--catalog=<path>", desc: "catalog.json (default: auto-discovered under forms/)" },
+    { flag: "--output=<path>", desc: "bindings.ts (default: derived from catalog location)" },
+    { flag: "--min-confidence=<l>", desc: "high | medium | low (default: high)" },
+  ],
+  run,
+};

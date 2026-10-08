@@ -72,8 +72,7 @@ State coverage is California-only today.
 
 ## Quick Start
 
-The default setup uses Anthropic models (just for ease of startup), but Summa can run against **any OpenAI-compatible model server**. I've personally tested this using Ollama + Gemma4 on my MacBook Air M4. Optionally, a Voyage AI key upgrades
-corpus search from keyword to semantic retrieval (tbd on a local model that does embeddings).
+The default setup uses Anthropic models (just for ease of startup), but Summa can run against **any OpenAI-compatible model server**. I've personally tested this using Ollama + Gemma4 on my MacBook Air M4. Semantic retrieval (RAG) over the IRS corpus runs **locally via Ollama** with EmbeddingGemma 2 — no API key, no cost.
 
 | Variable | Required | What it does |
 | --- | --- | --- |
@@ -81,7 +80,7 @@ corpus search from keyword to semantic retrieval (tbd on a local model that does
 | `JUDGE_MODEL` | **Yes** | The grounding judges that double-check AI decisions. Also required at startup. |
 | `ANTHROPIC_API_KEY` | With Anthropic models | Powers the two roles above when they point at Anthropic. |
 | `LUCA_MODEL_URL` / `JUDGE_MODEL_URL` | For local models | Point a role at an OpenAI-compatible server instead, e.g. `LUCA_MODEL=ollama/gemma4:26b` + `LUCA_MODEL_URL=http://localhost:11434/v1`. |
-| `VOYAGE_API_KEY` | No | Semantic retrieval + reranking over the IRS corpus. Without it, retrieval degrades gracefully to keyword (FTS) search. |
+| `EMBEDDINGS_MODEL` | No (defaults to `ollama/embeddinggemma-2`) | The local embedding model for semantic corpus search. Needs [Ollama](https://ollama.com) running with the model pulled; without it, search falls back to keyword matching. |
 | `AGENT_API_TOKEN` | No | Gates the agent port if it's ever reachable beyond localhost. |
 
 Local-model notes: vision, tool calling, and structured output all matter —
@@ -101,8 +100,15 @@ model roles at a local server) before the app will do anything useful.
 npm run install:all
 npm run dev:all          # first run generates .env.development files
 # → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
-npm run corpus:fetch     # prebuilt IRS reference corpus
+npm run corpus -- fetch  # prebuilt IRS reference corpus
+ollama pull embeddinggemma-2          # local embedding model for RAG
+npm run corpus -- reembed --all       # rebuild corpus vectors locally (~4 min)
 ```
+
+The last two steps enable semantic (RAG) search over the IRS corpus and
+require [Ollama](https://ollama.com). They're optional: without them the
+agent still works, and reference search falls back to keyword matching —
+see [Semantic search](#semantic-search-rag-vs-keyword-fallback) below.
 
 Open http://localhost:3000 — first run redirects to `/setup` to create your
 owner account.
@@ -126,13 +132,29 @@ The current agent Luca is built off of the [Mastra](https://mastra.ai/docs) fram
 
 ### Generating The Corpus
 
-The agent and the workflows use a corpus of IRS provided guides to ground its information in truth and to generate the original bindings of the form engine. Here is how that corpus is turned into our data model that the agents can then search. We store information in both vector format and in plain text format for two reasons. First, so there is a backup option if you don't want to use voyage or an embedding model, and second because if you add plain text search queries it makes the model's retrieval capabilities better for corpus search. 
+The agent and the workflows use a corpus of IRS provided guides to ground its information in truth and to generate the original bindings of the form engine. Here is how that corpus is turned into our data model that the agents can then search. We store information in both vector format and in plain text format for two reasons. First, so there is a backup option if you aren't running a local embedding model, and second because if you add plain text search queries it makes the model's retrieval capabilities better for corpus search. 
 
 1. *Read* Using unpdf, we read the instructions files (ex: forms/federal/1040/instructions.pdf) from the IRS and turn them into text documents for further processing
 2. *Parse (parse.ts)* turns those text documents into sections based on headers deterministically (No AI) with stable section IDs. 
 3. *Contextualize (contextualize.ts)* receives each block and sends that to an LLM (haiku) that then adds contextual information as part of the block.
 4. *Store* Then we store everything in the DB, as ref_documents (parent), ref_pages, ref_sections, and ref_blocks
-5. *Embeddings* Next we convert each blocks summary + text into RAG capable embeddings via Voyage. We store those vectors in each block's embedding column. 
+5. *Embeddings* Next we convert each block's summary + text into RAG-capable embeddings with the local embedding model (EmbeddingGemma 2 via Ollama — see below). We store those vectors in each block's embedding column. 
+
+### Semantic search (RAG) vs keyword fallback
+
+Reference-corpus search runs two legs: a keyword leg (SQLite FTS5) and a semantic vector leg. **The vector leg requires a local embedding model served by Ollama** — there is no cloud embedding dependency (the earlier Voyage pipeline was removed). As a developer, to get full-quality RAG retrieval you need:
+
+```bash
+# one-time setup
+ollama pull embeddinggemma-2          # 1.3 GB; needs Ollama ≥ 0.40
+npm run corpus -- reembed --all       # rebuild the corpus vectors locally (~4 min, free)
+```
+
+The re-embed is needed after `corpus fetch` because the published corpus-v1 asset still ships vectors from the retired Voyage pipeline; search detects the model mismatch and refuses to mix vector spaces.
+
+**If Ollama isn't running, nothing breaks** — searches log a warning and fall back to keyword (FTS) matching, which is a real but lower-recall mode: exact-term queries work well, paraphrased/semantic queries suffer. Fine for end users trying the app; not fine for judging retrieval quality or developing anything RAG-adjacent. Use `npm run corpus -- search "your query" --mode vector` (vs `--mode fts`) to see each leg's behavior, and `npm run corpus -- check` to confirm every block has an embedding.
+
+The embedding model is configurable via `EMBEDDINGS_MODEL` / `EMBEDDINGS_MODEL_URL` (default `ollama/embeddinggemma-2` at `http://localhost:11434`). After changing models, always run `npm run corpus -- reembed --all` — vectors from different models are not comparable, and the corpus records which model built it (`ref_meta.embedding_model`) to enforce that.
 
 ### Scenario Creation
 

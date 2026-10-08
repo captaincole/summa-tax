@@ -7,10 +7,11 @@ import type { MastraModelConfig } from "@mastra/core/llm";
 //   judge     — the grounding judges in workflows/reviewDecision (assess,
 //               rule, queryFormulator) plus their structured-output
 //               extraction passes. Text-only, narrow tasks.
-//   retrieval — embeddings + rerank for reference-doc search. Not resolved
-//               here: it stays Voyage (see refdocs/voyage.ts, keyed by
-//               VOYAGE_API_KEY) with graceful FTS-only fallback. The corpus
-//               is public IRS text, so cloud is acceptable there.
+//   retrieval — embeddings for reference-doc search. Not resolved here:
+//               they route through src/refdocs/embeddings.ts
+//               (EMBEDDINGS_MODEL, local Ollama — EmbeddingGemma 2 by
+//               default) with graceful keyword-only (FTS) fallback when
+//               Ollama isn't running.
 //
 // Every other model string in the repo (forms-pipeline, refdocs
 // contextualization) is operator-side tooling whose output ships prebuilt —

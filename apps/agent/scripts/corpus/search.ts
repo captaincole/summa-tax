@@ -1,20 +1,13 @@
-// Invoke the search-ref-docs Mastra tool directly — same code path the review workflow
-// uses during a review. Lets you eyeball what she'd see for a given query.
-//
-// Usage:
-//   npx tsx scripts/searchRefDocs.ts "your query here"
-//   npx tsx scripts/searchRefDocs.ts "single filing status" --limit 5
-//   npx tsx scripts/searchRefDocs.ts "single filing status" --mode fts
-//   npx tsx scripts/searchRefDocs.ts "single filing status" --doc-id irs-1040-inst-2025
-//
-// Mode options: auto | fts | vector | hybrid (default: auto, which picks
-// hybrid+rerank when embeddings + Voyage key are present, else FTS-only).
-import "dotenv/config";
-import { parseArgs } from "node:util";
-import { searchRefDocsTool } from "../src/mastra/tools/refDocs";
+// Invoke the search-ref-docs Mastra tool directly — same code path the review
+// workflow uses during a review. Lets you eyeball what it'd see for a query.
 
-async function main() {
+import { parseArgs } from "node:util";
+import { searchRefDocsTool } from "../../src/mastra/tools/refDocs";
+import type { Command } from "../lib/cli";
+
+async function run(argv: string[]): Promise<void> {
   const { values, positionals } = parseArgs({
+    args: argv,
     options: {
       limit: { type: "string", default: "5" },
       mode: { type: "string", default: "auto" },
@@ -24,7 +17,7 @@ async function main() {
   });
   const query = positionals.join(" ").trim();
   if (!query) {
-    console.error('usage: npx tsx scripts/searchRefDocs.ts "your query" [--mode auto|fts|vector|hybrid] [--limit N] [--doc-id <id>]');
+    console.error('required: a query string (see --help)');
     process.exit(1);
   }
 
@@ -65,7 +58,17 @@ async function main() {
   });
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+export const searchCommand: Command = {
+  name: "search",
+  summary: "Run the production search-ref-docs tool against the corpus",
+  usage: '"query"',
+  options: [
+    { flag: "--limit <n>", desc: "max results, 1–25 (default: 5)" },
+    {
+      flag: "--mode auto|fts|vector|hybrid",
+      desc: "retrieval mode; auto runs hybrid, degrading to FTS when Ollama is unavailable (default: auto)",
+    },
+    { flag: "--doc-id <id>", desc: "restrict to one document, e.g. irs-1040-inst-2025" },
+  ],
+  run,
+};

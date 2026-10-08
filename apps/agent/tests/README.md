@@ -4,7 +4,9 @@ Scenario tests should cover *EVERY* supported form field at some level. This is 
 
 The offline golden suite — `npm test` from the repo root, and what the
 pre-commit hook runs. Fast, deterministic, no network, no AI: it exercises
-the form engine and PDF fill entirely in memory.
+the form engine and PDF fill entirely in memory. Positional args filter by
+check name: `npm test -- alex`, `npm test -- catalog-fill`,
+`npm test -- form-540`.
 
 Two kinds of checks, one summary table (`runAll.ts`):
 
@@ -27,8 +29,9 @@ Two kinds of checks, one summary table (`runAll.ts`):
   the `SCENARIOS` array in `runAll.ts`.
 - **New form's catalog check**: add an entry to `CATALOGS` in
   `catalogFill.ts`. The first run fails with "no golden — run --update";
-  run `npm run test:catalog-fill -- --update` to bootstrap the snapshot,
-  eyeball the PDF it wrote, and commit it.
+  run `npx tsx tests/catalogFill.ts --form-id=<id> --update` (from
+  `apps/agent/`) to bootstrap the snapshot, eyeball the PDF it wrote, and
+  commit it.
 
 `helpers/` holds the shared assertion/fixture/golden-PDF utilities.
 

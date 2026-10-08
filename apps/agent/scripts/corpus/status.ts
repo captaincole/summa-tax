@@ -1,10 +1,10 @@
-import "dotenv/config";
-import { getDocument, listDocuments } from "../src/mastra/db/refDocs";
-import { walkCorpus, type CorpusEntry } from "../src/refdocs/walkCorpus";
-import { projectRoot } from "../src/paths";
-
 // Read-only diff between forms/**/instructions.pdf and ref_documents in the
 // local corpus DB. Exits 0 unless --strict is passed and there's any drift.
+
+import { getDocument, listDocuments } from "../../src/mastra/db/refDocs";
+import { walkCorpus, type CorpusEntry } from "../../src/refdocs/walkCorpus";
+import { projectRoot } from "../../src/paths";
+import type { Command } from "../lib/cli";
 
 interface Categorized {
   present: CorpusEntry[];
@@ -56,7 +56,7 @@ function format(walk: Awaited<ReturnType<typeof walkCorpus>>, cats: Categorized)
     cats.missing.length +
     cats.extra.length +
     walk.unconfigured.length;
-  lines.push(`[refdocs:status] ${total} doc(s):`);
+  lines.push(`[corpus status] ${total} doc(s):`);
   lines.push(
     `  present     ${cats.present.length.toString().padStart(3)} (sha matches DB)`,
   );
@@ -108,8 +108,8 @@ function format(walk: Awaited<ReturnType<typeof walkCorpus>>, cats: Categorized)
   return lines.join("\n");
 }
 
-async function main() {
-  const strict = process.argv.includes("--strict");
+async function run(argv: string[]): Promise<void> {
+  const strict = argv.includes("--strict");
   const { walk, cats } = await categorize();
   console.log(format(walk, cats));
 
@@ -120,13 +120,15 @@ async function main() {
       cats.extra.length +
       walk.unconfigured.length;
     if (dirty > 0) {
-      console.error(`\n[refdocs:status] --strict: ${dirty} drift item(s)`);
+      console.error(`\n[corpus status] --strict: ${dirty} drift item(s)`);
       process.exit(1);
     }
   }
 }
 
-main().catch((err) => {
-  console.error("[refdocs:status] failed:", err);
-  process.exit(1);
-});
+export const statusCommand: Command = {
+  name: "status",
+  summary: "Diff repo instruction PDFs vs corpus.db (present/drift/missing/extra)",
+  options: [{ flag: "--strict", desc: "exit non-zero on any drift (for CI/pre-push)" }],
+  run,
+};

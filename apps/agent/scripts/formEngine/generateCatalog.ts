@@ -1,20 +1,14 @@
-// Phase C CLI — thin wrapper around the ingestFormWorkflow Mastra workflow.
-//
-//   npx tsx scripts/ingestForm.ts \
-//     --pdf=forms/federal/1040/blank.pdf \
-//     --form-id=form-1040 \
-//     --tax-year=2025 \
-//     --jurisdiction=federal \
-//     --title="U.S. Individual Income Tax Return"
+// Thin wrapper around the ingestFormWorkflow Mastra workflow: extract a
+// blank PDF's AcroForm widgets and AI-label them into a catalog.json.
 //
 // Writes the classified catalog to
 //   apps/agent/forms/<jurisdiction>/<short>/catalog.json
 // where <short> is the formId with "form-" stripped.
-// Pass --write-db to additionally upsert into the forms / form_fields tables.
 
 import { resolve } from "node:path";
-import { runIngestForm } from "../src/forms-pipeline/ingestFormWorkflow/index.js";
-import { projectRoot } from "../src/paths.js";
+import { runIngestForm } from "../../src/forms-pipeline/ingestFormWorkflow/index.js";
+import { projectRoot } from "../../src/paths.js";
+import type { Command } from "../lib/cli";
 
 interface Args {
   pdf: string;
@@ -25,7 +19,7 @@ interface Args {
   writeDb: boolean;
 }
 
-function parseArgs(argv: string[]): Args {
+function parseCmdArgs(argv: string[]): Args {
   const get = (flag: string): string | undefined => {
     const arg = argv.find((a) => a.startsWith(`${flag}=`));
     return arg ? arg.slice(flag.length + 1) : undefined;
@@ -64,14 +58,14 @@ function defaultOutputDir(jurisdiction: string, formId: string): string {
   return `forms/federal/${shortName}`;
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
+async function run(argv: string[]): Promise<void> {
+  const args = parseCmdArgs(argv);
   const outputPath = resolve(
     projectRoot,
     `${defaultOutputDir(args.jurisdiction, args.formId)}/catalog.json`,
   );
 
-  console.log(`Phase C ingest: ${args.formId} (${args.taxYear})`);
+  console.log(`generate-catalog: ${args.formId} (${args.taxYear})`);
   console.log(`  PDF:    ${args.pdf}`);
   console.log(`  Output: ${outputPath}`);
   if (args.writeDb) console.log(`  --write-db: forms + form_fields will be upserted`);
@@ -114,7 +108,16 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+export const generateCatalogCommand: Command = {
+  name: "generate-catalog",
+  summary: "Extract + AI-label a blank PDF's widgets → forms/<…>/catalog.json",
+  options: [
+    { flag: "--pdf=<path>", desc: "blank fillable PDF (required)" },
+    { flag: "--form-id=<id>", desc: "e.g. form-1040 (required)" },
+    { flag: "--tax-year=<year>", desc: "e.g. 2025 (required)" },
+    { flag: "--title=<title>", desc: "official form title (required)" },
+    { flag: "--jurisdiction=<j>", desc: "federal | state-<st> (default: federal)" },
+    { flag: "--write-db", desc: "also upsert forms/form_fields tables in corpus.db" },
+  ],
+  run,
+};

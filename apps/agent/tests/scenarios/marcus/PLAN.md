@@ -109,18 +109,19 @@ For every new form we follow the same three-step sequence. Bindings are
 the most expensive step and are sequenced last so the cheap catalog +
 fill-test work for all six new forms can land together first.
 
-**Step 1 — Catalog build.** Run the blank PDF through `npm run forms:ingest`
-(wraps the ingestFormWorkflow). Inputs: `blank.pdf`, an `instructions.pdf` +
-`instructions.meta.json` sidecar, a stable `--form-id` (e.g. `schedule-a`,
-`form-8889`), and `--tax-year=2025`. Output: `catalog.json` co-located with
-the blank PDF under `apps/agent/forms/<jurisdiction>/<short>/`. Then
-`npm run forms:promote` copies the catalog into
+**Step 1 — Catalog build.** Run the blank PDF through
+`npm run form-engine -- generate-catalog` (wraps the ingestFormWorkflow).
+Inputs: `blank.pdf`, an `instructions.pdf` + `instructions.meta.json`
+sidecar, a stable `--form-id` (e.g. `schedule-a`, `form-8889`), and
+`--tax-year=2025`. Output: `catalog.json` co-located with the blank PDF
+under `apps/agent/forms/<jurisdiction>/<short>/`. Then
+`npm run form-engine -- promote` copies the catalog into
 `src/mastra/public/forms/...` so the runtime registry picks it up.
 
 **Step 2 — Catalog-fill golden.** Add a `FORMS` entry in
 `src/mastra/engine/registry.ts` (catalog import + spec entry) but no
 bindings yet. Then run
-`npm run test:catalog-fill -- --form-id=<id> --update` to bootstrap the
+`npx tsx tests/catalogFill.ts --form-id=<id> --update` to bootstrap the
 synthetic-fill golden + a debug PDF at `/tmp/smoke-<formId>.pdf`. Eyeball
 the PDF — every widget filled, no overflow, no missed widget. Commit the
 golden. From then on, `runAll.ts` automatically regression-checks the
@@ -304,7 +305,7 @@ Luca should call `record-ai-decision` (fires Nynaeve synchronously) for:
    - MAGI > $200k single → 3.8% on lesser of NII or MAGI excess
    - Form 8960 territory; check whether the engine already handles this
 
-Run `npm run refdocs:status` to confirm IRS Pub 590-A is in the corpus
+Run `npm run corpus -- status` to confirm IRS Pub 590-A is in the corpus
 before expecting Nynaeve to ground decision #1.
 
 ## Decisions made (was "still open")

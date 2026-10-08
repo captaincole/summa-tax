@@ -30,11 +30,15 @@ blank.pdf ──ingest──► catalog.json ──promote──► runtime copy
 ## Commands (from repo root)
 
 ```bash
-npm run forms:ingest             # PDF → catalog.json (Anthropic calls, costs money)
-npm run forms:promote            # copy catalog + blank.pdf into src/mastra/public/forms/
-npm run forms:bind               # catalog → bindings.ts draft
-npm run forms:ingest-tax-table   # refresh the federal tax table JSON
+npm run form-engine -- generate-catalog           # PDF → catalog.json (Anthropic calls, costs money)
+npm run form-engine -- promote                    # copy catalog + blank.pdf into src/mastra/public/forms/
+npm run form-engine -- generate-bindings          # catalog → bindings.ts draft
+npm run form-engine -- ingest-federal-tax-table   # refresh the federal tax table JSON
 ```
+
+Run `npm run form-engine` with no arguments for the full command list
+(including `generate-types` and `ingest-ca-tax-table`), and
+`-- <command> --help` for a command's options.
 
 The promote step is a deliberate gate: tests run against
 `apps/agent/forms/` (offline source of truth); the runtime only sees a

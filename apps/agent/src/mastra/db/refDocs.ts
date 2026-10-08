@@ -120,8 +120,8 @@ function vectorLiteral(embedding: number[]): string {
 // FTS5 MATCH has its own query grammar and throws on bare operator characters
 // (-, ", *, :, etc). User/agent queries are free text, so we reduce to bare
 // alphanumeric tokens, quote each to neutralize operators, and OR them for
-// recall — bm25 still ranks blocks matching more terms higher, and the Voyage
-// reranker (when present) decides final order. Returns null when nothing
+// recall — bm25 still ranks blocks matching more terms higher, and the merged
+// best-of-leg scoring decides final order. Returns null when nothing
 // searchable survives (all punctuation/stopwords), so the caller skips the leg.
 function toFtsMatchQuery(raw: string): string | null {
   const terms = raw.toLowerCase().match(/[a-z0-9]+/g);
@@ -366,25 +366,24 @@ export async function vectorSearchRefDocs(
 export interface HybridSearchOpts {
   query: string;
   docId?: string;
-  /** Top-K returned to the caller after rerank. Default 8. */
+  /** Top-K returned to the caller. Default 8. */
   limit?: number;
-  /** How many candidates to pull from each leg before merging + reranking.
-   *  Bigger = more recall, more rerank cost. Default 50. */
+  /** How many candidates to pull from each leg before merging.
+   *  Bigger = more recall. Default 50. */
   candidatesPerLeg?: number;
-  /** Force a specific retrieval path. Default "auto" picks based on what's
-   *  available (Voyage key set?). */
+  /** Force a specific retrieval path. Default "auto" = hybrid, degrading to
+   *  FTS when the local embedding model is unavailable or stale. */
   mode?: "auto" | "fts" | "vector" | "hybrid";
-  /** Skip Voyage reranking even when available. Default false. */
-  noRerank?: boolean;
 }
 
-/** Hybrid retrieval: FTS top-N ∪ vector top-N → Voyage rerank → top-K.
+/** Hybrid retrieval: FTS top-N ∪ vector top-N → merged ordering → top-K.
  *
- * Falls back gracefully:
- *   - If Voyage key absent → FTS-only (vector leg is skipped because we pass
- *     queryEmbedding=null)
- *   - If rerank fails → return merged candidates ordered by best-of-leg
- *     (we don't try to normalize bm25 vs cosine; rerank is the proper fix)
+ * Falls back gracefully to keyword (FTS-only) retrieval when the vector leg
+ * can't run — searching always works, semantic quality is what degrades:
+ *   - Ollama down / embedding model not pulled → FTS-only with a warning
+ *   - Stored vectors built by a DIFFERENT embedding model than the active
+ *     one (e.g. a prebuilt corpus from the retired Voyage pipeline) →
+ *     FTS-only with a warning; fix with `npm run corpus -- reembed --all`
  */
 export async function hybridSearchRefDocs(
   opts: HybridSearchOpts,
@@ -392,17 +391,36 @@ export async function hybridSearchRefDocs(
   const limit = Math.min(opts.limit ?? 8, 25);
   const cands = Math.min(opts.candidatesPerLeg ?? 50, 100);
 
-  const hasVoyageKey = !!process.env.VOYAGE_API_KEY;
-  const mode: "fts" | "vector" | "hybrid" = (() => {
-    if (opts.mode && opts.mode !== "auto") return opts.mode;
-    return hasVoyageKey ? "hybrid" : "fts";
-  })();
+  const { resolveEmbeddings, embedQuery } = await import(
+    "../../refdocs/embeddings"
+  );
+  const mode: "fts" | "vector" | "hybrid" =
+    opts.mode && opts.mode !== "auto" ? opts.mode : "hybrid";
 
-  // Embed the query if we're going to use the vector leg.
+  // Embed the query if we're going to use the vector leg — but only when the
+  // stored vectors came from the same model (cross-model cosine is garbage),
+  // and only if the local embedding endpoint is actually up.
   let queryEmbedding: number[] | null = null;
-  if ((mode === "vector" || mode === "hybrid") && hasVoyageKey) {
-    const { embedOne } = await import("../../refdocs/voyage");
-    queryEmbedding = await embedOne(opts.query, { inputType: "query" });
+  if (mode === "vector" || mode === "hybrid") {
+    try {
+      const embedCfg = resolveEmbeddings();
+      const stored = await storedEmbeddingModel();
+      if (stored !== null && stored !== embedCfg.id) {
+        console.warn(
+          `[hybridSearchRefDocs] corpus embeddings were built with ${stored} ` +
+            `but the active model is ${embedCfg.id} — skipping the vector ` +
+            `leg (FTS-only). Run \`npm run corpus -- reembed --all\` to rebuild.`,
+        );
+      } else {
+        queryEmbedding = await embedQuery(embedCfg, opts.query);
+      }
+    } catch (err) {
+      console.warn(
+        `[hybridSearchRefDocs] vector leg unavailable, falling back to ` +
+          `keyword search: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+    if (queryEmbedding == null && mode === "vector") return [];
   }
 
   const rows = await callMatch({
@@ -413,29 +431,11 @@ export async function hybridSearchRefDocs(
   });
   if (rows.length === 0) return [];
 
-  // Rerank if we have it. Voyage rerank-2.5 takes (query, documents[]) and
-  // returns relevance-ordered indices. We send the contextualized text — the
-  // same surface FTS/vector indexed against, so the reranker's signal aligns.
-  const shouldRerank = !opts.noRerank && hasVoyageKey && rows.length > 1;
-  if (shouldRerank) {
-    try {
-      const { rerank } = await import("../../refdocs/voyage");
-      const docs = rows.map((r) => r.contextualized_text ?? r.text);
-      const ranked = await rerank(opts.query, docs, { topK: limit });
-      return ranked
-        .map((r) => rowToHit(rows[r.index], r.score))
-        .slice(0, limit);
-    } catch (err) {
-      console.warn(
-        `[hybridSearchRefDocs] rerank failed, returning merged results: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
-      );
-    }
-  }
-
-  // Fallback ordering: blocks that hit both legs first, then by best signal.
-  // We don't try to normalize bm25 vs cosine — rerank is the right fix.
+  // Merged ordering: blocks that hit both legs first, then by best signal.
+  // We don't try to normalize bm25 vs cosine — both-legs agreement is the
+  // strongest cheap relevance signal. (The retired Voyage pipeline reranked
+  // here with rerank-2.5; a local cross-encoder is the future option if
+  // ordering quality ever becomes the bottleneck.)
   const scored = rows
     .map((r) => {
       const ftsScore = r.fts_rank ?? 0;
@@ -464,6 +464,7 @@ export async function deleteDocument(docId: string): Promise<void> {
 
 export async function setBlockEmbeddings(
   pairs: { blockId: string; embedding: number[] }[],
+  opts: { embeddingModel?: string } = {},
 ): Promise<void> {
   if (pairs.length === 0) return;
   await ensureCorpusSchema();
@@ -480,6 +481,11 @@ export async function setBlockEmbeddings(
       })),
       "write",
     );
+  }
+  // Stamp which model produced these vectors so the search path can detect
+  // a provider switch (see storedEmbeddingModel / hybridSearchRefDocs).
+  if (opts.embeddingModel) {
+    await setCorpusMeta("embedding_model", opts.embeddingModel);
   }
 }
 
@@ -607,7 +613,7 @@ export async function writeDocument(payload: IngestPayload): Promise<void> {
 // don't reach past this module into the DB client directly.
 // ---------------------------------------------------------------------------
 
-/** All ingested docs (doc_id + sha256). For drift detection in refdocs:status. */
+/** All ingested docs (doc_id + sha256). For drift detection in `corpus status`. */
 export async function listDocuments(): Promise<{ docId: string; sha256: string }[]> {
   await ensureCorpusSchema();
   const res = await getCorpusDb().execute(
@@ -646,14 +652,19 @@ export async function countBlocksByDoc(
   };
 }
 
-/** Blocks with no embedding yet — the recovery input for refdocs:reembed. */
-export async function listBlocksWithoutEmbeddings(): Promise<
+/** Blocks with no embedding yet — the recovery input for `corpus reembed`.
+ *  Pass all=true to list EVERY block (for a full re-embed after switching
+ *  embedding models). */
+export async function listBlocksWithoutEmbeddings(
+  opts: { all?: boolean } = {},
+): Promise<
   { blockId: string; docId: string; contextualizedText: string | null; text: string }[]
 > {
   await ensureCorpusSchema();
+  const where = opts.all ? "" : "WHERE embedding IS NULL ";
   const res = await getCorpusDb().execute(
     `SELECT block_id, doc_id, contextualized_text, text
-     FROM ref_blocks WHERE embedding IS NULL ORDER BY block_id`,
+     FROM ref_blocks ${where}ORDER BY block_id`,
   );
   return res.rows.map((r) => ({
     blockId: asStr(r.block_id),
@@ -661,4 +672,40 @@ export async function listBlocksWithoutEmbeddings(): Promise<
     contextualizedText: asStrOrNull(r.contextualized_text),
     text: asStr(r.text),
   }));
+}
+
+// ---------------------------------------------------------------------------
+// Corpus metadata (ref_meta) — which embedding model built the stored vectors.
+// ---------------------------------------------------------------------------
+
+export async function getCorpusMeta(key: string): Promise<string | null> {
+  await ensureCorpusSchema();
+  const res = await getCorpusDb().execute({
+    sql: `SELECT value FROM ref_meta WHERE key = ?`,
+    args: [key],
+  });
+  return res.rows.length > 0 ? asStr(res.rows[0].value) : null;
+}
+
+export async function setCorpusMeta(key: string, value: string): Promise<void> {
+  await ensureCorpusSchema();
+  await getCorpusDb().execute({
+    sql: `INSERT INTO ref_meta (key, value) VALUES (?, ?)
+          ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+    args: [key, value],
+  });
+}
+
+/** The embedding-model identity the stored vectors were built with. A corpus
+ *  with embeddings but no stamp predates the stamp — treat as the legacy
+ *  Voyage default (the only writer that existed then). */
+export async function storedEmbeddingModel(): Promise<string | null> {
+  const stamped = await getCorpusMeta("embedding_model");
+  if (stamped) return stamped;
+  const res = await getCorpusDb().execute(
+    `SELECT count(embedding) AS n FROM ref_blocks`,
+  );
+  if (asNum(res.rows[0]?.n) === 0) return null;
+  const { LEGACY_EMBEDDING_ID } = await import("../../refdocs/embeddings");
+  return LEGACY_EMBEDDING_ID;
 }

@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { mkdirSync } from "node:fs";
 import { createClient, type Client } from "@libsql/client";
+import { resolveEmbeddings } from "../../refdocs/embeddings";
 
 // The reference corpus lives in a single local libsql/SQLite file — "the DB is
 // a file." This replaces the Supabase/Postgres corpus store (ref_* tables +
@@ -27,6 +28,22 @@ function corpusDbPath(): string {
 
 let cached: Client | null = null;
 let schemaReady: Promise<void> | null = null;
+
+// Declared dimension for the ref_blocks.embedding column on a FRESH db
+// (voyage-law-2 = 1024, embeddinggemma-2 = 768). Only consulted at CREATE
+// TABLE time — SQLite doesn't enforce the declared dim, and we have no ANN
+// index, so an existing db keeps working if the provider changes; what
+// actually matters is that stored and query vectors come from the same
+// model, which ref_meta.embedding_model guards (see db/refDocs.ts).
+function embeddingDims(): number {
+  try {
+    return resolveEmbeddings()?.dims ?? 1024;
+  } catch {
+    // Misconfigured EMBEDDINGS_MODEL shouldn't block schema creation; the
+    // embed/search paths surface the real error.
+    return 1024;
+  }
+}
 
 export function getCorpusDb(): Client {
   if (cached) return cached;
@@ -93,7 +110,7 @@ export function ensureCorpusSchema(): Promise<void> {
            contextual_summary  TEXT,
            contextualized_text TEXT,
            block_text_sha1     TEXT,
-           embedding           F32_BLOB(1024)
+           embedding           F32_BLOB(${embeddingDims()})
          )`,
         `CREATE INDEX IF NOT EXISTS idx_ref_blocks_doc_ord ON ref_blocks(doc_id, ordinal)`,
         `CREATE INDEX IF NOT EXISTS idx_ref_blocks_section ON ref_blocks(section_id, ordinal)`,
@@ -108,6 +125,13 @@ export function ensureCorpusSchema(): Promise<void> {
            doc_id UNINDEXED,
            content,
            tokenize = 'porter unicode61'
+         )`,
+        // Corpus-level key/value metadata. Today: embedding_model — which
+        // "provider/model" produced the stored vectors, so search can refuse
+        // to compare query vectors from a different model (db/refDocs.ts).
+        `CREATE TABLE IF NOT EXISTS ref_meta (
+           key   TEXT PRIMARY KEY,
+           value TEXT NOT NULL
          )`,
         // Form catalog — the inventory side of the form engine (one row per
         // (form_id, tax_year) + one per field). Written by the forms-ingest
@@ -143,14 +167,13 @@ export function ensureCorpusSchema(): Promise<void> {
     );
     // Loud once-per-process nudge: an empty corpus means grounding reviews
     // can't retrieve anything (verdicts degrade to needs_more_facts). The
-    // app keeps working — same graceful-degrade posture as a missing
-    // Voyage key.
+    // app keeps working — same graceful-degrade posture as Ollama being down.
     const count = await db.execute(`SELECT count(*) AS n FROM ref_documents`);
     if (Number(count.rows[0]?.n ?? 0) === 0) {
       console.warn(
         "[corpus] reference corpus is EMPTY — grounding reviews will return " +
-          "needs_more_facts. Run `npm run corpus:fetch` (prebuilt) or " +
-          "`npm run refdocs:sync` (rebuild, needs VOYAGE_API_KEY).",
+          "needs_more_facts. Run `npm run corpus -- fetch` (prebuilt) or " +
+          "`npm run corpus -- sync` (rebuild, needs ANTHROPIC_API_KEY + Ollama).",
       );
     }
   })();

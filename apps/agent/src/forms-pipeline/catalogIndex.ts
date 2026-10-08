@@ -3,7 +3,7 @@
 // `lookup_form_fields` tool so the AI can fetch fieldIds + labels from
 // other forms on demand when binding cross-form references.
 //
-// Lazy: we scan once per `forms:bind` invocation and cache the result.
+// Lazy: we scan once per `generate-bindings` invocation and cache the result.
 // Slim rows: only `fieldId`, `label`, `valueType` make it into the
 // tool's return value. The full catalog has positions, options, widget
 // names — none of that is useful for the classifier's job of "decide

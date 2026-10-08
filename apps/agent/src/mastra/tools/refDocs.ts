@@ -19,7 +19,7 @@ const searchHitSchema = z.object({
 export const searchRefDocsTool = createTool({
   id: "search-ref-docs",
   description:
-    "Search the ingested reference-document corpus (IRS instructions, pubs, etc.). Uses hybrid retrieval (lexical FTS + semantic vector search) with Voyage rerank-2.5 for the final ordering — the system gracefully falls back to FTS-only if embeddings or the rerank API are unavailable. Pass a natural-language query with the key terms (e.g. 'household employee wages reporting', 'standard deduction single filer 2025'). Each hit includes a block_id that can be resolved to exact text via cite-ref-docs.",
+    "Search the ingested reference-document corpus (IRS instructions, pubs, etc.). Uses hybrid retrieval (lexical FTS + local semantic vector search) — the system gracefully falls back to keyword-only search if the local embedding model is unavailable. Pass a natural-language query with the key terms (e.g. 'household employee wages reporting', 'standard deduction single filer 2025'). Each hit includes a block_id that can be resolved to exact text via cite-ref-docs.",
   inputSchema: z.object({
     query: z
       .string()
@@ -43,7 +43,7 @@ export const searchRefDocsTool = createTool({
       .enum(["auto", "fts", "vector", "hybrid"])
       .optional()
       .describe(
-        "Retrieval mode. Default 'auto' picks hybrid+rerank if embeddings + Voyage key are available, else FTS-only. Override only for evals/debugging.",
+        "Retrieval mode. Default 'auto' runs hybrid (FTS + vector), degrading to FTS-only when the local embedding model is unavailable. Override only for evals/debugging.",
       ),
   }),
   outputSchema: z.object({

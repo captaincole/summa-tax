@@ -3,9 +3,9 @@
 // field, so Claude can ground rule + params choices against the actual
 // regulatory text instead of guessing from the field label alone.
 //
-// Uses the existing hybridSearchRefDocs (the grounding review's retrieval path): FTS leg
-// + voyage-law-2 vector leg + voyage rerank-2.5. Runs per-field in parallel
-// with a concurrency cap so we don't burst the Voyage API.
+// Uses the existing hybridSearchRefDocs (the grounding review's retrieval
+// path): FTS leg + local embedding vector leg, merged best-of-leg ordering.
+// Runs per-field in parallel with a concurrency cap.
 
 import { hybridSearchRefDocs } from "../mastra/db/refDocs.js";
 import type { FieldInventory } from "../engine/catalog.js";
@@ -28,18 +28,12 @@ export interface RetrievedFieldContext {
 export interface RetrieveOpts {
   fields: FieldInventory[];
   formTitle: string;
-  /** Top-K blocks retained per field after rerank. */
+  /** Top-K blocks retained per field after merging. */
   topK?: number;
   /** How many fields to retrieve for in parallel. */
   concurrency?: number;
-  /** Skip Voyage rerank-2.5 — falls back to merged FTS + vector ordering.
-   *  Default true for Phase D because the 197-field × 100-candidate volume
-   *  trips the rerank-2.5 TPM ceiling (2M tok/min), and binding
-   *  classification doesn't need rerank-grade precision. */
-  noRerank?: boolean;
-  /** Candidates pulled from each retrieval leg before merging. Smaller =
-   *  less data through Voyage = faster + lower cost. Default 20 (vs
-   *  hybridSearchRefDocs's default of 50) since we keep topK at 3. */
+  /** Candidates pulled from each retrieval leg before merging. Default 20
+   *  (vs hybridSearchRefDocs's default of 50) since we keep topK at 3. */
   candidatesPerLeg?: number;
 }
 
@@ -49,7 +43,6 @@ export async function retrieveContextPerField(
 ): Promise<RetrievedFieldContext[]> {
   const topK = opts.topK ?? 3;
   const concurrency = Math.max(1, Math.min(opts.concurrency ?? 10, 25));
-  const noRerank = opts.noRerank ?? true;
   const candidatesPerLeg = opts.candidatesPerLeg ?? 20;
 
   const out: RetrievedFieldContext[] = new Array(opts.fields.length);
@@ -65,7 +58,6 @@ export async function retrieveContextPerField(
       const hits = await hybridSearchRefDocs({
         query,
         limit: topK,
-        noRerank,
         candidatesPerLeg,
       });
       out[i] = {

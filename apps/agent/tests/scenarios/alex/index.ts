@@ -6,7 +6,7 @@
 // California: taxable income $73,294 → tax $3,256 → $3 owed.
 //
 // Run just this scenario:
-//   npm run test:alex
+//   npm test -- alex
 // Run all scenarios:
 //   npm test
 

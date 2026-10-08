@@ -24,7 +24,7 @@ import { register as registerForm8959 } from "./8959/bindings.js";
 // src/mastra/public/forms/, not the offline source-of-truth at
 // apps/agent/forms/. This gives us a promotion gate: ingesting a new
 // catalog updates apps/agent/forms/ (tests run against it), and only
-// after a `forms:promote` cp does the runtime pick up the change.
+// after a `form-engine promote` cp does the runtime pick up the change.
 // Rollup inlines these JSON contents at build time; nothing reads them
 // from disk in the running process.
 import form8949CatalogJson from "../../mastra/public/forms/federal/8949/catalog.json";

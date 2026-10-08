@@ -32,10 +32,14 @@ ANTHROPIC_API_KEY=
 # vLLM, …) set e.g. LUCA_MODEL=ollama/qwen3-vl:8b and
 # LUCA_MODEL_URL=http://localhost:11434/v1 (same pattern for JUDGE_*).
 LUCA_MODEL=anthropic/claude-sonnet-4-6
-JUDGE_MODEL=anthropic/claude-haiku-4-5
+JUDGE_MODEL=anthropic/claude-haiku-5-5
 
-# Optional: semantic retrieval + reranking (FTS-only without it).
-VOYAGE_API_KEY=
+# Semantic retrieval (RAG) embeds locally via Ollama — install from
+# https://ollama.com and run \`ollama pull embeddinggemma-2\`. Without Ollama
+# running, reference search falls back to keyword (FTS) matching.
+# Defaults shown; uncomment to override.
+# EMBEDDINGS_MODEL=ollama/embeddinggemma-2
+# EMBEDDINGS_MODEL_URL=http://localhost:11434
 
 # Local data files.
 CORPUS_DB_PATH=${DATA}/corpus.db
@@ -63,6 +67,6 @@ DOCUMENTS_PATH=${DATA}/documents
 if (wrote) {
   console.log(
     "[bootstrap] first run: set ANTHROPIC_API_KEY in apps/agent/.env.development," +
-      " then `npm run corpus:fetch` for the prebuilt reference corpus.",
+      " then `npm run corpus -- fetch` for the prebuilt reference corpus.",
   );
 }

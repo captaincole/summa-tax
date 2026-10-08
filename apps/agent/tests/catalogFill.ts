@@ -6,7 +6,8 @@
 // fillFromCatalog, and diff the rendered map against the golden stored
 // alongside the catalog.
 //
-//   npm run test:catalog-fill -- --form-id=form-8949 [--update]
+//   npx tsx tests/catalogFill.ts --form-id=form-8949 [--update]
+//   (check-only, via the main runner: npm test -- form-8949)
 //
 // What this catches:
 //   - widget the catalog references doesn't exist in the PDF
@@ -300,7 +301,7 @@ export async function runCatalogFillCheck(formId: string): Promise<RunResult> {
       expectedRaw = await fs.readFile(goldenPath, "utf8");
     } catch {
       failures.push(
-        `no golden at ${goldenPath} — run "npm run test:catalog-fill -- --form-id=${formId} --update"`,
+        `no golden at ${goldenPath} — run "npx tsx tests/catalogFill.ts --form-id=${formId} --update"`,
       );
       return {
         name: `catalog-fill:${formId}`,
@@ -338,7 +339,7 @@ async function main(): Promise<void> {
   const blankPath = join(formDir, "blank.pdf");
   const goldenPath = join(formDir, "catalog-fill-golden.json");
 
-  console.log(`test:catalog-fill ${args.formId}${args.update ? " (--update)" : ""}`);
+  console.log(`catalog-fill ${args.formId}${args.update ? " (--update)" : ""}`);
   console.log(`  catalog: ${catalogPath}`);
   console.log(`  blank:   ${blankPath}`);
   console.log(`  golden:  ${goldenPath}`);

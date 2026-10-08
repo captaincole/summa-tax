@@ -2,7 +2,7 @@
 // the result as TypeScript, and overwrite the corresponding generated/
 // file. Not registered with the production Mastra instance (PIPELINE.md
 // keeps both forms-pipeline workflows standalone); invoked from
-// scripts/generateBindings.ts.
+// scripts/formEngine/generateBindings.ts.
 
 import { createWorkflow } from "@mastra/core/workflows";
 import {

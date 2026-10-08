@@ -9,7 +9,7 @@ Deploy it like you'd deploy a personal tool, not a SaaS.
 npm run install:all
 npm run dev:all          # generates .env.development files on first run
 # → set ANTHROPIC_API_KEY in apps/agent/.env.development
-npm run corpus:fetch     # prebuilt IRS reference corpus
+npm run corpus -- fetch  # prebuilt IRS reference corpus
 ```
 
 Open http://localhost:3000 → `/setup`. Everything persistent lives in

@@ -29,7 +29,7 @@ export type { WorkflowInput, WorkflowOutput };
 /**
  * Run the workflow end-to-end. Thin wrapper around createRun/start that
  * unwraps the success result or throws on failure. Used by
- * scripts/ingestForm.ts.
+ * scripts/formEngine/generateCatalog.ts.
  */
 export async function runIngestForm(input: WorkflowInput): Promise<WorkflowOutput> {
   const run = await ingestFormWorkflow.createRun();

@@ -20,8 +20,8 @@ export const irsBlockSnapshotSchema = z.object({
   blockId: z.string(),
   docId: z.string(),
   text: z.string(),
-  // Score from the retrieval call (rerank-2.5 if available, else best-of-leg
-  // similarity). Persisted so future evals can compare retrieval strategies.
+  // Score from the retrieval call (merged best-of-leg similarity).
+  // Persisted so future evals can compare retrieval strategies.
   score: z.number().optional(),
 });
 
