@@ -1,12 +1,12 @@
 # Summa by @captaincole — AI Can Do Your Taxes
 
-Summa is a local-capable AI harness that allows you to build all the documents you need to either estimate or file your taxes. 
+Summa is a local-capable AI harness that allows you to build all the documents you need to either estimate or file your taxes. This is a project I've been developing 
 
 ## Why? - Let's Break The System...
 
 Taxes shouldn't be as hard as they are today. An entire industry profits from keeping the U.S. tax system difficult and opaque, but it doesn't have to be that way and this project is an attempt to change that system. 
 
-I personally have suffered through the companies that provide tax products only to ask myself if there was a better way. You shouldn't have to pay a private company to help you figure out how much money you have to pay to the government!
+You shouldn't have to pay a private company to help you figure out how much money you have to pay to the government!
 
 This project was going to be a startup, but life changed directions. Now I want this to be a collaborative project that has the greatest impact it can. Join me in disrupting the tax cabal. 
 
@@ -62,6 +62,8 @@ State coverage is California-only today.
 | Dependents, MFJ/MFS/HoH | ❌ Not yet | ❌ Not yet |
 | Self-employment, K-1s, rental | ❌ Not yet | ❌ Not yet |
 
+Lots of other stuff is unsupported. There are a lot of edge cases when it comes to taxes so please keep that in mind. 
+
 ## Before you use this — read honestly
 
 - **Your tax data goes to your model.** Every conversation turn, and every background grounding check, is an API call carrying your tax facts to the model you configured. If you use a local model, or spin up your own private infra you are fine, but if you use Anthropic or OpenAI just remember that. 
@@ -101,13 +103,24 @@ npm run install:all
 npm run dev:all          # first run generates .env.development files
 # → set ANTHROPIC_API_KEY in apps/agent/.env.development, restart
 npm run corpus -- fetch  # prebuilt IRS reference corpus
+
+# Optional but recommended — needs Ollama installed (https://ollama.com):
 ollama pull embeddinggemma-2          # local embedding model for RAG
 ```
 
 The last step enables semantic (RAG) search over the IRS corpus and
-requires [Ollama](https://ollama.com). It's optional: without it the
-agent still works, and reference search falls back to keyword matching —
-see [Semantic search](#semantic-search-rag-vs-keyword-fallback) below.
+requires [Ollama](https://ollama.com) (`brew install ollama`, or the
+installer from their site). It's optional: without it the agent still
+works, and reference search falls back to keyword matching — see
+[Semantic search](#semantic-search-rag-vs-keyword-fallback) below.
+
+To check your setup at any point, run the doctor. It prints machine
+info, resolved config, data-file state, and whether Ollama / LM Studio
+are installed, running, and serving the models Summa expects:
+
+```bash
+npm run doctor
+```
 
 Open http://localhost:3000 — first run redirects to `/setup` to create your
 owner account.

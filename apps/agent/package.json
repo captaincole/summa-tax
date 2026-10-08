@@ -11,6 +11,7 @@
     "corpus": "tsx scripts/corpus/cli.ts",
     "form-engine": "tsx scripts/formEngine/cli.ts",
     "smoke:review": "tsx scripts/smokeReview.ts",
+    "doctor": "tsx scripts/doctor.ts",
     "test": "tsx tests/runAll.ts",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest"

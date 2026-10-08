@@ -17,6 +17,7 @@
     "start": "npm --prefix apps/agent run start",
     "form-engine": "npm --prefix apps/agent run form-engine --",
     "smoke:review": "npm --prefix apps/agent run smoke:review",
+    "doctor": "npm --prefix apps/agent run doctor",
     "test": "npm --prefix apps/agent test",
     "install:all": "npm install && npm --prefix apps/agent install && npm --prefix apps/web install",
     "prepare": "husky"
